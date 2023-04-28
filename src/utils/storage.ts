@@ -1,96 +1,53 @@
 import { ICoinGeckoCoinList, ISimpleCoinInfo } from '../models/ICoinInfo'
 import { ICoinGeckoNftList, ISimpleNftInfo } from '../models/INftInfo'
 
-export interface LocalStorage {
-	coins?: ICoinGeckoCoinList
-	coinIds?: ISimpleCoinInfo[]
-	nfts?: ICoinGeckoNftList
-	nftIds?: ISimpleNftInfo[]
-	darkmodeChecked?: boolean
+export interface LocalStorageData {
+	coins?: ICoinGeckoCoinList;
+	coinIds?: ISimpleCoinInfo[];
+	nfts?: ICoinGeckoNftList;
+	nftIds?: ISimpleNftInfo[];
 }
 
-export type LocalStorageKeys = keyof LocalStorage
 
-export function setStoredCoinList(coins: ICoinGeckoCoinList): Promise<void> {
-	const vals: LocalStorage = {
-		coins,
-	}
-
+export async function setStoredCoinList(coins: ICoinGeckoCoinList): Promise<void> {
 	return new Promise((resolve) => {
-		chrome.storage.local.set(vals, () => {
-			resolve()
-		})
-	})
+		chrome.storage.local.set({ coins }, resolve);
+	});
 }
 
-export function getStoredCoinList(): Promise<ICoinGeckoCoinList> {
-	const keys: LocalStorageKeys[] = ['coins']
+export async function getStoredCoinList(): Promise<ICoinGeckoCoinList> {
 	return new Promise((resolve) => {
-		chrome.storage.local.get(keys, (res: LocalStorage) => {
-			resolve(res.coins ?? [])
-		})
-	})
+		chrome.storage.local.get(['coins'], (res: LocalStorageData) => {
+			resolve(res.coins ?? []);
+		});
+	});
 }
 
-export function setStoredCoins(coinIds: ISimpleCoinInfo[]): Promise<void> {
-	const vals: LocalStorage = {
-		coinIds,
-	}
-
+export async function setStoredCoins(coinIds: ISimpleCoinInfo[]): Promise<void> {
 	return new Promise((resolve) => {
-		chrome.storage.local.set(vals, () => {
-			resolve()
-		})
-	})
+		chrome.storage.local.set({ coinIds }, resolve);
+	});
 }
 
-export function getStoredCoins(): Promise<ISimpleCoinInfo[]> {
-	const keys: LocalStorageKeys[] = ['coinIds']
+export async function getStoredCoins(): Promise<ISimpleCoinInfo[]> {
 	return new Promise((resolve) => {
-		chrome.storage.local.get(keys, (res: LocalStorage) => {
-			resolve(res.coinIds ?? [])
-		})
-	})
-}
-///////////////////////////
-///////////////////////////
-export function setStoredNftList(nfts: ICoinGeckoNftList): Promise<void> {
-	const vals: LocalStorage = {
-		nfts,
-	}
-
-	return new Promise((resolve) => {
-		chrome.storage.local.set(vals, () => {
-			resolve()
-		})
-	})
+		chrome.storage.local.get(['coinIds'], (res: LocalStorageData) => {
+			resolve(res.coinIds ?? []);
+		});
+	});
 }
 
-export function getStoredNftList(): Promise<ICoinGeckoNftList> {
-	const keys: LocalStorageKeys[] = ['nfts']
+// NFTs
+export async function setStoredNftList(nfts: ICoinGeckoNftList): Promise<void> {
 	return new Promise((resolve) => {
-		chrome.storage.local.get(keys, (res: LocalStorage) => {
-			resolve(res.nfts ?? [])
-		})
-	})
+		chrome.storage.local.set({ nfts }, resolve);
+	});
 }
 
-export function setDarkmode(darkmodeChecked: boolean): Promise<void> {
-	const vals: LocalStorage = {
-		darkmodeChecked,
-	}
-
+export async function getStoredNftList(): Promise<ICoinGeckoNftList> {
 	return new Promise((resolve) => {
-		chrome.storage.local.set(vals, () => {
-			resolve()
-		})
-	})
-}
-export function getDarkmode(): Promise<boolean> {
-	const keys: LocalStorageKeys[] = ['darkmodeChecked']
-	return new Promise((resolve) => {
-		chrome.storage.local.get(keys, (res: LocalStorage) => {
-			resolve(res.darkmodeChecked)
-		})
-	})
+		chrome.storage.local.get(['nfts'], (res: LocalStorageData) => {
+			resolve(res.nfts ?? []);
+		});
+	});
 }

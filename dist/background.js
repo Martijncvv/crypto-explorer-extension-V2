@@ -31,89 +31,120 @@ const COINGECKO_COINS_LIST_API = 'https://api.coingecko.com/api/v3/coins/list';
 const COINGECKO_NFTS_LIST_API = 'https://api.coingecko.com/api/v3/nfts/list';
 function fetchCoinsList() {
     return __awaiter(this, void 0, void 0, function* () {
-        const res = yield fetch(COINGECKO_COINS_LIST_API);
-        if (!res.ok) {
-            throw new Error(`Fetch error, Coingecko Coins List}`);
+        try {
+            const res = yield fetch(COINGECKO_COINS_LIST_API);
+            if (!res.ok) {
+                throw new Error(`Fetch error, Coingecko Coins List: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
         }
-        const data = yield res.json();
-        return data;
+        catch (error) {
+            console.error('Error fetching Coingecko Coins List:', error);
+            throw error;
+        }
     });
 }
 function fetchTrendingCoins() {
     return __awaiter(this, void 0, void 0, function* () {
-        const res = yield fetch(`https://api.coingecko.com/api/v3/search/trending`);
-        if (!res.ok) {
-            throw new Error(`Fetch error, Hot Coins}`);
+        try {
+            const res = yield fetch('https://api.coingecko.com/api/v3/search/trending');
+            if (!res.ok) {
+                throw new Error(`Fetch error, Hot Coins: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
         }
-        const data = yield res.json();
-        return data;
+        catch (error) {
+            console.error('Error fetching Hot Coins:', error);
+            throw error;
+        }
     });
 }
 function fetchCoinInfo(coinId) {
     return __awaiter(this, void 0, void 0, function* () {
-        coinId = coinId ? coinId : 'bitcoin';
-        const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
-        if (!res.ok) {
-            throw new Error(`Fetch error, coin info data: ${coinId}`);
+        coinId = coinId || 'bitcoin';
+        try {
+            const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
         }
-        const data = yield res.json();
-        return data;
+        catch (error) {
+            console.error(`Error fetching coin info data (${coinId}):`, error);
+            throw error;
+        }
     });
 }
 function fetchNftInfo(coinId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const res = yield fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}`);
-        if (!res.ok) {
-            throw new Error(`Fetch error, nft info data: ${coinId}`);
+        try {
+            const res = yield fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, NFT info data (${coinId}): ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
         }
-        const data = yield res.json();
-        return data;
+        catch (error) {
+            console.error(`Error fetching NFT info data (${coinId}):`, error);
+            throw error;
+        }
     });
 }
 function fetchPriceHistoryData(coinId, quote, chartRange) {
     return __awaiter(this, void 0, void 0, function* () {
-        coinId = coinId ? coinId : 'bitcoin';
-        quote = quote ? quote : 'usd';
-        const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`);
-        if (!res.ok) {
-            throw new Error(`Fetch error, price history data: ${coinId}`);
+        coinId = coinId || 'bitcoin';
+        quote = quote || 'usd';
+        try {
+            const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, price history data (${coinId}): ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
         }
-        const priceData = yield res.json();
-        return priceData;
+        catch (error) {
+            console.error(`Error fetching price history data (${coinId}):`, error);
+            throw error;
+        }
     });
 }
 function fetchTokenTxs(domainName, contractAddress, txAmount) {
     return __awaiter(this, void 0, void 0, function* () {
-        const res = yield fetch('https://api.' +
-            domainName +
-            '/api?module=account&action=tokentx&contractaddress=' +
-            contractAddress +
-            '&page=1&offset=' +
-            txAmount +
-            '&startblock=0&endblock=99999999&sort=desc');
-        if (!res.ok) {
-            throw new Error(`Fetch error, Eth token txs info}`);
+        try {
+            const res = yield fetch(`https://api.${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, Eth token txs info: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
         }
-        const data = yield res.json();
-        return data;
+        catch (error) {
+            console.error('Error fetching Eth token txs info:', error);
+            throw error;
+        }
     });
 }
 function fetchNftList() {
     return __awaiter(this, void 0, void 0, function* () {
         let allNfts = [];
         for (let page = 1; page < 100; page++) {
-            yield new Promise((resolve) => setTimeout(resolve, 500));
-            let res = yield fetch(`${COINGECKO_NFTS_LIST_API}?per_page=250&page=${page}`);
-            if (!res.ok) {
-                console.log(`Fetch error, API info page ${page}`);
-                return allNfts;
+            try {
+                yield new Promise((resolve) => setTimeout(resolve, 500));
+                const res = yield fetch(`${COINGECKO_NFTS_LIST_API}?per_page=250&page=${page}`);
+                if (!res.ok) {
+                    console.log(`Fetch error, API info page ${page}: ${res.status} ${res.statusText}`);
+                    return allNfts;
+                }
+                const data = yield res.json();
+                allNfts.push(...data);
+                if (data.length < 250) {
+                    return allNfts;
+                }
             }
-            let data = yield res.json();
-            yield allNfts.push(...data);
-            if (data.length < 250) {
+            catch (error) {
+                console.error(`Error fetching API info page ${page}:`, error);
                 return allNfts;
             }
         }
+        return allNfts;
     });
 }
 
@@ -133,84 +164,66 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "setStoredCoins": () => (/* binding */ setStoredCoins),
 /* harmony export */   "getStoredCoins": () => (/* binding */ getStoredCoins),
 /* harmony export */   "setStoredNftList": () => (/* binding */ setStoredNftList),
-/* harmony export */   "getStoredNftList": () => (/* binding */ getStoredNftList),
-/* harmony export */   "setDarkmode": () => (/* binding */ setDarkmode),
-/* harmony export */   "getDarkmode": () => (/* binding */ getDarkmode)
+/* harmony export */   "getStoredNftList": () => (/* binding */ getStoredNftList)
 /* harmony export */ });
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 function setStoredCoinList(coins) {
-    const vals = {
-        coins,
-    };
-    return new Promise((resolve) => {
-        chrome.storage.local.set(vals, () => {
-            resolve();
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ coins }, resolve);
         });
     });
 }
 function getStoredCoinList() {
-    const keys = ['coins'];
-    return new Promise((resolve) => {
-        chrome.storage.local.get(keys, (res) => {
-            var _a;
-            resolve((_a = res.coins) !== null && _a !== void 0 ? _a : []);
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['coins'], (res) => {
+                var _a;
+                resolve((_a = res.coins) !== null && _a !== void 0 ? _a : []);
+            });
         });
     });
 }
 function setStoredCoins(coinIds) {
-    const vals = {
-        coinIds,
-    };
-    return new Promise((resolve) => {
-        chrome.storage.local.set(vals, () => {
-            resolve();
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ coinIds }, resolve);
         });
     });
 }
 function getStoredCoins() {
-    const keys = ['coinIds'];
-    return new Promise((resolve) => {
-        chrome.storage.local.get(keys, (res) => {
-            var _a;
-            resolve((_a = res.coinIds) !== null && _a !== void 0 ? _a : []);
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['coinIds'], (res) => {
+                var _a;
+                resolve((_a = res.coinIds) !== null && _a !== void 0 ? _a : []);
+            });
         });
     });
 }
-///////////////////////////
-///////////////////////////
+// NFTs
 function setStoredNftList(nfts) {
-    const vals = {
-        nfts,
-    };
-    return new Promise((resolve) => {
-        chrome.storage.local.set(vals, () => {
-            resolve();
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ nfts }, resolve);
         });
     });
 }
 function getStoredNftList() {
-    const keys = ['nfts'];
-    return new Promise((resolve) => {
-        chrome.storage.local.get(keys, (res) => {
-            var _a;
-            resolve((_a = res.nfts) !== null && _a !== void 0 ? _a : []);
-        });
-    });
-}
-function setDarkmode(darkmodeChecked) {
-    const vals = {
-        darkmodeChecked,
-    };
-    return new Promise((resolve) => {
-        chrome.storage.local.set(vals, () => {
-            resolve();
-        });
-    });
-}
-function getDarkmode() {
-    const keys = ['darkmodeChecked'];
-    return new Promise((resolve) => {
-        chrome.storage.local.get(keys, (res) => {
-            resolve(res.darkmodeChecked);
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['nfts'], (res) => {
+                var _a;
+                resolve((_a = res.nfts) !== null && _a !== void 0 ? _a : []);
+            });
         });
     });
 }
@@ -298,14 +311,9 @@ fetchData();
 function fetchData() {
     return __awaiter(this, void 0, void 0, function* () {
         let coinList = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_0__.fetchCoinsList)();
-        console.log('coinList');
-        console.log(coinList);
         let nftList = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftList)();
-        console.log('nftList');
-        console.log(nftList);
         (0,_utils_storage__WEBPACK_IMPORTED_MODULE_1__.setStoredCoinList)(coinList);
         (0,_utils_storage__WEBPACK_IMPORTED_MODULE_1__.setStoredNftList)(nftList);
-        console.log('BACKGROUND; Coingecko info fetched');
         (0,_utils_storage__WEBPACK_IMPORTED_MODULE_1__.setStoredCoins)([{ id: 'bitcoin', symbol: 'btc', name: 'bitcoin' }]);
     });
 }

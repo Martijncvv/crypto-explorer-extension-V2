@@ -11,47 +11,66 @@ const COINGECKO_COINS_LIST_API = 'https://api.coingecko.com/api/v3/coins/list'
 const COINGECKO_NFTS_LIST_API = 'https://api.coingecko.com/api/v3/nfts/list'
 
 export async function fetchCoinsList(): Promise<ICoinGeckoCoinList> {
-	const res = await fetch(COINGECKO_COINS_LIST_API)
-	if (!res.ok) {
-		throw new Error(`Fetch error, Coingecko Coins List}`)
-	}
+	try {
+		const res = await fetch(COINGECKO_COINS_LIST_API);
 
-	const data: ICoinGeckoCoinList = await res.json()
-	return data
+		if (!res.ok) {
+			throw new Error(`Fetch error, Coingecko Coins List: ${res.status} ${res.statusText}`);
+		}
+
+		return await res.json();
+	} catch (error) {
+		console.error('Error fetching Coingecko Coins List:', error);
+		throw error;
+	}
 }
 
 export async function fetchTrendingCoins(): Promise<TrendingCoinList> {
-	const res = await fetch(`https://api.coingecko.com/api/v3/search/trending`)
-	if (!res.ok) {
-		throw new Error(`Fetch error, Hot Coins}`)
-	}
+	try {
+		const res = await fetch('https://api.coingecko.com/api/v3/search/trending');
 
-	const data = await res.json()
-	return data
+		if (!res.ok) {
+			throw new Error(`Fetch error, Hot Coins: ${res.status} ${res.statusText}`);
+		}
+
+		return await res.json();
+	} catch (error) {
+		console.error('Error fetching Hot Coins:', error);
+		throw error;
+	}
 }
 
-export async function fetchCoinInfo(
-	coinId: string
-): Promise<IAdvancedCoinInfo> {
-	coinId = coinId ? coinId : 'bitcoin'
-	const res = await fetch(
-		`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`
-	)
-	if (!res.ok) {
-		throw new Error(`Fetch error, coin info data: ${coinId}`)
-	}
+export async function fetchCoinInfo(coinId: string): Promise<IAdvancedCoinInfo> {
+	coinId = coinId || 'bitcoin';
+	try {
+		const res = await fetch(
+			`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`
+		);
 
-	const data = await res.json()
-	return data
+		if (!res.ok) {
+			throw new Error(`Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`);
+		}
+
+		return await res.json();
+	} catch (error) {
+		console.error(`Error fetching coin info data (${coinId}):`, error);
+		throw error;
+	}
 }
+
 export async function fetchNftInfo(coinId: string): Promise<IAdvancedNftInfo> {
-	const res = await fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}`)
-	if (!res.ok) {
-		throw new Error(`Fetch error, nft info data: ${coinId}`)
-	}
+	try {
+		const res = await fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}`);
 
-	const data = await res.json()
-	return data
+		if (!res.ok) {
+			throw new Error(`Fetch error, NFT info data (${coinId}): ${res.status} ${res.statusText}`);
+		}
+
+		return await res.json();
+	} catch (error) {
+		console.error(`Error fetching NFT info data (${coinId}):`, error);
+		throw error;
+	}
 }
 
 export async function fetchPriceHistoryData(
@@ -59,18 +78,23 @@ export async function fetchPriceHistoryData(
 	quote: string,
 	chartRange: string
 ): Promise<IPriceData> {
-	coinId = coinId ? coinId : 'bitcoin'
-	quote = quote ? quote : 'usd'
+	coinId = coinId || 'bitcoin';
+	quote = quote || 'usd';
 
-	const res = await fetch(
-		`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`
-	)
-	if (!res.ok) {
-		throw new Error(`Fetch error, price history data: ${coinId}`)
+	try {
+		const res = await fetch(
+			`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`
+		);
+
+		if (!res.ok) {
+			throw new Error(`Fetch error, price history data (${coinId}): ${res.status} ${res.statusText}`);
+		}
+
+		return await res.json();
+	} catch (error) {
+		console.error(`Error fetching price history data (${coinId}):`, error);
+		throw error;
 	}
-
-	const priceData = await res.json()
-	return priceData
 }
 
 export async function fetchTokenTxs(
@@ -78,41 +102,46 @@ export async function fetchTokenTxs(
 	contractAddress: string,
 	txAmount: number
 ): Promise<ITokenTxs> {
-	const res = await fetch(
-		'https://api.' +
-			domainName +
-			'/api?module=account&action=tokentx&contractaddress=' +
-			contractAddress +
-			'&page=1&offset=' +
-			txAmount +
-			'&startblock=0&endblock=99999999&sort=desc'
-	)
-	if (!res.ok) {
-		throw new Error(`Fetch error, Eth token txs info}`)
+	try {
+		const res = await fetch(
+			`https://api.${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`
+		);
+
+		if (!res.ok) {
+			throw new Error(`Fetch error, Eth token txs info: ${res.status} ${res.statusText}`);
+		}
+
+		return await res.json();
+	} catch (error) {
+		console.error('Error fetching Eth token txs info:', error);
+		throw error;
 	}
-
-	const data = await res.json()
-
-	return data
 }
 
 export async function fetchNftList(): Promise<ICoinGeckoNftList> {
-	let allNfts = []
+	let allNfts: ICoinGeckoNftList = [];
+
 	for (let page = 1; page < 100; page++) {
-		await new Promise((resolve) => setTimeout(resolve, 500))
-		let res = await fetch(
-			`${COINGECKO_NFTS_LIST_API}?per_page=250&page=${page}`
-		)
-		if (!res.ok) {
-			console.log(`Fetch error, API info page ${page}`)
-			return allNfts
-		}
+		try {
+			await new Promise((resolve) => setTimeout(resolve, 500));
+			const res = await fetch(`${COINGECKO_NFTS_LIST_API}?per_page=250&page=${page}`);
 
-		let data: ICoinGeckoNftList = await res.json()
+			if (!res.ok) {
+				console.log(`Fetch error, API info page ${page}: ${res.status} ${res.statusText}`);
+				return allNfts;
+			}
 
-		await allNfts.push(...data)
-		if (data.length < 250) {
-			return allNfts
+			const data: ICoinGeckoNftList = await res.json();
+			allNfts.push(...data);
+
+			if (data.length < 250) {
+				return allNfts;
+			}
+		} catch (error) {
+			console.error(`Error fetching API info page ${page}:`, error);
+			return allNfts;
 		}
 	}
+
+	return allNfts;
 }

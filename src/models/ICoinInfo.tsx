@@ -1,5 +1,39 @@
 export type ICoinGeckoCoinList = ISimpleCoinInfo[]
 export type TrendingCoinList = { coins: ITrendingCoinInfo[] }
+export type SearchCoinList = {
+	coins: ICoinSearchInfo[]
+	exchanges: IExchangeSearchInfo[]
+	icos: any
+	categories: ICategorieSearchInfo[]
+	nfts: INFTSearchInfo[]
+}
+
+export interface ICoinSearchInfo{
+	id: string
+	name: string
+	api_symbol: string
+	symbol: string
+	market_cap_rank: number
+	thumb: string
+	large: string
+}
+export interface INFTSearchInfo {
+	id: string
+	name: string
+	symbol: string
+	thumb: string
+}
+export interface ICategorieSearchInfo {
+	id: number
+	name: string
+}
+export interface IExchangeSearchInfo {
+	id: string
+	name: string
+	market_type: string
+	thumb: string
+	large: string
+}
 
 export interface ISimpleCoinInfo {
 	id: string
@@ -8,6 +42,27 @@ export interface ISimpleCoinInfo {
 	contract_address?: string
 	asset_platform_id?: string
 }
+
+
+export interface IDetailedCoinInfo {
+	assetPlatformId: string
+	blockExplorerLink: string
+	circSupply: number
+	coingeckoLink: string
+	contractAddress: string
+	description: string
+	icon: string
+	id: string
+	marketCapRank: string
+	name: string
+	price: number
+	symbol: string
+	telegramLink: string
+	totalSupply: string
+	twitterLink: string
+	websiteLink: string
+}
+
 export interface ITrendingCoinInfo {
 	item: {
 		id: string

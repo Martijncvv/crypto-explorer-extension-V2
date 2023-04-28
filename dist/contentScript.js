@@ -15,84 +15,66 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "setStoredCoins": () => (/* binding */ setStoredCoins),
 /* harmony export */   "getStoredCoins": () => (/* binding */ getStoredCoins),
 /* harmony export */   "setStoredNftList": () => (/* binding */ setStoredNftList),
-/* harmony export */   "getStoredNftList": () => (/* binding */ getStoredNftList),
-/* harmony export */   "setDarkmode": () => (/* binding */ setDarkmode),
-/* harmony export */   "getDarkmode": () => (/* binding */ getDarkmode)
+/* harmony export */   "getStoredNftList": () => (/* binding */ getStoredNftList)
 /* harmony export */ });
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 function setStoredCoinList(coins) {
-    const vals = {
-        coins,
-    };
-    return new Promise((resolve) => {
-        chrome.storage.local.set(vals, () => {
-            resolve();
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ coins }, resolve);
         });
     });
 }
 function getStoredCoinList() {
-    const keys = ['coins'];
-    return new Promise((resolve) => {
-        chrome.storage.local.get(keys, (res) => {
-            var _a;
-            resolve((_a = res.coins) !== null && _a !== void 0 ? _a : []);
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['coins'], (res) => {
+                var _a;
+                resolve((_a = res.coins) !== null && _a !== void 0 ? _a : []);
+            });
         });
     });
 }
 function setStoredCoins(coinIds) {
-    const vals = {
-        coinIds,
-    };
-    return new Promise((resolve) => {
-        chrome.storage.local.set(vals, () => {
-            resolve();
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ coinIds }, resolve);
         });
     });
 }
 function getStoredCoins() {
-    const keys = ['coinIds'];
-    return new Promise((resolve) => {
-        chrome.storage.local.get(keys, (res) => {
-            var _a;
-            resolve((_a = res.coinIds) !== null && _a !== void 0 ? _a : []);
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['coinIds'], (res) => {
+                var _a;
+                resolve((_a = res.coinIds) !== null && _a !== void 0 ? _a : []);
+            });
         });
     });
 }
-///////////////////////////
-///////////////////////////
+// NFTs
 function setStoredNftList(nfts) {
-    const vals = {
-        nfts,
-    };
-    return new Promise((resolve) => {
-        chrome.storage.local.set(vals, () => {
-            resolve();
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ nfts }, resolve);
         });
     });
 }
 function getStoredNftList() {
-    const keys = ['nfts'];
-    return new Promise((resolve) => {
-        chrome.storage.local.get(keys, (res) => {
-            var _a;
-            resolve((_a = res.nfts) !== null && _a !== void 0 ? _a : []);
-        });
-    });
-}
-function setDarkmode(darkmodeChecked) {
-    const vals = {
-        darkmodeChecked,
-    };
-    return new Promise((resolve) => {
-        chrome.storage.local.set(vals, () => {
-            resolve();
-        });
-    });
-}
-function getDarkmode() {
-    const keys = ['darkmodeChecked'];
-    return new Promise((resolve) => {
-        chrome.storage.local.get(keys, (res) => {
-            resolve(res.darkmodeChecked);
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['nfts'], (res) => {
+                var _a;
+                resolve((_a = res.nfts) !== null && _a !== void 0 ? _a : []);
+            });
         });
     });
 }
@@ -174,21 +156,23 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
-console.log('CONTENTSCRIPT is running');
-document.addEventListener('selectionchange', getSelection);
-function getSelection() {
+// Listen for the 'selectionchange' event to process the selected text
+document.addEventListener('selectionchange', handleSelection);
+function handleSelection() {
     return __awaiter(this, void 0, void 0, function* () {
+        // Get the selected text, remove special characters, and convert to lowercase
         let selectedTicker = window
             .getSelection()
             .toString()
             .trim()
             .replace(/[#$?!.,:"']/g, '')
             .toLowerCase();
+        // Process the selected text if it's not empty and shorter than 7 characters
         if (selectedTicker !== '' && selectedTicker.length < 7) {
-            console.log(`Potential ticker selected: ${selectedTicker}`);
             const coinList = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getStoredCoinList)();
-            console.log(coinList.length);
+            // Filter the coin list based on the selected ticker
             const filteredCoinTickers = coinList.filter((coin) => coin.symbol === selectedTicker);
+            // Create a new array of coin IDs based on the filtered coin tickers
             let coinIds = [];
             filteredCoinTickers.forEach((coin) => {
                 coinIds.push({
@@ -197,6 +181,7 @@ function getSelection() {
                     name: coin.name,
                 });
             });
+            // Store the coin IDs in the local storage
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.setStoredCoins)(coinIds);
         }
     });

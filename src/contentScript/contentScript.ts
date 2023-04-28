@@ -1,36 +1,38 @@
-import { ISimpleCoinInfo } from '../models/ICoinInfo'
-import { getStoredCoinList, setStoredCoins } from '../utils/storage'
+import { ISimpleCoinInfo } from '../models/ICoinInfo';
+import { getStoredCoinList, setStoredCoins } from '../utils/storage';
 
-console.log('CONTENTSCRIPT is running')
+// Listen for the 'selectionchange' event to process the selected text
+document.addEventListener('selectionchange', handleSelection);
 
-document.addEventListener('selectionchange', getSelection)
-
-async function getSelection() {
+async function handleSelection() {
+	// Get the selected text, remove special characters, and convert to lowercase
 	let selectedTicker = window
 		.getSelection()
 		.toString()
 		.trim()
 		.replace(/[#$?!.,:"']/g, '')
-		.toLowerCase()
+		.toLowerCase();
 
+	// Process the selected text if it's not empty and shorter than 7 characters
 	if (selectedTicker !== '' && selectedTicker.length < 7) {
-		console.log(`Potential ticker selected: ${selectedTicker}`)
+		const coinList: ISimpleCoinInfo[] = await getStoredCoinList();
 
-		const coinList: ISimpleCoinInfo[] = await getStoredCoinList()
-		console.log(coinList.length)
+		// Filter the coin list based on the selected ticker
 		const filteredCoinTickers: ISimpleCoinInfo[] = coinList.filter(
 			(coin) => coin.symbol === selectedTicker
-		)
+		);
 
-		let coinIds: ISimpleCoinInfo[] = []
+		// Create a new array of coin IDs based on the filtered coin tickers
+		let coinIds: ISimpleCoinInfo[] = [];
 		filteredCoinTickers.forEach((coin: ISimpleCoinInfo) => {
 			coinIds.push({
 				id: coin.id,
 				symbol: coin.symbol,
 				name: coin.name,
-			})
-		})
+			});
+		});
 
-		setStoredCoins(coinIds)
+		// Store the coin IDs in the local storage
+		setStoredCoins(coinIds);
 	}
 }
