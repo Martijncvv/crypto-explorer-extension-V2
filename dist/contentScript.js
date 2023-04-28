@@ -10,12 +10,12 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "setStoredCoinList": () => (/* binding */ setStoredCoinList),
 /* harmony export */   "getStoredCoinList": () => (/* binding */ getStoredCoinList),
-/* harmony export */   "setStoredCoins": () => (/* binding */ setStoredCoins),
 /* harmony export */   "getStoredCoins": () => (/* binding */ getStoredCoins),
-/* harmony export */   "setStoredNftList": () => (/* binding */ setStoredNftList),
-/* harmony export */   "getStoredNftList": () => (/* binding */ getStoredNftList)
+/* harmony export */   "getStoredNftList": () => (/* binding */ getStoredNftList),
+/* harmony export */   "setStoredCoinList": () => (/* binding */ setStoredCoinList),
+/* harmony export */   "setStoredCoins": () => (/* binding */ setStoredCoins),
+/* harmony export */   "setStoredNftList": () => (/* binding */ setStoredNftList)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }

@@ -1,7 +1,7 @@
 {
 	"name": "Crypto Explorer V2",
 	"description": "Display information about a token or NFT; check the top trending coins, on-chain data and compare market caps.",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"manifest_version": 3,
 	"icons": {
 		"16": "images/CryptoExplorer_logo_128.png",

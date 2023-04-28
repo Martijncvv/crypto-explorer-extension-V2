@@ -10,13 +10,13 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "fetchCoinsList": () => (/* binding */ fetchCoinsList),
-/* harmony export */   "fetchTrendingCoins": () => (/* binding */ fetchTrendingCoins),
 /* harmony export */   "fetchCoinInfo": () => (/* binding */ fetchCoinInfo),
+/* harmony export */   "fetchCoinsList": () => (/* binding */ fetchCoinsList),
 /* harmony export */   "fetchNftInfo": () => (/* binding */ fetchNftInfo),
+/* harmony export */   "fetchNftList": () => (/* binding */ fetchNftList),
 /* harmony export */   "fetchPriceHistoryData": () => (/* binding */ fetchPriceHistoryData),
 /* harmony export */   "fetchTokenTxs": () => (/* binding */ fetchTokenTxs),
-/* harmony export */   "fetchNftList": () => (/* binding */ fetchNftList)
+/* harmony export */   "fetchTrendingCoins": () => (/* binding */ fetchTrendingCoins)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -159,12 +159,12 @@ function fetchNftList() {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "setStoredCoinList": () => (/* binding */ setStoredCoinList),
 /* harmony export */   "getStoredCoinList": () => (/* binding */ getStoredCoinList),
-/* harmony export */   "setStoredCoins": () => (/* binding */ setStoredCoins),
 /* harmony export */   "getStoredCoins": () => (/* binding */ getStoredCoins),
-/* harmony export */   "setStoredNftList": () => (/* binding */ setStoredNftList),
-/* harmony export */   "getStoredNftList": () => (/* binding */ getStoredNftList)
+/* harmony export */   "getStoredNftList": () => (/* binding */ getStoredNftList),
+/* harmony export */   "setStoredCoinList": () => (/* binding */ setStoredCoinList),
+/* harmony export */   "setStoredCoins": () => (/* binding */ setStoredCoins),
+/* harmony export */   "setStoredNftList": () => (/* binding */ setStoredNftList)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }

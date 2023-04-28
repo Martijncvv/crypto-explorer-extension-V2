@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 const styles: { [key: string]: CSSProperties } = {
 	container: {
@@ -20,14 +20,11 @@ const styles: { [key: string]: CSSProperties } = {
 const App: React.FC = () => {
 	return (
 		<div style={styles.container}>
-			<h1 style={styles.title}>TESTESTTTT</h1>
+			<h1 style={styles.title}>TES222TESTTTT</h1>
 		</div>
 	);
 };
 
 const root = document.createElement('div');
 document.body.appendChild(root);
-ReactDOM.render(<App />, root);
-
-
-
+createRoot(root).render(<App />);
