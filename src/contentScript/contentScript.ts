@@ -3,6 +3,7 @@ import { getStoredCoinList, setStoredCoins } from '../utils/storage';
 
 // Listen for the 'selectionchange' event to process the selected text
 document.addEventListener('selectionchange', handleSelection);
+// TODO uncomment this
 
 async function handleSelection() {
 	// Get the selected text, remove special characters, and convert to lowercase

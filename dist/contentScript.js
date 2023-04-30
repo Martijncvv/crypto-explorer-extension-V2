@@ -158,6 +158,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 // Listen for the 'selectionchange' event to process the selected text
 document.addEventListener('selectionchange', handleSelection);
+// TODO uncomment this
 function handleSelection() {
     return __awaiter(this, void 0, void 0, function* () {
         // Get the selected text, remove special characters, and convert to lowercase

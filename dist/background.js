@@ -307,7 +307,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
-fetchData();
+// fetchData()
 function fetchData() {
     return __awaiter(this, void 0, void 0, function* () {
         let coinList = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_0__.fetchCoinsList)();

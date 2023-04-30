@@ -5,7 +5,7 @@ import {
 	setStoredNftList,
 } from '../utils/storage'
 
-fetchData()
+// fetchData()
 
 async function fetchData() {
 	let coinList = await fetchCoinsList()

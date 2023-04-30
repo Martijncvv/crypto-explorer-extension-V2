@@ -1,0 +1,9 @@
+body,
+#root {
+    background: radial-gradient(#424f8c, #242D58);
+    width: 330px;
+    height: 600px;
+    margin: 0;
+    padding: 0;
+    /*overflow: hidden;*/
+}

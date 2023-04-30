@@ -1,26 +1,20 @@
 import React, { CSSProperties } from 'react';
 import { createRoot } from 'react-dom/client';
-
+import '../App.css';
+import PriceBar from '../components/PriceBar';
 const styles: { [key: string]: CSSProperties } = {
 	container: {
-		backgroundColor: 'lightblue',
-		padding: '20px',
-		textAlign: 'center',
-		borderRadius: '5px',
+		padding: '12px',
 	},
-	title: {
-		color: 'darkblue',
-		fontSize: '32px',
-		fontWeight: 'bold',
-		margin: 0,
-	},
+
 };
 
 
 const App: React.FC = () => {
 	return (
 		<div style={styles.container}>
-			<h1 style={styles.title}>TES222TESTTTT</h1>
+		<PriceBar allTimeLow={0.22} allTimeHigh={1.78} price={1.60} />
+
 		</div>
 	);
 };
