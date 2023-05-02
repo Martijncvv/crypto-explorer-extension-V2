@@ -500,6 +500,68 @@ module.exports = styleTagTransform;
 
 /***/ }),
 
+/***/ "./src/components/ExpandableTextField.tsx":
+/*!************************************************!*\
+  !*** ./src/components/ExpandableTextField.tsx ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
+
+
+const ExpandableTextField = ({ text }) => {
+    const [expanded, setExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+    const handleClick = () => {
+        setExpanded(!expanded);
+    };
+    const styles = {
+        expandableField: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            width: 306,
+            minHeight: 67,
+            padding: 12,
+            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
+        },
+        textFieldContainer: {
+            overflowY: expanded ? 'scroll' : 'hidden',
+            maxHeight: expanded ? 220 : 67,
+        },
+        textField: {
+            fontSize: 12,
+            color: 'white',
+            display: '-webkit-box',
+            WebkitLineClamp: expanded ? 5 : 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+        },
+        expandBtn: {
+            fontSize: 12,
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium,
+            backgroundColor: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            marginTop: 4,
+            outline: 'none',
+        },
+    };
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.expandableField },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.textFieldContainer },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.textField }, text)),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.expandBtn, onClick: handleClick }, "Expand")));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpandableTextField);
+
+
+/***/ }),
+
 /***/ "./src/components/PriceBar.tsx":
 /*!*************************************!*\
   !*** ./src/components/PriceBar.tsx ***!
@@ -586,6 +648,66 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
 
 /***/ }),
 
+/***/ "./src/components/ValueBlock.tsx":
+/*!***************************************!*\
+  !*** ./src/components/ValueBlock.tsx ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
+
+
+const ValueBlock = ({ title, mainValue, secondaryValue }) => {
+    const styles = {
+        rectangle: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: 144,
+            height: 48,
+            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
+            borderRadius: 12,
+        },
+        title: {
+            fontSize: 12,
+            fontWeight: '500',
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium,
+            margin: '4px 0 0',
+        },
+        values: {
+            display: 'flex',
+            alignItems: 'flex-end',
+            height: 24,
+        },
+        mainValue: {
+            fontSize: 16,
+            fontWeight: '500',
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
+        },
+        secondaryValue: {
+            fontSize: 12,
+            fontWeight: '500',
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium,
+            marginLeft: 4,
+        },
+    };
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.rectangle },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.title }, title),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.values },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue }, mainValue),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.secondaryValue }, secondaryValue))));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ValueBlock);
+
+
+/***/ }),
+
 /***/ "./src/popup/popup.tsx":
 /*!*****************************!*\
   !*** ./src/popup/popup.tsx ***!
@@ -598,6 +720,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
 /* harmony import */ var _App_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../App.css */ "./src/App.css");
 /* harmony import */ var _components_PriceBar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/PriceBar */ "./src/components/PriceBar.tsx");
+/* harmony import */ var _components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/ValueBlock */ "./src/components/ValueBlock.tsx");
+/* harmony import */ var _components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/ExpandableTextField */ "./src/components/ExpandableTextField.tsx");
+
+
 
 
 
@@ -606,10 +732,19 @@ const styles = {
     container: {
         padding: '12px',
     },
+    dataBlocks: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginTop: '18px',
+    },
 };
 const App = () => {
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_3__["default"], { allTimeLow: 0.22, allTimeHigh: 1.78, price: 1.60 })));
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_3__["default"], { allTimeLow: 0.22, allTimeHigh: 1.78, price: 1.60 }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.dataBlocks },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Circ. Supply", mainValue: "139 T", secondaryValue: "/ 250 T" }),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Market Cap", mainValue: "$11.6 B", secondaryValue: "#9" })),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_5__["default"], { text: "Dogecoin is a cryptocurrency based on the popular \"Doge\" Internet meme and features a Shiba Inu on its logo. Dogecoin is a Litecoin fork. Introduced as a \"joke currency\" on 6 December 2013, Dogecoin quickly developed its own online community and reached a capitalization of US$60 million in January 2014. Compared with other cryptocurrencies, Dogecoin had a fast initial coin production schedule: 100 billion coins were in circulation by mid-2015, with an additional 5.256 billion coins every year thereafter. As of 30 June 2015, the 100 billionth Dogecoin had been mined. Dogecoin was created by Billy Markus from Portland, Oregon and Jackson Palmer from Sydney, Australia. Both wanted to create a fun cryptocurrency that will appeal beyond the core Bitcoin audience. Dogecoin is primarily used as a tipping system on Reddit and Twitter where users tip each other for creating or sharing good content. The community is very active in organising fundraising activities for deserving causes. The developers of Dogecoin haven’t made any major changes to the coin since 2015. This means that Dogecoin could get left behind and is why Shibas are leaving Dogecoin to join more advanced platforms like Ethereum. One of Dogecoin strengths is its relaxed and fun-loving community. However, this is also a weakness because other currencies are way more professional. To purchase Dogecoin, it involves downloading a crypto wallet, setting up a crypto exchange account and then trading away for your desired crypto currency. Once we have set up an account with a DOGE currency exchange and deposited some funds, you are ready to start trading." })));
 };
 const root = document.createElement('div');
 document.body.appendChild(root);
@@ -629,8 +764,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 const colors = {
-    primary_dark: '#2F396D',
     primary_medium: '#34495e',
+    primary_dark: '#2F396D',
+    secondary_medium: '#8F95EC',
+    accent_medium: '#FFFFFF80',
     red_medium: '#FD8E8E',
     green_medium: '#88EE58',
     white_medium: '#F5F5F5',
