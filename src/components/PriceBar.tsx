@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-
+import colors from '../static/colors';
 interface PriceBarProps {
     allTimeLow: number;
     allTimeHigh: number;
@@ -14,7 +14,7 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
         container: {
             width: '306px',
             height: '40px',
-            backgroundColor: '#2F396D',
+            backgroundColor: colors.primary_dark,
             position: 'relative',
             borderRadius: '12px',
             overflow: 'hidden',
@@ -28,7 +28,7 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'linear-gradient(to right, #2F396D,  rgba(220, 220, 256, 0.30)',
+            background: `linear-gradient(to right, ${colors.primary_dark}, rgba(220, 220, 256, 0.30)`,
         },
         allTimeLow: {
             position: 'absolute',
@@ -36,7 +36,7 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
             top: '50%',
             transform: 'translateY(-50%)',
             fontSize: '12px',
-            color: '#FD8E8E',
+            color: colors.red_medium,
             fontFamily: 'Open Sans',
             fontWeight: '600',
         },
@@ -46,7 +46,7 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
             top: '50%',
             transform: 'translate(-50%, -50%)',
             fontSize: '22px',
-            color: 'white',
+            color: colors.white_medium,
             fontFamily: 'Open Sans',
             fontWeight: '600',
         },
@@ -56,7 +56,7 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
             top: '50%',
             transform: 'translateY(-50%)',
             fontSize: '12px',
-            color: '#88EE58',
+            color: colors.green_medium,
             fontFamily: 'Open Sans',
             fontWeight: '600',
         },

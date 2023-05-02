@@ -512,6 +512,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
+
 
 const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
     const percentage = ((price - allTimeLow) / (allTimeHigh - allTimeLow)) * 100;
@@ -520,7 +522,7 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
         container: {
             width: '306px',
             height: '40px',
-            backgroundColor: '#2F396D',
+            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
             position: 'relative',
             borderRadius: '12px',
             overflow: 'hidden',
@@ -534,7 +536,7 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'linear-gradient(to right, #2F396D,  rgba(220, 220, 256, 0.30)',
+            background: `linear-gradient(to right, ${_static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark}, rgba(220, 220, 256, 0.30)`,
         },
         allTimeLow: {
             position: 'absolute',
@@ -542,7 +544,7 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
             top: '50%',
             transform: 'translateY(-50%)',
             fontSize: '12px',
-            color: '#FD8E8E',
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium,
             fontFamily: 'Open Sans',
             fontWeight: '600',
         },
@@ -552,7 +554,7 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
             top: '50%',
             transform: 'translate(-50%, -50%)',
             fontSize: '22px',
-            color: 'white',
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
             fontFamily: 'Open Sans',
             fontWeight: '600',
         },
@@ -562,7 +564,7 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
             top: '50%',
             transform: 'translateY(-50%)',
             fontSize: '12px',
-            color: '#88EE58',
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].green_medium,
             fontFamily: 'Open Sans',
             fontWeight: '600',
         },
@@ -612,6 +614,28 @@ const App = () => {
 const root = document.createElement('div');
 document.body.appendChild(root);
 (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(root).render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement(App, null));
+
+
+/***/ }),
+
+/***/ "./src/static/colors.tsx":
+/*!*******************************!*\
+  !*** ./src/static/colors.tsx ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const colors = {
+    primary_dark: '#2F396D',
+    primary_medium: '#34495e',
+    red_medium: '#FD8E8E',
+    green_medium: '#88EE58',
+    white_medium: '#F5F5F5',
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (colors);
 
 
 /***/ })
