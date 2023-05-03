@@ -1,5 +1,6 @@
 interface Constants {
     border_radius: number;
+    border_radius_small: number,
 
     default_padding: number;
 
@@ -14,6 +15,7 @@ interface Constants {
 
 const constants: Constants = {
     border_radius: 12,
+    border_radius_small: 6,
 
     default_padding: 12,
 

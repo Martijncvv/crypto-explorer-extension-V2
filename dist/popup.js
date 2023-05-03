@@ -500,6 +500,34 @@ module.exports = styleTagTransform;
 
 /***/ }),
 
+/***/ "./src/components/ChartsBlock.tsx":
+/*!****************************************!*\
+  !*** ./src/components/ChartsBlock.tsx ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+const ChartsBlock = ({ pricedata, volumedata }) => {
+    const styles = {
+        container: {
+            width: 330,
+            height: 165,
+            backgroundColor: 'white', // Or any other background color
+        },
+    };
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container }));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChartsBlock);
+
+
+/***/ }),
+
 /***/ "./src/components/ExchangeBlock.tsx":
 /*!******************************************!*\
   !*** ./src/components/ExchangeBlock.tsx ***!
@@ -531,46 +559,59 @@ const ExchangeBlock = ({ exchanges }) => {
             boxSizing: "border-box",
             width: 306,
             height: 40,
-            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
-            borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+            background: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
             display: "flex",
             alignItems: "center",
             padding: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
+        },
+        firstExchange: {
+            borderTopLeftRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+            borderTopRightRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+            borderBottomLeftRadius: !isExpanded && _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+            borderBottomRightRadius: !isExpanded && _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+        },
+        lastExchange: {
+            borderBottomLeftRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+            borderBottomRightRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
         },
         image: {
             width: 22,
             height: 22,
         },
         exchangeName: {
-            width: 110,
+            width: 100,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_medium,
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
             paddingLeft: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
         },
         tradingVolume: {
+            paddingLeft: 6,
             width: 50,
+            height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
             textAlign: "right",
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_micro,
+            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
-            paddingLeft: 6,
+            verticalAlign: 'bottom',
         },
         staticText: {
-            width: 30,
-            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium,
-            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_micro,
-            fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
             paddingLeft: 6,
+            width: 34,
+            height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium,
+            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
+            fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
+            verticalAlign: 'bottom',
         },
         arrowIcon: {
             paddingLeft: 26,
             cursor: "pointer",
         },
     };
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, exchanges.map((exchange, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: index, style: Object.assign(Object.assign({}, styles.exchangeWrapper), { display: isExpanded || index === 0 ? "flex" : "none" }) },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: exchange.image, alt: exchange.exchangeName, style: styles.image }),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName }, exchange.exchangeName),
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, exchanges.map((exchange, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: index, style: Object.assign(Object.assign(Object.assign(Object.assign({}, styles.exchangeWrapper), index === 0 && styles.firstExchange), index === exchanges.length - 1 && styles.lastExchange), { display: isExpanded || index === 0 ? "flex" : "none" }) },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: exchange.image, alt: exchange.exchangeName, style: styles.image, onClick: () => window.open(exchange.websiteLink, "_blank") }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName, onClick: () => window.open(exchange.websiteLink, "_blank") }, exchange.exchangeName),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.tradingVolume },
             " ",
             exchange.tradingVolume,
@@ -655,6 +696,87 @@ const ExpandableTextField = ({ text }) => {
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.expandBtn, onClick: handleClick }, expanded ? 'Collapse' : 'Expand')));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpandableTextField);
+
+
+/***/ }),
+
+/***/ "./src/components/HeaderBlock.tsx":
+/*!****************************************!*\
+  !*** ./src/components/HeaderBlock.tsx ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
+/* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
+
+
+
+const menuIcon = __webpack_require__(/*! ../static/images/icons/menu-icon.png */ "./src/static/images/icons/menu-icon.png");
+const searchIcon = __webpack_require__(/*! ../static/images/icons/search-icon.png */ "./src/static/images/icons/search-icon.png");
+const HeaderBlock = ({ mainLogo }) => {
+    const styles = {
+        headerBlock: {
+            display: 'flex',
+            alignItems: 'center',
+        },
+        rectangle: {
+            width: 40,
+            height: 40,
+            borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        centeredImage: {
+            width: 20,
+            height: 20,
+        },
+        searchbar: {
+            marginLeft: 12,
+            width: 202,
+            height: 40,
+            borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
+            display: 'flex',
+            alignItems: 'center',
+            position: 'relative',
+        },
+        searchbarImage: {
+            width: 20,
+            height: 20,
+            marginLeft: 12,
+        },
+        searchInput: {
+            marginLeft: 12,
+            border: 'none',
+            background: 'transparent',
+            color: 'white',
+            outline: 'none',
+            width: '100%',
+        },
+        mainLogo: {
+            marginLeft: 12,
+            width: 40,
+            height: 40,
+            borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius_small,
+        },
+    };
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.rectangle },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.centeredImage, src: menuIcon, alt: "Centered" })),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchbar },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.searchbarImage, src: searchIcon, alt: "Search" }),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { style: styles.searchInput, type: "text", placeholder: "Search" })),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo, alt: "Main Logo" })));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HeaderBlock);
 
 
 /***/ }),
@@ -885,6 +1007,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/ExpandableTextField */ "./src/components/ExpandableTextField.tsx");
 /* harmony import */ var _components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/SocialBlock */ "./src/components/SocialBlock.tsx");
 /* harmony import */ var _components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/ExchangeBlock */ "./src/components/ExchangeBlock.tsx");
+/* harmony import */ var _components_HeaderBlock__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/HeaderBlock */ "./src/components/HeaderBlock.tsx");
+/* harmony import */ var _components_ChartsBlock__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/ChartsBlock */ "./src/components/ChartsBlock.tsx");
+
+
 
 
 
@@ -907,7 +1033,6 @@ const styles = {
     dataBlocks: {
         display: 'flex',
         justifyContent: 'space-between',
-        marginTop: '18px',
     },
     socialBlocks: {
         display: 'flex',
@@ -916,33 +1041,39 @@ const styles = {
 };
 const App = () => {
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_8__["default"], { mainLogo: blockchainIcon }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { pricedata: [], volumedata: [] }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_3__["default"], { allTimeLow: 0.22, allTimeHigh: 1.78, price: 1.60 }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.dataBlocks },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Circ. Supply", mainValue: "139 T", secondaryValue: "/ 250 T" }),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Market Cap", mainValue: "$11.6 B", secondaryValue: "#9" })),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_5__["default"], { text: "Dogecoin is a cryptocurrency based on the popular \"Doge\" Internet meme and features a Shiba Inu on its logo. Dogecoin is a Litecoin fork. Introduced as a \"joke currency\" on 6 December 2013, Dogecoin quickly developed its own online community and reached a capitalization of US$60 million in January 2014. Compared with other cryptocurrencies, Dogecoin had a fast initial coin production schedule: 100 billion coins were in circulation by mid-2015, with an additional 5.256 billion coins every year thereafter. As of 30 June 2015, the 100 billionth Dogecoin had been mined. Dogecoin was created by Billy Markus from Portland, Oregon and Jackson Palmer from Sydney, Australia. Both wanted to create a fun cryptocurrency that will appeal beyond the core Bitcoin audience. Dogecoin is primarily used as a tipping system on Reddit and Twitter where users tip each other for creating or sharing good content. The community is very active in organising fundraising activities for deserving causes. The developers of Dogecoin haven’t made any major changes to the coin since 2015. This means that Dogecoin could get left behind and is why Shibas are leaving Dogecoin to join more advanced platforms like Ethereum. One of Dogecoin strengths is its relaxed and fun-loving community. However, this is also a weakness because other currencies are way more professional. To purchase Dogecoin, it involves downloading a crypto wallet, setting up a crypto exchange account and then trading away for your desired crypto currency. Once we have set up an account with a DOGE currency exchange and deposited some funds, you are ready to start trading." }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { exchanges: [
                 {
                     image: redditIcon,
                     exchangeName: "WOOnetwork",
                     tradingVolume: "$2.6 B",
+                    websiteLink: "https://www.reddit.com/r/dogecoin/",
                 },
                 {
                     image: discordIcon,
                     exchangeName: "Binance",
                     tradingVolume: "$13.4 M",
+                    websiteLink: "https://www.reddit.com/r/dogecoin/",
                 },
                 {
                     image: twitterIcon,
                     exchangeName: "Huobi",
                     tradingVolume: "$1.4 M",
+                    websiteLink: "https://www.reddit.com/r/dogecoin/",
                 },
                 {
                     image: coingeckoIcon,
                     exchangeName: "Bittrex",
                     tradingVolume: "$0.5 M",
+                    websiteLink: "https://www.reddit.com/r/dogecoin/",
                 },
             ] }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_5__["default"], { text: "Dogecoin is a cryptocurrency based on the popular \"Doge\" Internet meme and features a Shiba Inu on its logo. Dogecoin is a Litecoin fork. Introduced as a \"joke currency\" on 6 December 2013, Dogecoin quickly developed its own online community and reached a capitalization of US$60 million in January 2014. Compared with other cryptocurrencies, Dogecoin had a fast initial coin production schedule: 100 billion coins were in circulation by mid-2015, with an additional 5.256 billion coins every year thereafter. As of 30 June 2015, the 100 billionth Dogecoin had been mined. Dogecoin was created by Billy Markus from Portland, Oregon and Jackson Palmer from Sydney, Australia. Both wanted to create a fun cryptocurrency that will appeal beyond the core Bitcoin audience. Dogecoin is primarily used as a tipping system on Reddit and Twitter where users tip each other for creating or sharing good content. The community is very active in organising fundraising activities for deserving causes. The developers of Dogecoin haven’t made any major changes to the coin since 2015. This means that Dogecoin could get left behind and is why Shibas are leaving Dogecoin to join more advanced platforms like Ethereum. One of Dogecoin strengths is its relaxed and fun-loving community. However, this is also a weakness because other currencies are way more professional. To purchase Dogecoin, it involves downloading a crypto wallet, setting up a crypto exchange account and then trading away for your desired crypto currency. Once we have set up an account with a DOGE currency exchange and deposited some funds, you are ready to start trading." }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.socialBlocks },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: websiteIcon }),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: blockchainIcon }),
@@ -995,6 +1126,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 const constants = {
     border_radius: 12,
+    border_radius_small: 6,
     default_padding: 12,
     font_large: 22,
     font_medium: 16,
@@ -1058,6 +1190,16 @@ module.exports = __webpack_require__.p + "559b02f9d985feb71f8a.png";
 
 /***/ }),
 
+/***/ "./src/static/images/icons/menu-icon.png":
+/*!***********************************************!*\
+  !*** ./src/static/images/icons/menu-icon.png ***!
+  \***********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "f4ba429b501f76efc5ef.png";
+
+/***/ }),
+
 /***/ "./src/static/images/icons/reddit-icon.png":
 /*!*************************************************!*\
   !*** ./src/static/images/icons/reddit-icon.png ***!
@@ -1065,6 +1207,16 @@ module.exports = __webpack_require__.p + "559b02f9d985feb71f8a.png";
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 module.exports = __webpack_require__.p + "c9ba47d35142132fba34.png";
+
+/***/ }),
+
+/***/ "./src/static/images/icons/search-icon.png":
+/*!*************************************************!*\
+  !*** ./src/static/images/icons/search-icon.png ***!
+  \*************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "265a38582130035fe898.png";
 
 /***/ }),
 

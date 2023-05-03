@@ -10,6 +10,7 @@ interface Exchange {
     image: string;
     exchangeName: string;
     tradingVolume: string;
+    websiteLink: string;
 }
 
 interface ExchangeBlockProps {
@@ -28,37 +29,50 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
             boxSizing: "border-box",
             width: 306,
             height: 40,
-            backgroundColor: colors.primary_dark,
-            borderRadius: constants.border_radius,
+            background: colors.primary_dark,
             display: "flex",
             alignItems: "center",
             padding: constants.default_padding,
+        },
+        firstExchange: {
+            borderTopLeftRadius: constants.border_radius,
+            borderTopRightRadius: constants.border_radius,
+            borderBottomLeftRadius: !isExpanded && constants.border_radius,
+            borderBottomRightRadius: !isExpanded && constants.border_radius,
+        },
+        lastExchange: {
+            borderBottomLeftRadius: constants.border_radius,
+            borderBottomRightRadius: constants.border_radius,
         },
         image: {
             width: 22,
             height: 22,
         },
         exchangeName: {
-            width: 110,
+            width: 100,
             color: colors.white_medium,
             fontSize: constants.font_medium,
             fontWeight: constants.font_weight_medium,
             paddingLeft: constants.default_padding,
         },
         tradingVolume: {
+            paddingLeft: 6,
             width: 50,
+            height: constants.font_small,
             textAlign: "right",
             color: colors.white_medium,
-            fontSize: constants.font_micro,
+            fontSize: constants.font_small,
             fontWeight: constants.font_weight_medium,
-            paddingLeft: 6,
+            verticalAlign: 'bottom',
         },
         staticText: {
-            width: 30,
-            color: colors.accent_medium,
-            fontSize: constants.font_micro,
-            fontWeight: constants.font_weight_medium,
             paddingLeft: 6,
+            width: 34,
+            height: constants.font_small,
+            color: colors.accent_medium,
+            fontSize: constants.font_small,
+            fontWeight: constants.font_weight_medium,
+            verticalAlign: 'bottom',
         },
         arrowIcon: {
             paddingLeft: 26,
@@ -73,6 +87,8 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                     key={index}
                     style={{
                         ...styles.exchangeWrapper,
+                        ...index === 0 && styles.firstExchange,
+                        ...index === exchanges.length - 1 && styles.lastExchange,
                         display: isExpanded || index === 0 ? "flex" : "none",
                     }}
                 >
@@ -80,8 +96,9 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                         src={exchange.image}
                         alt={exchange.exchangeName}
                         style={styles.image}
+                        onClick={() => window.open(exchange.websiteLink, "_blank")}
                     />
-                    <span style={styles.exchangeName}>{exchange.exchangeName}</span>
+                    <span style={styles.exchangeName}  onClick={() => window.open(exchange.websiteLink, "_blank")}>{exchange.exchangeName}</span>
                     <span style={styles.tradingVolume}> {exchange.tradingVolume} </span>
                     <span style={styles.staticText}>/ 24h</span>
                     {index === 0 && (
