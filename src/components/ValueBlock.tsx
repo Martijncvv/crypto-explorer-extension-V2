@@ -1,5 +1,6 @@
 import React, {CSSProperties} from 'react';
 import colors from "../static/colors";
+import constants from "../static/constants";
 
 interface ValueBlockProps {
     title: string;
@@ -17,11 +18,11 @@ const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue, secondaryValu
             width: 144,
             height: 48,
             backgroundColor: colors.primary_dark,
-            borderRadius: 12,
+            borderRadius: constants.border_radius,
         },
         title: {
-            fontSize: 12,
-            fontWeight: '500',
+            fontSize: 14,
+            fontWeight: constants.font_weight_medium,
             color: colors.secondary_medium,
             margin: '4px 0 0',
         },
@@ -32,12 +33,12 @@ const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue, secondaryValu
         },
         mainValue: {
             fontSize: 16,
-            fontWeight: '500',
+            fontWeight: constants.font_weight_medium,
             color: colors.white_medium,
         },
         secondaryValue: {
-            fontSize: 12,
-            fontWeight: '500',
+            fontSize: 14,
+            fontWeight: constants.font_weight_medium,
             color: colors.accent_medium,
             marginLeft: 4,
         },

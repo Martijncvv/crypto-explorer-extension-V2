@@ -1,5 +1,7 @@
 import React, { CSSProperties } from 'react';
 import colors from '../static/colors';
+import constants from "../static/constants";
+
 interface PriceBarProps {
     allTimeLow: number;
     allTimeHigh: number;
@@ -16,14 +18,14 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
             height: '40px',
             backgroundColor: colors.primary_dark,
             position: 'relative',
-            borderRadius: '12px',
+            borderRadius: constants.border_radius,
             overflow: 'hidden',
         },
         gradient: {
             width: `${gradientWidth}px`,
             height: '40px',
             position: 'absolute',
-            borderRadius: '12px',
+            borderRadius: constants.border_radius,
             top: 0,
             left: 0,
             right: 0,
@@ -32,33 +34,33 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
         },
         allTimeLow: {
             position: 'absolute',
-            left: '12px',
+            left: constants.default_padding,
             top: '50%',
             transform: 'translateY(-50%)',
-            fontSize: '12px',
+            fontSize: constants.font_small,
             color: colors.red_medium,
             fontFamily: 'Open Sans',
-            fontWeight: '600',
+            fontWeight: constants.font_weight_large,
         },
         price: {
             position: 'absolute',
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
-            fontSize: '22px',
+            fontSize: constants.font_large,
             color: colors.white_medium,
             fontFamily: 'Open Sans',
-            fontWeight: '600',
+            fontWeight: constants.font_weight_large,
         },
         allTimeHigh: {
             position: 'absolute',
-            right: '12px',
+            right: constants.default_padding,
             top: '50%',
             transform: 'translateY(-50%)',
-            fontSize: '12px',
+            fontSize: constants.font_small,
             color: colors.green_medium,
             fontFamily: 'Open Sans',
-            fontWeight: '600',
+            fontWeight: constants.font_weight_large,
         },
     };
 
