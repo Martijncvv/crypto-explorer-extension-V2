@@ -571,11 +571,21 @@ const ExchangeBlock = ({ exchanges }) => {
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, exchanges.map((exchange, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: index, style: Object.assign(Object.assign({}, styles.exchangeWrapper), { display: isExpanded || index === 0 ? "flex" : "none" }) },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: exchange.image, alt: exchange.exchangeName, style: styles.image }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName }, exchange.exchangeName),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.tradingVolume }, exchange.tradingVolume),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.tradingVolume },
+            " ",
+            exchange.tradingVolume,
+            " "),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.staticText }, "/ 24h"),
         index === 0 && (isExpanded ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: ExpandLessIcon, alt: "expand-less-icon", style: styles.arrowIcon, onClick: toggleExpanded })) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: ExpandMoreIcon, alt: "expand-more-icon", style: styles.arrowIcon, onClick: toggleExpanded }))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExchangeBlock);
+{ /*{index === 0 && (*/ }
+{ /*    isExpanded ? (*/ }
+{ /*        <ExpandLessIcon onClick={toggleExpanded} />*/ }
+{ /*    ) : (*/ }
+{ /*        <ExpandMoreIcon onClick={toggleExpanded} />*/ }
+{ /*    )*/ }
+{ /*)}*/ }
 
 
 /***/ }),
