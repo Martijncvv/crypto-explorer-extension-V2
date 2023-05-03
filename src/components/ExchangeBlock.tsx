@@ -82,9 +82,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                         style={styles.image}
                     />
                     <span style={styles.exchangeName}>{exchange.exchangeName}</span>
-                    <span style={styles.tradingVolume}>
-            {exchange.tradingVolume}
-                    </span>
+                    <span style={styles.tradingVolume}> {exchange.tradingVolume} </span>
                     <span style={styles.staticText}>/ 24h</span>
                     {index === 0 && (
                         isExpanded ? (
@@ -94,13 +92,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
 
                         )
                     )}
-                    {/*{index === 0 && (*/}
-                    {/*    isExpanded ? (*/}
-                    {/*        <ExpandLessIcon onClick={toggleExpanded} />*/}
-                    {/*    ) : (*/}
-                    {/*        <ExpandMoreIcon onClick={toggleExpanded} />*/}
-                    {/*    )*/}
-                    {/*)}*/}
+
 
                 </div>
             ))}
@@ -108,5 +100,12 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
     );
 };
 
-
 export default ExchangeBlock;
+
+{/*{index === 0 && (*/}
+{/*    isExpanded ? (*/}
+{/*        <ExpandLessIcon onClick={toggleExpanded} />*/}
+{/*    ) : (*/}
+{/*        <ExpandMoreIcon onClick={toggleExpanded} />*/}
+{/*    )*/}
+{/*)}*/}
