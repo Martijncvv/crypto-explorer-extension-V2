@@ -714,12 +714,44 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
+/* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
 
 
 
 const menuIcon = __webpack_require__(/*! ../static/images/icons/menu-icon.png */ "./src/static/images/icons/menu-icon.png");
 const searchIcon = __webpack_require__(/*! ../static/images/icons/search-icon.png */ "./src/static/images/icons/search-icon.png");
 const HeaderBlock = ({ mainLogo }) => {
+    const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+    const [searchResults, setSearchResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+    const [trendingCoins, setTrendingCoins] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+    const [testValue, setTestValue] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+    const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+    const toggleExpanded = () => {
+        setIsExpanded(!isExpanded);
+    };
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+        getTrendingCoins();
+    }, []);
+    const getTrendingCoins = () => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const trendingCoins = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTrendingCoins)();
+            console.log("getTrendingCoins: ", trendingCoins);
+            setTrendingCoins(trendingCoins);
+        }
+        catch (error) {
+            console.error("getTrendingCoins: Error fetching trending coins:", error);
+        }
+    });
     const styles = {
         headerBlock: {
             display: 'flex',
@@ -768,12 +800,32 @@ const HeaderBlock = ({ mainLogo }) => {
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius_small,
         },
     };
+    function handleSearch(event) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (event.key === "Enter") {
+                if (searchInput.length > 0) {
+                    try {
+                        const searchResults = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNameSearch)(searchInput);
+                        if (!searchResults) {
+                            setTestValue("No results");
+                            console.log("No results");
+                        }
+                        console.log(searchResults);
+                        setSearchResults(searchResults);
+                    }
+                    catch (error) {
+                        console.error("handleSearch: Error searching for coins:", error);
+                    }
+                }
+            }
+        });
+    }
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.rectangle },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.centeredImage, src: menuIcon, alt: "Centered" })),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchbar },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.searchbar), { display: !isExpanded ? "flex" : "none" }) },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.searchbarImage, src: searchIcon, alt: "Search" }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { style: styles.searchInput, type: "text", placeholder: "Search" })),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", style: styles.searchInput, onChange: (e => setSearchInput(e.target.value)), onKeyDown: handleSearch, placeholder: testValue })),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo, alt: "Main Logo" })));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HeaderBlock);
@@ -1136,6 +1188,171 @@ const constants = {
     font_weight_medium: 500,
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (constants);
+
+
+/***/ }),
+
+/***/ "./src/utils/api.ts":
+/*!**************************!*\
+  !*** ./src/utils/api.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "fetchCoinInfo": () => (/* binding */ fetchCoinInfo),
+/* harmony export */   "fetchCoinsList": () => (/* binding */ fetchCoinsList),
+/* harmony export */   "fetchNameSearch": () => (/* binding */ fetchNameSearch),
+/* harmony export */   "fetchNftInfo": () => (/* binding */ fetchNftInfo),
+/* harmony export */   "fetchNftList": () => (/* binding */ fetchNftList),
+/* harmony export */   "fetchPriceHistoryData": () => (/* binding */ fetchPriceHistoryData),
+/* harmony export */   "fetchTokenTxs": () => (/* binding */ fetchTokenTxs),
+/* harmony export */   "fetchTrendingCoins": () => (/* binding */ fetchTrendingCoins)
+/* harmony export */ });
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+const COINGECKO_COINS_LIST_API = 'https://api.coingecko.com/api/v3/coins/list';
+const COINGECKO_NFTS_LIST_API = 'https://api.coingecko.com/api/v3/nfts/list';
+function fetchCoinsList() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch(COINGECKO_COINS_LIST_API);
+            if (!res.ok) {
+                throw new Error(`Fetch error, Coingecko Coins List: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error('Error fetching Coingecko Coins List:', error);
+            throw error;
+        }
+    });
+}
+function fetchNameSearch(searchQuery) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch(`https://api.coingecko.com/api/v3/search?query=${searchQuery}`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, Coingecko searchQuery ${searchQuery}: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error('Error fetching  Coingecko searchQuery ${searchQuery}', error);
+            throw error;
+        }
+    });
+}
+function fetchTrendingCoins() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch('https://api.coingecko.com/api/v3/search/trending');
+            if (!res.ok) {
+                throw new Error(`Fetch error, Hot Coins: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error('Error fetching Hot Coins:', error);
+            throw error;
+        }
+    });
+}
+function fetchCoinInfo(coinId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        coinId = coinId || 'bitcoin';
+        try {
+            const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error(`Error fetching coin info data (${coinId}):`, error);
+            throw error;
+        }
+    });
+}
+function fetchNftInfo(coinId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, NFT info data (${coinId}): ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error(`Error fetching NFT info data (${coinId}):`, error);
+            throw error;
+        }
+    });
+}
+function fetchPriceHistoryData(coinId, quote, chartRange) {
+    return __awaiter(this, void 0, void 0, function* () {
+        coinId = coinId || 'bitcoin';
+        quote = quote || 'usd';
+        try {
+            const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, price history data (${coinId}): ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error(`Error fetching price history data (${coinId}):`, error);
+            throw error;
+        }
+    });
+}
+function fetchTokenTxs(domainName, contractAddress, txAmount) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch(`https://api.${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, Eth token txs info: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error('Error fetching Eth token txs info:', error);
+            throw error;
+        }
+    });
+}
+function fetchNftList() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let allNfts = [];
+        for (let page = 1; page < 100; page++) {
+            try {
+                yield new Promise((resolve) => setTimeout(resolve, 500));
+                const res = yield fetch(`${COINGECKO_NFTS_LIST_API}?per_page=250&page=${page}`);
+                if (!res.ok) {
+                    console.log(`Fetch error, API info page ${page}: ${res.status} ${res.statusText}`);
+                    return allNfts;
+                }
+                const data = yield res.json();
+                allNfts.push(...data);
+                if (data.length < 250) {
+                    return allNfts;
+                }
+            }
+            catch (error) {
+                console.error(`Error fetching API info page ${page}:`, error);
+                return allNfts;
+            }
+        }
+        return allNfts;
+    });
+}
 
 
 /***/ }),

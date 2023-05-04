@@ -1,6 +1,6 @@
 export type ICoinGeckoCoinList = ISimpleCoinInfo[]
-export type TrendingCoinList = { coins: ITrendingCoinInfo[] }
-export type SearchCoinList = {
+export type ITrendingCoinList = { coins: ITrendingCoinInfo[] }
+export type ISearchCoinList = {
 	coins: ICoinSearchInfo[]
 	exchanges: IExchangeSearchInfo[]
 	icos: any

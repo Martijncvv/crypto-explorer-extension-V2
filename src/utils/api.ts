@@ -1,8 +1,9 @@
 import {
 	IAdvancedCoinInfo,
 	ICoinGeckoCoinList,
-	TrendingCoinList,
+	ITrendingCoinList,
 	IPriceData,
+	ISearchCoinList
 } from '../models/ICoinInfo'
 import { IAdvancedNftInfo, ICoinGeckoNftList } from '../models/INftInfo'
 import ITokenTxs from '../models/ITokenTxs'
@@ -24,8 +25,22 @@ export async function fetchCoinsList(): Promise<ICoinGeckoCoinList> {
 		throw error;
 	}
 }
+export async function fetchNameSearch(searchQuery: string): Promise<ISearchCoinList> {
+	try {
+		const res = await fetch(`https://api.coingecko.com/api/v3/search?query=${searchQuery}`);
 
-export async function fetchTrendingCoins(): Promise<TrendingCoinList> {
+		if (!res.ok) {
+			throw new Error(`Fetch error, Coingecko searchQuery ${searchQuery}: ${res.status} ${res.statusText}`);
+		}
+
+		return await res.json();
+	} catch (error) {
+		console.error('Error fetching  Coingecko searchQuery ${searchQuery}', error);
+		throw error;
+	}
+}
+
+export async function fetchTrendingCoins(): Promise<ITrendingCoinList> {
 	try {
 		const res = await fetch('https://api.coingecko.com/api/v3/search/trending');
 

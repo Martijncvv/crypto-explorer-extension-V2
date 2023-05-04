@@ -18,11 +18,11 @@ interface ExchangeBlockProps {
 }
 
 const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const toggleExpanded = () => {
         setIsExpanded(!isExpanded);
     };
+
 
     const styles: { [key: string]: CSSProperties } = {
         exchangeWrapper: {

@@ -12,6 +12,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "fetchCoinInfo": () => (/* binding */ fetchCoinInfo),
 /* harmony export */   "fetchCoinsList": () => (/* binding */ fetchCoinsList),
+/* harmony export */   "fetchNameSearch": () => (/* binding */ fetchNameSearch),
 /* harmony export */   "fetchNftInfo": () => (/* binding */ fetchNftInfo),
 /* harmony export */   "fetchNftList": () => (/* binding */ fetchNftList),
 /* harmony export */   "fetchPriceHistoryData": () => (/* binding */ fetchPriceHistoryData),
@@ -40,6 +41,21 @@ function fetchCoinsList() {
         }
         catch (error) {
             console.error('Error fetching Coingecko Coins List:', error);
+            throw error;
+        }
+    });
+}
+function fetchNameSearch(searchQuery) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch(`https://api.coingecko.com/api/v3/search?query=${searchQuery}`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, Coingecko searchQuery ${searchQuery}: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error('Error fetching  Coingecko searchQuery ${searchQuery}', error);
             throw error;
         }
     });

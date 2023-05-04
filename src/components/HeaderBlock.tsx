@@ -1,6 +1,8 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState, useEffect } from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
+import {fetchNameSearch, fetchTrendingCoins} from "../utils/api";
+import {ISearchCoinList, ITrendingCoinList} from "../models/ICoinInfo";
 
 const menuIcon = require( "../static/images/icons/menu-icon.png")
 const searchIcon = require( "../static/images/icons/search-icon.png")
@@ -9,6 +11,32 @@ interface HeaderBlockProps {
 }
 
 const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
+    const [searchInput, setSearchInput] = useState<string>('');
+    const [searchResults, setSearchResults] = useState<ISearchCoinList | []>([]);
+    const [trendingCoins, setTrendingCoins] = useState<ITrendingCoinList | []>([]);
+    const [testValue, setTestValue] = useState<string>("");
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+    const toggleExpanded = () => {
+        setIsExpanded(!isExpanded);
+    };
+
+    useEffect(() => {
+        getTrendingCoins();
+    }, []);
+
+    const getTrendingCoins = async () => {
+        try {
+        const trendingCoins: ITrendingCoinList = await fetchTrendingCoins();
+        console.log("getTrendingCoins: ", trendingCoins)
+        setTrendingCoins(trendingCoins);
+        } catch (error) {
+            console.error("getTrendingCoins: Error fetching trending coins:", error);
+
+        }
+    }
+
+
     const styles: { [key: string]: CSSProperties } = {
         headerBlock: {
             display: 'flex',
@@ -56,16 +84,48 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
             height: 40,
             borderRadius: constants.border_radius_small,
         },
+
+
     };
+
+    async function handleSearch(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.key === "Enter") {
+            if (searchInput.length > 0) {
+                try {
+                    const searchResults: ISearchCoinList = await fetchNameSearch(searchInput);
+                    if (!searchResults) {
+                        setTestValue("No results")
+                        console.log("No results")
+                    }
+
+                    console.log(searchResults)
+                    setSearchResults(searchResults);
+
+                } catch (error) {
+                    console.error("handleSearch: Error searching for coins:", error);
+
+                }
+            }
+        }
+    }
 
     return (
         <div style={styles.headerBlock}>
             <div style={styles.rectangle}>
                 <img style={styles.centeredImage} src={menuIcon} alt="Centered" />
             </div>
-            <div style={styles.searchbar}>
+            <div style={{
+                ...styles.searchbar,
+                display: !isExpanded? "flex" : "none",
+            }}>
                 <img style={styles.searchbarImage} src={searchIcon} alt="Search" />
-                <input style={styles.searchInput} type="text" placeholder="Search" />
+                <input
+                    type="text"
+                    style={styles.searchInput}
+                    onChange={(e => setSearchInput(e.target.value))}
+                    onKeyDown={handleSearch}
+                    placeholder={testValue}
+                />
             </div>
             <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
         </div>
