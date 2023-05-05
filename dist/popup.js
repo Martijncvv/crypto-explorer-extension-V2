@@ -732,26 +732,10 @@ const menuIcon = __webpack_require__(/*! ../static/images/icons/menu-icon.png */
 const searchIcon = __webpack_require__(/*! ../static/images/icons/search-icon.png */ "./src/static/images/icons/search-icon.png");
 const HeaderBlock = ({ mainLogo }) => {
     const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
-    const [searchResults, setSearchResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    const [trendingCoins, setTrendingCoins] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+    const [searchResults, setSearchResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{ coins: [] }]);
+    const [trendingCoins, setTrendingCoins] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ coins: [] });
     const [testValue, setTestValue] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-    const toggleExpanded = () => {
-        setIsExpanded(!isExpanded);
-    };
-    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-        getTrendingCoins();
-    }, []);
-    const getTrendingCoins = () => __awaiter(void 0, void 0, void 0, function* () {
-        try {
-            const trendingCoins = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTrendingCoins)();
-            console.log("getTrendingCoins: ", trendingCoins);
-            setTrendingCoins(trendingCoins);
-        }
-        catch (error) {
-            console.error("getTrendingCoins: Error fetching trending coins:", error);
-        }
-    });
     const styles = {
         headerBlock: {
             display: 'flex',
@@ -793,6 +777,41 @@ const HeaderBlock = ({ mainLogo }) => {
             outline: 'none',
             width: '100%',
         },
+        searchResults: {
+            position: 'absolute',
+            width: 202,
+            marginLeft: 52,
+            zIndex: 99,
+            display: 'flex',
+            flexDirection: 'column',
+            color: '#3381e8',
+            background: 'linear-gradient(to bottom, #2F396D 0%, #3E6CB6 80%)',
+            borderBottomLeftRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+            borderBottomRightRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+        },
+        coinSearchInfo: {
+            display: 'flex',
+            padding: 9,
+        },
+        coinImage: {
+            width: 22,
+            height: 22,
+            borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius_small,
+        },
+        exchangeName: {
+            paddingLeft: 16,
+            width: 100,
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
+            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_medium,
+            fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
+        },
+        marketCapRank: {
+            paddingLeft: 6,
+            width: 40,
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium,
+            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
+            fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
+        },
         mainLogo: {
             marginLeft: 12,
             width: 40,
@@ -800,6 +819,22 @@ const HeaderBlock = ({ mainLogo }) => {
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius_small,
         },
     };
+    const toggleExpanded = () => {
+        setIsExpanded(!isExpanded);
+    };
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+        getTrendingCoins();
+    }, []);
+    const getTrendingCoins = () => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const trendingCoins = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTrendingCoins)();
+            console.log("getTrendingCoins: ", trendingCoins);
+            setTrendingCoins(trendingCoins);
+        }
+        catch (error) {
+            console.error("getTrendingCoins: Error fetching trending coins:", error);
+        }
+    });
     function handleSearch(event) {
         return __awaiter(this, void 0, void 0, function* () {
             if (event.key === "Enter") {
@@ -810,7 +845,7 @@ const HeaderBlock = ({ mainLogo }) => {
                             setTestValue("No results");
                             console.log("No results");
                         }
-                        console.log(searchResults);
+                        console.log("searchResults: ", searchResults);
                         setSearchResults(searchResults);
                     }
                     catch (error) {
@@ -820,13 +855,28 @@ const HeaderBlock = ({ mainLogo }) => {
             }
         });
     }
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.rectangle },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.centeredImage, src: menuIcon, alt: "Centered" })),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.searchbar), { display: !isExpanded ? "flex" : "none" }) },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.searchbarImage, src: searchIcon, alt: "Search" }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", style: styles.searchInput, onChange: (e => setSearchInput(e.target.value)), onKeyDown: handleSearch, placeholder: testValue })),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo, alt: "Main Logo" })));
+    function handleFocus() {
+        return __awaiter(this, void 0, void 0, function* () {
+            setTestValue("FOCUS");
+            toggleExpanded();
+        });
+    }
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.rectangle },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.centeredImage, src: menuIcon, alt: "Centered" })),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.searchbar), { borderBottomLeftRadius: isExpanded ? 0 : _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius, borderBottomRightRadius: isExpanded ? 0 : _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius }) },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.searchbarImage, src: searchIcon, alt: "Search" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", style: styles.searchInput, onChange: (e => setSearchInput(e.target.value)), onKeyDown: handleSearch, onFocus: handleFocus, placeholder: testValue })),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo, alt: "Main Logo" })),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults }, isExpanded && (trendingCoins === null || trendingCoins === void 0 ? void 0 : trendingCoins.coins.length) > 0 &&
+            (trendingCoins === null || trendingCoins === void 0 ? void 0 : trendingCoins.coins.map((coinInfo) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: coinInfo.item.coin_id, style: styles.coinSearchInfo },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: coinInfo.item.small, alt: coinInfo.item.name, style: styles.coinImage }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName }, coinInfo.item.name),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.marketCapRank },
+                    "#",
+                    coinInfo.item.market_cap_rank,
+                    " ")))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HeaderBlock);
 

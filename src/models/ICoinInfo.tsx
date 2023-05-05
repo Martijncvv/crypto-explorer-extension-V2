@@ -8,6 +8,22 @@ export type ISearchCoinList = {
 	nfts: INFTSearchInfo[]
 }
 
+export interface ITrendingCoinInfo {
+	item: {
+		id: string
+		coin_id: number
+		name: string
+		symbol: string
+		market_cap_rank: number
+		thumb: string
+		small: string
+		large: string
+		slug: string
+		price_btc: number
+		score: number
+	}
+}
+
 export interface ICoinSearchInfo{
 	id: string
 	name: string
@@ -63,21 +79,7 @@ export interface IDetailedCoinInfo {
 	websiteLink: string
 }
 
-export interface ITrendingCoinInfo {
-	item: {
-		id: string
-		coin_id: number
-		name: string
-		symbol: string
-		market_cap_rank: number
-		thumb: string
-		small: string
-		large: string
-		slug: string
-		price_btc: number
-		score: number
-	}
-}
+
 export interface IAdvancedCoinInfo {
 	id: string
 	symbol: string
