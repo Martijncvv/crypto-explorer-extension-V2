@@ -734,6 +734,7 @@ const HeaderBlock = ({ mainLogo }) => {
     const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
     const [searchResults, setSearchResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{ coins: [] }]);
     const [trendingCoins, setTrendingCoins] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ coins: [] });
+    const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ coins: [] });
     const [testValue, setTestValue] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const styles = {
@@ -799,11 +800,14 @@ const HeaderBlock = ({ mainLogo }) => {
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius_small,
         },
         exchangeName: {
-            paddingLeft: 16,
+            paddingLeft: 12,
             width: 100,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_medium,
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
         },
         marketCapRank: {
             paddingLeft: 6,
@@ -829,7 +833,10 @@ const HeaderBlock = ({ mainLogo }) => {
         try {
             const trendingCoins = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTrendingCoins)();
             console.log("getTrendingCoins: ", trendingCoins);
-            setTrendingCoins(trendingCoins);
+            // setTrendingCoins(trendingCoins);
+            setDisplayResults(trendingCoins);
+            // TODO: set NFTs too
+            // max 7 tokens , rest NFTs?
         }
         catch (error) {
             console.error("getTrendingCoins: Error fetching trending coins:", error);
@@ -846,7 +853,7 @@ const HeaderBlock = ({ mainLogo }) => {
                             console.log("No results");
                         }
                         console.log("searchResults: ", searchResults);
-                        setSearchResults(searchResults);
+                        setDisplayResults(searchResults);
                     }
                     catch (error) {
                         console.error("handleSearch: Error searching for coins:", error);
@@ -869,14 +876,17 @@ const HeaderBlock = ({ mainLogo }) => {
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.searchbarImage, src: searchIcon, alt: "Search" }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", style: styles.searchInput, onChange: (e => setSearchInput(e.target.value)), onKeyDown: handleSearch, onFocus: handleFocus, placeholder: testValue })),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo, alt: "Main Logo" })),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults }, isExpanded && (trendingCoins === null || trendingCoins === void 0 ? void 0 : trendingCoins.coins.length) > 0 &&
-            (trendingCoins === null || trendingCoins === void 0 ? void 0 : trendingCoins.coins.map((coinInfo) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: coinInfo.item.coin_id, style: styles.coinSearchInfo },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: coinInfo.item.small, alt: coinInfo.item.name, style: styles.coinImage }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName }, coinInfo.item.name),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.marketCapRank },
-                    "#",
-                    coinInfo.item.market_cap_rank,
-                    " ")))))));
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults }, isExpanded && (displayResults === null || displayResults === void 0 ? void 0 : displayResults.coins.length) > 0 &&
+            (displayResults === null || displayResults === void 0 ? void 0 : displayResults.coins.slice(0, 12).map((coinInfo) => {
+                var _a, _b, _c, _d, _e;
+                return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: ((_a = coinInfo.item) === null || _a === void 0 ? void 0 : _a.id) || coinInfo.id, style: styles.coinSearchInfo },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: ((_b = coinInfo.item) === null || _b === void 0 ? void 0 : _b.small) || coinInfo.thumb, alt: ((_c = coinInfo.item) === null || _c === void 0 ? void 0 : _c.name) || coinInfo.name, style: styles.coinImage }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName }, ((_d = coinInfo.item) === null || _d === void 0 ? void 0 : _d.name) || coinInfo.name),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.marketCapRank },
+                        "#",
+                        ((_e = coinInfo.item) === null || _e === void 0 ? void 0 : _e.market_cap_rank) || coinInfo.market_cap_rank,
+                        " "));
+            })))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HeaderBlock);
 

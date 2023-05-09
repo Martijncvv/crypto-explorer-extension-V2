@@ -14,6 +14,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
        const [searchInput, setSearchInput] = useState<string>('');
     const [searchResults, setSearchResults] = useState<ISearchCoinList | [{coins : []}]>([{coins: []}]);
     const [trendingCoins, setTrendingCoins] = useState<ITrendingCoinList>({ coins: [] });
+    const [displayResults, setDisplayResults] = useState<ITrendingCoinList | ISearchCoinList>({ coins: [] });
     const [testValue, setTestValue] = useState<string>("");
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -83,11 +84,14 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
             borderRadius: constants.border_radius_small,
         },
         exchangeName: {
-            paddingLeft: 16,
+            paddingLeft: 12,
             width: 100,
             color: colors.white_medium,
             fontSize: constants.font_medium,
             fontWeight: constants.font_weight_medium,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
         },
         marketCapRank: {
             paddingLeft: 6,
@@ -116,7 +120,11 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
         try {
         const trendingCoins: ITrendingCoinList = await fetchTrendingCoins();
         console.log("getTrendingCoins: ", trendingCoins)
-        setTrendingCoins(trendingCoins);
+        // setTrendingCoins(trendingCoins);
+            setDisplayResults(trendingCoins);
+        // TODO: set NFTs too
+            // max 7 tokens , rest NFTs?
+
         } catch (error) {
             console.error("getTrendingCoins: Error fetching trending coins:", error);
 
@@ -135,7 +143,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
                     }
 
                     console.log("searchResults: ", searchResults)
-                    setSearchResults(searchResults);
+                    setDisplayResults(searchResults);
+
 
                 } catch (error) {
                     console.error("handleSearch: Error searching for coins:", error);
@@ -174,19 +183,19 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
                 <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
             </div>
             <div style={ styles.searchResults }>
-                {isExpanded && trendingCoins?.coins.length > 0 &&
-                    trendingCoins?.coins.map((coinInfo) =>
+                {isExpanded && displayResults?.coins.length > 0 &&
+                    displayResults?.coins.slice(0, 12).map((coinInfo) =>
                         <div
-                            key={coinInfo.item.coin_id}
+                            key={coinInfo.item?.id || coinInfo.id}
                             style={styles.coinSearchInfo}
                         >
                             <img
-                                src={coinInfo.item.small}
-                                alt={coinInfo.item.name}
+                                src={coinInfo.item?.small || coinInfo.thumb}
+                                alt={coinInfo.item?.name || coinInfo.name}
                                 style={styles.coinImage}
                             />
-                            <span style={styles.exchangeName}>{coinInfo.item.name}</span>
-                            <span style={styles.marketCapRank}>#{coinInfo.item.market_cap_rank} </span>
+                            <span style={styles.exchangeName}>{coinInfo.item?.name || coinInfo.name}</span>
+                            <span style={styles.marketCapRank}>#{coinInfo.item?.market_cap_rank || coinInfo.market_cap_rank} </span>
                         </div>
                     )
                 }
