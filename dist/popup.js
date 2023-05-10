@@ -730,13 +730,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 const menuIcon = __webpack_require__(/*! ../static/images/icons/menu-icon.png */ "./src/static/images/icons/menu-icon.png");
 const searchIcon = __webpack_require__(/*! ../static/images/icons/search-icon.png */ "./src/static/images/icons/search-icon.png");
-const HeaderBlock = ({ mainLogo }) => {
+const HeaderBlock = ({ mainLogo, setCoinInfo }) => {
     const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
-    const [searchResults, setSearchResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{ coins: [] }]);
-    const [trendingCoins, setTrendingCoins] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ coins: [] });
-    const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ coins: [] });
-    const [testValue, setTestValue] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+    const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ tokens: [], total: 0 });
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+    const [testValue, setTestValue] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
     const styles = {
         headerBlock: {
             display: 'flex',
@@ -793,6 +791,10 @@ const HeaderBlock = ({ mainLogo }) => {
         coinSearchInfo: {
             display: 'flex',
             padding: 9,
+            '&:hover': {
+                backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
+                cursor: 'pointer',
+            },
         },
         coinImage: {
             width: 22,
@@ -833,10 +835,17 @@ const HeaderBlock = ({ mainLogo }) => {
         try {
             const trendingCoins = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTrendingCoins)();
             console.log("getTrendingCoins: ", trendingCoins);
-            // setTrendingCoins(trendingCoins);
-            setDisplayResults(trendingCoins);
-            // TODO: set NFTs too
-            // max 7 tokens , rest NFTs?
+            let searchFormat = { tokens: [], total: 0 };
+            trendingCoins.coins.forEach((coin) => {
+                searchFormat.tokens.push({
+                    id: coin.item.id,
+                    name: coin.item.name,
+                    image: coin.item.small,
+                    marketCapRank: coin.item.market_cap_rank,
+                    nft: false,
+                });
+            });
+            setDisplayResults(searchFormat);
         }
         catch (error) {
             console.error("getTrendingCoins: Error fetching trending coins:", error);
@@ -853,7 +862,31 @@ const HeaderBlock = ({ mainLogo }) => {
                             console.log("No results");
                         }
                         console.log("searchResults: ", searchResults);
-                        setDisplayResults(searchResults);
+                        let displayNrOfNfts = Math.min(searchResults.nfts.length, 3);
+                        let displayNrOfCoins = 11 - displayNrOfNfts;
+                        // SET COINS
+                        let searchFormat = { tokens: [], total: 0 };
+                        searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
+                            searchFormat.tokens.push({
+                                id: coin.id,
+                                name: coin.name,
+                                image: coin.large,
+                                marketCapRank: coin.market_cap_rank,
+                                nft: false,
+                            });
+                        });
+                        // SET NFTs
+                        searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
+                            searchFormat.tokens.push({
+                                id: nft.id,
+                                name: nft.name,
+                                image: nft.thumb,
+                                marketCapRank: 'NFT',
+                                nft: true,
+                            });
+                        });
+                        searchFormat.total = searchResults.coins.length + searchResults.nfts.length;
+                        setDisplayResults(searchFormat);
                     }
                     catch (error) {
                         console.error("handleSearch: Error searching for coins:", error);
@@ -868,6 +901,22 @@ const HeaderBlock = ({ mainLogo }) => {
             toggleExpanded();
         });
     }
+    const handleCoinOptionClick = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const coinSearchResult = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchCoinInfo)(coinId);
+            if (!coinSearchResult) {
+                console.log(`No results for ${coinId}`);
+                setTestValue(`No results for ${coinId}`);
+                return;
+            }
+            console.log("coinSearchResult: ", coinSearchResult);
+            setCoinInfo(coinSearchResult);
+            toggleExpanded();
+        }
+        catch (error) {
+            console.error("handleCoinOptionClick: Error searching for coin:", error);
+        }
+    });
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.rectangle },
@@ -876,17 +925,16 @@ const HeaderBlock = ({ mainLogo }) => {
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.searchbarImage, src: searchIcon, alt: "Search" }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", style: styles.searchInput, onChange: (e => setSearchInput(e.target.value)), onKeyDown: handleSearch, onFocus: handleFocus, placeholder: testValue })),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo, alt: "Main Logo" })),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults }, isExpanded && (displayResults === null || displayResults === void 0 ? void 0 : displayResults.coins.length) > 0 &&
-            (displayResults === null || displayResults === void 0 ? void 0 : displayResults.coins.slice(0, 12).map((coinInfo) => {
-                var _a, _b, _c, _d, _e;
-                return react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: ((_a = coinInfo.item) === null || _a === void 0 ? void 0 : _a.id) || coinInfo.id, style: styles.coinSearchInfo },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: ((_b = coinInfo.item) === null || _b === void 0 ? void 0 : _b.small) || coinInfo.thumb, alt: ((_c = coinInfo.item) === null || _c === void 0 ? void 0 : _c.name) || coinInfo.name, style: styles.coinImage }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName }, ((_d = coinInfo.item) === null || _d === void 0 ? void 0 : _d.name) || coinInfo.name),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.marketCapRank },
-                        "#",
-                        ((_e = coinInfo.item) === null || _e === void 0 ? void 0 : _e.market_cap_rank) || coinInfo.market_cap_rank,
-                        " "));
-            })))));
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults }, isExpanded && (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.length) > 0 &&
+            (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.slice(0, 12).map((tokenInfo) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: tokenInfo.id, style: styles.coinSearchInfo, onClick: () => handleCoinOptionClick(tokenInfo.id) },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: tokenInfo.image, alt: tokenInfo.name, style: styles.coinImage }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName }, tokenInfo.name),
+                tokenInfo.marketCapRank &&
+                    (tokenInfo.marketCapRank === 'NFT' ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.marketCapRank }, tokenInfo.marketCapRank))
+                        :
+                            (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.marketCapRank },
+                                "#",
+                                tokenInfo.marketCapRank)))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HeaderBlock);
 
@@ -1152,8 +1200,10 @@ const styles = {
     },
 };
 const App = () => {
+    var _a;
+    const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_8__["default"], { mainLogo: blockchainIcon }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_8__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : blockchainIcon, setCoinInfo: setCoinInfo }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { pricedata: [], volumedata: [] }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_3__["default"], { allTimeLow: 0.22, allTimeHigh: 1.78, price: 1.60 }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.dataBlocks },

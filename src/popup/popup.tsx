@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../App.css';
 import PriceBar from '../components/PriceBar';
@@ -8,6 +8,7 @@ import SocialBlock from "../components/SocialBlock";
 import ExchangeBlock from "../components/ExchangeBlock";
 import HeaderBlock from "../components/HeaderBlock";
 import ChartsBlock from "../components/ChartsBlock";
+import {IDetailedCoinInfo} from "../models/ICoinInfo";
 
 const blockchainIcon = require( "../static/images/icons/blockchain-icon.png")
 const coingeckoIcon = require( "../static/images/icons/coingecko-icon.png")
@@ -34,9 +35,11 @@ const styles: { [key: string]: CSSProperties } = {
 
 
 const App: React.FC = () => {
+	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
+
 	return (
 		<div style={styles.container}>
-			<HeaderBlock mainLogo={blockchainIcon} />
+			<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : blockchainIcon} setCoinInfo={setCoinInfo}/>
 			<ChartsBlock pricedata={[]} volumedata={[]} />
 			<PriceBar allTimeLow={0.22} allTimeHigh={1.78} price={1.60} />
 			<div style={styles.dataBlocks}>

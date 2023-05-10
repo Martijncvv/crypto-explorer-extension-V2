@@ -1,10 +1,16 @@
 export type ICoinGeckoCoinList = ISimpleCoinInfo[]
 export type ITrendingCoinList = { coins: ITrendingCoinInfo[] }
+export type ISearchOptions = {
+	tokens: ISearchOption[]
+	total: number
+}
+
+
 export type ISearchCoinList = {
 	coins: ICoinSearchInfo[]
 	exchanges: IExchangeSearchInfo[]
 	icos: any
-	categories: ICategorieSearchInfo[]
+	categories: ICategorySearchInfo[]
 	nfts: INFTSearchInfo[]
 }
 
@@ -33,13 +39,21 @@ export interface ICoinSearchInfo{
 	thumb: string
 	large: string
 }
+
+export interface ISearchOption{
+	id: string
+	name: string
+	image: string
+	marketCapRank: number | string
+	nft: boolean
+}
 export interface INFTSearchInfo {
 	id: string
 	name: string
 	symbol: string
 	thumb: string
 }
-export interface ICategorieSearchInfo {
+export interface ICategorySearchInfo {
 	id: number
 	name: string
 }
@@ -69,6 +83,7 @@ export interface IDetailedCoinInfo {
 	description: string
 	icon: string
 	id: string
+	image: ISize
 	marketCapRank: string
 	name: string
 	price: number

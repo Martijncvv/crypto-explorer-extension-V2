@@ -1,22 +1,27 @@
 import React, { CSSProperties, useState, useEffect } from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
-import {fetchNameSearch, fetchTrendingCoins} from "../utils/api";
-import {ISearchCoinList, ITrendingCoinList} from "../models/ICoinInfo";
+import {fetchCoinInfo, fetchNameSearch, fetchTrendingCoins} from "../utils/api";
+import {
+    IDetailedCoinInfo,
+    ISearchCoinList,
+    ISearchOptions,
+    ITrendingCoinList
+} from "../models/ICoinInfo";
 
 const menuIcon = require( "../static/images/icons/menu-icon.png")
 const searchIcon = require( "../static/images/icons/search-icon.png")
 interface HeaderBlockProps {
     mainLogo: string;
+    setCoinInfo: (coinInfo: IDetailedCoinInfo) => void;
 }
 
-const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
-       const [searchInput, setSearchInput] = useState<string>('');
-    const [searchResults, setSearchResults] = useState<ISearchCoinList | [{coins : []}]>([{coins: []}]);
-    const [trendingCoins, setTrendingCoins] = useState<ITrendingCoinList>({ coins: [] });
-    const [displayResults, setDisplayResults] = useState<ITrendingCoinList | ISearchCoinList>({ coins: [] });
-    const [testValue, setTestValue] = useState<string>("");
+const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
+    const [searchInput, setSearchInput] = useState<string>('');
+    const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+    const [testValue, setTestValue] = useState<string>("");
 
     const styles: { [key: string]: CSSProperties } = {
         headerBlock: {
@@ -77,7 +82,11 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
         coinSearchInfo: {
             display: 'flex',
             padding: 9,
-        },
+            '&:hover': {
+                backgroundColor: colors.primary_dark,
+                cursor: 'pointer',
+            },
+        } as any,
         coinImage: {
             width: 22,
             height: 22,
@@ -118,19 +127,26 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
 
     const getTrendingCoins = async () => {
         try {
-        const trendingCoins: ITrendingCoinList = await fetchTrendingCoins();
-        console.log("getTrendingCoins: ", trendingCoins)
-        // setTrendingCoins(trendingCoins);
-            setDisplayResults(trendingCoins);
-        // TODO: set NFTs too
-            // max 7 tokens , rest NFTs?
+            const trendingCoins: ITrendingCoinList = await fetchTrendingCoins();
+            console.log("getTrendingCoins: ", trendingCoins)
+            let searchFormat:ISearchOptions = {tokens: [], total: 0}
+            trendingCoins.coins.forEach((coin) => {
+                searchFormat.tokens.push(
+                    {
+                        id: coin.item.id,
+                        name: coin.item.name,
+                        image: coin.item.small,
+                        marketCapRank: coin.item.market_cap_rank,
+                        nft: false,
+                    }
+                )
+            })
+            setDisplayResults(searchFormat);
 
         } catch (error) {
             console.error("getTrendingCoins: Error fetching trending coins:", error);
-
         }
     }
-
 
     async function handleSearch(event: React.KeyboardEvent<HTMLInputElement>) {
         if (event.key === "Enter") {
@@ -141,10 +157,37 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
                         setTestValue("No results")
                         console.log("No results")
                     }
+console.log("searchResults: ", searchResults)
+                    let displayNrOfNfts: number = Math.min(searchResults.nfts.length, 3);
+                    let displayNrOfCoins: number = 11 - displayNrOfNfts
 
-                    console.log("searchResults: ", searchResults)
-                    setDisplayResults(searchResults);
-
+                    // SET COINS
+                    let searchFormat:ISearchOptions = {tokens: [], total: 0}
+                    searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
+                        searchFormat.tokens.push(
+                            {
+                                id: coin.id,
+                                name: coin.name,
+                                image: coin.large,
+                                marketCapRank: coin.market_cap_rank,
+                                nft: false,
+                            }
+                        )
+                    })
+                    // SET NFTs
+                    searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
+                        searchFormat.tokens.push(
+                            {
+                                id: nft.id,
+                                name: nft.name,
+                                image: nft.thumb,
+                                marketCapRank: 'NFT',
+                                nft: true,
+                            }
+                        )
+                    })
+                    searchFormat.total = searchResults.coins.length + searchResults.nfts.length
+                    setDisplayResults(searchFormat);
 
                 } catch (error) {
                     console.error("handleSearch: Error searching for coins:", error);
@@ -156,6 +199,22 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
     async function handleFocus() {
         setTestValue("FOCUS")
         toggleExpanded();
+    }
+
+    const handleCoinOptionClick = async (coinId: string) => {
+        try {
+            const coinSearchResult: IDetailedCoinInfo = await fetchCoinInfo(coinId);
+            if (!coinSearchResult) {
+                console.log(`No results for ${coinId}`)
+                setTestValue(`No results for ${coinId}`)
+                return
+            }
+            console.log("coinSearchResult: ", coinSearchResult)
+            setCoinInfo(coinSearchResult)
+            toggleExpanded()
+        } catch (error) {
+            console.error("handleCoinOptionClick: Error searching for coin:", error);
+        }
     }
 
     return (
@@ -183,19 +242,28 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo }) => {
                 <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
             </div>
             <div style={ styles.searchResults }>
-                {isExpanded && displayResults?.coins.length > 0 &&
-                    displayResults?.coins.slice(0, 12).map((coinInfo) =>
+                {isExpanded && displayResults?.tokens.length > 0 &&
+                    displayResults?.tokens.slice(0, 12).map((tokenInfo) =>
                         <div
-                            key={coinInfo.item?.id || coinInfo.id}
+                            key={tokenInfo.id}
                             style={styles.coinSearchInfo}
+                            onClick={() => handleCoinOptionClick(tokenInfo.id)}
                         >
                             <img
-                                src={coinInfo.item?.small || coinInfo.thumb}
-                                alt={coinInfo.item?.name || coinInfo.name}
+                                src={tokenInfo.image }
+                                alt={tokenInfo.name}
                                 style={styles.coinImage}
                             />
-                            <span style={styles.exchangeName}>{coinInfo.item?.name || coinInfo.name}</span>
-                            <span style={styles.marketCapRank}>#{coinInfo.item?.market_cap_rank || coinInfo.market_cap_rank} </span>
+                            <span style={styles.exchangeName}>{tokenInfo.name}</span>
+                            {tokenInfo.marketCapRank &&
+                                (tokenInfo.marketCapRank === 'NFT' ? (
+                                <span style={styles.marketCapRank}>{tokenInfo.marketCapRank}</span>
+                            )
+                            :
+                                (
+                                    <span style={styles.marketCapRank}>#{tokenInfo.marketCapRank}</span>
+                                )
+                                )}
                         </div>
                     )
                 }

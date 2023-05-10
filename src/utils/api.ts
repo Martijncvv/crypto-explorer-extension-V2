@@ -1,9 +1,8 @@
 import {
-	IAdvancedCoinInfo,
 	ICoinGeckoCoinList,
 	ITrendingCoinList,
 	IPriceData,
-	ISearchCoinList
+	ISearchCoinList, IDetailedCoinInfo
 } from '../models/ICoinInfo'
 import { IAdvancedNftInfo, ICoinGeckoNftList } from '../models/INftInfo'
 import ITokenTxs from '../models/ITokenTxs'
@@ -55,7 +54,7 @@ export async function fetchTrendingCoins(): Promise<ITrendingCoinList> {
 	}
 }
 
-export async function fetchCoinInfo(coinId: string): Promise<IAdvancedCoinInfo> {
+export async function fetchCoinInfo(coinId: string): Promise<IDetailedCoinInfo> {
 	coinId = coinId || 'bitcoin';
 	try {
 		const res = await fetch(
