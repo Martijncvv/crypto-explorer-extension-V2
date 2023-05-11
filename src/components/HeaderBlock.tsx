@@ -157,7 +157,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
                         setTestValue("No results")
                         console.log("No results")
                     }
-console.log("searchResults: ", searchResults)
+                console.log("searchResults: ", searchResults)
                     let displayNrOfNfts: number = Math.min(searchResults.nfts.length, 3);
                     let displayNrOfCoins: number = 11 - displayNrOfNfts
 

@@ -73,25 +73,19 @@ export interface ISimpleCoinInfo {
 	asset_platform_id?: string
 }
 
-
 export interface IDetailedCoinInfo {
-	assetPlatformId: string
-	blockExplorerLink: string
 	circSupply: number
-	coingeckoLink: string
 	contractAddress: string
 	description: string
 	icon: string
 	id: string
 	image: ISize
-	marketCapRank: string
+	links: ILinks
+	market_data: IMarket_data
+	market_cap_rank: number
 	name: string
-	price: number
 	symbol: string
-	telegramLink: string
-	totalSupply: string
-	twitterLink: string
-	websiteLink: string
+
 }
 
 
@@ -133,6 +127,7 @@ interface ISize {
 interface ILinks {
 	homepage: string[]
 	twitter_screen_name: string
+	subreddit_url: string
 	telegram_channel_identifier: string
 	blockchain_site: string[]
 }
