@@ -1,14 +1,17 @@
 import React, {CSSProperties} from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
+import {amountFormatter} from "../utils/amountFormatter";
 
 interface ValueBlockProps {
     title: string;
-    mainValue: string;
-    secondaryValue: string;
+    mainValue: number;
+    mainPreFix?: string;
+    secondaryValue: number;
+    secondaryPreFix?: string;
 }
 
-const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue, secondaryValue }) => {
+const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue,mainPreFix, secondaryValue, secondaryPreFix }) => {
 
     const styles: { [key: string]: CSSProperties } = {
         rectangle: {
@@ -48,8 +51,8 @@ const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue, secondaryValu
         <div style={styles.rectangle}>
             <div style={styles.title}>{title}</div>
             <div style={styles.values}>
-                <span style={styles.mainValue}>{mainValue}</span>
-                <span style={styles.secondaryValue}>{secondaryValue}</span>
+                <span style={styles.mainValue}>{mainPreFix}{mainValue ? amountFormatter(mainValue) : ' -'}</span>
+                <span style={styles.secondaryValue}>{secondaryPreFix}{secondaryValue ? amountFormatter(secondaryValue) : ' -'}</span>
             </div>
         </div>
     );

@@ -22,10 +22,15 @@ export function amountFormatter(amount: number | null | undefined): string {
 	if (amount > 1e3) {
 		return `${(amount / 1e3).toPrecision(3)} K`;
 	}
-	// Negative amount
-	if (amount < 0) {
+	// Numbers close to zero
+	if (amount < 1e-3) {
+		return `${amount.toExponential(2)}`;
+	}
+	// Other small numbers
+	if (amount < 1) {
 		return `${amount.toPrecision(2)}`;
 	}
+
 	// Default case
 	return `${amount.toPrecision(4)}`;
 }

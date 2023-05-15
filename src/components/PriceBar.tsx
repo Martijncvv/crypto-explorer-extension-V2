@@ -1,6 +1,7 @@
 import React, { CSSProperties } from 'react';
 import colors from '../static/colors';
 import constants from "../static/constants";
+import {amountFormatter} from "../utils/amountFormatter";
 
 interface PriceBarProps {
     allTimeLow: number;
@@ -39,7 +40,7 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
             transform: 'translateY(-50%)',
             fontSize: constants.font_small,
             color: colors.red_medium,
-            fontFamily: 'Open Sans',
+            // fontFamily: 'Open Sans',
             fontWeight: constants.font_weight_large,
         },
         price: {
@@ -49,7 +50,7 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
             transform: 'translate(-50%, -50%)',
             fontSize: constants.font_large,
             color: colors.white_medium,
-            fontFamily: 'Open Sans',
+            // fontFamily: 'Open Sans',
             fontWeight: constants.font_weight_large,
         },
         allTimeHigh: {
@@ -59,7 +60,7 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
             transform: 'translateY(-50%)',
             fontSize: constants.font_small,
             color: colors.green_medium,
-            fontFamily: 'Open Sans',
+            // fontFamily: 'Open Sans',
             fontWeight: constants.font_weight_large,
         },
     };
@@ -68,9 +69,9 @@ const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) =
     return (
         <div style={styles.container}>
             <div style={styles.gradient}></div>
-            <span style={styles.allTimeLow}>${allTimeLow.toFixed(2)}</span>
-            <span style={styles.price}>${price.toFixed(2)}</span>
-            <span style={styles.allTimeHigh}>${allTimeHigh.toFixed(2)}</span>
+            <span style={styles.allTimeLow}>${amountFormatter(allTimeLow)}</span>
+            <span style={styles.price}>${amountFormatter(price)}</span>
+            <span style={styles.allTimeHigh}>${amountFormatter(allTimeHigh)}</span>
         </div>
     );
 };

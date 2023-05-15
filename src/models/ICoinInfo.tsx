@@ -76,33 +76,22 @@ export interface ISimpleCoinInfo {
 export interface IDetailedCoinInfo {
 	circSupply: number
 	contractAddress: string
-	description: string
+	description: ILanguage
 	icon: string
 	id: string
 	image: ISize
 	links: ILinks
-	market_data: IMarket_data
+	community_data: ICommunityData
+	market_data: IMarketData
 	market_cap_rank: number
 	name: string
 	symbol: string
-
+	watchlist_portfolio_users: number
+	tickers: IExchangeTickerInfo[]
 }
 
 
-export interface IAdvancedCoinInfo {
-	id: string
-	symbol: string
-	name: string
-	image: ISize
-	coingecko_rank: number
-	asset_platform_id: string
-	contract_address: string
-	description: ILanguage
-	market_data: IMarket_data
-	market_cap_rank: number
-	links: ILinks
-}
-interface IMarket_data {
+interface IMarketData {
 	market_cap: IQuote
 	current_price: IQuote
 	total_volume: IQuote
@@ -111,10 +100,52 @@ interface IMarket_data {
 	circulating_supply: number
 	total_supply: number
 }
+interface IExchangeTickerInfo {
+	base: string;
+	target: string;
+	market: {
+		name: string;
+		identifier: string;
+		has_trading_incentive: boolean;
+	};
+	last: number;
+	volume: number;
+	converted_last: {
+		btc: number;
+		eth: number;
+		usd: number;
+	};
+	converted_volume: {
+		btc: number;
+		eth: number;
+		usd: number;
+	};
+	trust_score: string;
+	bid_ask_spread_percentage: number;
+	timestamp: string;
+	last_traded_at: string;
+	last_fetch_at: string;
+	is_anomaly: boolean;
+	is_stale: boolean;
+	trade_url: string;
+	token_info_url: string | null;
+	coin_id: string;
+	target_coin_id: string;
+}
+
 
 interface IQuote {
 	usd: number
 	btc: number
+}
+interface ICommunityData {
+	facebook_likes: number
+	reddit_accounts_active_48h: number
+	reddit_average_comments_48h: number
+	reddit_average_posts_48h: number
+	reddit_subscribers: number
+	telegram_channel_user_count: number
+	twitter_followers: number
 }
 interface ILanguage {
 	en: string

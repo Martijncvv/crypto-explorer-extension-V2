@@ -79,7 +79,7 @@ function fetchCoinInfo(coinId) {
     return __awaiter(this, void 0, void 0, function* () {
         coinId = coinId || 'bitcoin';
         try {
-            const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+            const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false`);
             if (!res.ok) {
                 throw new Error(`Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`);
             }

@@ -35,54 +35,48 @@ const styles: { [key: string]: CSSProperties } = {
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
 
+	const formatExchangeInfo = (tickers) => {
+		if (!tickers) return [];
+
+		const sortedTickers = tickers.sort((a, b) => b.converted_volume.usd - a.converted_volume.usd);
+		const top10Tickers = sortedTickers.slice(0, 10); // by volume
+
+		return top10Tickers.map(obj => {
+			return {
+				image: redditIcon,
+				id: obj.market.identifier,
+				exchangeName: obj.market.name,
+				tradingVolume: obj.converted_volume.usd,
+				exchangeURL: obj.trade_url
+			};
+		});
+
+	}
+
 	console.log("coinInfo1: ", coinInfo)
-	// TODO fix conditional rendering
+	if (coinInfo?.tickers)	formatExchangeInfo(coinInfo.tickers)
+
 	return (
 		<div style={styles.container}>
 			<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : blockchainIcon} setCoinInfo={setCoinInfo}/>
 			<ChartsBlock pricedata={[]} volumedata={[]} />
 			{coinInfo?.name &&
 			<>
-				<PriceBar allTimeLow={coinInfo.market_data.atl.usd} allTimeHigh={coinInfo.market_data.ath.usd} price={coinInfo.market_data.current_price.usd} />
+				<PriceBar allTimeLow={coinInfo.market_data?.atl?.usd} allTimeHigh={coinInfo.market_data?.ath?.usd} price={coinInfo.market_data?.current_price?.usd} />
 				<div style={styles.dataBlocks}>
-					<ValueBlock title="Circ. Supply" mainValue={coinInfo.market_data.circulating_supply.toString()} secondaryValue={`/ ${coinInfo.market_data.total_supply}`}/>
-					<ValueBlock title="Market Cap" mainValue={coinInfo.market_data.market_cap.toString()} secondaryValue={coinInfo.market_cap_rank.toString()} />
+					<ValueBlock title="Circ. Supply" mainValue={coinInfo.market_data?.circulating_supply} secondaryValue={coinInfo.market_data?.total_supply} secondaryPreFix='/ '/>
+					<ValueBlock title="Market Cap" mainValue={coinInfo.market_data?.market_cap.usd} mainPreFix='$' secondaryValue={coinInfo.market_cap_rank} secondaryPreFix='#'/>
 				</div>
-				<ExchangeBlock exchanges={[
-					{
-						image: redditIcon,
-						exchangeName: "WOOnetwork",
-						tradingVolume: "$2.6 B",
-						websiteLink: "https://www.reddit.com/r/dogecoin/",
-					},
-					{
-						image: discordIcon,
-						exchangeName: "Binance",
-						tradingVolume: "$13.4 M",
-						websiteLink: "https://www.reddit.com/r/dogecoin/",
-					},
-					{
-						image: twitterIcon,
-						exchangeName: "Huobi",
-						tradingVolume: "$1.4 M",
-						websiteLink: "https://www.reddit.com/r/dogecoin/",
-					},
-					{
-						image: coingeckoIcon,
-						exchangeName: "Bittrex",
-						tradingVolume: "$0.5 M",
-						websiteLink: "https://www.reddit.com/r/dogecoin/",
-					},
+				<ExchangeBlock exchanges={formatExchangeInfo(coinInfo.tickers)} />
 
-				]} />
-				<ExpandableTextField text={coinInfo.description} />
+				<ExpandableTextField text={coinInfo.description?.en} />
 				<div style={styles.socialBlocks}>
-					<SocialBlock image={websiteIcon} link={coinInfo.links.homepage[0]}  />
-					<SocialBlock image={blockchainIcon}  link={coinInfo.links.blockchain_site[0]} />
-					<SocialBlock image={coingeckoIcon} mainValue="9 M" link={`https://www.coingecko.com/en/coins/${coinInfo.id}`}  />
-					<SocialBlock image={twitterIcon} mainValue="1.7 K"  link={`https://twitter.com/${coinInfo.links.twitter_screen_name}`} />
-					<SocialBlock image={redditIcon} mainValue="14 M"  link={coinInfo.links.subreddit_url} />
-					<SocialBlock image={telegramIcon} mainValue="10 K"  link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`} />
+					<SocialBlock image={websiteIcon} link={coinInfo.links?.homepage[0]}  />
+					<SocialBlock image={blockchainIcon}  link={coinInfo.links?.blockchain_site[0]} />
+					<SocialBlock image={coingeckoIcon} mainValue={coinInfo.watchlist_portfolio_users} link={`https://www.coingecko.com/en/coins/${coinInfo.id}`}  />
+					<SocialBlock image={twitterIcon} mainValue={coinInfo.community_data?.twitter_followers}  link={`https://twitter.com/${coinInfo.links.twitter_screen_name}`} />
+					<SocialBlock image={redditIcon} mainValue={coinInfo.community_data?.reddit_subscribers}   link={coinInfo.links?.subreddit_url} />
+					<SocialBlock image={telegramIcon} mainValue={coinInfo.community_data?.telegram_channel_user_count}   link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`} />
 					{/*/!*<SocialBlock image={discordIcon}  link={coinInfo.links.homepage[0]} />*!/ find out what to do with this*/}
 				</div>
 			</>

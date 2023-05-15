@@ -1,16 +1,18 @@
 import React, { CSSProperties, useState } from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
+import {amountFormatter} from "../utils/amountFormatter";
 // import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 const ExpandMoreIcon = require( "../static/images/icons/expand-more-icon.png")
 const ExpandLessIcon = require( "../static/images/icons/expand-less-icon.png")
 
 interface Exchange {
+    id: string;
     image: string;
     exchangeName: string;
-    tradingVolume: string;
-    websiteLink: string;
+    tradingVolume: number;
+    exchangeURL: string;
 }
 
 interface ExchangeBlockProps {
@@ -81,10 +83,10 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
     };
 
     return (
-        <div>
+        <div >
             {exchanges.map((exchange, index) => (
                 <div
-                    key={index}
+                    key={exchange.id}
                     style={{
                         ...styles.exchangeWrapper,
                         ...index === 0 && styles.firstExchange,
@@ -96,10 +98,10 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                         src={exchange.image}
                         alt={exchange.exchangeName}
                         style={styles.image}
-                        onClick={() => window.open(exchange.websiteLink, "_blank")}
+                        onClick={() => window.open(exchange.exchangeURL, "_blank")}
                     />
-                    <span style={styles.exchangeName}  onClick={() => window.open(exchange.websiteLink, "_blank")}>{exchange.exchangeName}</span>
-                    <span style={styles.tradingVolume}> {exchange.tradingVolume} </span>
+                    <span style={styles.exchangeName}  onClick={() => window.open(exchange.exchangeURL, "_blank")}>{exchange.exchangeName}</span>
+                    <span style={styles.tradingVolume}>${amountFormatter(exchange.tradingVolume)} </span>
                     <span style={styles.staticText}>/ 24h</span>
                     {index === 0 && (
                         isExpanded ? (

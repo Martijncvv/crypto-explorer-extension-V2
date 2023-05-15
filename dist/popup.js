@@ -542,6 +542,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
+/* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
+
 
 
 
@@ -609,12 +611,12 @@ const ExchangeBlock = ({ exchanges }) => {
             cursor: "pointer",
         },
     };
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, exchanges.map((exchange, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: index, style: Object.assign(Object.assign(Object.assign(Object.assign({}, styles.exchangeWrapper), index === 0 && styles.firstExchange), index === exchanges.length - 1 && styles.lastExchange), { display: isExpanded || index === 0 ? "flex" : "none" }) },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: exchange.image, alt: exchange.exchangeName, style: styles.image, onClick: () => window.open(exchange.websiteLink, "_blank") }),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName, onClick: () => window.open(exchange.websiteLink, "_blank") }, exchange.exchangeName),
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, exchanges.map((exchange, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: exchange.id, style: Object.assign(Object.assign(Object.assign(Object.assign({}, styles.exchangeWrapper), index === 0 && styles.firstExchange), index === exchanges.length - 1 && styles.lastExchange), { display: isExpanded || index === 0 ? "flex" : "none" }) },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: exchange.image, alt: exchange.exchangeName, style: styles.image, onClick: () => window.open(exchange.exchangeURL, "_blank") }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName, onClick: () => window.open(exchange.exchangeURL, "_blank") }, exchange.exchangeName),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.tradingVolume },
-            " ",
-            exchange.tradingVolume,
+            "$",
+            (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(exchange.tradingVolume),
             " "),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.staticText }, "/ 24h"),
         index === 0 && (isExpanded ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: ExpandLessIcon, alt: "expand-less-icon", style: styles.arrowIcon, onClick: toggleExpanded })) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: ExpandMoreIcon, alt: "expand-more-icon", style: styles.arrowIcon, onClick: toggleExpanded }))))))));
@@ -830,6 +832,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo }) => {
     };
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         getTrendingCoins();
+        fetchDetailedInfo('bitcoin');
     }, []);
     const getTrendingCoins = () => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -851,46 +854,49 @@ const HeaderBlock = ({ mainLogo, setCoinInfo }) => {
             console.error("getTrendingCoins: Error fetching trending coins:", error);
         }
     });
+    const searchCoinNames = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const searchResults = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNameSearch)(searchInput);
+            if (!searchResults) {
+                setTestValue("No results");
+                console.log("No results");
+            }
+            console.log("searchResults: ", searchResults);
+            let displayNrOfNfts = Math.min(searchResults.nfts.length, 3);
+            let displayNrOfCoins = 11 - displayNrOfNfts;
+            // SET COINS
+            let searchFormat = { tokens: [], total: 0 };
+            searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
+                searchFormat.tokens.push({
+                    id: coin.id,
+                    name: coin.name,
+                    image: coin.large,
+                    marketCapRank: coin.market_cap_rank,
+                    nft: false,
+                });
+            });
+            // SET NFTs
+            searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
+                searchFormat.tokens.push({
+                    id: nft.id,
+                    name: nft.name,
+                    image: nft.thumb,
+                    marketCapRank: 'NFT',
+                    nft: true,
+                });
+            });
+            searchFormat.total = searchResults.coins.length + searchResults.nfts.length;
+            setDisplayResults(searchFormat);
+        }
+        catch (error) {
+            console.error("handleSearch: Error searching for coins:", error);
+        }
+    });
     function handleSearch(event) {
         return __awaiter(this, void 0, void 0, function* () {
             if (event.key === "Enter") {
                 if (searchInput.length > 0) {
-                    try {
-                        const searchResults = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNameSearch)(searchInput);
-                        if (!searchResults) {
-                            setTestValue("No results");
-                            console.log("No results");
-                        }
-                        console.log("searchResults: ", searchResults);
-                        let displayNrOfNfts = Math.min(searchResults.nfts.length, 3);
-                        let displayNrOfCoins = 11 - displayNrOfNfts;
-                        // SET COINS
-                        let searchFormat = { tokens: [], total: 0 };
-                        searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
-                            searchFormat.tokens.push({
-                                id: coin.id,
-                                name: coin.name,
-                                image: coin.large,
-                                marketCapRank: coin.market_cap_rank,
-                                nft: false,
-                            });
-                        });
-                        // SET NFTs
-                        searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
-                            searchFormat.tokens.push({
-                                id: nft.id,
-                                name: nft.name,
-                                image: nft.thumb,
-                                marketCapRank: 'NFT',
-                                nft: true,
-                            });
-                        });
-                        searchFormat.total = searchResults.coins.length + searchResults.nfts.length;
-                        setDisplayResults(searchFormat);
-                    }
-                    catch (error) {
-                        console.error("handleSearch: Error searching for coins:", error);
-                    }
+                    searchCoinNames(searchInput);
                 }
             }
         });
@@ -901,7 +907,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo }) => {
             toggleExpanded();
         });
     }
-    const handleCoinOptionClick = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
+    const fetchDetailedInfo = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const coinSearchResult = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchCoinInfo)(coinId);
             if (!coinSearchResult) {
@@ -911,11 +917,14 @@ const HeaderBlock = ({ mainLogo, setCoinInfo }) => {
             }
             console.log("coinSearchResult: ", coinSearchResult);
             setCoinInfo(coinSearchResult);
-            toggleExpanded();
         }
         catch (error) {
             console.error("handleCoinOptionClick: Error searching for coin:", error);
         }
+    });
+    const handleCoinOptionClick = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
+        fetchDetailedInfo(coinId);
+        toggleExpanded();
     });
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
@@ -955,6 +964,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
+/* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
+
 
 
 
@@ -988,7 +999,7 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
             transform: 'translateY(-50%)',
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium,
-            fontFamily: 'Open Sans',
+            // fontFamily: 'Open Sans',
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_large,
         },
         price: {
@@ -998,7 +1009,7 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
             transform: 'translate(-50%, -50%)',
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-            fontFamily: 'Open Sans',
+            // fontFamily: 'Open Sans',
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_large,
         },
         allTimeHigh: {
@@ -1008,7 +1019,7 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
             transform: 'translateY(-50%)',
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].green_medium,
-            fontFamily: 'Open Sans',
+            // fontFamily: 'Open Sans',
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_large,
         },
     };
@@ -1016,13 +1027,13 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.gradient }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.allTimeLow },
             "$",
-            allTimeLow.toFixed(2)),
+            (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(allTimeLow)),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.price },
             "$",
-            price.toFixed(2)),
+            (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(price)),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.allTimeHigh },
             "$",
-            allTimeHigh.toFixed(2))));
+            (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(allTimeHigh))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PriceBar);
 
@@ -1103,10 +1114,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
+/* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
 
 
 
-const ValueBlock = ({ title, mainValue, secondaryValue }) => {
+
+const ValueBlock = ({ title, mainValue, mainPreFix, secondaryValue, secondaryPreFix }) => {
     const styles = {
         rectangle: {
             display: 'flex',
@@ -1143,8 +1156,12 @@ const ValueBlock = ({ title, mainValue, secondaryValue }) => {
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.rectangle },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.title }, title),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.values },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue }, mainValue),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.secondaryValue }, secondaryValue))));
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue },
+                mainPreFix,
+                mainValue ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(mainValue) : ' -'),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.secondaryValue },
+                secondaryPreFix,
+                secondaryValue ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(secondaryValue) : ' -'))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ValueBlock);
 
@@ -1200,53 +1217,44 @@ const styles = {
     },
 };
 const App = () => {
-    var _a;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
+    const formatExchangeInfo = (tickers) => {
+        if (!tickers)
+            return [];
+        const sortedTickers = tickers.sort((a, b) => b.converted_volume.usd - a.converted_volume.usd);
+        const top10Tickers = sortedTickers.slice(0, 10); // by volume
+        return top10Tickers.map(obj => {
+            return {
+                image: redditIcon,
+                id: obj.market.identifier,
+                exchangeName: obj.market.name,
+                tradingVolume: obj.converted_volume.usd,
+                exchangeURL: obj.trade_url
+            };
+        });
+    };
     console.log("coinInfo1: ", coinInfo);
-    // TODO fix conditional rendering
+    if (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.tickers)
+        formatExchangeInfo(coinInfo.tickers);
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_8__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : blockchainIcon, setCoinInfo: setCoinInfo }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { pricedata: [], volumedata: [] }),
         (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_3__["default"], { allTimeLow: coinInfo.market_data.atl.usd, allTimeHigh: coinInfo.market_data.ath.usd, price: coinInfo.market_data.current_price.usd }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_3__["default"], { allTimeLow: (_c = (_b = coinInfo.market_data) === null || _b === void 0 ? void 0 : _b.atl) === null || _c === void 0 ? void 0 : _c.usd, allTimeHigh: (_e = (_d = coinInfo.market_data) === null || _d === void 0 ? void 0 : _d.ath) === null || _e === void 0 ? void 0 : _e.usd, price: (_g = (_f = coinInfo.market_data) === null || _f === void 0 ? void 0 : _f.current_price) === null || _g === void 0 ? void 0 : _g.usd }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.dataBlocks },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Circ. Supply", mainValue: coinInfo.market_data.circulating_supply.toString(), secondaryValue: `/ ${coinInfo.market_data.total_supply}` }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Market Cap", mainValue: coinInfo.market_data.market_cap.toString(), secondaryValue: coinInfo.market_cap_rank.toString() })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { exchanges: [
-                        {
-                            image: redditIcon,
-                            exchangeName: "WOOnetwork",
-                            tradingVolume: "$2.6 B",
-                            websiteLink: "https://www.reddit.com/r/dogecoin/",
-                        },
-                        {
-                            image: discordIcon,
-                            exchangeName: "Binance",
-                            tradingVolume: "$13.4 M",
-                            websiteLink: "https://www.reddit.com/r/dogecoin/",
-                        },
-                        {
-                            image: twitterIcon,
-                            exchangeName: "Huobi",
-                            tradingVolume: "$1.4 M",
-                            websiteLink: "https://www.reddit.com/r/dogecoin/",
-                        },
-                        {
-                            image: coingeckoIcon,
-                            exchangeName: "Bittrex",
-                            tradingVolume: "$0.5 M",
-                            websiteLink: "https://www.reddit.com/r/dogecoin/",
-                        },
-                    ] }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_5__["default"], { text: coinInfo.description }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Circ. Supply", mainValue: (_h = coinInfo.market_data) === null || _h === void 0 ? void 0 : _h.circulating_supply, secondaryValue: (_j = coinInfo.market_data) === null || _j === void 0 ? void 0 : _j.total_supply, secondaryPreFix: '/ ' }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Market Cap", mainValue: (_k = coinInfo.market_data) === null || _k === void 0 ? void 0 : _k.market_cap.usd, mainPreFix: '$', secondaryValue: coinInfo.market_cap_rank, secondaryPreFix: '#' })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { exchanges: formatExchangeInfo(coinInfo.tickers) }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_5__["default"], { text: (_l = coinInfo.description) === null || _l === void 0 ? void 0 : _l.en }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.socialBlocks },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: websiteIcon, link: coinInfo.links.homepage[0] }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: blockchainIcon, link: coinInfo.links.blockchain_site[0] }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: coingeckoIcon, mainValue: "9 M", link: `https://www.coingecko.com/en/coins/${coinInfo.id}` }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: twitterIcon, mainValue: "1.7 K", link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: redditIcon, mainValue: "14 M", link: coinInfo.links.subreddit_url }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: telegramIcon, mainValue: "10 K", link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` })))));
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: websiteIcon, link: (_m = coinInfo.links) === null || _m === void 0 ? void 0 : _m.homepage[0] }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: blockchainIcon, link: (_o = coinInfo.links) === null || _o === void 0 ? void 0 : _o.blockchain_site[0] }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: coingeckoIcon, mainValue: coinInfo.watchlist_portfolio_users, link: `https://www.coingecko.com/en/coins/${coinInfo.id}` }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: twitterIcon, mainValue: (_p = coinInfo.community_data) === null || _p === void 0 ? void 0 : _p.twitter_followers, link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: redditIcon, mainValue: (_q = coinInfo.community_data) === null || _q === void 0 ? void 0 : _q.reddit_subscribers, link: (_r = coinInfo.links) === null || _r === void 0 ? void 0 : _r.subreddit_url }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { image: telegramIcon, mainValue: (_s = coinInfo.community_data) === null || _s === void 0 ? void 0 : _s.telegram_channel_user_count, link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` })))));
 };
 const root = document.createElement('div');
 document.body.appendChild(root);
@@ -1301,6 +1309,55 @@ const constants = {
     font_weight_medium: 500,
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (constants);
+
+
+/***/ }),
+
+/***/ "./src/utils/amountFormatter.ts":
+/*!**************************************!*\
+  !*** ./src/utils/amountFormatter.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "amountFormatter": () => (/* binding */ amountFormatter)
+/* harmony export */ });
+function amountFormatter(amount) {
+    if (amount === null || amount === undefined) {
+        return '?';
+    }
+    // Quadrillion (Q) - 10^15
+    if (amount >= 1e15) {
+        return `${(amount / 1e15).toPrecision(3)} Q`;
+    }
+    // Trillion (T) - 10^12
+    if (amount >= 1e12) {
+        return `${(amount / 1e12).toPrecision(3)} T`;
+    }
+    // Billion (B) - 10^9
+    if (amount >= 1e9) {
+        return `${(amount / 1e9).toPrecision(3)} B`;
+    }
+    // Million (M) - 10^6
+    if (amount > 1e6) {
+        return `${(amount / 1e6).toPrecision(3)} M`;
+    }
+    // Thousand (K) - 10^3
+    if (amount > 1e3) {
+        return `${(amount / 1e3).toPrecision(3)} K`;
+    }
+    // Numbers close to zero
+    if (amount < 1e-3) {
+        return `${amount.toExponential(2)}`;
+    }
+    // Other small numbers
+    if (amount < 1) {
+        return `${amount.toPrecision(2)}`;
+    }
+    // Default case
+    return `${amount.toPrecision(4)}`;
+}
 
 
 /***/ }),
@@ -1382,7 +1439,7 @@ function fetchCoinInfo(coinId) {
     return __awaiter(this, void 0, void 0, function* () {
         coinId = coinId || 'bitcoin';
         try {
-            const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+            const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false`);
             if (!res.ok) {
                 throw new Error(`Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`);
             }

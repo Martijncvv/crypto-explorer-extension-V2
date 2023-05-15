@@ -123,6 +123,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
 
     useEffect(() => {
         getTrendingCoins();
+        fetchDetailedInfo('bitcoin');
     }, []);
 
     const getTrendingCoins = async () => {
@@ -148,51 +149,54 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
         }
     }
 
+    const searchCoinNames = async (coinId: string) => {
+        try {
+            const searchResults: ISearchCoinList = await fetchNameSearch(searchInput);
+            if (!searchResults) {
+                setTestValue("No results")
+                console.log("No results")
+            }
+            console.log("searchResults: ", searchResults)
+            let displayNrOfNfts: number = Math.min(searchResults.nfts.length, 3);
+            let displayNrOfCoins: number = 11 - displayNrOfNfts
+
+            // SET COINS
+            let searchFormat:ISearchOptions = {tokens: [], total: 0}
+            searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
+                searchFormat.tokens.push(
+                    {
+                        id: coin.id,
+                        name: coin.name,
+                        image: coin.large,
+                        marketCapRank: coin.market_cap_rank,
+                        nft: false,
+                    }
+                )
+            })
+            // SET NFTs
+            searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
+                searchFormat.tokens.push(
+                    {
+                        id: nft.id,
+                        name: nft.name,
+                        image: nft.thumb,
+                        marketCapRank: 'NFT',
+                        nft: true,
+                    }
+                )
+            })
+            searchFormat.total = searchResults.coins.length + searchResults.nfts.length
+            setDisplayResults(searchFormat);
+
+        } catch (error) {
+            console.error("handleSearch: Error searching for coins:", error);
+        }
+    }
+
     async function handleSearch(event: React.KeyboardEvent<HTMLInputElement>) {
         if (event.key === "Enter") {
             if (searchInput.length > 0) {
-                try {
-                    const searchResults: ISearchCoinList = await fetchNameSearch(searchInput);
-                    if (!searchResults) {
-                        setTestValue("No results")
-                        console.log("No results")
-                    }
-                console.log("searchResults: ", searchResults)
-                    let displayNrOfNfts: number = Math.min(searchResults.nfts.length, 3);
-                    let displayNrOfCoins: number = 11 - displayNrOfNfts
-
-                    // SET COINS
-                    let searchFormat:ISearchOptions = {tokens: [], total: 0}
-                    searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
-                        searchFormat.tokens.push(
-                            {
-                                id: coin.id,
-                                name: coin.name,
-                                image: coin.large,
-                                marketCapRank: coin.market_cap_rank,
-                                nft: false,
-                            }
-                        )
-                    })
-                    // SET NFTs
-                    searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
-                        searchFormat.tokens.push(
-                            {
-                                id: nft.id,
-                                name: nft.name,
-                                image: nft.thumb,
-                                marketCapRank: 'NFT',
-                                nft: true,
-                            }
-                        )
-                    })
-                    searchFormat.total = searchResults.coins.length + searchResults.nfts.length
-                    setDisplayResults(searchFormat);
-
-                } catch (error) {
-                    console.error("handleSearch: Error searching for coins:", error);
-
-                }
+                searchCoinNames(searchInput);
             }
         }
     }
@@ -201,7 +205,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
         toggleExpanded();
     }
 
-    const handleCoinOptionClick = async (coinId: string) => {
+    const fetchDetailedInfo = async (coinId: string) => {
         try {
             const coinSearchResult: IDetailedCoinInfo = await fetchCoinInfo(coinId);
             if (!coinSearchResult) {
@@ -211,10 +215,14 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
             }
             console.log("coinSearchResult: ", coinSearchResult)
             setCoinInfo(coinSearchResult)
-            toggleExpanded()
         } catch (error) {
             console.error("handleCoinOptionClick: Error searching for coin:", error);
         }
+    }
+
+    const handleCoinOptionClick = async (coinId: string) => {
+        fetchDetailedInfo(coinId)
+        toggleExpanded()
     }
 
     return (
