@@ -14,7 +14,8 @@ interface Exchange {
     tradingVolume: number;
     exchangeURL: string;
 }
-
+// todo fix exchange logos, only display "/ 24h" on first exchange
+// fix double exchange block bug
 interface ExchangeBlockProps {
     exchanges: Exchange[];
 }
