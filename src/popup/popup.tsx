@@ -35,6 +35,7 @@ const styles: { [key: string]: CSSProperties } = {
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
 
+
 	const formatExchangeInfo = (tickers) => {
 		if (!tickers) return [];
 
@@ -65,7 +66,7 @@ const App: React.FC = () => {
 				<PriceBar allTimeLow={coinInfo.market_data?.atl?.usd} allTimeHigh={coinInfo.market_data?.ath?.usd} price={coinInfo.market_data?.current_price?.usd} />
 				<div style={styles.dataBlocks}>
 					<ValueBlock title="Circ. Supply" mainValue={coinInfo.market_data?.circulating_supply} secondaryValue={coinInfo.market_data?.total_supply} secondaryPreFix='/ '/>
-					<ValueBlock title="Market Cap" mainValue={coinInfo.market_data?.market_cap.usd} mainPreFix='$' secondaryValue={coinInfo.market_cap_rank} secondaryPreFix='#'/>
+					<ValueBlock title="Market Cap" mainValue={coinInfo.market_data?.market_cap.usd} mainPreFix='$' secondaryValue={coinInfo.market_cap_rank} secondaryPreFix='#' secondaryFormatter={false}/>
 				</div>
 				<ExchangeBlock exchanges={formatExchangeInfo(coinInfo.tickers)} />
 

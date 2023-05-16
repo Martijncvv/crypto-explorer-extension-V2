@@ -9,9 +9,10 @@ interface ValueBlockProps {
     mainPreFix?: string;
     secondaryValue: number;
     secondaryPreFix?: string;
+    secondaryFormatter?: boolean;
 }
 
-const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue,mainPreFix, secondaryValue, secondaryPreFix }) => {
+const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue,mainPreFix, secondaryValue, secondaryPreFix, secondaryFormatter = true }) => {
 
     const styles: { [key: string]: CSSProperties } = {
         rectangle: {
@@ -52,7 +53,7 @@ const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue,mainPreFix, se
             <div style={styles.title}>{title}</div>
             <div style={styles.values}>
                 <span style={styles.mainValue}>{mainPreFix}{mainValue ? amountFormatter(mainValue) : ' -'}</span>
-                <span style={styles.secondaryValue}>{secondaryPreFix}{secondaryValue ? amountFormatter(secondaryValue) : ' -'}</span>
+                <span style={styles.secondaryValue}>{secondaryPreFix}{!secondaryValue ? ' -' : secondaryFormatter ? amountFormatter(secondaryValue) : secondaryValue }</span>
             </div>
         </div>
     );

@@ -32,6 +32,7 @@ const ExpandableTextField: React.FC<ExpandableTextFieldProps> = ({ text }) => {
 
         textField: {
             fontSize: constants.font_small,
+            width: 282,
             color: 'white',
             display: '-webkit-box',
             WebkitLineClamp: expanded ? 1000 : 2,

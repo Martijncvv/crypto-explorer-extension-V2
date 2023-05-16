@@ -9,6 +9,7 @@ import ITokenTxs from '../models/ITokenTxs'
 
 const COINGECKO_COINS_LIST_API = 'https://api.coingecko.com/api/v3/coins/list'
 const COINGECKO_NFTS_LIST_API = 'https://api.coingecko.com/api/v3/nfts/list'
+const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250'
 
 export async function fetchCoinsList(): Promise<ICoinGeckoCoinList> {
 	try {
@@ -24,6 +25,22 @@ export async function fetchCoinsList(): Promise<ICoinGeckoCoinList> {
 		throw error;
 	}
 }
+export async function fetchExchangesList(): Promise<any> {
+	try {
+		const res = await fetch(COINGECKO_EXCHANGES_LIST_API);
+
+		if (!res.ok) {
+			throw new Error(`Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`);
+		}
+
+		return await res.json();
+	} catch (error) {
+		console.error('Error fetching Coingecko exchanges List:', error);
+		throw error;
+	}
+}
+
+
 export async function fetchNameSearch(searchQuery: string): Promise<ISearchCoinList> {
 	try {
 		const res = await fetch(`https://api.coingecko.com/api/v3/search?query=${searchQuery}`);

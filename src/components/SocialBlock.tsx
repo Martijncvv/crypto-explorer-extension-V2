@@ -1,10 +1,11 @@
 import React, { CSSProperties } from 'react';
 import colors from '../static/colors';
 import constants from "../static/constants";
+import {numberFormatter} from "../utils/amountFormatter";
 
 interface SocialBlockProps {
     image: string;
-    mainValue?: string | number;
+    mainValue?: number;
     link?: string;
 }
 
@@ -47,7 +48,7 @@ const SocialBlock: React.FC<SocialBlockProps> = ({ image, mainValue, link }) => 
     return (
         <div style={styles.container} onClick={openLinkInNewTab}>
             <img src={image} alt="Social image" style={styles.image} />
-            <span style={styles.mainValue}>{mainValue}</span>
+            <span style={styles.mainValue}>{numberFormatter(mainValue)}</span>
         </div>
     );
 };

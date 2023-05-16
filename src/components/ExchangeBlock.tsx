@@ -35,6 +35,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
             display: "flex",
             alignItems: "center",
             padding: constants.default_padding,
+            cursor: "pointer",
         },
         firstExchange: {
             borderTopLeftRadius: constants.border_radius,
@@ -51,7 +52,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
             height: 22,
         },
         exchangeName: {
-            width: 100,
+            width: 96,
             color: colors.white_medium,
             fontSize: constants.font_medium,
             fontWeight: constants.font_weight_medium,
@@ -59,7 +60,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
         },
         tradingVolume: {
             paddingLeft: 6,
-            width: 50,
+            width: 54,
             height: constants.font_small,
             textAlign: "right",
             color: colors.white_medium,
@@ -111,8 +112,6 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
 
                         )
                     )}
-
-
                 </div>
             ))}
         </div>
@@ -120,11 +119,3 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
 };
 
 export default ExchangeBlock;
-
-{/*{index === 0 && (*/}
-{/*    isExpanded ? (*/}
-{/*        <ExpandLessIcon onClick={toggleExpanded} />*/}
-{/*    ) : (*/}
-{/*        <ExpandMoreIcon onClick={toggleExpanded} />*/}
-{/*    )*/}
-{/*)}*/}

@@ -12,6 +12,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "fetchCoinInfo": () => (/* binding */ fetchCoinInfo),
 /* harmony export */   "fetchCoinsList": () => (/* binding */ fetchCoinsList),
+/* harmony export */   "fetchExchangesList": () => (/* binding */ fetchExchangesList),
 /* harmony export */   "fetchNameSearch": () => (/* binding */ fetchNameSearch),
 /* harmony export */   "fetchNftInfo": () => (/* binding */ fetchNftInfo),
 /* harmony export */   "fetchNftList": () => (/* binding */ fetchNftList),
@@ -30,6 +31,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 const COINGECKO_COINS_LIST_API = 'https://api.coingecko.com/api/v3/coins/list';
 const COINGECKO_NFTS_LIST_API = 'https://api.coingecko.com/api/v3/nfts/list';
+const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250';
 function fetchCoinsList() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -41,6 +43,21 @@ function fetchCoinsList() {
         }
         catch (error) {
             console.error('Error fetching Coingecko Coins List:', error);
+            throw error;
+        }
+    });
+}
+function fetchExchangesList() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch(COINGECKO_EXCHANGES_LIST_API);
+            if (!res.ok) {
+                throw new Error(`Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error('Error fetching Coingecko exchanges List:', error);
             throw error;
         }
     });

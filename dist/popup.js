@@ -565,6 +565,7 @@ const ExchangeBlock = ({ exchanges }) => {
             display: "flex",
             alignItems: "center",
             padding: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
+            cursor: "pointer",
         },
         firstExchange: {
             borderTopLeftRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
@@ -581,7 +582,7 @@ const ExchangeBlock = ({ exchanges }) => {
             height: 22,
         },
         exchangeName: {
-            width: 100,
+            width: 96,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_medium,
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
@@ -589,7 +590,7 @@ const ExchangeBlock = ({ exchanges }) => {
         },
         tradingVolume: {
             paddingLeft: 6,
-            width: 50,
+            width: 54,
             height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
             textAlign: "right",
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
@@ -622,13 +623,6 @@ const ExchangeBlock = ({ exchanges }) => {
         index === 0 && (isExpanded ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: ExpandLessIcon, alt: "expand-less-icon", style: styles.arrowIcon, onClick: toggleExpanded })) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: ExpandMoreIcon, alt: "expand-more-icon", style: styles.arrowIcon, onClick: toggleExpanded }))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExchangeBlock);
-{ /*{index === 0 && (*/ }
-{ /*    isExpanded ? (*/ }
-{ /*        <ExpandLessIcon onClick={toggleExpanded} />*/ }
-{ /*    ) : (*/ }
-{ /*        <ExpandMoreIcon onClick={toggleExpanded} />*/ }
-{ /*    )*/ }
-{ /*)}*/ }
 
 
 /***/ }),
@@ -674,6 +668,7 @@ const ExpandableTextField = ({ text }) => {
         },
         textField: {
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
+            width: 282,
             color: 'white',
             display: '-webkit-box',
             WebkitLineClamp: expanded ? 1000 : 2,
@@ -1054,6 +1049,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
+/* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
+
 
 
 
@@ -1093,7 +1090,7 @@ const SocialBlock = ({ image, mainValue, link }) => {
     };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container, onClick: openLinkInNewTab },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: image, alt: "Social image", style: styles.image }),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue }, mainValue)));
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue }, (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.numberFormatter)(mainValue))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SocialBlock);
 
@@ -1119,7 +1116,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const ValueBlock = ({ title, mainValue, mainPreFix, secondaryValue, secondaryPreFix }) => {
+const ValueBlock = ({ title, mainValue, mainPreFix, secondaryValue, secondaryPreFix, secondaryFormatter = true }) => {
     const styles = {
         rectangle: {
             display: 'flex',
@@ -1161,7 +1158,7 @@ const ValueBlock = ({ title, mainValue, mainPreFix, secondaryValue, secondaryPre
                 mainValue ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(mainValue) : ' -'),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.secondaryValue },
                 secondaryPreFix,
-                secondaryValue ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(secondaryValue) : ' -'))));
+                !secondaryValue ? ' -' : secondaryFormatter ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(secondaryValue) : secondaryValue))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ValueBlock);
 
@@ -1245,7 +1242,7 @@ const App = () => {
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_3__["default"], { allTimeLow: (_c = (_b = coinInfo.market_data) === null || _b === void 0 ? void 0 : _b.atl) === null || _c === void 0 ? void 0 : _c.usd, allTimeHigh: (_e = (_d = coinInfo.market_data) === null || _d === void 0 ? void 0 : _d.ath) === null || _e === void 0 ? void 0 : _e.usd, price: (_g = (_f = coinInfo.market_data) === null || _f === void 0 ? void 0 : _f.current_price) === null || _g === void 0 ? void 0 : _g.usd }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.dataBlocks },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Circ. Supply", mainValue: (_h = coinInfo.market_data) === null || _h === void 0 ? void 0 : _h.circulating_supply, secondaryValue: (_j = coinInfo.market_data) === null || _j === void 0 ? void 0 : _j.total_supply, secondaryPreFix: '/ ' }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Market Cap", mainValue: (_k = coinInfo.market_data) === null || _k === void 0 ? void 0 : _k.market_cap.usd, mainPreFix: '$', secondaryValue: coinInfo.market_cap_rank, secondaryPreFix: '#' })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Market Cap", mainValue: (_k = coinInfo.market_data) === null || _k === void 0 ? void 0 : _k.market_cap.usd, mainPreFix: '$', secondaryValue: coinInfo.market_cap_rank, secondaryPreFix: '#', secondaryFormatter: false })),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { exchanges: formatExchangeInfo(coinInfo.tickers) }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_5__["default"], { text: (_l = coinInfo.description) === null || _l === void 0 ? void 0 : _l.en }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.socialBlocks },
@@ -1305,6 +1302,7 @@ const constants = {
     font_medium: 16,
     font_small: 14,
     font_micro: 12,
+    font_nano: 10,
     font_weight_large: 600,
     font_weight_medium: 500,
 };
@@ -1321,31 +1319,32 @@ const constants = {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "amountFormatter": () => (/* binding */ amountFormatter)
+/* harmony export */   "amountFormatter": () => (/* binding */ amountFormatter),
+/* harmony export */   "numberFormatter": () => (/* binding */ numberFormatter)
 /* harmony export */ });
-function amountFormatter(amount) {
-    if (amount === null || amount === undefined) {
-        return '?';
+function amountFormatter(amount, precision = 3) {
+    if (amount === null || amount === undefined || amount === 0) {
+        return '';
     }
     // Quadrillion (Q) - 10^15
     if (amount >= 1e15) {
-        return `${(amount / 1e15).toPrecision(3)} Q`;
+        return `${(amount / 1e15).toPrecision(precision)} Q`;
     }
     // Trillion (T) - 10^12
     if (amount >= 1e12) {
-        return `${(amount / 1e12).toPrecision(3)} T`;
+        return `${(amount / 1e12).toPrecision(precision)} T`;
     }
     // Billion (B) - 10^9
     if (amount >= 1e9) {
-        return `${(amount / 1e9).toPrecision(3)} B`;
+        return `${(amount / 1e9).toPrecision(precision)} B`;
     }
     // Million (M) - 10^6
     if (amount > 1e6) {
-        return `${(amount / 1e6).toPrecision(3)} M`;
+        return `${(amount / 1e6).toPrecision(precision)} M`;
     }
     // Thousand (K) - 10^3
     if (amount > 1e3) {
-        return `${(amount / 1e3).toPrecision(3)} K`;
+        return `${(amount / 1e3).toPrecision(precision)} K`;
     }
     // Numbers close to zero
     if (amount < 1e-3) {
@@ -1353,10 +1352,29 @@ function amountFormatter(amount) {
     }
     // Other small numbers
     if (amount < 1) {
-        return `${amount.toPrecision(2)}`;
+        return `${amount.toPrecision(precision)}`;
     }
     // Default case
-    return `${amount.toPrecision(4)}`;
+    return `${amount.toPrecision(precision)}`;
+}
+function numberFormatter(amount) {
+    if (amount === null || amount === undefined || amount === 0) {
+        return '';
+    }
+    // Million (M) - 10^6
+    if (amount >= 1e6) {
+        return `${(amount / 1e6).toFixed(1)} M`;
+    }
+    // Hundred Thousand (0.1M) - 10^5
+    if (amount >= 1e5) {
+        return `${(amount / 1e6).toFixed(1)} M`;
+    }
+    // Thousand (K) - 10^3
+    if (amount >= 1e3) {
+        return `${(amount / 1e3).toFixed(0)} K`;
+    }
+    // Default case
+    return `${amount.toFixed(0)}`;
 }
 
 
@@ -1372,6 +1390,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "fetchCoinInfo": () => (/* binding */ fetchCoinInfo),
 /* harmony export */   "fetchCoinsList": () => (/* binding */ fetchCoinsList),
+/* harmony export */   "fetchExchangesList": () => (/* binding */ fetchExchangesList),
 /* harmony export */   "fetchNameSearch": () => (/* binding */ fetchNameSearch),
 /* harmony export */   "fetchNftInfo": () => (/* binding */ fetchNftInfo),
 /* harmony export */   "fetchNftList": () => (/* binding */ fetchNftList),
@@ -1390,6 +1409,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 const COINGECKO_COINS_LIST_API = 'https://api.coingecko.com/api/v3/coins/list';
 const COINGECKO_NFTS_LIST_API = 'https://api.coingecko.com/api/v3/nfts/list';
+const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250';
 function fetchCoinsList() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -1401,6 +1421,21 @@ function fetchCoinsList() {
         }
         catch (error) {
             console.error('Error fetching Coingecko Coins List:', error);
+            throw error;
+        }
+    });
+}
+function fetchExchangesList() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch(COINGECKO_EXCHANGES_LIST_API);
+            if (!res.ok) {
+                throw new Error(`Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error('Error fetching Coingecko exchanges List:', error);
             throw error;
         }
     });
