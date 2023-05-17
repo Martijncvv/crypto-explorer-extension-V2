@@ -27,18 +27,43 @@ export async function fetchCoinsList(): Promise<ICoinGeckoCoinList> {
 }
 export async function fetchExchangesList(): Promise<any> {
 	try {
-		const res = await fetch(COINGECKO_EXCHANGES_LIST_API);
+		let pageNr = 1;
+		let perPage = 250;
+		let allExchanges = [];
 
-		if (!res.ok) {
-			throw new Error(`Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`);
+		while (true) {
+			const res = await fetch(`${COINGECKO_EXCHANGES_LIST_API}?per_page=${perPage}&page=${pageNr}`);
+
+			if (!res.ok) {
+				throw new Error(`Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`);
+			}
+			const exchanges = await res.json();
+			allExchanges.push(...exchanges);
+			if (exchanges.length < perPage) {
+				// Reached the last page, exit the loop
+				break;
+			}
+			pageNr++;
 		}
 
-		return await res.json();
-	} catch (error) {
-		console.error('Error fetching Coingecko exchanges List:', error);
-		throw error;
-	}
+		const exchangesObject = allExchanges.reduce((acc, exchange) => {
+			acc[exchange.id] = exchange.image;
+			// acc[`"${exchange.id}"`] = exchange.image;
+			return acc;
+		}, {});
+
+		console.log("exchangesObject", JSON.stringify(exchangesObject, null, 2))
+		console.log("exchangesObject.length", Object.keys(exchangesObject).length)
+
+		} catch (error) {
+			console.error('Error fetching Coingecko exchanges List:', error);
+			throw error;
+		}
+
 }
+
+
+
 
 
 export async function fetchNameSearch(searchQuery: string): Promise<ISearchCoinList> {

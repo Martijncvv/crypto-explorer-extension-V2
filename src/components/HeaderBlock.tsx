@@ -251,11 +251,17 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
             </div>
             <div style={ styles.searchResults }>
                 {isExpanded && displayResults?.tokens.length > 0 &&
-                    displayResults?.tokens.slice(0, 12).map((tokenInfo) =>
+                    displayResults?.tokens.slice(0, 12).map((tokenInfo, index) =>
                         <div
                             key={tokenInfo.id}
                             style={styles.coinSearchInfo}
+                            tabIndex={index }
                             onClick={() => handleCoinOptionClick(tokenInfo.id)}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter') {
+                                    handleCoinOptionClick(tokenInfo.id);
+                                }
+                            }}
                         >
                             <img
                                 src={tokenInfo.image }

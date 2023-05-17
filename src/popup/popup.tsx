@@ -9,6 +9,7 @@ import ExchangeBlock from "../components/ExchangeBlock";
 import HeaderBlock from "../components/HeaderBlock";
 import ChartsBlock from "../components/ChartsBlock";
 import {IDetailedCoinInfo} from "../models/ICoinInfo";
+import {fetchExchangesList} from "../utils/api";
 
 const blockchainIcon = require( "../static/images/icons/blockchain-icon.png")
 const coingeckoIcon = require( "../static/images/icons/coingecko-icon.png")
@@ -34,7 +35,11 @@ const styles: { [key: string]: CSSProperties } = {
 
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
+	// fetchExchangesList()
 
+	// TODO: tab order, remove taborder nr 2 from expand description
+	// TODO: if wrong search: searchbar corners nuke, UX trips a little
+	// TODO: graph data
 
 	const formatExchangeInfo = (tickers) => {
 		if (!tickers) return [];
@@ -43,11 +48,17 @@ const App: React.FC = () => {
 		const top10Tickers = sortedTickers.slice(0, 10); // by volume
 
 		return top10Tickers.map(obj => {
+			let quote = String(obj.target)
+			if (quote.length > 5) {
+				quote = obj.target_coin_id.toUpperCase()
+			}
+
 			return {
 				image: redditIcon,
 				id: obj.market.identifier,
 				exchangeName: obj.market.name,
 				tradingVolume: obj.converted_volume.usd,
+				quote,
 				exchangeURL: obj.trade_url
 			};
 		});

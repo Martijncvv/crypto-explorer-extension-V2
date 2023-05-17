@@ -1,6 +1,7 @@
-import React, { CSSProperties, useState } from 'react';
+import React, { CSSProperties, useState, useEffect } from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
+import EXCHANGE_ICONS from "../static/exchangeIcons";
 import {amountFormatter} from "../utils/amountFormatter";
 // import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -12,6 +13,7 @@ interface Exchange {
     image: string;
     exchangeName: string;
     tradingVolume: number;
+    quote: string;
     exchangeURL: string;
 }
 // todo fix exchange logos, only display "/ 24h" on first exchange
@@ -26,6 +28,11 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
         setIsExpanded(!isExpanded);
     };
 
+    useEffect(() => {
+        setIsExpanded(false);
+    }, [exchanges]);
+
+
 
     const styles: { [key: string]: CSSProperties } = {
         exchangeWrapper: {
@@ -37,6 +44,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
             alignItems: "center",
             padding: constants.default_padding,
             cursor: "pointer",
+
         },
         firstExchange: {
             borderTopLeftRadius: constants.border_radius,
@@ -51,13 +59,17 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
         image: {
             width: 22,
             height: 22,
+            borderRadius: constants.border_radius_small,
         },
         exchangeName: {
-            width: 96,
+            width: 116,
             color: colors.white_medium,
             fontSize: constants.font_medium,
             fontWeight: constants.font_weight_medium,
             paddingLeft: constants.default_padding,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
         },
         tradingVolume: {
             paddingLeft: 6,
@@ -71,21 +83,24 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
         },
         staticText: {
             paddingLeft: 6,
+            paddingTop: 2,
             width: 34,
+            display: 'flex',
+            alignItems: 'flex-end',
             height: constants.font_small,
             color: colors.accent_medium,
-            fontSize: constants.font_small,
+            fontSize: constants.font_micro,
             fontWeight: constants.font_weight_medium,
             verticalAlign: 'bottom',
         },
         arrowIcon: {
-            paddingLeft: 26,
+            paddingLeft: 6,
             cursor: "pointer",
         },
     };
 
     return (
-        <div >
+        <div key={Date.now()}>
             {exchanges.map((exchange, index) => (
                 <div
                     key={exchange.id}
@@ -97,14 +112,18 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                     }}
                 >
                     <img
-                        src={exchange.image}
+                        src={EXCHANGE_ICONS[exchange.id]}
                         alt={exchange.exchangeName}
                         style={styles.image}
                         onClick={() => window.open(exchange.exchangeURL, "_blank")}
                     />
-                    <span style={styles.exchangeName}  onClick={() => window.open(exchange.exchangeURL, "_blank")}>{exchange.exchangeName}</span>
-                    <span style={styles.tradingVolume}>${amountFormatter(exchange.tradingVolume)} </span>
-                    <span style={styles.staticText}>/ 24h</span>
+
+                        <span style={styles.exchangeName}  onClick={() => window.open(exchange.exchangeURL, "_blank")}>{exchange.exchangeName}</span>
+                        <span style={styles.tradingVolume}>${amountFormatter(exchange.tradingVolume)} </span>
+
+                        {!isExpanded ? <span style={styles.staticText}>/ 24h</span> :
+                            <span style={styles.staticText}>{exchange.quote}</span>}
+
                     {index === 0 && (
                         isExpanded ? (
                             <img src={ExpandLessIcon} alt="expand-less-icon" style={styles.arrowIcon} onClick={toggleExpanded} />
