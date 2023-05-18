@@ -25,14 +25,13 @@ export function amountFormatter(amount: number | null | undefined, precision = 3
 		return `${(amount / 1e3).toPrecision(precision)} K`;
 	}
 	// Numbers close to zero
-	if (amount < 1e-3) {
-		return `${amount.toExponential(2)}`;
+	if (amount > 1e-4) {
+		return `${amount.toFixed(5).replace(/\.?0+$/, "")}`;
 	}
 	// Other small numbers
 	if (amount < 1) {
-		return `${amount.toPrecision(precision)}`;
+		return `${amount.toExponential(3)}`;
 	}
-
 	// Default case
 	return `${amount.toPrecision(precision)}`;
 }

@@ -1,6 +1,6 @@
 import React, { CSSProperties, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '../App.css';
+import './popup.css'
 import PriceBar from '../components/PriceBar';
 import ValueBlock from '../components/ValueBlock';
 import ExpandableTextField from "../components/ExpandableTextField";
@@ -37,8 +37,7 @@ const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
 	// fetchExchangesList()
 
-	// TODO: tab order, remove taborder nr 2 from expand description
-	// TODO: if wrong search: searchbar corners nuke, UX trips a little
+	// TODO: scrollbars
 	// TODO: graph data
 
 	const formatExchangeInfo = (tickers) => {

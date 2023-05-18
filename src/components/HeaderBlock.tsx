@@ -122,7 +122,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
     };
 
     useEffect(() => {
-        getTrendingCoins();
+        getTrendingCoins()
         fetchDetailedInfo('bitcoin');
     }, []);
 
@@ -149,12 +149,21 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
         }
     }
 
-    const searchCoinNames = async (coinId: string) => {
+    const searchCoinNames = async () => {
         try {
             const searchResults: ISearchCoinList = await fetchNameSearch(searchInput);
-            if (!searchResults) {
+            if (searchResults.coins.length === 0 && searchResults.nfts.length === 0) {
                 setTestValue("No results")
                 console.log("No results")
+                setDisplayResults( {tokens: [{
+                    id: "noResult",
+                    name: "No results",
+                    image: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256",
+                    marketCapRank: '',
+                    nft: false
+                }], total: 0});
+                setSearchInput("")
+                return
             }
             console.log("searchResults: ", searchResults)
             let displayNrOfNfts: number = Math.min(searchResults.nfts.length, 3);
@@ -196,7 +205,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
     async function handleSearch(event: React.KeyboardEvent<HTMLInputElement>) {
         if (event.key === "Enter") {
             if (searchInput.length > 0) {
-                searchCoinNames(searchInput);
+                searchCoinNames();
             }
         }
     }
@@ -243,7 +252,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
                         onChange={(e => setSearchInput(e.target.value))}
                         onKeyDown={handleSearch}
                         onFocus={handleFocus}
-                        placeholder={testValue}
+                        value={searchInput}
                     />
                 </div>
 

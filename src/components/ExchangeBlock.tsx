@@ -103,7 +103,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
         <div key={Date.now()}>
             {exchanges.map((exchange, index) => (
                 <div
-                    key={exchange.id}
+                    key={exchange.id + exchange.quote}
                     style={{
                         ...styles.exchangeWrapper,
                         ...index === 0 && styles.firstExchange,
@@ -124,7 +124,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                         {!isExpanded ? <span style={styles.staticText}>/ 24h</span> :
                             <span style={styles.staticText}>{exchange.quote}</span>}
 
-                    {index === 0 && (
+                    {index === 0 && exchanges.length > 1 && (
                         isExpanded ? (
                             <img src={ExpandLessIcon} alt="expand-less-icon" style={styles.arrowIcon} onClick={toggleExpanded} />
                         ) : (

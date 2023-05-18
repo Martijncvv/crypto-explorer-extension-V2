@@ -1,4 +1,4 @@
-import React, {CSSProperties, useState} from 'react';
+import React, {useState} from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
 interface ExpandableTextFieldProps {
@@ -12,7 +12,7 @@ const ExpandableTextField: React.FC<ExpandableTextFieldProps> = ({ text }) => {
         setExpanded(!expanded);
     };
 
-    const styles: { [key: string]: CSSProperties } = {
+    const styles: { [key: string]: any } = {
         expandableField: {
             boxSizing: "border-box",
             display: 'flex',
@@ -49,17 +49,19 @@ const ExpandableTextField: React.FC<ExpandableTextFieldProps> = ({ text }) => {
             border: 'none',
             cursor: 'pointer',
             outline: 'none',
+            tabIndex: 999,
         },
     };
 
     return (
         <div style={styles.expandableField}>
             <div   style={styles.textFieldContainer}>
-                <div style={styles.textField}>{text}</div>
+                <div style={styles.textField}>{text?.length > 10 ? text : 'No description available'}</div>
             </div>
+            {text?.length > 10 &&
             <button style={styles.expandBtn} onClick={handleClick}>
                 {expanded ? 'Collapse' : 'Expand'}
-            </button>
+            </button>}
         </div>
     );
 };
