@@ -30,16 +30,16 @@ const styles: { [key: string]: CSSProperties } = {
 	},
 	socialBlocks: {
 		display: 'flex',
-		justifyContent: 'flex-start',
+		justifyContent: 'center',
+		padding: '12px',
+		gap: '9px',
 	},
 };
 
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
-	// fetchExchangesList()
 
-	// TODO: graph data
-	// display total nr of search results after search click
+	// TODO: creatae graph data
 
 
 	const formatExchangeInfo = (tickers) => {

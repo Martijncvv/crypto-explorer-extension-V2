@@ -112,6 +112,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
         },
     };
 
+    // todo expanding not always working, replace toggle expanding with just normal setExpanded?
     const toggleExpanded = () => {
         setIsExpanded(!isExpanded);
     };

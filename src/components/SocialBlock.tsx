@@ -14,7 +14,6 @@ const SocialBlock: React.FC<SocialBlockProps> = ({ image, mainValue, link }) => 
         container: {
             width: 34,
             height: 49,
-            marginRight: 10,
             borderTopLeftRadius: 34,
             borderTopRightRadius: 34,
             display: 'flex',

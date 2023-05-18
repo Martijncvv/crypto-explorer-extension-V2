@@ -836,6 +836,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo }) => {
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius_small,
         },
     };
+    // todo expanding not always working, replace toggle expanding with just normal setExpanded?
     const toggleExpanded = () => {
         setIsExpanded(!isExpanded);
     };
@@ -1096,7 +1097,6 @@ const SocialBlock = ({ image, mainValue, link }) => {
         container: {
             width: 34,
             height: 49,
-            marginRight: 10,
             borderTopLeftRadius: 34,
             borderTopRightRadius: 34,
             display: 'flex',
@@ -1286,15 +1286,15 @@ const styles = {
     },
     socialBlocks: {
         display: 'flex',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
+        padding: '12px',
+        gap: '9px',
     },
 };
 const App = () => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
-    // fetchExchangesList()
-    // TODO: graph data
-    // display total nr of search results after search click
+    // TODO: creatae graph data
     const formatExchangeInfo = (tickers) => {
         if (!tickers)
             return [];
