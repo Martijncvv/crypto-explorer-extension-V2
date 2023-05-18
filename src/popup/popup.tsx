@@ -37,8 +37,10 @@ const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
 	// fetchExchangesList()
 
-	// TODO: scrollbars
 	// TODO: graph data
+	// TODO set tab focus on first result after search
+	// display total nr of search results after search click
+
 
 	const formatExchangeInfo = (tickers) => {
 		if (!tickers) return [];
