@@ -21,8 +21,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
     const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
-    const [testValue, setTestValue] = useState<string>("");
-
     const styles: { [key: string]: CSSProperties } = {
         headerBlock: {
             display: 'flex',
@@ -82,10 +80,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
         coinSearchInfo: {
             display: 'flex',
             padding: 9,
-            '&:hover': {
-                backgroundColor: colors.primary_dark,
-                cursor: 'pointer',
-            },
+            cursor: "pointer",
         } as any,
         coinImage: {
             width: 22,
@@ -153,7 +148,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
         try {
             const searchResults: ISearchCoinList = await fetchNameSearch(searchInput);
             if (searchResults.coins.length === 0 && searchResults.nfts.length === 0) {
-                setTestValue("No results")
                 console.log("No results")
                 setDisplayResults( {tokens: [{
                     id: "noResult",
@@ -195,6 +189,18 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
                 )
             })
             searchFormat.total = searchResults.coins.length + searchResults.nfts.length
+            searchFormat.tokens.push(
+                {
+                    id: '',
+                    name: `${searchFormat.total} others`,
+                    image: '',
+                    marketCapRank: '',
+                    nft: true,
+                }
+            )
+            if (searchFormat.tokens?.length >  0) { // not sure if this is nice: display first search
+                fetchDetailedInfo(searchFormat.tokens[0].id)
+            }
             setDisplayResults(searchFormat);
 
         } catch (error) {
@@ -210,7 +216,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
         }
     }
     async function handleFocus() {
-        setTestValue("FOCUS")
         toggleExpanded();
     }
 
@@ -219,7 +224,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
             const coinSearchResult: IDetailedCoinInfo = await fetchCoinInfo(coinId);
             if (!coinSearchResult) {
                 console.log(`No results for ${coinId}`)
-                setTestValue(`No results for ${coinId}`)
                 return
             }
             console.log("coinSearchResult: ", coinSearchResult)
@@ -251,6 +255,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
                         style={styles.searchInput}
                         onChange={(e => setSearchInput(e.target.value))}
                         onKeyDown={handleSearch}
+                        onClick={() => setSearchInput("")}
                         onFocus={handleFocus}
                         value={searchInput}
                     />
@@ -264,7 +269,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
                         <div
                             key={tokenInfo.id}
                             style={styles.coinSearchInfo}
-                            tabIndex={index }
+                            tabIndex={index}
                             onClick={() => handleCoinOptionClick(tokenInfo.id)}
                             onKeyDown={(event) => {
                                 if (event.key === 'Enter') {
@@ -272,11 +277,16 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
                                 }
                             }}
                         >
+                            {tokenInfo.image ?
                             <img
-                                src={tokenInfo.image }
+                                src={tokenInfo.image}
                                 alt={tokenInfo.name}
                                 style={styles.coinImage}
-                            />
+                            /> :
+                                <div
+                                    style={styles.coinImage}
+                                />
+                            }
                             <span style={styles.exchangeName}>{tokenInfo.name}</span>
                             {tokenInfo.marketCapRank &&
                                 (tokenInfo.marketCapRank === 'NFT' ? (

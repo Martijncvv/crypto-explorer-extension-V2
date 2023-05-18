@@ -16,8 +16,7 @@ interface Exchange {
     quote: string;
     exchangeURL: string;
 }
-// todo fix exchange logos, only display "/ 24h" on first exchange
-// fix double exchange block bug
+
 interface ExchangeBlockProps {
     exchanges: Exchange[];
 }
@@ -106,30 +105,35 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                     key={exchange.id + exchange.quote}
                     style={{
                         ...styles.exchangeWrapper,
-                        ...index === 0 && styles.firstExchange,
-                        ...index === exchanges.length - 1 && styles.lastExchange,
+                        ...(index === 0 && styles.firstExchange),
+                        ...(index === exchanges.length - 1 && styles.lastExchange),
                         display: isExpanded || index === 0 ? "flex" : "none",
                     }}
                 >
-                    <img
-                        src={EXCHANGE_ICONS[exchange.id]}
-                        alt={exchange.exchangeName}
-                        style={styles.image}
-                        onClick={() => window.open(exchange.exchangeURL, "_blank")}
-                    />
-
-                        <span style={styles.exchangeName}  onClick={() => window.open(exchange.exchangeURL, "_blank")}>{exchange.exchangeName}</span>
-                        <span style={styles.tradingVolume}>${amountFormatter(exchange.tradingVolume)} </span>
-
-                        {!isExpanded ? <span style={styles.staticText}>/ 24h</span> :
-                            <span style={styles.staticText}>{exchange.quote}</span>}
+                    <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={() => {
+                        if (exchange.exchangeURL) {
+                            window.open(exchange.exchangeURL, "_blank");
+                        }
+                    }}>
+                        <img
+                            src={EXCHANGE_ICONS[exchange.id]}
+                            alt={exchange.exchangeName}
+                            style={styles.image}
+                        />
+                        <span style={styles.exchangeName}>{exchange.exchangeName}</span>
+                        <span style={styles.tradingVolume}>${amountFormatter(exchange.tradingVolume)}</span>
+                        {!isExpanded ? (
+                            <span style={styles.staticText}>/ 24h</span>
+                        ) : (
+                            <span style={styles.staticText}>{exchange.quote}</span>
+                        )}
+                    </div>
 
                     {index === 0 && exchanges.length > 1 && (
                         isExpanded ? (
                             <img src={ExpandLessIcon} alt="expand-less-icon" style={styles.arrowIcon} onClick={toggleExpanded} />
                         ) : (
                             <img src={ExpandMoreIcon} alt="expand-more-icon" style={styles.arrowIcon} onClick={toggleExpanded} />
-
                         )
                     )}
                 </div>
