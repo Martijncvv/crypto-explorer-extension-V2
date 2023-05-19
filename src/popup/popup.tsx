@@ -31,7 +31,7 @@ const styles: { [key: string]: CSSProperties } = {
 	socialBlocks: {
 		display: 'flex',
 		justifyContent: 'center',
-		padding: '12px',
+		// padding: '12px',
 		gap: '9px',
 	},
 };
@@ -39,7 +39,9 @@ const styles: { [key: string]: CSSProperties } = {
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
 
-	// TODO: creatae graph data
+	// TODO: create graph data
+	// fix ticker background
+	// todo check search ux; doesn't always expand after playing around
 
 
 	const formatExchangeInfo = (tickers) => {

@@ -190,15 +190,17 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
                 )
             })
             searchFormat.total = searchResults.coins.length + searchResults.nfts.length
+            if (searchFormat.total > 11) {
             searchFormat.tokens.push(
                 {
                     id: '',
-                    name: `${searchFormat.total} others`,
+                    name: `${searchFormat.total - 11} others`,
                     image: '',
                     marketCapRank: '',
                     nft: true,
                 }
             )
+            }
             if (searchFormat.tokens?.length >  0) { // not sure if this is nice: display first search
                 fetchDetailedInfo(searchFormat.tokens[0].id)
             }

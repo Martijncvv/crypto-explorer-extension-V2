@@ -21,160 +21,9 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    height: 600px;\n    margin: 0;\n    padding: 0;\n    /*overflow: hidden;*/\n}\n\n::-webkit-scrollbar {\n    width: 3px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}", "",{"version":3,"sources":["webpack://./src/popup/popup.css"],"names":[],"mappings":"AAAA;;IAEI,6CAA6C;IAC7C,YAAY;IACZ,aAAa;IACb,SAAS;IACT,UAAU;IACV,oBAAoB;AACxB;;AAEA;IACI,UAAU;AACd;AACA;IACI,gDAAgD;AACpD;AACA;IACI,iCAAiC;IACjC,kBAAkB;AACtB","sourcesContent":["body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    height: 600px;\n    margin: 0;\n    padding: 0;\n    /*overflow: hidden;*/\n}\n\n::-webkit-scrollbar {\n    width: 3px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    height: 600px;\n    margin: 0;\n    padding: 0;\n    /*overflow: hidden;*/\n}\n\n::-webkit-scrollbar {\n    width: 0px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}", "",{"version":3,"sources":["webpack://./src/popup/popup.css"],"names":[],"mappings":"AAAA;;IAEI,6CAA6C;IAC7C,YAAY;IACZ,aAAa;IACb,SAAS;IACT,UAAU;IACV,oBAAoB;AACxB;;AAEA;IACI,UAAU;AACd;AACA;IACI,gDAAgD;AACpD;AACA;IACI,iCAAiC;IACjC,kBAAkB;AACtB","sourcesContent":["body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    height: 600px;\n    margin: 0;\n    padding: 0;\n    /*overflow: hidden;*/\n}\n\n::-webkit-scrollbar {\n    width: 0px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/runtime/api.js":
-/*!*****************************************************!*\
-  !*** ./node_modules/css-loader/dist/runtime/api.js ***!
-  \*****************************************************/
-/***/ ((module) => {
-
-
-
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-*/
-module.exports = function (cssWithMappingToString) {
-  var list = [];
-
-  // return the list of modules as css string
-  list.toString = function toString() {
-    return this.map(function (item) {
-      var content = "";
-      var needLayer = typeof item[5] !== "undefined";
-      if (item[4]) {
-        content += "@supports (".concat(item[4], ") {");
-      }
-      if (item[2]) {
-        content += "@media ".concat(item[2], " {");
-      }
-      if (needLayer) {
-        content += "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {");
-      }
-      content += cssWithMappingToString(item);
-      if (needLayer) {
-        content += "}";
-      }
-      if (item[2]) {
-        content += "}";
-      }
-      if (item[4]) {
-        content += "}";
-      }
-      return content;
-    }).join("");
-  };
-
-  // import a list of modules into the list
-  list.i = function i(modules, media, dedupe, supports, layer) {
-    if (typeof modules === "string") {
-      modules = [[null, modules, undefined]];
-    }
-    var alreadyImportedModules = {};
-    if (dedupe) {
-      for (var k = 0; k < this.length; k++) {
-        var id = this[k][0];
-        if (id != null) {
-          alreadyImportedModules[id] = true;
-        }
-      }
-    }
-    for (var _k = 0; _k < modules.length; _k++) {
-      var item = [].concat(modules[_k]);
-      if (dedupe && alreadyImportedModules[item[0]]) {
-        continue;
-      }
-      if (typeof layer !== "undefined") {
-        if (typeof item[5] === "undefined") {
-          item[5] = layer;
-        } else {
-          item[1] = "@layer".concat(item[5].length > 0 ? " ".concat(item[5]) : "", " {").concat(item[1], "}");
-          item[5] = layer;
-        }
-      }
-      if (media) {
-        if (!item[2]) {
-          item[2] = media;
-        } else {
-          item[1] = "@media ".concat(item[2], " {").concat(item[1], "}");
-          item[2] = media;
-        }
-      }
-      if (supports) {
-        if (!item[4]) {
-          item[4] = "".concat(supports);
-        } else {
-          item[1] = "@supports (".concat(item[4], ") {").concat(item[1], "}");
-          item[4] = supports;
-        }
-      }
-      list.push(item);
-    }
-  };
-  return list;
-};
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/runtime/sourceMaps.js":
-/*!************************************************************!*\
-  !*** ./node_modules/css-loader/dist/runtime/sourceMaps.js ***!
-  \************************************************************/
-/***/ ((module) => {
-
-
-
-module.exports = function (item) {
-  var content = item[1];
-  var cssMapping = item[3];
-  if (!cssMapping) {
-    return content;
-  }
-  if (typeof btoa === "function") {
-    var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(cssMapping))));
-    var data = "sourceMappingURL=data:application/json;charset=utf-8;base64,".concat(base64);
-    var sourceMapping = "/*# ".concat(data, " */");
-    return [content].concat([sourceMapping]).join("\n");
-  }
-  return [content].join("\n");
-};
-
-/***/ }),
-
-/***/ "./node_modules/react-dom/client.js":
-/*!******************************************!*\
-  !*** ./node_modules/react-dom/client.js ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-
-var m = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-if (false) {} else {
-  var i = m.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-  exports.createRoot = function(c, o) {
-    i.usingClientEntryPoint = true;
-    try {
-      return m.createRoot(c, o);
-    } finally {
-      i.usingClientEntryPoint = false;
-    }
-  };
-  exports.hydrateRoot = function(c, h, o) {
-    i.usingClientEntryPoint = true;
-    try {
-      return m.hydrateRoot(c, h, o);
-    } finally {
-      i.usingClientEntryPoint = false;
-    }
-  };
-}
 
 
 /***/ }),
@@ -233,273 +82,6 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js":
-/*!****************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
-  \****************************************************************************/
-/***/ ((module) => {
-
-
-
-var stylesInDOM = [];
-function getIndexByIdentifier(identifier) {
-  var result = -1;
-  for (var i = 0; i < stylesInDOM.length; i++) {
-    if (stylesInDOM[i].identifier === identifier) {
-      result = i;
-      break;
-    }
-  }
-  return result;
-}
-function modulesToDom(list, options) {
-  var idCountMap = {};
-  var identifiers = [];
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i];
-    var id = options.base ? item[0] + options.base : item[0];
-    var count = idCountMap[id] || 0;
-    var identifier = "".concat(id, " ").concat(count);
-    idCountMap[id] = count + 1;
-    var indexByIdentifier = getIndexByIdentifier(identifier);
-    var obj = {
-      css: item[1],
-      media: item[2],
-      sourceMap: item[3],
-      supports: item[4],
-      layer: item[5]
-    };
-    if (indexByIdentifier !== -1) {
-      stylesInDOM[indexByIdentifier].references++;
-      stylesInDOM[indexByIdentifier].updater(obj);
-    } else {
-      var updater = addElementStyle(obj, options);
-      options.byIndex = i;
-      stylesInDOM.splice(i, 0, {
-        identifier: identifier,
-        updater: updater,
-        references: 1
-      });
-    }
-    identifiers.push(identifier);
-  }
-  return identifiers;
-}
-function addElementStyle(obj, options) {
-  var api = options.domAPI(options);
-  api.update(obj);
-  var updater = function updater(newObj) {
-    if (newObj) {
-      if (newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap && newObj.supports === obj.supports && newObj.layer === obj.layer) {
-        return;
-      }
-      api.update(obj = newObj);
-    } else {
-      api.remove();
-    }
-  };
-  return updater;
-}
-module.exports = function (list, options) {
-  options = options || {};
-  list = list || [];
-  var lastIdentifiers = modulesToDom(list, options);
-  return function update(newList) {
-    newList = newList || [];
-    for (var i = 0; i < lastIdentifiers.length; i++) {
-      var identifier = lastIdentifiers[i];
-      var index = getIndexByIdentifier(identifier);
-      stylesInDOM[index].references--;
-    }
-    var newLastIdentifiers = modulesToDom(newList, options);
-    for (var _i = 0; _i < lastIdentifiers.length; _i++) {
-      var _identifier = lastIdentifiers[_i];
-      var _index = getIndexByIdentifier(_identifier);
-      if (stylesInDOM[_index].references === 0) {
-        stylesInDOM[_index].updater();
-        stylesInDOM.splice(_index, 1);
-      }
-    }
-    lastIdentifiers = newLastIdentifiers;
-  };
-};
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/insertBySelector.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/insertBySelector.js ***!
-  \********************************************************************/
-/***/ ((module) => {
-
-
-
-var memo = {};
-
-/* istanbul ignore next  */
-function getTarget(target) {
-  if (typeof memo[target] === "undefined") {
-    var styleTarget = document.querySelector(target);
-
-    // Special case to return head of iframe instead of iframe itself
-    if (window.HTMLIFrameElement && styleTarget instanceof window.HTMLIFrameElement) {
-      try {
-        // This will throw an exception if access to iframe is blocked
-        // due to cross-origin restrictions
-        styleTarget = styleTarget.contentDocument.head;
-      } catch (e) {
-        // istanbul ignore next
-        styleTarget = null;
-      }
-    }
-    memo[target] = styleTarget;
-  }
-  return memo[target];
-}
-
-/* istanbul ignore next  */
-function insertBySelector(insert, style) {
-  var target = getTarget(insert);
-  if (!target) {
-    throw new Error("Couldn't find a style target. This probably means that the value for the 'insert' parameter is invalid.");
-  }
-  target.appendChild(style);
-}
-module.exports = insertBySelector;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/insertStyleElement.js":
-/*!**********************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/insertStyleElement.js ***!
-  \**********************************************************************/
-/***/ ((module) => {
-
-
-
-/* istanbul ignore next  */
-function insertStyleElement(options) {
-  var element = document.createElement("style");
-  options.setAttributes(element, options.attributes);
-  options.insert(element, options.options);
-  return element;
-}
-module.exports = insertStyleElement;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js":
-/*!**********************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js ***!
-  \**********************************************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-
-
-/* istanbul ignore next  */
-function setAttributesWithoutAttributes(styleElement) {
-  var nonce =  true ? __webpack_require__.nc : 0;
-  if (nonce) {
-    styleElement.setAttribute("nonce", nonce);
-  }
-}
-module.exports = setAttributesWithoutAttributes;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/styleDomAPI.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/styleDomAPI.js ***!
-  \***************************************************************/
-/***/ ((module) => {
-
-
-
-/* istanbul ignore next  */
-function apply(styleElement, options, obj) {
-  var css = "";
-  if (obj.supports) {
-    css += "@supports (".concat(obj.supports, ") {");
-  }
-  if (obj.media) {
-    css += "@media ".concat(obj.media, " {");
-  }
-  var needLayer = typeof obj.layer !== "undefined";
-  if (needLayer) {
-    css += "@layer".concat(obj.layer.length > 0 ? " ".concat(obj.layer) : "", " {");
-  }
-  css += obj.css;
-  if (needLayer) {
-    css += "}";
-  }
-  if (obj.media) {
-    css += "}";
-  }
-  if (obj.supports) {
-    css += "}";
-  }
-  var sourceMap = obj.sourceMap;
-  if (sourceMap && typeof btoa !== "undefined") {
-    css += "\n/*# sourceMappingURL=data:application/json;base64,".concat(btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))), " */");
-  }
-
-  // For old IE
-  /* istanbul ignore if  */
-  options.styleTagTransform(css, styleElement, options.options);
-}
-function removeStyleElement(styleElement) {
-  // istanbul ignore if
-  if (styleElement.parentNode === null) {
-    return false;
-  }
-  styleElement.parentNode.removeChild(styleElement);
-}
-
-/* istanbul ignore next  */
-function domAPI(options) {
-  if (typeof document === "undefined") {
-    return {
-      update: function update() {},
-      remove: function remove() {}
-    };
-  }
-  var styleElement = options.insertStyleElement(options);
-  return {
-    update: function update(obj) {
-      apply(styleElement, options, obj);
-    },
-    remove: function remove() {
-      removeStyleElement(styleElement);
-    }
-  };
-}
-module.exports = domAPI;
-
-/***/ }),
-
-/***/ "./node_modules/style-loader/dist/runtime/styleTagTransform.js":
-/*!*********************************************************************!*\
-  !*** ./node_modules/style-loader/dist/runtime/styleTagTransform.js ***!
-  \*********************************************************************/
-/***/ ((module) => {
-
-
-
-/* istanbul ignore next  */
-function styleTagTransform(css, styleElement) {
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = css;
-  } else {
-    while (styleElement.firstChild) {
-      styleElement.removeChild(styleElement.firstChild);
-    }
-    styleElement.appendChild(document.createTextNode(css));
-  }
-}
-module.exports = styleTagTransform;
-
-/***/ }),
-
 /***/ "./src/components/ChartsBlock.tsx":
 /*!****************************************!*\
   !*** ./src/components/ChartsBlock.tsx ***!
@@ -512,6 +94,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/ResponsiveContainer.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/ComposedChart.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/Tooltip.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Line.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Bar.js");
+
 
 const ChartsBlock = ({ pricedata, volumedata }) => {
     const styles = {
@@ -521,7 +109,88 @@ const ChartsBlock = ({ pricedata, volumedata }) => {
             backgroundColor: 'white', // Or any other background color
         },
     };
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container }));
+    let data = [
+        {
+            name: 'Page A',
+            price: 1.80,
+            volume: 80000,
+        },
+        {
+            name: 'Page B',
+            price: 1.60,
+            volume: 96007,
+        },
+        {
+            name: 'Page C',
+            price: 1.30,
+            volume: 10098,
+        },
+        {
+            name: 'Page D',
+            price: 1.90,
+            volume: 12000,
+        },
+        {
+            name: 'Page E',
+            price: 2.60,
+            volume: 11008,
+        },
+        {
+            name: 'Page F',
+            price: 2.40,
+            volume: 14000,
+        },
+        {
+            name: 'Page G',
+            price: 1.20,
+            volume: 23459,
+        },
+        {
+            name: 'Page H',
+            price: 0.40,
+            volume: 6000,
+        },
+        {
+            name: 'Page I',
+            price: 1.20,
+            volume: 98999,
+        },
+        {
+            name: 'Page J',
+            price: 1.70,
+            volume: 38999,
+        },
+    ];
+    for (let i = 0; i < 31; i++) {
+        const index = i % data.length;
+        const page = {
+            name: `Page ${String.fromCharCode(65 + index)}`,
+            price: data[index].price,
+            volume: data[index].volume,
+        };
+        data.push(page);
+    }
+    // Calculate the maximum price and volume value
+    let maxPrice = Math.max(...data.map(obj => obj.price));
+    let maxVolume = Math.max(...data.map(obj => obj.volume));
+    const barHeightMultiplier = (maxVolume / maxPrice) * 2.1;
+    // Add extraKey to each object as the volume divided by valueX
+    data = data.map(obj => (Object.assign(Object.assign({}, obj), { volumeChartFormat: obj.volume / barHeightMultiplier })));
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_1__.ResponsiveContainer, { width: "100%", height: "100%" },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_2__.ComposedChart, { data: data, margin: { top: 0, left: 0, right: 0, bottom: 0 } },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("defs", null,
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("filter", { id: "shadow", x: "-20%", y: "-20%", width: "140%", height: "140%" },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feGaussianBlur", { in: "SourceAlpha", stdDeviation: "3" }),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feOffset", { dx: "2", dy: "2", result: "offsetblur" }),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feComponentTransfer", null,
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feFuncA", { type: "linear", slope: "0.5" })),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMerge", null,
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMergeNode", null),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMergeNode", { in: "SourceGraphic" })))),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_3__.Tooltip, null),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.Line, { type: "monotone", strokeWidth: 2, dataKey: "price", stroke: "#6C74E4", filter: "url(#shadow)" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.Bar, { dataKey: "volumeChartFormat", fill: "rgba(64, 73, 130, 0.8)" })))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChartsBlock);
 
@@ -905,13 +574,15 @@ const HeaderBlock = ({ mainLogo, setCoinInfo }) => {
                 });
             });
             searchFormat.total = searchResults.coins.length + searchResults.nfts.length;
-            searchFormat.tokens.push({
-                id: '',
-                name: `${searchFormat.total} others`,
-                image: '',
-                marketCapRank: '',
-                nft: true,
-            });
+            if (searchFormat.total > 11) {
+                searchFormat.tokens.push({
+                    id: '',
+                    name: `${searchFormat.total - 11} others`,
+                    image: '',
+                    marketCapRank: '',
+                    nft: true,
+                });
+            }
             if (((_a = searchFormat.tokens) === null || _a === void 0 ? void 0 : _a.length) > 0) { // not sure if this is nice: display first search
                 fetchDetailedInfo(searchFormat.tokens[0].id);
             }
@@ -1287,14 +958,16 @@ const styles = {
     socialBlocks: {
         display: 'flex',
         justifyContent: 'center',
-        padding: '12px',
+        // padding: '12px',
         gap: '9px',
     },
 };
 const App = () => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
-    // TODO: creatae graph data
+    // TODO: create graph data
+    // fix ticker background
+    // todo check search ux; doesn't always expand after playing around
     const formatExchangeInfo = (tickers) => {
         if (!tickers)
             return [];
@@ -2381,7 +2054,7 @@ module.exports = __webpack_require__.p + "275488b8325f50682b7c.png";
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -2573,7 +2246,7 @@ module.exports = __webpack_require__.p + "275488b8325f50682b7c.png";
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js"], () => (__webpack_require__("./src/popup/popup.tsx")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_css-loader_dist_runtime_api_js-node_modules_css-loader_dist_runtime_sour-81a8ca"], () => (__webpack_require__("./src/popup/popup.tsx")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
