@@ -28,6 +28,6 @@
 	},
 	"dependencies": {
 		"npm-check-updates": "^16.10.9",
-		"recharts": "^2.5.0"
+		"recharts": "^2.6.2"
 	}
 }
