@@ -16,20 +16,24 @@ import {
     ResponsiveContainer,
     ReferenceLine
 } from 'recharts';
+import {IPriceData} from "../models/ICoinInfo";
 
 interface ChartsBlockProps {
-    pricedata: any[]; // Ideally, you should use a specific type for the data instead of 'any'
-    volumedata: any[]; // Ideally, you should use a specific type for the data instead of 'any'
+    pricedata: IPriceData; // Ideally, you should use a specific type for the data instead of 'any'
 }
 
-const ChartsBlock: React.FC<ChartsBlockProps> = ({ pricedata, volumedata }) => {
+const ChartsBlock: React.FC<ChartsBlockProps> = ( pricedata ) => {
     const styles: { [key: string]: CSSProperties } = {
         container: {
             width: 330,
-            height: 165,
-            backgroundColor: 'white', // Or any other background color
+            height: 160,
+            // backgroundColor: 'white', // Or any other background color
         },
     };
+
+    // TODO format, price data
+
+    console.log("pricedata1: ", pricedata)
 
     let data = [
         {
@@ -127,8 +131,8 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ({ pricedata, volumedata }) => {
                         </filter>
                     </defs>
                     <Tooltip />
-                    <Line type="monotone" strokeWidth={2} dataKey="price" stroke="#6C74E4" filter="url(#shadow)" />
                     <Bar dataKey="volumeChartFormat" fill="rgba(64, 73, 130, 0.8)" />
+                    <Line type="monotone" strokeWidth={2} dataKey="price" stroke="#6C74E4" filter="url(#shadow)" />
                 </ComposedChart>
             </ResponsiveContainer>
         </div>

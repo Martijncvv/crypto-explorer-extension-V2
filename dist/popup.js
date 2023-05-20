@@ -97,18 +97,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/ResponsiveContainer.js");
 /* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/ComposedChart.js");
 /* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/Tooltip.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Line.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Bar.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Bar.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Line.js");
 
 
-const ChartsBlock = ({ pricedata, volumedata }) => {
+const ChartsBlock = (pricedata) => {
     const styles = {
         container: {
             width: 330,
-            height: 165,
-            backgroundColor: 'white', // Or any other background color
+            height: 160,
+            // backgroundColor: 'white', // Or any other background color
         },
     };
+    // TODO format, price data
+    console.log("pricedata1: ", pricedata);
     let data = [
         {
             name: 'Page A',
@@ -189,8 +191,8 @@ const ChartsBlock = ({ pricedata, volumedata }) => {
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMergeNode", null),
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMergeNode", { in: "SourceGraphic" })))),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_3__.Tooltip, null),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.Line, { type: "monotone", strokeWidth: 2, dataKey: "price", stroke: "#6C74E4", filter: "url(#shadow)" }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.Bar, { dataKey: "volumeChartFormat", fill: "rgba(64, 73, 130, 0.8)" })))));
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.Bar, { dataKey: "volumeChartFormat", fill: "rgba(64, 73, 130, 0.8)" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.Line, { type: "monotone", strokeWidth: 2, dataKey: "price", stroke: "#6C74E4", filter: "url(#shadow)" })))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChartsBlock);
 
@@ -414,7 +416,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 const menuIcon = __webpack_require__(/*! ../static/images/icons/menu-icon.png */ "./src/static/images/icons/menu-icon.png");
 const searchIcon = __webpack_require__(/*! ../static/images/icons/search-icon.png */ "./src/static/images/icons/search-icon.png");
-const HeaderBlock = ({ mainLogo, setCoinInfo }) => {
+const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
     const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
     const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ tokens: [], total: 0 });
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
@@ -608,16 +610,25 @@ const HeaderBlock = ({ mainLogo, setCoinInfo }) => {
     }
     const fetchDetailedInfo = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const coinSearchResult = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchCoinInfo)(coinId);
+            const [coinSearchResult, priceHistoryData] = yield Promise.all([
+                (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchCoinInfo)(coinId),
+                (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchPriceHistoryData)(coinId, 'usd', '30'),
+            ]);
             if (!coinSearchResult) {
-                console.log(`No results for ${coinId}`);
+                console.log(`No results for coinSearchResult ${coinId}`);
+                return;
+            }
+            if (!priceHistoryData) {
+                console.log(`No results for priceHistoryData ${coinId}`);
                 return;
             }
             console.log("coinSearchResult: ", coinSearchResult);
+            // console.log("priceHistoryData: ", priceHistoryData)
             setCoinInfo(coinSearchResult);
+            setPriceChartData(priceHistoryData);
         }
         catch (error) {
-            console.error("handleCoinOptionClick: Error searching for coin:", error);
+            console.error(`fetchDetailedInfo: Error searching for coin: ${coinId}`, error);
         }
     });
     const handleCoinOptionClick = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -942,11 +953,11 @@ __webpack_require__.r(__webpack_exports__);
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 const blockchainIcon = __webpack_require__(/*! ../static/images/icons/blockchain-icon.png */ "./src/static/images/icons/blockchain-icon.png");
 const coingeckoIcon = __webpack_require__(/*! ../static/images/icons/coingecko-icon.png */ "./src/static/images/icons/coingecko-icon.png");
-// const discordIcon = require( "../static/images/icons/discord-icon.png")
 const redditIcon = __webpack_require__(/*! ../static/images/icons/reddit-icon.png */ "./src/static/images/icons/reddit-icon.png");
 const telegramIcon = __webpack_require__(/*! ../static/images/icons/telegram-icon.png */ "./src/static/images/icons/telegram-icon.png");
 const twitterIcon = __webpack_require__(/*! ../static/images/icons/twitter-icon.png */ "./src/static/images/icons/twitter-icon.png");
 const websiteIcon = __webpack_require__(/*! ../static/images/icons/website-icon.png */ "./src/static/images/icons/website-icon.png");
+// const discordIcon = require( "../static/images/icons/discord-icon.png")
 const styles = {
     container: {
         padding: '12px',
@@ -958,16 +969,20 @@ const styles = {
     socialBlocks: {
         display: 'flex',
         justifyContent: 'center',
-        // padding: '12px',
         gap: '9px',
     },
 };
 const App = () => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
+    const [priceChartData, setPriceChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     // TODO: create graph data
     // fix ticker background
     // todo check search ux; doesn't always expand after playing around
+    // todo increase line spacing description
+    // todo bring formatExchangeInfo to exchangeBlock component
+    // unfolding animation
+    // navigation with arrow keys? left right key to switch between trending pages
     const formatExchangeInfo = (tickers) => {
         if (!tickers)
             return [];
@@ -993,10 +1008,11 @@ const App = () => {
         formatExchangeInfo(coinInfo.tickers);
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : blockchainIcon, setCoinInfo: setCoinInfo })),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : blockchainIcon, setCoinInfo: setCoinInfo, setPriceChartData: setPriceChartData })),
         (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: coinInfo.name }),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { pricedata: [], volumedata: [] }),
+        (priceChartData === null || priceChartData === void 0 ? void 0 : priceChartData.prices.length) > 0 &&
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { pricedata: priceChartData }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container }, (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_4__["default"], { allTimeLow: (_c = (_b = coinInfo.market_data) === null || _b === void 0 ? void 0 : _b.atl) === null || _c === void 0 ? void 0 : _c.usd, allTimeHigh: (_e = (_d = coinInfo.market_data) === null || _d === void 0 ? void 0 : _d.ath) === null || _e === void 0 ? void 0 : _e.usd, price: (_g = (_f = coinInfo.market_data) === null || _f === void 0 ? void 0 : _f.current_price) === null || _g === void 0 ? void 0 : _g.usd }),
@@ -1744,7 +1760,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "fetchCoinInfo": () => (/* binding */ fetchCoinInfo),
 /* harmony export */   "fetchCoinsList": () => (/* binding */ fetchCoinsList),
-/* harmony export */   "fetchExchangesList": () => (/* binding */ fetchExchangesList),
 /* harmony export */   "fetchNameSearch": () => (/* binding */ fetchNameSearch),
 /* harmony export */   "fetchNftInfo": () => (/* binding */ fetchNftInfo),
 /* harmony export */   "fetchNftList": () => (/* binding */ fetchNftList),
@@ -1763,7 +1778,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 const COINGECKO_COINS_LIST_API = 'https://api.coingecko.com/api/v3/coins/list';
 const COINGECKO_NFTS_LIST_API = 'https://api.coingecko.com/api/v3/nfts/list';
-const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250';
+// const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250'
 function fetchCoinsList() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -1775,39 +1790,6 @@ function fetchCoinsList() {
         }
         catch (error) {
             console.error('Error fetching Coingecko Coins List:', error);
-            throw error;
-        }
-    });
-}
-function fetchExchangesList() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            let pageNr = 1;
-            let perPage = 250;
-            let allExchanges = [];
-            while (true) {
-                const res = yield fetch(`${COINGECKO_EXCHANGES_LIST_API}?per_page=${perPage}&page=${pageNr}`);
-                if (!res.ok) {
-                    throw new Error(`Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`);
-                }
-                const exchanges = yield res.json();
-                allExchanges.push(...exchanges);
-                if (exchanges.length < perPage) {
-                    // Reached the last page, exit the loop
-                    break;
-                }
-                pageNr++;
-            }
-            const exchangesObject = allExchanges.reduce((acc, exchange) => {
-                acc[exchange.id] = exchange.image;
-                // acc[`"${exchange.id}"`] = exchange.image;
-                return acc;
-            }, {});
-            console.log("exchangesObject", JSON.stringify(exchangesObject, null, 2));
-            console.log("exchangesObject.length", Object.keys(exchangesObject).length);
-        }
-        catch (error) {
-            console.error('Error fetching Coingecko exchanges List:', error);
             throw error;
         }
     });
@@ -1877,6 +1859,7 @@ function fetchPriceHistoryData(coinId, quote, chartRange) {
     return __awaiter(this, void 0, void 0, function* () {
         coinId = coinId || 'bitcoin';
         quote = quote || 'usd';
+        chartRange = chartRange || '30';
         try {
             const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`);
             if (!res.ok) {
@@ -1930,6 +1913,42 @@ function fetchNftList() {
         return allNfts;
     });
 }
+// used to fetch exchanges
+// export async function fetchExchangesList(): Promise<any> {
+// 	try {
+// 		let pageNr = 1;
+// 		let perPage = 250;
+// 		let allExchanges = [];
+//
+// 		while (true) {
+// 			const res = await fetch(`${COINGECKO_EXCHANGES_LIST_API}?per_page=${perPage}&page=${pageNr}`);
+//
+// 			if (!res.ok) {
+// 				throw new Error(`Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`);
+// 			}
+// 			const exchanges = await res.json();
+// 			allExchanges.push(...exchanges);
+// 			if (exchanges.length < perPage) {
+// 				// Reached the last page, exit the loop
+// 				break;
+// 			}
+// 			pageNr++;
+// 		}
+//
+// 		const exchangesObject = allExchanges.reduce((acc, exchange) => {
+// 			acc[exchange.id] = exchange.image;
+// 			// acc[`"${exchange.id}"`] = exchange.image;
+// 			return acc;
+// 		}, {});
+//
+// 		console.log("exchangesObject", JSON.stringify(exchangesObject, null, 2))
+// 		console.log("exchangesObject.length", Object.keys(exchangesObject).length)
+//
+// 		} catch (error) {
+// 			console.error('Error fetching Coingecko exchanges List:', error);
+// 			throw error;
+// 		}
+// }
 
 
 /***/ }),

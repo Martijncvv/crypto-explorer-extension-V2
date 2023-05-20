@@ -9,16 +9,16 @@ import SocialBlock from "../components/SocialBlock";
 import ExchangeBlock from "../components/ExchangeBlock";
 import HeaderBlock from "../components/HeaderBlock";
 import ChartsBlock from "../components/ChartsBlock";
-import {IDetailedCoinInfo} from "../models/ICoinInfo";
+import {IDetailedCoinInfo, IPriceData} from "../models/ICoinInfo";
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 
 const blockchainIcon = require( "../static/images/icons/blockchain-icon.png")
 const coingeckoIcon = require( "../static/images/icons/coingecko-icon.png")
-// const discordIcon = require( "../static/images/icons/discord-icon.png")
 const redditIcon = require( "../static/images/icons/reddit-icon.png")
 const telegramIcon = require( "../static/images/icons/telegram-icon.png")
 const twitterIcon = require( "../static/images/icons/twitter-icon.png")
 const websiteIcon = require( "../static/images/icons/website-icon.png")
+// const discordIcon = require( "../static/images/icons/discord-icon.png")
 
 const styles: { [key: string]: CSSProperties } = {
 	container: {
@@ -31,17 +31,21 @@ const styles: { [key: string]: CSSProperties } = {
 	socialBlocks: {
 		display: 'flex',
 		justifyContent: 'center',
-		// padding: '12px',
 		gap: '9px',
 	},
 };
 
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
+	const [priceChartData, setPriceChartData] = useState<IPriceData>()
 
 	// TODO: create graph data
 	// fix ticker background
 	// todo check search ux; doesn't always expand after playing around
+	// todo increase line spacing description
+	// todo bring formatExchangeInfo to exchangeBlock component
+	// unfolding animation
+	// navigation with arrow keys? left right key to switch between trending pages
 
 
 	const formatExchangeInfo = (tickers) => {
@@ -74,12 +78,14 @@ const App: React.FC = () => {
 	return (
 		<>
 			<div style={styles.container}>
-				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : blockchainIcon} setCoinInfo={setCoinInfo}/>
+				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : blockchainIcon} setCoinInfo={setCoinInfo} setPriceChartData={setPriceChartData}/>
 			</div>
 			{coinInfo?.name &&
 				<TitleBlock title={coinInfo.name} />
 			}
-			<ChartsBlock pricedata={[]} volumedata={[]} />
+			{priceChartData?.prices.length > 0 &&
+				<ChartsBlock pricedata={priceChartData} />
+			}
 
 			<div style={styles.container}>
 				{coinInfo?.name &&

@@ -1,9 +1,10 @@
 import React, { CSSProperties, useState, useEffect } from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
-import {fetchCoinInfo, fetchNameSearch, fetchTrendingCoins} from "../utils/api";
+import {fetchCoinInfo, fetchPriceHistoryData, fetchNameSearch, fetchTrendingCoins} from "../utils/api";
 import {
     IDetailedCoinInfo,
+    IPriceData,
     ISearchCoinList,
     ISearchOptions,
     ITrendingCoinList
@@ -14,9 +15,10 @@ const searchIcon = require( "../static/images/icons/search-icon.png")
 interface HeaderBlockProps {
     mainLogo: string;
     setCoinInfo: (coinInfo: IDetailedCoinInfo) => void;
+    setPriceChartData: (priceChartData: IPriceData) => void;
 }
 
-const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
+const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
     const [searchInput, setSearchInput] = useState<string>('');
     const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -224,15 +226,25 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo }) => {
 
     const fetchDetailedInfo = async (coinId: string) => {
         try {
-            const coinSearchResult: IDetailedCoinInfo = await fetchCoinInfo(coinId);
+            const [coinSearchResult, priceHistoryData] = await Promise.all([
+                fetchCoinInfo(coinId),
+                fetchPriceHistoryData(coinId, 'usd', '30'),
+            ]);
+
             if (!coinSearchResult) {
-                console.log(`No results for ${coinId}`)
+                console.log(`No results for coinSearchResult ${coinId}`)
+                return
+            }
+            if (!priceHistoryData) {
+                console.log(`No results for priceHistoryData ${coinId}`)
                 return
             }
             console.log("coinSearchResult: ", coinSearchResult)
+            // console.log("priceHistoryData: ", priceHistoryData)
             setCoinInfo(coinSearchResult)
+            setPriceChartData(priceHistoryData)
         } catch (error) {
-            console.error("handleCoinOptionClick: Error searching for coin:", error);
+            console.error(`fetchDetailedInfo: Error searching for coin: ${coinId}`, error);
         }
     }
 
