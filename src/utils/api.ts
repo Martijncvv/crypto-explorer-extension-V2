@@ -1,7 +1,7 @@
 import {
 	ICoinGeckoCoinList,
 	ITrendingCoinList,
-	IPriceData,
+	IPriceHistoryData,
 	ISearchCoinList, IDetailedCoinInfo
 } from '../models/ICoinInfo'
 import { IAdvancedNftInfo, ICoinGeckoNftList } from '../models/INftInfo'
@@ -93,7 +93,7 @@ export async function fetchPriceHistoryData(
 	coinId: string,
 	quote: string,
 	chartRange: string
-): Promise<IPriceData> {
+): Promise<IPriceHistoryData> {
 	coinId = coinId || 'bitcoin';
 	quote = quote || 'usd';
 	chartRange = chartRange || '30';

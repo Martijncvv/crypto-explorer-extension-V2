@@ -163,14 +163,17 @@ interface ILinks {
 	blockchain_site: string[]
 }
 
-export interface IPriceData {
+export interface IPriceHistoryData {
 	prices: IUnixPriceArray[]
-	market_caps: IUnixPriceArray[]
-	total_volumes: IUnixPriceArray[]
+	market_caps: IUnixMarketcapArray[]
+	total_volumes: IUnixVolumeArray[]
 }
 interface IUnixPriceArray {
-	UnixPrice: IUnixPrice[]
+	UnixPrice: number[]
 }
-interface IUnixPrice {
-	value: number
+interface IUnixVolumeArray {
+	UnixVolume: number[]
+}
+interface IUnixMarketcapArray {
+	UnixMarketcap: number[]
 }

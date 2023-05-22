@@ -94,14 +94,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/ResponsiveContainer.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/ComposedChart.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/Tooltip.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Bar.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Line.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/ResponsiveContainer.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/ComposedChart.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/Tooltip.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Bar.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Line.js");
+/* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
 
 
-const ChartsBlock = (pricedata) => {
+
+const ChartsBlock = ({ priceHistorydata }) => {
     const styles = {
         container: {
             width: 330,
@@ -109,78 +111,48 @@ const ChartsBlock = (pricedata) => {
             // backgroundColor: 'white', // Or any other background color
         },
     };
-    // TODO format, price data
-    console.log("pricedata1: ", pricedata);
-    let data = [
-        {
-            name: 'Page A',
-            price: 1.80,
-            volume: 80000,
-        },
-        {
-            name: 'Page B',
-            price: 1.60,
-            volume: 96007,
-        },
-        {
-            name: 'Page C',
-            price: 1.30,
-            volume: 10098,
-        },
-        {
-            name: 'Page D',
-            price: 1.90,
-            volume: 12000,
-        },
-        {
-            name: 'Page E',
-            price: 2.60,
-            volume: 11008,
-        },
-        {
-            name: 'Page F',
-            price: 2.40,
-            volume: 14000,
-        },
-        {
-            name: 'Page G',
-            price: 1.20,
-            volume: 23459,
-        },
-        {
-            name: 'Page H',
-            price: 0.40,
-            volume: 6000,
-        },
-        {
-            name: 'Page I',
-            price: 1.20,
-            volume: 98999,
-        },
-        {
-            name: 'Page J',
-            price: 1.70,
-            volume: 38999,
-        },
-    ];
-    for (let i = 0; i < 31; i++) {
-        const index = i % data.length;
-        const page = {
-            name: `Page ${String.fromCharCode(65 + index)}`,
-            price: data[index].price,
-            volume: data[index].volume,
-        };
-        data.push(page);
+    let chartData = [];
+    for (let i = 0; i < priceHistorydata.prices.length; i++) {
+        const unixPriceArray = priceHistorydata.prices[i];
+        const unixVolumeArray = priceHistorydata.total_volumes[i];
+        const date = new Date(unixPriceArray[0]);
+        date.setHours(0, 0, 0, 0);
+        chartData.push({
+            date: date,
+            price: unixPriceArray[1],
+            totalVolume: unixVolumeArray[1],
+        });
     }
     // Calculate the maximum price and volume value
-    let maxPrice = Math.max(...data.map(obj => obj.price));
-    let maxVolume = Math.max(...data.map(obj => obj.volume));
+    let maxPrice = Math.max(...chartData.map(dateData => dateData.price));
+    let maxVolume = Math.max(...chartData.map(dateData => dateData.totalVolume));
     const barHeightMultiplier = (maxVolume / maxPrice) * 2.1;
-    // Add extraKey to each object as the volume divided by valueX
-    data = data.map(obj => (Object.assign(Object.assign({}, obj), { volumeChartFormat: obj.volume / barHeightMultiplier })));
+    // Add extraKey to each object for chart format
+    chartData = chartData.map(dateData => (Object.assign(Object.assign({}, dateData), { chartFormatVolume: dateData.totalVolume / barHeightMultiplier })));
+    const CustomTooltip = props => {
+        const { active, payload } = props;
+        console.log(payload);
+        if (active && payload && payload.length) {
+            const date = payload[1].payload.date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
+            const price = (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_1__.amountFormatter)(payload[1].payload.price);
+            const volume = (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_1__.amountFormatter)(payload[1].payload.totalVolume);
+            return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: {
+                    background: 'rgba(0, 0, 0, 0.6)',
+                    border: 'none',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    padding: '10px',
+                    fontSize: '14px',
+                } },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0, marginBottom: '6px' } }, `${date}`),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0, marginBottom: '6px' } }, `$${price}`),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0 } }, `${volume} / 24h `)));
+        }
+        return null;
+    };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_1__.ResponsiveContainer, { width: "100%", height: "100%" },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_2__.ComposedChart, { data: data, margin: { top: 0, left: 0, right: 0, bottom: 0 } },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_2__.ResponsiveContainer, { width: "100%", height: "100%" },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_3__.ComposedChart, { data: chartData, margin: { top: 0, left: 0, right: 0, bottom: 0 } },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("defs", null,
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("filter", { id: "shadow", x: "-20%", y: "-20%", width: "140%", height: "140%" },
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feGaussianBlur", { in: "SourceAlpha", stdDeviation: "3" }),
@@ -190,9 +162,9 @@ const ChartsBlock = (pricedata) => {
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMerge", null,
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMergeNode", null),
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMergeNode", { in: "SourceGraphic" })))),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_3__.Tooltip, null),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.Bar, { dataKey: "volumeChartFormat", fill: "rgba(64, 73, 130, 0.8)" }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.Line, { type: "monotone", strokeWidth: 2, dataKey: "price", stroke: "#6C74E4", filter: "url(#shadow)" })))));
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.Tooltip, { content: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CustomTooltip, null), cursor: { fill: 'transparent' } }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.Bar, { dataKey: "chartFormatVolume", fill: "rgba(64, 73, 130, 0.8)" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_6__.Line, { type: "monotone", strokeWidth: 2, dataKey: "price", stroke: "#6C74E4", filter: "url(#shadow)", dot: false })))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChartsBlock);
 
@@ -977,10 +949,12 @@ const App = () => {
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [priceChartData, setPriceChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     // TODO: create graph data
-    // fix ticker background
+    // fix ticker in background
     // todo check search ux; doesn't always expand after playing around
     // todo increase line spacing description
     // todo bring formatExchangeInfo to exchangeBlock component
+    // todo improve chart tooltip box
+    // drag and zoom chart functionality
     // unfolding animation
     // navigation with arrow keys? left right key to switch between trending pages
     const formatExchangeInfo = (tickers) => {
@@ -1012,7 +986,7 @@ const App = () => {
         (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: coinInfo.name }),
         (priceChartData === null || priceChartData === void 0 ? void 0 : priceChartData.prices.length) > 0 &&
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { pricedata: priceChartData }),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { priceHistorydata: priceChartData }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container }, (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_4__["default"], { allTimeLow: (_c = (_b = coinInfo.market_data) === null || _b === void 0 ? void 0 : _b.atl) === null || _c === void 0 ? void 0 : _c.usd, allTimeHigh: (_e = (_d = coinInfo.market_data) === null || _d === void 0 ? void 0 : _d.ath) === null || _e === void 0 ? void 0 : _e.usd, price: (_g = (_f = coinInfo.market_data) === null || _f === void 0 ? void 0 : _f.current_price) === null || _g === void 0 ? void 0 : _g.usd }),

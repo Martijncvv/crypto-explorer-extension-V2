@@ -4,7 +4,7 @@ import constants from "../static/constants";
 import {fetchCoinInfo, fetchPriceHistoryData, fetchNameSearch, fetchTrendingCoins} from "../utils/api";
 import {
     IDetailedCoinInfo,
-    IPriceData,
+    IPriceHistoryData,
     ISearchCoinList,
     ISearchOptions,
     ITrendingCoinList
@@ -15,7 +15,7 @@ const searchIcon = require( "../static/images/icons/search-icon.png")
 interface HeaderBlockProps {
     mainLogo: string;
     setCoinInfo: (coinInfo: IDetailedCoinInfo) => void;
-    setPriceChartData: (priceChartData: IPriceData) => void;
+    setPriceChartData: (priceChartData: IPriceHistoryData) => void;
 }
 
 const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPriceChartData }) => {

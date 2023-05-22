@@ -9,7 +9,7 @@ import SocialBlock from "../components/SocialBlock";
 import ExchangeBlock from "../components/ExchangeBlock";
 import HeaderBlock from "../components/HeaderBlock";
 import ChartsBlock from "../components/ChartsBlock";
-import {IDetailedCoinInfo, IPriceData} from "../models/ICoinInfo";
+import {IDetailedCoinInfo, IPriceHistoryData} from "../models/ICoinInfo";
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 
 const blockchainIcon = require( "../static/images/icons/blockchain-icon.png")
@@ -37,13 +37,15 @@ const styles: { [key: string]: CSSProperties } = {
 
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
-	const [priceChartData, setPriceChartData] = useState<IPriceData>()
+	const [priceChartData, setPriceChartData] = useState<IPriceHistoryData>()
 
 	// TODO: create graph data
-	// fix ticker background
+	// fix ticker in background
 	// todo check search ux; doesn't always expand after playing around
 	// todo increase line spacing description
 	// todo bring formatExchangeInfo to exchangeBlock component
+	// todo improve chart tooltip box
+	// drag and zoom chart functionality
 	// unfolding animation
 	// navigation with arrow keys? left right key to switch between trending pages
 
@@ -84,7 +86,7 @@ const App: React.FC = () => {
 				<TitleBlock title={coinInfo.name} />
 			}
 			{priceChartData?.prices.length > 0 &&
-				<ChartsBlock pricedata={priceChartData} />
+				<ChartsBlock priceHistorydata={priceChartData} />
 			}
 
 			<div style={styles.container}>
