@@ -107,7 +107,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {priceHistorydata} ) => {
                             </feMerge>
                         </filter>
                     </defs>
-                    {/*<Tooltip />*/}
+
                     <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
                     <Bar dataKey="chartFormatVolume" fill="rgba(64, 73, 130, 0.8)" />
                     <Line type="monotone"
