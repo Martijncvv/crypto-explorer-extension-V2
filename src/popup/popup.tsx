@@ -10,6 +10,7 @@ import ExchangeBlock from "../components/ExchangeBlock";
 import HeaderBlock from "../components/HeaderBlock";
 import ChartsBlock from "../components/ChartsBlock";
 import {IDetailedCoinInfo, IPriceHistoryData} from "../models/ICoinInfo";
+import TickerBlock from "../components/TickerBlock";
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 
 const blockchainIcon = require( "../static/images/icons/blockchain-icon.png")
@@ -21,8 +22,12 @@ const websiteIcon = require( "../static/images/icons/website-icon.png")
 // const discordIcon = require( "../static/images/icons/discord-icon.png")
 
 const styles: { [key: string]: CSSProperties } = {
-	container: {
+	topContainer: {
 		padding: '12px',
+	},
+	bottomContainer: {
+		paddingLeft: '12px',
+		paddingRight: '12px',
 	},
 	dataBlocks: {
 		display: 'flex',
@@ -33,20 +38,22 @@ const styles: { [key: string]: CSSProperties } = {
 		justifyContent: 'center',
 		gap: '9px',
 	},
+	bottomMargin: {
+		marginBottom: '12px',
+	},
 };
 
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
 	const [priceChartData, setPriceChartData] = useState<IPriceHistoryData>()
 
-	// TODO: create graph data
-	// fix ticker in background
-	// todo check search ux; doesn't always expand after playing around
-	// todo increase line spacing description
-	// todo bring formatExchangeInfo to exchangeBlock component
-	// todo improve chart tooltip box
+
+	// todo bring formatExchangeInfo function to exchangeBlock component
+
 	// drag and zoom chart functionality
-	// unfolding animation
+	// join a group via name/ code?
+	// check watchlist etc.
+
 	// navigation with arrow keys? left right key to switch between trending pages
 
 
@@ -61,7 +68,6 @@ const App: React.FC = () => {
 			if (quote.length > 5) {
 				quote = obj.target_coin_id.toUpperCase()
 			}
-
 			return {
 				image: redditIcon,
 				id: obj.market.identifier,
@@ -71,7 +77,6 @@ const App: React.FC = () => {
 				exchangeURL: obj.trade_url
 			};
 		});
-
 	}
 
 	console.log("coinInfo1: ", coinInfo)
@@ -79,28 +84,37 @@ const App: React.FC = () => {
 
 	return (
 		<>
-			<div style={styles.container}>
+			<div style={styles.topContainer}>
 				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : blockchainIcon} setCoinInfo={setCoinInfo} setPriceChartData={setPriceChartData}/>
 			</div>
 			{coinInfo?.name &&
-				<TitleBlock title={coinInfo.name} />
+				<>
+					<TitleBlock title={coinInfo.name} />
+					<TickerBlock ticker={coinInfo.symbol} />
+				</>
 			}
+
 			{priceChartData?.prices.length > 0 &&
 				<ChartsBlock priceHistorydata={priceChartData} />
 			}
 
-			<div style={styles.container}>
+			<div style={styles.bottomContainer}>
 				{coinInfo?.name &&
 					<>
-						<PriceBar allTimeLow={coinInfo.market_data?.atl?.usd} allTimeHigh={coinInfo.market_data?.ath?.usd} price={coinInfo.market_data?.current_price?.usd} />
-						<div style={styles.dataBlocks}>
+						<div  style={styles.bottomMargin}>
+							<PriceBar allTimeLow={coinInfo.market_data?.atl?.usd} allTimeHigh={coinInfo.market_data?.ath?.usd} price={coinInfo.market_data?.current_price?.usd} />
+						</div>
+						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
 							<ValueBlock title="Circ. Supply" mainValue={coinInfo.market_data?.circulating_supply} secondaryValue={coinInfo.market_data?.total_supply} secondaryPreFix='/ '/>
 							<ValueBlock title="Market Cap" mainValue={coinInfo.market_data?.market_cap.usd} mainPreFix='$' secondaryValue={coinInfo.market_cap_rank} secondaryPreFix='#' secondaryFormatter={false}/>
 						</div>
-						<ExchangeBlock exchanges={formatExchangeInfo(coinInfo.tickers)} />
-
-						<ExpandableTextField text={coinInfo.description?.en} />
-						<div style={styles.socialBlocks}>
+						<div  style={styles.bottomMargin}>
+							<ExchangeBlock exchanges={formatExchangeInfo(coinInfo.tickers)} />
+						</div>
+						<div  style={styles.bottomMargin}>
+							<ExpandableTextField text={coinInfo.description?.en} />
+						</div>
+						<div style={{...styles.socialBlocks, ...styles.bottomMargin}}>
 							<SocialBlock image={websiteIcon} link={coinInfo.links?.homepage[0]}  />
 							<SocialBlock image={blockchainIcon}  link={coinInfo.links?.blockchain_site[0]} />
 							<SocialBlock image={coingeckoIcon} mainValue={coinInfo.watchlist_portfolio_users} link={`https://www.coingecko.com/en/coins/${coinInfo.id}`}  />

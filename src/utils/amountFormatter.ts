@@ -24,6 +24,10 @@ export function amountFormatter(amount: number | null | undefined, precision = 3
 	if (amount > 1e3) {
 		return `${(amount / 1e3).toPrecision(precision)} K`;
 	}
+	// 1 till 1000
+	if (amount > 1) {
+		return `${amount.toFixed(2)}`;
+	}
 	// Numbers close to zero
 	if (amount > 1e-4) {
 		return `${amount.toFixed(5).replace(/\.?0+$/, "")}`;
@@ -45,10 +49,10 @@ export function numberFormatter(amount: number | null | undefined): string {
 	if (amount >= 1e6) {
 		return `${(amount / 1e6).toFixed(1)} M`;
 	}
-	// Hundred Thousand (0.1M) - 10^5
-	if (amount >= 1e5) {
-		return `${(amount / 1e6).toFixed(1)} M`;
-	}
+	// // Hundred Thousand (0.1M) - 10^5
+	// if (amount >= 1e5) {
+	// 	return `${(amount / 1e6).toFixed(1)} M`;
+	// }
 	// Thousand (K) - 10^3
 	if (amount >= 1e3) {
 		return `${(amount / 1e3).toFixed(0)} K`;

@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState, useEffect } from 'react';
+import React, { CSSProperties, useState, useEffect, useRef } from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
 import {fetchCoinInfo, fetchPriceHistoryData, fetchNameSearch, fetchTrendingCoins} from "../utils/api";
@@ -19,7 +19,10 @@ interface HeaderBlockProps {
 }
 
 const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
+    const searchResultsRef = useRef(null);
+
     const [searchInput, setSearchInput] = useState<string>('');
+    const [arrowCounter, setArrowCounter] = useState<number>(0);
     const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -84,11 +87,13 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
             padding: 9,
             cursor: "pointer",
         } as any,
+
         coinImage: {
             width: 22,
             height: 22,
             borderRadius: constants.border_radius_small,
         },
+
         exchangeName: {
             paddingLeft: 12,
             width: 100,
@@ -114,10 +119,44 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
         },
     };
 
-    // todo expanding not always working, replace toggle expanding with just normal setExpanded?
-    const toggleExpanded = () => {
-        setIsExpanded(!isExpanded);
+    // functionality for clicking outside of the search results block
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const handleClickOutside = (event: MouseEvent) => {
+        // Close the expansion if the click is outside of the search results block
+        if (searchResultsRef.current && !searchResultsRef.current.contains(event.target)) {
+            setIsExpanded(false);
+        }
     };
+
+    // check if right or left arrow key is pressed
+    // todo
+    // useEffect(() => {
+    //     const handleKeyDown = (event) => {
+    //         if (event.key === 'ArrowRight') {
+    //             const trendingCoins = getTrendingCoins()
+    //             // Right arrow key was pressed
+    //             console.log('Right arrow key was pressed');
+    //             console.log("trendingCoins:", trendingCoins)
+    //             fetchDetailedInfo(trendingCoins.[arrowCounter].id);
+    //             // Perform your desired action here
+    //         }
+    //     };
+    //
+    //     document.addEventListener('keydown', handleKeyDown);
+    //
+    //     return () => {
+    //         document.removeEventListener('keydown', handleKeyDown);
+    //     };
+    // }, []);
+
+
 
     useEffect(() => {
         getTrendingCoins()
@@ -141,7 +180,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
                 )
             })
             setDisplayResults(searchFormat);
-
+            return searchFormat
         } catch (error) {
             console.error("getTrendingCoins: Error fetching trending coins:", error);
         }
@@ -162,7 +201,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
                 setSearchInput("")
                 return
             }
-            console.log("searchResults: ", searchResults)
+
             let displayNrOfNfts: number = Math.min(searchResults.nfts.length, 3);
             let displayNrOfCoins: number = 11 - displayNrOfNfts
 
@@ -203,9 +242,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
                 }
             )
             }
-            if (searchFormat.tokens?.length >  0) { // not sure if this is nice: display first search
-                fetchDetailedInfo(searchFormat.tokens[0].id)
-            }
+            console.log("searchResults: ", searchResults)
             setDisplayResults(searchFormat);
 
         } catch (error) {
@@ -217,11 +254,16 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
         if (event.key === "Enter") {
             if (searchInput.length > 0) {
                 searchCoinNames();
+                setIsExpanded(true);
+            }
+            else {
+                setIsExpanded(false);
+                getTrendingCoins()
             }
         }
     }
     async function handleFocus() {
-        toggleExpanded();
+        setIsExpanded(true);
     }
 
     const fetchDetailedInfo = async (coinId: string) => {
@@ -240,7 +282,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
                 return
             }
             console.log("coinSearchResult: ", coinSearchResult)
-            // console.log("priceHistoryData: ", priceHistoryData)
             setCoinInfo(coinSearchResult)
             setPriceChartData(priceHistoryData)
         } catch (error) {
@@ -250,7 +291,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
 
     const handleCoinOptionClick = async (coinId: string) => {
         fetchDetailedInfo(coinId)
-        toggleExpanded()
+        setIsExpanded(false);
     }
 
     return (
@@ -259,63 +300,64 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
                 <div style={styles.rectangle}>
                     <img style={styles.centeredImage} src={menuIcon} alt="Centered" />
                 </div>
-            <div style={{
-                ...styles.searchbar,
-                borderBottomLeftRadius:isExpanded ? 0 : constants.border_radius,
-                borderBottomRightRadius:isExpanded ? 0 : constants.border_radius,
-            }}>
-                    <img style={styles.searchbarImage} src={searchIcon} alt="Search" />
-                    <input
-                        type="text"
-                        style={styles.searchInput}
-                        onChange={(e => setSearchInput(e.target.value))}
-                        onKeyDown={handleSearch}
-                        onClick={() => setSearchInput("")}
-                        onFocus={handleFocus}
-                        value={searchInput}
-                    />
-                </div>
 
-                <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
-            </div>
-            <div style={ styles.searchResults }>
-                {isExpanded && displayResults?.tokens.length > 0 &&
-                    displayResults?.tokens.slice(0, 12).map((tokenInfo, index) =>
-                        <div
-                            key={tokenInfo.id}
-                            style={styles.coinSearchInfo}
-                            tabIndex={index}
-                            onClick={() => handleCoinOptionClick(tokenInfo.id)}
-                            onKeyDown={(event) => {
-                                if (event.key === 'Enter') {
-                                    handleCoinOptionClick(tokenInfo.id);
-                                }
-                            }}
-                        >
-                            {tokenInfo.image ?
-                            <img
-                                src={tokenInfo.image}
-                                alt={tokenInfo.name}
-                                style={styles.coinImage}
-                            /> :
-                                <div
-                                    style={styles.coinImage}
-                                />
-                            }
-                            <span style={styles.exchangeName}>{tokenInfo.name}</span>
-                            {tokenInfo.marketCapRank &&
-                                (tokenInfo.marketCapRank === 'NFT' ? (
-                                <span style={styles.marketCapRank}>{tokenInfo.marketCapRank}</span>
-                            )
-                            :
-                                (
-                                    <span style={styles.marketCapRank}>#{tokenInfo.marketCapRank}</span>
-                                )
-                                )}
+                    <div  style={{
+                        ...styles.searchbar,
+                        borderBottomLeftRadius:isExpanded ? 0 : constants.border_radius,
+                        borderBottomRightRadius:isExpanded ? 0 : constants.border_radius,
+                    }}>
+                            <img style={styles.searchbarImage} src={searchIcon} alt="Search" />
+                            <input
+                                type="text"
+                                style={styles.searchInput}
+                                onChange={(e => setSearchInput(e.target.value))}
+                                onKeyDown={handleSearch}
+                                onClick={() => setSearchInput("")}
+                                onFocus={handleFocus}
+                                value={searchInput}
+                            />
                         </div>
-                    )
-                }
-            </div>
+
+                        <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
+                    </div>
+                    <div  style={ styles.searchResults } ref={searchResultsRef}>
+                        {isExpanded && displayResults?.tokens.length > 0 &&
+                            displayResults?.tokens.slice(0, 12).map((tokenInfo, index) =>
+                                <div
+                                    key={tokenInfo.id + index}
+                                    style={styles.coinSearchInfo}
+                                    tabIndex={index}
+                                    onClick={() => handleCoinOptionClick(tokenInfo.id)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter') {
+                                            handleCoinOptionClick(tokenInfo.id);
+                                        }
+                                    }}
+                                >
+                                    {tokenInfo.image ?
+                                    <img
+                                        src={tokenInfo.image}
+                                        alt={tokenInfo.name}
+                                        style={styles.coinImage}
+                                    /> :
+                                        <div
+                                            style={styles.coinImage}
+                                        />
+                                    }
+                                    <span style={styles.exchangeName}>{tokenInfo.name}</span>
+                                    {tokenInfo.marketCapRank &&
+                                        (tokenInfo.marketCapRank === 'NFT' ? (
+                                        <span style={styles.marketCapRank}>{tokenInfo.marketCapRank}</span>
+                                    )
+                                    :
+                                        (
+                                            <span style={styles.marketCapRank}>#{tokenInfo.marketCapRank}</span>
+                                        )
+                                        )}
+                                </div>
+                            )
+                        }
+                    </div>
         </>
     );
 };

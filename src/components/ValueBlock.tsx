@@ -26,22 +26,25 @@ const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue,mainPreFix, se
         },
         title: {
             fontSize: 14,
+            height: 16,
             fontWeight: constants.font_weight_medium,
-            color: colors.secondary_medium,
-            margin: '4px 0 0',
+            color: colors.secondary_light,
+            marginTop: 4,
+            marginBottom: 0
         },
         values: {
             display: 'flex',
             alignItems: 'flex-end',
             height: 24,
+            marginBottom: 6
         },
         mainValue: {
-            fontSize: 16,
+            fontSize: constants.font_medium,
             fontWeight: constants.font_weight_medium,
             color: colors.white_medium,
         },
         secondaryValue: {
-            fontSize: 14,
+            fontSize: constants.font_small,
             fontWeight: constants.font_weight_medium,
             color: colors.accent_medium,
             marginLeft: 4,

@@ -38,7 +38,8 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
             boxSizing: "border-box",
             width: 306,
             height: 40,
-            background: colors.primary_dark,
+
+
             display: "flex",
             alignItems: "center",
             padding: constants.default_padding,
@@ -98,8 +99,12 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
         },
     };
 
+    function handleOpenTab(link) {
+        chrome.tabs.create({ url: link, active: false })
+    }
+
     return (
-        <div key={Date.now()}>
+        <div key={Date.now()} style={{ background: isExpanded ? 'linear-gradient(to bottom, #2F396D 0%, #3E6CB6 80%)' : colors.primary_dark, borderRadius: constants.border_radius }}>
             {exchanges.map((exchange, index) => (
                 <div
                     key={exchange.id + exchange.quote}
@@ -110,9 +115,10 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                         display: isExpanded || index === 0 ? "flex" : "none",
                     }}
                 >
-                    <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={() => {
+                    <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={(event) => {
                         if (exchange.exchangeURL) {
-                            window.open(exchange.exchangeURL, "_blank");
+                            event.stopPropagation();
+                            handleOpenTab(exchange.exchangeURL);
                         }
                     }}>
                         <img

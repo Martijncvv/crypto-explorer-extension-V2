@@ -12,8 +12,8 @@ interface SocialBlockProps {
 const SocialBlock: React.FC<SocialBlockProps> = ({ image, mainValue, link }) => {
     const styles: { [key: string]: CSSProperties } = {
         container: {
-            width: 34,
-            height: 49,
+            width: 38,
+            height: 51,
             borderTopLeftRadius: 34,
             borderTopRightRadius: 34,
             display: 'flex',
@@ -27,25 +27,28 @@ const SocialBlock: React.FC<SocialBlockProps> = ({ image, mainValue, link }) => 
             width: 22,
             height: 22,
             borderRadius: '50%',
-            marginTop: 6,
+            marginTop: 8,
         },
         mainValue: {
             fontSize: constants.font_micro,
             color: colors.white_medium,
-            height: constants.font_micro,
+            height: 9,
+            width: 32,
             marginBottom: 6,
             padding: 0,
+
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
         },
     };
 
-    const openLinkInNewTab = () => {
-        if (link) {
-            window.open(link, '_blank');
-        }
-    };
+    function handleOpenTab() {
+        chrome.tabs.create({ url: link, active: false })
+    }
 
     return (
-        <div style={styles.container} onClick={openLinkInNewTab}>
+        <div style={styles.container} onClick={handleOpenTab}>
             <img src={image} alt="Social image" style={styles.image} />
             <span style={styles.mainValue}>{numberFormatter(mainValue)}</span>
         </div>

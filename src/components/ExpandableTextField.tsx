@@ -19,14 +19,14 @@ const ExpandableTextField: React.FC<ExpandableTextFieldProps> = ({ text }) => {
             flexDirection: 'column',
             alignItems: 'flex-start',
             width: 306,
-            minHeight: 67,
+            minHeight: 37,
             padding: constants.default_padding,
             backgroundColor: colors.primary_dark,
             borderRadius: constants.border_radius,
         },
         textFieldContainer: {
             overflowY: expanded ? 'scroll' : 'hidden',
-            maxHeight: expanded ? 220 : 32,
+            maxHeight: expanded ? 220 : 38,
             scrollbarWidth: 'none'
         },
 
@@ -38,13 +38,14 @@ const ExpandableTextField: React.FC<ExpandableTextFieldProps> = ({ text }) => {
             WebkitLineClamp: expanded ? 1000 : 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
+            textOverflow: 'ellipsis',
+            lineHeight: '1.4'
         },
         expandBtn: {
             marginTop: 2,
             paddingLeft: 0,
             fontSize: constants.font_small,
-            color: colors.secondary_medium,
+            color: colors.secondary_light,
             backgroundColor: 'transparent',
             border: 'none',
             cursor: 'pointer',
@@ -53,10 +54,15 @@ const ExpandableTextField: React.FC<ExpandableTextFieldProps> = ({ text }) => {
         },
     };
 
+    const formattedDescription = (text) => {
+        const linkRegex = /<a\b[^>]*>(.*?)<\/a>/g;
+        return text.replace(linkRegex, '$1');
+    };
+
     return (
         <div style={styles.expandableField}>
             <div   style={styles.textFieldContainer}>
-                <div style={styles.textField}>{text?.length > 10 ? text : 'No description available'}</div>
+                <div style={styles.textField}>{text?.length > 10 ? formattedDescription(text) : 'No description available'}</div>
             </div>
             {text?.length > 10 &&
             <button style={styles.expandBtn} onClick={handleClick}>

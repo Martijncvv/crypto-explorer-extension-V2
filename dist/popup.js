@@ -21,7 +21,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    height: 600px;\n    margin: 0;\n    padding: 0;\n    /*overflow: hidden;*/\n}\n\n::-webkit-scrollbar {\n    width: 0px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}", "",{"version":3,"sources":["webpack://./src/popup/popup.css"],"names":[],"mappings":"AAAA;;IAEI,6CAA6C;IAC7C,YAAY;IACZ,aAAa;IACb,SAAS;IACT,UAAU;IACV,oBAAoB;AACxB;;AAEA;IACI,UAAU;AACd;AACA;IACI,gDAAgD;AACpD;AACA;IACI,iCAAiC;IACjC,kBAAkB;AACtB","sourcesContent":["body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    height: 600px;\n    margin: 0;\n    padding: 0;\n    /*overflow: hidden;*/\n}\n\n::-webkit-scrollbar {\n    width: 0px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    max-height: 600px;\n    margin: 0;\n    padding: 0;\n}\n\n::-webkit-scrollbar {\n    width: 0px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}", "",{"version":3,"sources":["webpack://./src/popup/popup.css"],"names":[],"mappings":"AAAA;;IAEI,6CAA6C;IAC7C,YAAY;IACZ,iBAAiB;IACjB,SAAS;IACT,UAAU;AACd;;AAEA;IACI,UAAU;AACd;AACA;IACI,gDAAgD;AACpD;AACA;IACI,iCAAiC;IACjC,kBAAkB;AACtB","sourcesContent":["body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    max-height: 600px;\n    margin: 0;\n    padding: 0;\n}\n\n::-webkit-scrollbar {\n    width: 0px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -94,12 +94,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/ResponsiveContainer.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/ComposedChart.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/Tooltip.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Bar.js");
+/* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/ResponsiveContainer.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/ComposedChart.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/Tooltip.js");
 /* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Line.js");
-/* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/ReferenceLine.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/Label.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Bar.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/XAxis.js");
+/* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
+
 
 
 
@@ -108,51 +113,69 @@ const ChartsBlock = ({ priceHistorydata }) => {
         container: {
             width: 330,
             height: 160,
-            // backgroundColor: 'white', // Or any other background color
         },
     };
+    console.log("priceHistorydata1: ", priceHistorydata);
+    // add all previous day-candle close data
     let chartData = [];
-    for (let i = 0; i < priceHistorydata.prices.length; i++) {
+    for (let i = 0; i < priceHistorydata.prices.length - 1; i++) {
         const unixPriceArray = priceHistorydata.prices[i];
         const unixVolumeArray = priceHistorydata.total_volumes[i];
-        const date = new Date(unixPriceArray[0]);
-        date.setHours(0, 0, 0, 0);
+        const date = new Date(unixPriceArray[0] - 86400000);
         chartData.push({
             date: date,
             price: unixPriceArray[1],
             totalVolume: unixVolumeArray[1],
         });
     }
-    // Calculate the maximum price and volume value
+    // add today's current volume/price
+    const unixPriceArray = priceHistorydata.prices[chartData.length];
+    const unixVolumeArray = priceHistorydata.total_volumes[chartData.length];
+    const date = new Date(unixPriceArray[0]);
+    chartData.push({
+        date: date,
+        price: unixPriceArray[1],
+        totalVolume: unixVolumeArray[1],
+    });
+    console.log("chartData1: ", chartData);
+    // Calculate the min and maximum price and volume value
+    let minPrice = Math.min(...chartData.map(dateData => dateData.price));
     let maxPrice = Math.max(...chartData.map(dateData => dateData.price));
     let maxVolume = Math.max(...chartData.map(dateData => dateData.totalVolume));
-    const barHeightMultiplier = (maxVolume / maxPrice) * 2.1;
+    // let maxFormattedPrice = (maxPrice - minPrice) / (maxPrice - minPrice) * 0.5
+    let maxFormattedPrice = 0.5;
+    const barHeightMultiplier = maxVolume / maxFormattedPrice;
     // Add extraKey to each object for chart format
-    chartData = chartData.map(dateData => (Object.assign(Object.assign({}, dateData), { chartFormatVolume: dateData.totalVolume / barHeightMultiplier })));
+    chartData = chartData.map(dateData => (Object.assign(Object.assign({}, dateData), { chartFormatPrice: (dateData.price - minPrice) / (maxPrice - minPrice) * 0.8 + 0.3, chartFormatVolume: dateData.totalVolume / barHeightMultiplier })));
     const CustomTooltip = props => {
         const { active, payload } = props;
-        console.log(payload);
         if (active && payload && payload.length) {
-            const date = payload[1].payload.date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
-            const price = (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_1__.amountFormatter)(payload[1].payload.price);
-            const volume = (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_1__.amountFormatter)(payload[1].payload.totalVolume);
+            const date = payload[1].payload.date;
+            const formattedDate = date.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit' });
+            const price = (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__.amountFormatter)(payload[1].payload.price);
+            const volume = (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__.amountFormatter)(payload[1].payload.totalVolume);
             return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: {
-                    background: 'rgba(0, 0, 0, 0.6)',
+                    background: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
                     border: 'none',
                     borderRadius: '4px',
                     color: '#fff',
                     padding: '10px',
                     fontSize: '14px',
                 } },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0, marginBottom: '6px' } }, `${date}`),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0, marginBottom: '6px' } }, `${formattedDate}`),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0, marginBottom: '6px' } }, `$${price}`),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0 } }, `${volume} / 24h `)));
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0 } }, `$${volume} / 24h `)));
         }
         return null;
     };
+    const CustomBar = (props) => {
+        const { x, y, width, height, date } = props;
+        let fill = date.getDay() === 1 ? _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_dark : _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark;
+        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: y, width: width, height: height, fill: fill }));
+    };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_2__.ResponsiveContainer, { width: "100%", height: "100%" },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_3__.ComposedChart, { data: chartData, margin: { top: 0, left: 0, right: 0, bottom: 0 } },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_3__.ResponsiveContainer, { width: "100%", height: "100%" },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.ComposedChart, { data: chartData, margin: { top: 0, left: 0, right: 0, bottom: 0 } },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("defs", null,
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("filter", { id: "shadow", x: "-20%", y: "-20%", width: "140%", height: "140%" },
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feGaussianBlur", { in: "SourceAlpha", stdDeviation: "3" }),
@@ -162,9 +185,27 @@ const ChartsBlock = ({ priceHistorydata }) => {
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMerge", null,
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMergeNode", null),
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMergeNode", { in: "SourceGraphic" })))),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.Tooltip, { content: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CustomTooltip, null), cursor: { fill: 'transparent' } }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.Bar, { dataKey: "chartFormatVolume", fill: "rgba(64, 73, 130, 0.8)" }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_6__.Line, { type: "monotone", strokeWidth: 2, dataKey: "price", stroke: "#6C74E4", filter: "url(#shadow)", dot: false })))));
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.Tooltip, { content: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CustomTooltip, null), cursor: { fill: 'transparent' } }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_6__.Line, { type: "monotone", strokeWidth: 2, dataKey: "chartFormatPrice", stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium, filter: "url(#shadow)", dot: false }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_7__.ReferenceLine, { y: Math.max(...chartData.map(dateData => dateData.chartFormatPrice)), stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, 
+                    // fill={colors.white_medium}
+                    strokeDasharray: "0 36 9 0", style: { display: 'none' } },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_8__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__.amountFormatter)(Math.max(...chartData.map(dateData => dateData.price)))}`, position: "insideTopLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_7__.ReferenceLine, { y: Math.min(...chartData.map(dateData => dateData.chartFormatPrice)), stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, 
+                    // fill={colors.white_medium}
+                    strokeDasharray: "0 36 9 0", style: { display: 'none' } },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_8__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__.amountFormatter)(Math.min(...chartData.map(dateData => dateData.price)))}`, position: "insideBottomLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_9__.Bar, { dataKey: "chartFormatVolume", shape: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CustomBar, null) }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_10__.XAxis, { dataKey: "date", tickFormatter: (date) => {
+                        if (date.getDay() === 1) { // Show only Monday dates
+                            return date.toLocaleDateString('en-US', {
+                                day: 'numeric',
+                                month: 'numeric',
+                                timeZone: 'UTC'
+                            }).replace(/\b0(?=\d)/g, '');
+                        }
+                        return '';
+                    }, interval: 0, height: 28, axisLine: { stroke: 'none' }, tickLine: { stroke: 'none' }, tick: { fontSize: 12, fill: 'white' }, tickMargin: 2, padding: { left: 9, right: 9 } })))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChartsBlock);
 
@@ -209,7 +250,6 @@ const ExchangeBlock = ({ exchanges }) => {
             boxSizing: "border-box",
             width: 306,
             height: 40,
-            background: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
             display: "flex",
             alignItems: "center",
             padding: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
@@ -267,10 +307,14 @@ const ExchangeBlock = ({ exchanges }) => {
             cursor: "pointer",
         },
     };
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: Date.now() }, exchanges.map((exchange, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: exchange.id + exchange.quote, style: Object.assign(Object.assign(Object.assign(Object.assign({}, styles.exchangeWrapper), (index === 0 && styles.firstExchange)), (index === exchanges.length - 1 && styles.lastExchange)), { display: isExpanded || index === 0 ? "flex" : "none" }) },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: { display: "flex", alignItems: "center", cursor: "pointer" }, onClick: () => {
+    function handleOpenTab(link) {
+        chrome.tabs.create({ url: link, active: false });
+    }
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: Date.now(), style: { background: isExpanded ? 'linear-gradient(to bottom, #2F396D 0%, #3E6CB6 80%)' : _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius } }, exchanges.map((exchange, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: exchange.id + exchange.quote, style: Object.assign(Object.assign(Object.assign(Object.assign({}, styles.exchangeWrapper), (index === 0 && styles.firstExchange)), (index === exchanges.length - 1 && styles.lastExchange)), { display: isExpanded || index === 0 ? "flex" : "none" }) },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: { display: "flex", alignItems: "center", cursor: "pointer" }, onClick: (event) => {
                 if (exchange.exchangeURL) {
-                    window.open(exchange.exchangeURL, "_blank");
+                    event.stopPropagation();
+                    handleOpenTab(exchange.exchangeURL);
                 }
             } },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: _static_exchangeIcons__WEBPACK_IMPORTED_MODULE_3__["default"][exchange.id], alt: exchange.exchangeName, style: styles.image }),
@@ -315,14 +359,14 @@ const ExpandableTextField = ({ text }) => {
             flexDirection: 'column',
             alignItems: 'flex-start',
             width: 306,
-            minHeight: 67,
+            minHeight: 37,
             padding: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
             backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
         },
         textFieldContainer: {
             overflowY: expanded ? 'scroll' : 'hidden',
-            maxHeight: expanded ? 220 : 32,
+            maxHeight: expanded ? 220 : 38,
             scrollbarWidth: 'none'
         },
         textField: {
@@ -333,13 +377,14 @@ const ExpandableTextField = ({ text }) => {
             WebkitLineClamp: expanded ? 1000 : 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            textOverflow: 'ellipsis'
+            textOverflow: 'ellipsis',
+            lineHeight: '1.4'
         },
         expandBtn: {
             marginTop: 2,
             paddingLeft: 0,
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
-            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium,
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light,
             backgroundColor: 'transparent',
             border: 'none',
             cursor: 'pointer',
@@ -347,9 +392,13 @@ const ExpandableTextField = ({ text }) => {
             tabIndex: 999,
         },
     };
+    const formattedDescription = (text) => {
+        const linkRegex = /<a\b[^>]*>(.*?)<\/a>/g;
+        return text.replace(linkRegex, '$1');
+    };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.expandableField },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.textFieldContainer },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.textField }, (text === null || text === void 0 ? void 0 : text.length) > 10 ? text : 'No description available')),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.textField }, (text === null || text === void 0 ? void 0 : text.length) > 10 ? formattedDescription(text) : 'No description available')),
         (text === null || text === void 0 ? void 0 : text.length) > 10 &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.expandBtn, onClick: handleClick }, expanded ? 'Collapse' : 'Expand')));
 };
@@ -389,7 +438,9 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 const menuIcon = __webpack_require__(/*! ../static/images/icons/menu-icon.png */ "./src/static/images/icons/menu-icon.png");
 const searchIcon = __webpack_require__(/*! ../static/images/icons/search-icon.png */ "./src/static/images/icons/search-icon.png");
 const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
+    const searchResultsRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
     const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+    const [arrowCounter, setArrowCounter] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
     const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ tokens: [], total: 0 });
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const styles = {
@@ -479,10 +530,39 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius_small,
         },
     };
-    // todo expanding not always working, replace toggle expanding with just normal setExpanded?
-    const toggleExpanded = () => {
-        setIsExpanded(!isExpanded);
+    // functionality for clicking outside of the search results block
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+    const handleClickOutside = (event) => {
+        // Close the expansion if the click is outside of the search results block
+        if (searchResultsRef.current && !searchResultsRef.current.contains(event.target)) {
+            setIsExpanded(false);
+        }
     };
+    // check if right or left arrow key is pressed
+    // todo
+    // useEffect(() => {
+    //     const handleKeyDown = (event) => {
+    //         if (event.key === 'ArrowRight') {
+    //             const trendingCoins = getTrendingCoins()
+    //             // Right arrow key was pressed
+    //             console.log('Right arrow key was pressed');
+    //             console.log("trendingCoins:", trendingCoins)
+    //             fetchDetailedInfo(trendingCoins.[arrowCounter].id);
+    //             // Perform your desired action here
+    //         }
+    //     };
+    //
+    //     document.addEventListener('keydown', handleKeyDown);
+    //
+    //     return () => {
+    //         document.removeEventListener('keydown', handleKeyDown);
+    //     };
+    // }, []);
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         getTrendingCoins();
         fetchDetailedInfo('bitcoin');
@@ -502,13 +582,13 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
                 });
             });
             setDisplayResults(searchFormat);
+            return searchFormat;
         }
         catch (error) {
             console.error("getTrendingCoins: Error fetching trending coins:", error);
         }
     });
     const searchCoinNames = () => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
         try {
             const searchResults = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNameSearch)(searchInput);
             if (searchResults.coins.length === 0 && searchResults.nfts.length === 0) {
@@ -523,7 +603,6 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
                 setSearchInput("");
                 return;
             }
-            console.log("searchResults: ", searchResults);
             let displayNrOfNfts = Math.min(searchResults.nfts.length, 3);
             let displayNrOfCoins = 11 - displayNrOfNfts;
             // SET COINS
@@ -557,9 +636,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
                     nft: true,
                 });
             }
-            if (((_a = searchFormat.tokens) === null || _a === void 0 ? void 0 : _a.length) > 0) { // not sure if this is nice: display first search
-                fetchDetailedInfo(searchFormat.tokens[0].id);
-            }
+            console.log("searchResults: ", searchResults);
             setDisplayResults(searchFormat);
         }
         catch (error) {
@@ -571,13 +648,18 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
             if (event.key === "Enter") {
                 if (searchInput.length > 0) {
                     searchCoinNames();
+                    setIsExpanded(true);
+                }
+                else {
+                    setIsExpanded(false);
+                    getTrendingCoins();
                 }
             }
         });
     }
     function handleFocus() {
         return __awaiter(this, void 0, void 0, function* () {
-            toggleExpanded();
+            setIsExpanded(true);
         });
     }
     const fetchDetailedInfo = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -595,7 +677,6 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
                 return;
             }
             console.log("coinSearchResult: ", coinSearchResult);
-            // console.log("priceHistoryData: ", priceHistoryData)
             setCoinInfo(coinSearchResult);
             setPriceChartData(priceHistoryData);
         }
@@ -605,7 +686,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
     });
     const handleCoinOptionClick = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
         fetchDetailedInfo(coinId);
-        toggleExpanded();
+        setIsExpanded(false);
     });
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
@@ -615,8 +696,8 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.searchbarImage, src: searchIcon, alt: "Search" }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", style: styles.searchInput, onChange: (e => setSearchInput(e.target.value)), onKeyDown: handleSearch, onClick: () => setSearchInput(""), onFocus: handleFocus, value: searchInput })),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo, alt: "Main Logo" })),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults }, isExpanded && (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.length) > 0 &&
-            (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.slice(0, 12).map((tokenInfo, index) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: tokenInfo.id, style: styles.coinSearchInfo, tabIndex: index, onClick: () => handleCoinOptionClick(tokenInfo.id), onKeyDown: (event) => {
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults, ref: searchResultsRef }, isExpanded && (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.length) > 0 &&
+            (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.slice(0, 12).map((tokenInfo, index) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: tokenInfo.id + index, style: styles.coinSearchInfo, tabIndex: index, onClick: () => handleCoinOptionClick(tokenInfo.id), onKeyDown: (event) => {
                     if (event.key === 'Enter') {
                         handleCoinOptionClick(tokenInfo.id);
                     }
@@ -749,8 +830,8 @@ __webpack_require__.r(__webpack_exports__);
 const SocialBlock = ({ image, mainValue, link }) => {
     const styles = {
         container: {
-            width: 34,
-            height: 49,
+            width: 38,
+            height: 51,
             borderTopLeftRadius: 34,
             borderTopRightRadius: 34,
             display: 'flex',
@@ -764,26 +845,63 @@ const SocialBlock = ({ image, mainValue, link }) => {
             width: 22,
             height: 22,
             borderRadius: '50%',
-            marginTop: 6,
+            marginTop: 8,
         },
         mainValue: {
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_micro,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-            height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_micro,
+            height: 9,
+            width: 32,
             marginBottom: 6,
             padding: 0,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
         },
     };
-    const openLinkInNewTab = () => {
-        if (link) {
-            window.open(link, '_blank');
-        }
-    };
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container, onClick: openLinkInNewTab },
+    function handleOpenTab() {
+        chrome.tabs.create({ url: link, active: false });
+    }
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container, onClick: handleOpenTab },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: image, alt: "Social image", style: styles.image }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue }, (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.numberFormatter)(mainValue))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SocialBlock);
+
+
+/***/ }),
+
+/***/ "./src/components/TickerBlock.tsx":
+/*!****************************************!*\
+  !*** ./src/components/TickerBlock.tsx ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+
+const TickerBlock = ({ ticker }) => {
+    const styles = {
+        container: {
+            height: 65,
+            width: 200,
+            position: 'absolute',
+            top: '100px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            textAlign: 'center',
+            fontFamily: 'Open Sans, sans-serif',
+            fontSize: 64,
+            color: '#0000001A',
+        },
+    };
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container }, ticker.toUpperCase()));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TickerBlock);
 
 
 /***/ }),
@@ -856,22 +974,25 @@ const ValueBlock = ({ title, mainValue, mainPreFix, secondaryValue, secondaryPre
         },
         title: {
             fontSize: 14,
+            height: 16,
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
-            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium,
-            margin: '4px 0 0',
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light,
+            marginTop: 4,
+            marginBottom: 0
         },
         values: {
             display: 'flex',
             alignItems: 'flex-end',
             height: 24,
+            marginBottom: 6
         },
         mainValue: {
-            fontSize: 16,
+            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_medium,
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
         },
         secondaryValue: {
-            fontSize: 14,
+            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium,
             marginLeft: 4,
@@ -911,6 +1032,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/ExchangeBlock */ "./src/components/ExchangeBlock.tsx");
 /* harmony import */ var _components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/HeaderBlock */ "./src/components/HeaderBlock.tsx");
 /* harmony import */ var _components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../components/ChartsBlock */ "./src/components/ChartsBlock.tsx");
+/* harmony import */ var _components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../components/TickerBlock */ "./src/components/TickerBlock.tsx");
+
 
 
 
@@ -931,8 +1054,12 @@ const twitterIcon = __webpack_require__(/*! ../static/images/icons/twitter-icon.
 const websiteIcon = __webpack_require__(/*! ../static/images/icons/website-icon.png */ "./src/static/images/icons/website-icon.png");
 // const discordIcon = require( "../static/images/icons/discord-icon.png")
 const styles = {
-    container: {
+    topContainer: {
         padding: '12px',
+    },
+    bottomContainer: {
+        paddingLeft: '12px',
+        paddingRight: '12px',
     },
     dataBlocks: {
         display: 'flex',
@@ -943,19 +1070,18 @@ const styles = {
         justifyContent: 'center',
         gap: '9px',
     },
+    bottomMargin: {
+        marginBottom: '12px',
+    },
 };
 const App = () => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [priceChartData, setPriceChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
-    // TODO: create graph data
-    // fix ticker in background
-    // todo check search ux; doesn't always expand after playing around
-    // todo increase line spacing description
-    // todo bring formatExchangeInfo to exchangeBlock component
-    // todo improve chart tooltip box
+    // todo bring formatExchangeInfo function to exchangeBlock component
     // drag and zoom chart functionality
-    // unfolding animation
+    // join a group via name/ code?
+    // check watchlist etc.
     // navigation with arrow keys? left right key to switch between trending pages
     const formatExchangeInfo = (tickers) => {
         if (!tickers)
@@ -981,21 +1107,26 @@ const App = () => {
     if (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.tickers)
         formatExchangeInfo(coinInfo.tickers);
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.topContainer },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : blockchainIcon, setCoinInfo: setCoinInfo, setPriceChartData: setPriceChartData })),
         (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: coinInfo.name }),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: coinInfo.name }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: coinInfo.symbol })),
         (priceChartData === null || priceChartData === void 0 ? void 0 : priceChartData.prices.length) > 0 &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { priceHistorydata: priceChartData }),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container }, (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomContainer }, (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_4__["default"], { allTimeLow: (_c = (_b = coinInfo.market_data) === null || _b === void 0 ? void 0 : _b.atl) === null || _c === void 0 ? void 0 : _c.usd, allTimeHigh: (_e = (_d = coinInfo.market_data) === null || _d === void 0 ? void 0 : _d.ath) === null || _e === void 0 ? void 0 : _e.usd, price: (_g = (_f = coinInfo.market_data) === null || _f === void 0 ? void 0 : _f.current_price) === null || _g === void 0 ? void 0 : _g.usd }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.dataBlocks },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_4__["default"], { allTimeLow: (_c = (_b = coinInfo.market_data) === null || _b === void 0 ? void 0 : _b.atl) === null || _c === void 0 ? void 0 : _c.usd, allTimeHigh: (_e = (_d = coinInfo.market_data) === null || _d === void 0 ? void 0 : _d.ath) === null || _e === void 0 ? void 0 : _e.usd, price: (_g = (_f = coinInfo.market_data) === null || _f === void 0 ? void 0 : _f.current_price) === null || _g === void 0 ? void 0 : _g.usd })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Circ. Supply", mainValue: (_h = coinInfo.market_data) === null || _h === void 0 ? void 0 : _h.circulating_supply, secondaryValue: (_j = coinInfo.market_data) === null || _j === void 0 ? void 0 : _j.total_supply, secondaryPreFix: '/ ' }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Market Cap", mainValue: (_k = coinInfo.market_data) === null || _k === void 0 ? void 0 : _k.market_cap.usd, mainPreFix: '$', secondaryValue: coinInfo.market_cap_rank, secondaryPreFix: '#', secondaryFormatter: false })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_8__["default"], { exchanges: formatExchangeInfo(coinInfo.tickers) }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__["default"], { text: (_l = coinInfo.description) === null || _l === void 0 ? void 0 : _l.en }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.socialBlocks },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_8__["default"], { exchanges: formatExchangeInfo(coinInfo.tickers) })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__["default"], { text: (_l = coinInfo.description) === null || _l === void 0 ? void 0 : _l.en })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.socialBlocks), styles.bottomMargin) },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: websiteIcon, link: (_m = coinInfo.links) === null || _m === void 0 ? void 0 : _m.homepage[0] }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: blockchainIcon, link: (_o = coinInfo.links) === null || _o === void 0 ? void 0 : _o.blockchain_site[0] }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, mainValue: coinInfo.watchlist_portfolio_users, link: `https://www.coingecko.com/en/coins/${coinInfo.id}` }),
@@ -1023,7 +1154,9 @@ __webpack_require__.r(__webpack_exports__);
 const colors = {
     primary_medium: '#34495e',
     primary_dark: '#2F396D',
-    secondary_medium: '#8F95EC',
+    secondary_light: '#8F95EC',
+    secondary_medium: '#6778CE',
+    secondary_dark: '#5b61c2',
     accent_medium: '#FFFFFF80',
     red_medium: '#FD8E8E',
     green_medium: '#88EE58',
@@ -1690,6 +1823,10 @@ function amountFormatter(amount, precision = 3) {
     if (amount > 1e3) {
         return `${(amount / 1e3).toPrecision(precision)} K`;
     }
+    // 1 till 1000
+    if (amount > 1) {
+        return `${amount.toFixed(2)}`;
+    }
     // Numbers close to zero
     if (amount > 1e-4) {
         return `${amount.toFixed(5).replace(/\.?0+$/, "")}`;
@@ -1709,10 +1846,10 @@ function numberFormatter(amount) {
     if (amount >= 1e6) {
         return `${(amount / 1e6).toFixed(1)} M`;
     }
-    // Hundred Thousand (0.1M) - 10^5
-    if (amount >= 1e5) {
-        return `${(amount / 1e6).toFixed(1)} M`;
-    }
+    // // Hundred Thousand (0.1M) - 10^5
+    // if (amount >= 1e5) {
+    // 	return `${(amount / 1e6).toFixed(1)} M`;
+    // }
     // Thousand (K) - 10^3
     if (amount >= 1e3) {
         return `${(amount / 1e3).toFixed(0)} K`;
