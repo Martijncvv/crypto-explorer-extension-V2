@@ -49,7 +49,8 @@ const App: React.FC = () => {
 
 
 	// todo bring formatExchangeInfo function to exchangeBlock component
-
+	// todo use arrows to switch between charts 30d vs max
+	// todo set bitcoin icon as default
 	// drag and zoom chart functionality
 	// join a group via name/ code?
 	// check watchlist etc.

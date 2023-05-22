@@ -544,7 +544,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
         }
     };
     // check if right or left arrow key is pressed
-    // todo
+    // todo use arrows to switch between charts 30d vs max
     // useEffect(() => {
     //     const handleKeyDown = (event) => {
     //         if (event.key === 'ArrowRight') {
@@ -1079,6 +1079,8 @@ const App = () => {
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [priceChartData, setPriceChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     // todo bring formatExchangeInfo function to exchangeBlock component
+    // todo use arrows to switch between charts 30d vs max
+    // todo set bitcoin icon as default
     // drag and zoom chart functionality
     // join a group via name/ code?
     // check watchlist etc.

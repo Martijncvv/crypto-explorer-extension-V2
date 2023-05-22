@@ -136,7 +136,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
     };
 
     // check if right or left arrow key is pressed
-    // todo
+    // todo use arrows to switch between charts 30d vs max
     // useEffect(() => {
     //     const handleKeyDown = (event) => {
     //         if (event.key === 'ArrowRight') {
