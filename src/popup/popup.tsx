@@ -53,6 +53,10 @@ const App: React.FC = () => {
 
 	// todo add onchain txs chart
 	// todo nft page
+	// todo, check other social link names: reddit, telegram, explorer, conigecko id
+	// todo fix formatting of data valueblock
+	// todo add chart
+	// format 6000 as 6000, not 6k
 
 	// improve rendering efficiency
 	// keep highest and lowest price on chart
@@ -99,12 +103,13 @@ const App: React.FC = () => {
 	}
 
 	console.log("coinInfo1: ", coinInfo)
+	console.log("nftInfo2: ", nftInfo)
 	if (coinInfo?.tickers)	formatExchangeInfo(coinInfo.tickers)
 
 	return (
 		<>
 			<div style={styles.topContainer}>
-				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : bitcoinIcon}
+				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : nftInfo?.image?.small ?  nftInfo.image.small : bitcoinIcon}
 							 setCoinInfo={setCoinInfo}
 							 setNftInfo={setNftInfo}
 							 setPrice30dChartData={setPrice30dChartData}
@@ -115,6 +120,12 @@ const App: React.FC = () => {
 				<>
 					<TitleBlock title={coinInfo.name} />
 					<TickerBlock ticker={coinInfo.symbol} />
+				</>
+			}
+			{nftInfo?.name &&
+				<>
+					<TitleBlock title={nftInfo.name} />
+					<TickerBlock ticker={nftInfo.symbol} />
 				</>
 			}
 
@@ -160,6 +171,51 @@ const App: React.FC = () => {
 								<SocialBlock image={telegramIcon} mainValue={coinInfo.community_data?.telegram_channel_user_count}   link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`} />
 							}
 							{/*/!*<SocialBlock image={discordIcon}  link={coinInfo.links.homepage[0]} />*!/ find out what to do with this*/}
+						</div>
+					</>
+				}
+
+
+				{nftInfo?.name &&
+					<>
+						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
+							<ValueBlock title="Floor" mainValue={nftInfo.floor_price?.usd} mainPreFix='$' secondaryValue={nftInfo.floor_price_in_usd_24h_percentage_change} secondaryPostFix={'%'}/>
+							<ValueBlock title="Native" mainValue={nftInfo.floor_price?.native_currency} secondaryValue={nftInfo.native_currency} secondaryFormatter={false}/>
+						</div>
+						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
+							<ValueBlock title="Total supply" mainValue={nftInfo.total_supply}/>
+							<ValueBlock title="Unique owners" mainValue={nftInfo.number_of_unique_addresses} secondaryValue={nftInfo.number_of_unique_addresses_24h_percentage_change} secondaryFormatter={true} secondaryPostFix={'%'}/>
+						</div>
+						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
+							<ValueBlock title="Market Cap" mainValue={nftInfo?.market_cap?.usd}/>
+							<ValueBlock title="volume" mainValue={nftInfo.volume_24h.usd} mainPreFix='$' secondaryValue={nftInfo.volume_in_usd_24h_percentage_change} secondaryFormatter={true} secondaryPostFix={'%'}/>
+						</div>
+
+						<div  style={styles.bottomMargin}>
+							<ExpandableTextField text={nftInfo.description} />
+						</div>
+						<div style={{...styles.socialBlocks, ...styles.bottomMargin}}>
+							{nftInfo?.links?.homepage &&
+								<SocialBlock image={websiteIcon} link={nftInfo.links?.homepage}  />
+							}
+							{/*{nftInfo.links?.blockchain_site &&*/}
+							{/*	<SocialBlock image={blockchainIcon}  link={coinInfo.links?.blockchain} />*/}
+						{/*todo find out what to do with this*/}
+							{nftInfo?.id &&
+								<SocialBlock image={coingeckoIcon}  link={`https://www.coingecko.com/en/coins/${nftInfo.id}`}  />
+							}
+							{nftInfo?.links?.twitter &&
+								<SocialBlock image={twitterIcon}   link={nftInfo?.links?.twitter} />
+							}
+							{nftInfo?.links?.reddit &&
+								<SocialBlock image={redditIcon}  link={nftInfo?.links?.reddit} />
+							}
+							{nftInfo?.links?.telegram &&
+								<SocialBlock image={telegramIcon}  link={nftInfo?.links?.telegram} />
+							}
+							{nftInfo?.links?.discord &&
+								<SocialBlock image={telegramIcon}  link={nftInfo?.links?.discord} />
+							}
 						</div>
 					</>
 				}

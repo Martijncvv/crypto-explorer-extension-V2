@@ -144,7 +144,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     // get detailed coin info and trending info on startup
     useEffect(() => {
         getTrendingCoins()
-        fetchDetailedTokenInfo('bitcoin');
+        // fetchDetailedTokenInfo('bitcoin');
+        fetchDetailedNftInfo('bored-ape-solana-club');
         // if (inputRef.current) {
         //     inputRef.current.focus();
         // }
