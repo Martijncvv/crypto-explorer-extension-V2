@@ -562,7 +562,8 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setPrice30dChartData, 
     // get detailed coin info and trending info on startup
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         getTrendingCoins();
-        fetchDetailedTokenInfo('bitcoin');
+        // fetchDetailedTokenInfo('bitcoin');
+        fetchDetailedNftInfo('bored-ape-solana-club');
         // if (inputRef.current) {
         //     inputRef.current.focus();
         // }
@@ -1093,7 +1094,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const ValueBlock = ({ title, mainValue, mainPreFix, secondaryValue, secondaryPreFix, secondaryFormatter = true }) => {
+const ValueBlock = ({ title, mainValue, mainPreFix, mainPostFix, secondaryValue, secondaryPreFix, secondaryPostFix, secondaryFormatter = true }) => {
     const styles = {
         rectangle: {
             display: 'flex',
@@ -1135,10 +1136,13 @@ const ValueBlock = ({ title, mainValue, mainPreFix, secondaryValue, secondaryPre
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.values },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue },
                 mainPreFix,
-                mainValue ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(mainValue) : ' -'),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.secondaryValue },
-                secondaryPreFix,
-                !secondaryValue ? ' -' : secondaryFormatter ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(secondaryValue) : secondaryValue))));
+                mainValue ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(mainValue) : ' -',
+                mainPostFix),
+            secondaryValue &&
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.secondaryValue },
+                    secondaryPreFix,
+                    !secondaryValue ? ' -' : secondaryFormatter ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(secondaryValue) : secondaryValue,
+                    secondaryPostFix))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ValueBlock);
 
@@ -1208,13 +1212,17 @@ const styles = {
     },
 };
 const App = () => {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [price30dChartData, setPrice30dChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [priceMaxChartData, setPriceMaxChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     // todo add onchain txs chart
     // todo nft page
+    // todo, check other social link names: reddit, telegram, explorer, conigecko id
+    // todo fix formatting of data valueblock
+    // todo add chart
+    // format 6000 as 6000, not 6k
     // improve rendering efficiency
     // keep highest and lowest price on chart
     // bring formatExchangeInfo function to exchangeBlock component
@@ -1253,41 +1261,73 @@ const App = () => {
         });
     };
     console.log("coinInfo1: ", coinInfo);
+    console.log("nftInfo2: ", nftInfo);
     if (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.tickers)
         formatExchangeInfo(coinInfo.tickers);
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.topContainer },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : bitcoinIcon, setCoinInfo: setCoinInfo, setNftInfo: setNftInfo, setPrice30dChartData: setPrice30dChartData, setPriceMaxChartData: setPriceMaxChartData })),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : ((_b = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.image) === null || _b === void 0 ? void 0 : _b.small) ? nftInfo.image.small : bitcoinIcon, setCoinInfo: setCoinInfo, setNftInfo: setNftInfo, setPrice30dChartData: setPrice30dChartData, setPriceMaxChartData: setPriceMaxChartData })),
         (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: coinInfo.name }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: coinInfo.symbol })),
+        (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) &&
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: nftInfo.name }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: nftInfo.symbol })),
         (price30dChartData === null || price30dChartData === void 0 ? void 0 : price30dChartData.length) > 0 &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { price30dHistorydata: price30dChartData, priceMaxHistorydata: priceMaxChartData }),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomContainer }, (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_4__["default"], { allTimeLow: (_c = (_b = coinInfo.market_data) === null || _b === void 0 ? void 0 : _b.atl) === null || _c === void 0 ? void 0 : _c.usd, allTimeHigh: (_e = (_d = coinInfo.market_data) === null || _d === void 0 ? void 0 : _d.ath) === null || _e === void 0 ? void 0 : _e.usd, price: (_g = (_f = coinInfo.market_data) === null || _f === void 0 ? void 0 : _f.current_price) === null || _g === void 0 ? void 0 : _g.usd })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Circ. Supply", mainValue: (_h = coinInfo.market_data) === null || _h === void 0 ? void 0 : _h.circulating_supply, secondaryValue: (_j = coinInfo.market_data) === null || _j === void 0 ? void 0 : _j.total_supply, secondaryPreFix: '/ ' }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Market Cap", mainValue: (_k = coinInfo.market_data) === null || _k === void 0 ? void 0 : _k.market_cap.usd, mainPreFix: '$', secondaryValue: coinInfo.market_cap_rank, secondaryPreFix: '#', secondaryFormatter: false })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_8__["default"], { exchanges: formatExchangeInfo(coinInfo.tickers) })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__["default"], { text: (_l = coinInfo.description) === null || _l === void 0 ? void 0 : _l.en })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.socialBlocks), styles.bottomMargin) },
-                    ((_m = coinInfo.links) === null || _m === void 0 ? void 0 : _m.homepage[0]) &&
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: websiteIcon, link: (_o = coinInfo.links) === null || _o === void 0 ? void 0 : _o.homepage[0] }),
-                    ((_p = coinInfo.links) === null || _p === void 0 ? void 0 : _p.blockchain_site[0]) &&
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: blockchainIcon, link: (_q = coinInfo.links) === null || _q === void 0 ? void 0 : _q.blockchain_site[0] }),
-                    coinInfo.id &&
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, mainValue: coinInfo.watchlist_portfolio_users, link: `https://www.coingecko.com/en/coins/${coinInfo.id}` }),
-                    ((_r = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _r === void 0 ? void 0 : _r.twitter_screen_name) &&
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, mainValue: (_s = coinInfo.community_data) === null || _s === void 0 ? void 0 : _s.twitter_followers, link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` }),
-                    ((_t = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _t === void 0 ? void 0 : _t.subreddit_url) &&
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: redditIcon, mainValue: (_u = coinInfo.community_data) === null || _u === void 0 ? void 0 : _u.reddit_subscribers, link: (_v = coinInfo.links) === null || _v === void 0 ? void 0 : _v.subreddit_url }),
-                    ((_w = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _w === void 0 ? void 0 : _w.telegram_channel_identifier) &&
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, mainValue: (_x = coinInfo.community_data) === null || _x === void 0 ? void 0 : _x.telegram_channel_user_count, link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` }))))));
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomContainer },
+            (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_4__["default"], { allTimeLow: (_d = (_c = coinInfo.market_data) === null || _c === void 0 ? void 0 : _c.atl) === null || _d === void 0 ? void 0 : _d.usd, allTimeHigh: (_f = (_e = coinInfo.market_data) === null || _e === void 0 ? void 0 : _e.ath) === null || _f === void 0 ? void 0 : _f.usd, price: (_h = (_g = coinInfo.market_data) === null || _g === void 0 ? void 0 : _g.current_price) === null || _h === void 0 ? void 0 : _h.usd })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Circ. Supply", mainValue: (_j = coinInfo.market_data) === null || _j === void 0 ? void 0 : _j.circulating_supply, secondaryValue: (_k = coinInfo.market_data) === null || _k === void 0 ? void 0 : _k.total_supply, secondaryPreFix: '/ ' }),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Market Cap", mainValue: (_l = coinInfo.market_data) === null || _l === void 0 ? void 0 : _l.market_cap.usd, mainPreFix: '$', secondaryValue: coinInfo.market_cap_rank, secondaryPreFix: '#', secondaryFormatter: false })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_8__["default"], { exchanges: formatExchangeInfo(coinInfo.tickers) })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__["default"], { text: (_m = coinInfo.description) === null || _m === void 0 ? void 0 : _m.en })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.socialBlocks), styles.bottomMargin) },
+                        ((_o = coinInfo.links) === null || _o === void 0 ? void 0 : _o.homepage[0]) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: websiteIcon, link: (_p = coinInfo.links) === null || _p === void 0 ? void 0 : _p.homepage[0] }),
+                        ((_q = coinInfo.links) === null || _q === void 0 ? void 0 : _q.blockchain_site[0]) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: blockchainIcon, link: (_r = coinInfo.links) === null || _r === void 0 ? void 0 : _r.blockchain_site[0] }),
+                        coinInfo.id &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, mainValue: coinInfo.watchlist_portfolio_users, link: `https://www.coingecko.com/en/coins/${coinInfo.id}` }),
+                        ((_s = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _s === void 0 ? void 0 : _s.twitter_screen_name) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, mainValue: (_t = coinInfo.community_data) === null || _t === void 0 ? void 0 : _t.twitter_followers, link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` }),
+                        ((_u = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _u === void 0 ? void 0 : _u.subreddit_url) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: redditIcon, mainValue: (_v = coinInfo.community_data) === null || _v === void 0 ? void 0 : _v.reddit_subscribers, link: (_w = coinInfo.links) === null || _w === void 0 ? void 0 : _w.subreddit_url }),
+                        ((_x = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _x === void 0 ? void 0 : _x.telegram_channel_identifier) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, mainValue: (_y = coinInfo.community_data) === null || _y === void 0 ? void 0 : _y.telegram_channel_user_count, link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` }))),
+            (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) &&
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Floor", mainValue: (_z = nftInfo.floor_price) === null || _z === void 0 ? void 0 : _z.usd, mainPreFix: '$', secondaryValue: nftInfo.floor_price_in_usd_24h_percentage_change, secondaryPostFix: '%' }),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Native", mainValue: (_0 = nftInfo.floor_price) === null || _0 === void 0 ? void 0 : _0.native_currency, secondaryValue: nftInfo.native_currency, secondaryFormatter: false })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Total supply", mainValue: nftInfo.total_supply }),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Unique owners", mainValue: nftInfo.number_of_unique_addresses, secondaryValue: nftInfo.number_of_unique_addresses_24h_percentage_change, secondaryFormatter: true, secondaryPostFix: '%' })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Market Cap", mainValue: (_1 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _1 === void 0 ? void 0 : _1.usd }),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "volume", mainValue: nftInfo.volume_24h.usd, mainPreFix: '$', secondaryValue: nftInfo.volume_in_usd_24h_percentage_change, secondaryFormatter: true, secondaryPostFix: '%' })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__["default"], { text: nftInfo.description })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.socialBlocks), styles.bottomMargin) },
+                        ((_2 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _2 === void 0 ? void 0 : _2.homepage) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: websiteIcon, link: (_3 = nftInfo.links) === null || _3 === void 0 ? void 0 : _3.homepage }),
+                        (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.id) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, link: `https://www.coingecko.com/en/coins/${nftInfo.id}` }),
+                        ((_4 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _4 === void 0 ? void 0 : _4.twitter) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, link: (_5 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _5 === void 0 ? void 0 : _5.twitter }),
+                        ((_6 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _6 === void 0 ? void 0 : _6.reddit) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: redditIcon, link: (_7 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _7 === void 0 ? void 0 : _7.reddit }),
+                        ((_8 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _8 === void 0 ? void 0 : _8.telegram) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, link: (_9 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _9 === void 0 ? void 0 : _9.telegram }),
+                        ((_10 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _10 === void 0 ? void 0 : _10.discord) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, link: (_11 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _11 === void 0 ? void 0 : _11.discord }))))));
 };
 const root = document.createElement('div');
 document.body.appendChild(root);
