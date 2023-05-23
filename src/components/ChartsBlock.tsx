@@ -97,7 +97,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                 >
                     <p style={{ margin: 0, marginBottom: '6px' }}>{`${formattedDate}`}</p>
                     <p style={{ margin: 0, marginBottom: '6px' }}>{`$${price}`}</p>
-                    <p style={{ margin: 0 }}>{`$${volume} / 24h `}</p>
+                    {volume && <p style={{ margin: 0 }}>{`$${volume} / 24h `}</p>}
                 </div>
             );
         }

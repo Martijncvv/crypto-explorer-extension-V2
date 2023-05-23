@@ -276,6 +276,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
 
 
             setCoinInfo(coinSearchResult)
+
             setPrice30dChartData(FormatChartData(price30dHistoryData))
             setPriceMaxChartData(FormatChartData(priceMaxHistoryData))
         } catch (error) {
@@ -284,6 +285,14 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
     }
 
     const FormatChartData = (priceHistoryData) => {
+        console.log("priceHistoryData7: ", priceHistoryData)
+        delete priceHistoryData.market_caps;
+
+        if (priceHistoryData.prices.length > 100 ) {
+            priceHistoryData.prices = downsampling(priceHistoryData.prices, 300)
+            priceHistoryData.total_volumes = downsampling(priceHistoryData.total_volumes, 300)
+        }
+        console.log("priceHistoryData7: ", priceHistoryData)
         // add all previous day-candle close data
         let formattedChartData: any = []
         for (let i = 0; i < priceHistoryData.prices.length - 1; i++) {
@@ -322,9 +331,29 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
             chartFormatPrice: (dateData.price - minPrice) / (maxPrice - minPrice) * 0.8 + 0.3,
             chartFormatVolume: dateData.totalVolume / barHeightMultiplier,
         }));
-
         return formattedChartData
     }
+
+    function downsampling(originalArray, maxDataPoints) {
+        const decimationFactor = Math.floor(originalArray.length / maxDataPoints);
+        const newArray = [];
+
+        for (let i = 0; i < originalArray.length; i += decimationFactor) {
+            const chunk = originalArray.slice(i, i + decimationFactor);
+            const averagedObject = {};
+
+            for (let key in chunk[0]) {
+                if (chunk[0].hasOwnProperty(key)) {
+                    const values = chunk.map(obj => obj[key]);
+                    const averageValue = values.reduce((sum, value) => sum + value, 0) / values.length;
+                    averagedObject[key] = averageValue;
+                }
+            }
+            newArray.push(averagedObject);
+        }
+        return newArray;
+    }
+
 
     const handleCoinOptionClick = async (coinId: string) => {
         fetchDetailedInfo(coinId)

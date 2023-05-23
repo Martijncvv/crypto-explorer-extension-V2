@@ -49,11 +49,16 @@ const App: React.FC = () => {
 	const [price30dChartData, setPrice30dChartData] = useState<any>()
 	const [priceMaxChartData, setPriceMaxChartData] = useState<any>()
 
-
-	// todo bring formatExchangeInfo function to exchangeBlock component
+	// todo improve x axis labels of max chart
 	// todo add onchain txs chart
-	// todo improve rendering efficiency
+	// todo focus on search input at extension opening
+	// todo nft page
 
+	// improve rendering efficiency
+	// bring formatExchangeInfo function to exchangeBlock component
+	// drag and zoom chart functionality
+	// join a group via name/ code?
+	// check watchlist etc.
 	// Avoid Complex Calculations in the Render Method: Move the calculation of minPrice, maxPrice, maxVolume, maxFormattedPrice, barHeightMultiplier and the map operation to format the chart data outside the Format30dChartData and FormatMaxChartData functions. Store these values in state variables and update them only when price30dHistorydata and priceMaxHistorydata change.
 	//
 	// Limit the Number of Re-Renders: Instead of using the useState hook for chartOption and listening for changes with useEffect, consider using the useMemo hook. This way, you only calculate the formatted chart data when chartOption, price30dHistorydata, and priceMaxHistorydata change.
@@ -66,11 +71,8 @@ const App: React.FC = () => {
 	//
 	// Debounce or Throttle Event Handlers: If you're dealing with events that fire rapidly (like scrolling or keyboard events), you might want to limit how often your component re-renders in response to those events.
 
-	// drag and zoom chart functionality
-	// join a group via name/ code?
-	// check watchlist etc.
 
-	// navigation with arrow keys? left right key to switch between trending pages
+
 
 
 	const formatExchangeInfo = (tickers) => {

@@ -177,7 +177,7 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata }) => {
                 } },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0, marginBottom: '6px' } }, `${formattedDate}`),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0, marginBottom: '6px' } }, `$${price}`),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0 } }, `$${volume} / 24h `)));
+                volume && react__WEBPACK_IMPORTED_MODULE_0___default().createElement("p", { style: { margin: 0 } }, `$${volume} / 24h `)));
         }
         return null;
     };
@@ -694,6 +694,13 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPrice30dChartData, setPriceMaxC
         }
     });
     const FormatChartData = (priceHistoryData) => {
+        console.log("priceHistoryData7: ", priceHistoryData);
+        delete priceHistoryData.market_caps;
+        if (priceHistoryData.prices.length > 100) {
+            priceHistoryData.prices = downsampling(priceHistoryData.prices, 300);
+            priceHistoryData.total_volumes = downsampling(priceHistoryData.total_volumes, 300);
+        }
+        console.log("priceHistoryData7: ", priceHistoryData);
         // add all previous day-candle close data
         let formattedChartData = [];
         for (let i = 0; i < priceHistoryData.prices.length - 1; i++) {
@@ -726,6 +733,23 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPrice30dChartData, setPriceMaxC
         formattedChartData = formattedChartData.map(dateData => (Object.assign(Object.assign({}, dateData), { chartFormatPrice: (dateData.price - minPrice) / (maxPrice - minPrice) * 0.8 + 0.3, chartFormatVolume: dateData.totalVolume / barHeightMultiplier })));
         return formattedChartData;
     };
+    function downsampling(originalArray, maxDataPoints) {
+        const decimationFactor = Math.floor(originalArray.length / maxDataPoints);
+        const newArray = [];
+        for (let i = 0; i < originalArray.length; i += decimationFactor) {
+            const chunk = originalArray.slice(i, i + decimationFactor);
+            const averagedObject = {};
+            for (let key in chunk[0]) {
+                if (chunk[0].hasOwnProperty(key)) {
+                    const values = chunk.map(obj => obj[key]);
+                    const averageValue = values.reduce((sum, value) => sum + value, 0) / values.length;
+                    averagedObject[key] = averageValue;
+                }
+            }
+            newArray.push(averagedObject);
+        }
+        return newArray;
+    }
     const handleCoinOptionClick = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
         fetchDetailedInfo(coinId);
         setIsExpanded(false);
@@ -1122,9 +1146,15 @@ const App = () => {
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [price30dChartData, setPrice30dChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [priceMaxChartData, setPriceMaxChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
-    // todo bring formatExchangeInfo function to exchangeBlock component
+    // todo improve x axis labels of max chart
     // todo add onchain txs chart
-    // todo improve rendering efficiency
+    // todo focus on search input at extension opening
+    // todo nft page
+    // improve rendering efficiency
+    // bring formatExchangeInfo function to exchangeBlock component
+    // drag and zoom chart functionality
+    // join a group via name/ code?
+    // check watchlist etc.
     // Avoid Complex Calculations in the Render Method: Move the calculation of minPrice, maxPrice, maxVolume, maxFormattedPrice, barHeightMultiplier and the map operation to format the chart data outside the Format30dChartData and FormatMaxChartData functions. Store these values in state variables and update them only when price30dHistorydata and priceMaxHistorydata change.
     //
     // Limit the Number of Re-Renders: Instead of using the useState hook for chartOption and listening for changes with useEffect, consider using the useMemo hook. This way, you only calculate the formatted chart data when chartOption, price30dHistorydata, and priceMaxHistorydata change.
@@ -1136,10 +1166,6 @@ const App = () => {
     // Use React.PureComponent or React.memo for Child Components: If you have child components inside the ChartsBlock that receive props, and you want to prevent unnecessary renders, consider converting these child components to PureComponent or wrapping them with React.memo.
     //
     // Debounce or Throttle Event Handlers: If you're dealing with events that fire rapidly (like scrolling or keyboard events), you might want to limit how often your component re-renders in response to those events.
-    // drag and zoom chart functionality
-    // join a group via name/ code?
-    // check watchlist etc.
-    // navigation with arrow keys? left right key to switch between trending pages
     const formatExchangeInfo = (tickers) => {
         if (!tickers)
             return [];
