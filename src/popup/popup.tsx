@@ -9,10 +9,11 @@ import SocialBlock from "../components/SocialBlock";
 import ExchangeBlock from "../components/ExchangeBlock";
 import HeaderBlock from "../components/HeaderBlock";
 import ChartsBlock from "../components/ChartsBlock";
-import {IDetailedCoinInfo, IPriceHistoryData} from "../models/ICoinInfo";
+import {IDetailedCoinInfo} from "../models/ICoinInfo";
 import TickerBlock from "../components/TickerBlock";
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 
+const bitcoinIcon = require( "../static/images/icons/bitcoin-icon.png")
 const blockchainIcon = require( "../static/images/icons/blockchain-icon.png")
 const coingeckoIcon = require( "../static/images/icons/coingecko-icon.png")
 const redditIcon = require( "../static/images/icons/reddit-icon.png")
@@ -45,12 +46,26 @@ const styles: { [key: string]: CSSProperties } = {
 
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
-	const [priceChartData, setPriceChartData] = useState<IPriceHistoryData>()
+	const [price30dChartData, setPrice30dChartData] = useState<any>()
+	const [priceMaxChartData, setPriceMaxChartData] = useState<any>()
 
 
 	// todo bring formatExchangeInfo function to exchangeBlock component
-	// todo use arrows to switch between charts 30d vs max
-	// todo set bitcoin icon as default
+	// todo add onchain txs chart
+	// todo improve rendering efficiency
+
+	// Avoid Complex Calculations in the Render Method: Move the calculation of minPrice, maxPrice, maxVolume, maxFormattedPrice, barHeightMultiplier and the map operation to format the chart data outside the Format30dChartData and FormatMaxChartData functions. Store these values in state variables and update them only when price30dHistorydata and priceMaxHistorydata change.
+	//
+	// Limit the Number of Re-Renders: Instead of using the useState hook for chartOption and listening for changes with useEffect, consider using the useMemo hook. This way, you only calculate the formatted chart data when chartOption, price30dHistorydata, and priceMaxHistorydata change.
+	//
+	// Memoize Components: React creates a new function instance for every render when you define CustomTooltip and CustomBar within the ChartsBlock component. To prevent unnecessary re-renders and optimize performance, memoize these components with React.memo.
+	//
+	// Efficient Event Listening: Instead of attaching and removing event listeners on every render, use the useEffect hook to attach the event listener when the component mounts and remove it when the component unmounts.
+	//
+	// Use React.PureComponent or React.memo for Child Components: If you have child components inside the ChartsBlock that receive props, and you want to prevent unnecessary renders, consider converting these child components to PureComponent or wrapping them with React.memo.
+	//
+	// Debounce or Throttle Event Handlers: If you're dealing with events that fire rapidly (like scrolling or keyboard events), you might want to limit how often your component re-renders in response to those events.
+
 	// drag and zoom chart functionality
 	// join a group via name/ code?
 	// check watchlist etc.
@@ -86,7 +101,10 @@ const App: React.FC = () => {
 	return (
 		<>
 			<div style={styles.topContainer}>
-				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : blockchainIcon} setCoinInfo={setCoinInfo} setPriceChartData={setPriceChartData}/>
+				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : bitcoinIcon} setCoinInfo={setCoinInfo}
+							 setPrice30dChartData={setPrice30dChartData}
+							 setPriceMaxChartData={setPriceMaxChartData}
+				/>
 			</div>
 			{coinInfo?.name &&
 				<>
@@ -95,8 +113,10 @@ const App: React.FC = () => {
 				</>
 			}
 
-			{priceChartData?.prices.length > 0 &&
-				<ChartsBlock priceHistorydata={priceChartData} />
+			{price30dChartData?.length > 0 &&
+				<ChartsBlock
+					price30dHistorydata={price30dChartData}
+					priceMaxHistorydata={priceMaxChartData} />
 			}
 
 			<div style={styles.bottomContainer}>

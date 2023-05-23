@@ -99,58 +99,71 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/chart/ComposedChart.js");
 /* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/Tooltip.js");
 /* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Line.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/ReferenceLine.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/Label.js");
-/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Bar.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/Bar.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/ReferenceLine.js");
+/* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/component/Label.js");
 /* harmony import */ var recharts__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! recharts */ "./node_modules/recharts/es6/cartesian/XAxis.js");
 /* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
 
 
 
 
-const ChartsBlock = ({ priceHistorydata }) => {
+const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata }) => {
+    const [chartOption, setChartOption] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1);
+    // 30d HISTORY = 1
+    // max HISTORY = 2
+    const [formattedChartData, setFormattedChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const styles = {
         container: {
             width: 330,
             height: 160,
         },
+        menuOptions: {
+            display: 'flex',
+            justifyContent: 'center',
+        },
+        menuOption: {
+            width: 40,
+            height: 2,
+            marginRight: '9px',
+            cursor: 'pointer',
+            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_medium
+        },
+        activeOption: {
+            width: 40,
+            height: 2,
+            marginRight: '9px',
+            cursor: 'pointer',
+            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium
+        },
     };
-    console.log("priceHistorydata1: ", priceHistorydata);
-    // add all previous day-candle close data
-    let chartData = [];
-    for (let i = 0; i < priceHistorydata.prices.length - 1; i++) {
-        const unixPriceArray = priceHistorydata.prices[i];
-        const unixVolumeArray = priceHistorydata.total_volumes[i];
-        const date = new Date(unixPriceArray[0] - 86400000);
-        chartData.push({
-            date: date,
-            price: unixPriceArray[1],
-            totalVolume: unixVolumeArray[1],
-        });
-    }
-    // add today's current volume/price
-    const unixPriceArray = priceHistorydata.prices[chartData.length];
-    const unixVolumeArray = priceHistorydata.total_volumes[chartData.length];
-    const date = new Date(unixPriceArray[0]);
-    chartData.push({
-        date: date,
-        price: unixPriceArray[1],
-        totalVolume: unixVolumeArray[1],
-    });
-    console.log("chartData1: ", chartData);
-    // Calculate the min and maximum price and volume value
-    let minPrice = Math.min(...chartData.map(dateData => dateData.price));
-    let maxPrice = Math.max(...chartData.map(dateData => dateData.price));
-    let maxVolume = Math.max(...chartData.map(dateData => dateData.totalVolume));
-    // let maxFormattedPrice = (maxPrice - minPrice) / (maxPrice - minPrice) * 0.5
-    let maxFormattedPrice = 0.5;
-    const barHeightMultiplier = maxVolume / maxFormattedPrice;
-    // Add extraKey to each object for chart format
-    chartData = chartData.map(dateData => (Object.assign(Object.assign({}, dateData), { chartFormatPrice: (dateData.price - minPrice) / (maxPrice - minPrice) * 0.8 + 0.3, chartFormatVolume: dateData.totalVolume / barHeightMultiplier })));
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'ArrowRight') {
+                setChartOption(2);
+            }
+            else if (event.key === 'ArrowLeft') {
+                setChartOption(1);
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+        if (chartOption === 2) {
+            setFormattedChartData(priceMaxHistorydata);
+        }
+        else {
+            setFormattedChartData(price30dHistorydata);
+        }
+    }, [chartOption, price30dHistorydata]);
     const CustomTooltip = props => {
+        var _a;
         const { active, payload } = props;
         if (active && payload && payload.length) {
-            const date = payload[1].payload.date;
+            const date = (_a = payload[1]) === null || _a === void 0 ? void 0 : _a.payload.date;
             const formattedDate = date.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit' });
             const price = (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__.amountFormatter)(payload[1].payload.price);
             const volume = (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__.amountFormatter)(payload[1].payload.totalVolume);
@@ -174,8 +187,11 @@ const ChartsBlock = ({ priceHistorydata }) => {
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: y, width: width, height: height, fill: fill }));
     };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.menuOptions },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { onClick: () => setChartOption(1), style: chartOption === 1 ? styles.activeOption : styles.menuOption }),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { onClick: () => setChartOption(2), style: chartOption === 2 ? styles.activeOption : styles.menuOption })),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_3__.ResponsiveContainer, { width: "100%", height: "100%" },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.ComposedChart, { data: chartData, margin: { top: 0, left: 0, right: 0, bottom: 0 } },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.ComposedChart, { data: formattedChartData, margin: { top: 0, left: 0, right: 0, bottom: 0 } },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("defs", null,
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("filter", { id: "shadow", x: "-20%", y: "-20%", width: "140%", height: "140%" },
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feGaussianBlur", { in: "SourceAlpha", stdDeviation: "3" }),
@@ -187,17 +203,17 @@ const ChartsBlock = ({ priceHistorydata }) => {
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("feMergeNode", { in: "SourceGraphic" })))),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.Tooltip, { content: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CustomTooltip, null), cursor: { fill: 'transparent' } }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_6__.Line, { type: "monotone", strokeWidth: 2, dataKey: "chartFormatPrice", stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium, filter: "url(#shadow)", dot: false }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_7__.ReferenceLine, { y: Math.max(...chartData.map(dateData => dateData.chartFormatPrice)), stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, 
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_7__.Bar, { dataKey: "chartFormatVolume", shape: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CustomBar, null) }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_8__.ReferenceLine, { y: Math.max(...formattedChartData.map(dateData => dateData.chartFormatPrice)), stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, 
                     // fill={colors.white_medium}
                     strokeDasharray: "0 36 9 0", style: { display: 'none' } },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_8__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__.amountFormatter)(Math.max(...chartData.map(dateData => dateData.price)))}`, position: "insideTopLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_7__.ReferenceLine, { y: Math.min(...chartData.map(dateData => dateData.chartFormatPrice)), stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, 
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_9__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__.amountFormatter)(Math.max(...formattedChartData.map(dateData => dateData.price)))}`, position: "insideTopLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_8__.ReferenceLine, { y: Math.min(...formattedChartData.map(dateData => dateData.chartFormatPrice)), stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, 
                     // fill={colors.white_medium}
                     strokeDasharray: "0 36 9 0", style: { display: 'none' } },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_8__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__.amountFormatter)(Math.min(...chartData.map(dateData => dateData.price)))}`, position: "insideBottomLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_9__.Bar, { dataKey: "chartFormatVolume", shape: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CustomBar, null) }),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_9__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_2__.amountFormatter)(Math.min(...formattedChartData.map(dateData => dateData.price)))}`, position: "insideBottomLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_10__.XAxis, { dataKey: "date", tickFormatter: (date) => {
-                        if (date.getDay() === 1) { // Show only Monday dates
+                        if (chartOption === 1 && date.getDay() === 1) { // Show only Monday dates
                             return date.toLocaleDateString('en-US', {
                                 day: 'numeric',
                                 month: 'numeric',
@@ -437,10 +453,9 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 const menuIcon = __webpack_require__(/*! ../static/images/icons/menu-icon.png */ "./src/static/images/icons/menu-icon.png");
 const searchIcon = __webpack_require__(/*! ../static/images/icons/search-icon.png */ "./src/static/images/icons/search-icon.png");
-const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
+const HeaderBlock = ({ mainLogo, setCoinInfo, setPrice30dChartData, setPriceMaxChartData }) => {
     const searchResultsRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
     const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
-    const [arrowCounter, setArrowCounter] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
     const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ tokens: [], total: 0 });
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const styles = {
@@ -537,32 +552,13 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+    // Close the expansion if the click is outside of the search results block
     const handleClickOutside = (event) => {
-        // Close the expansion if the click is outside of the search results block
         if (searchResultsRef.current && !searchResultsRef.current.contains(event.target)) {
             setIsExpanded(false);
         }
     };
-    // check if right or left arrow key is pressed
-    // todo use arrows to switch between charts 30d vs max
-    // useEffect(() => {
-    //     const handleKeyDown = (event) => {
-    //         if (event.key === 'ArrowRight') {
-    //             const trendingCoins = getTrendingCoins()
-    //             // Right arrow key was pressed
-    //             console.log('Right arrow key was pressed');
-    //             console.log("trendingCoins:", trendingCoins)
-    //             fetchDetailedInfo(trendingCoins.[arrowCounter].id);
-    //             // Perform your desired action here
-    //         }
-    //     };
-    //
-    //     document.addEventListener('keydown', handleKeyDown);
-    //
-    //     return () => {
-    //         document.removeEventListener('keydown', handleKeyDown);
-    //     };
-    // }, []);
+    // get detailed coin info and trending info on startup
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         getTrendingCoins();
         fetchDetailedInfo('bitcoin');
@@ -570,7 +566,6 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
     const getTrendingCoins = () => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const trendingCoins = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTrendingCoins)();
-            console.log("getTrendingCoins: ", trendingCoins);
             let searchFormat = { tokens: [], total: 0 };
             trendingCoins.coins.forEach((coin) => {
                 searchFormat.tokens.push({
@@ -641,6 +636,14 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
         }
         catch (error) {
             console.error("handleSearch: Error searching for coins:", error);
+            setDisplayResults({ tokens: [{
+                        id: "noResult",
+                        name: "No results",
+                        image: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256",
+                        marketCapRank: '',
+                        nft: false
+                    }], total: 0 });
+            setSearchInput("");
         }
     });
     function handleSearch(event) {
@@ -664,26 +667,65 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
     }
     const fetchDetailedInfo = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const [coinSearchResult, priceHistoryData] = yield Promise.all([
+            const [coinSearchResult, price30dHistoryData, priceMaxHistoryData] = yield Promise.all([
                 (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchCoinInfo)(coinId),
                 (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchPriceHistoryData)(coinId, 'usd', '30'),
+                (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchPriceHistoryData)(coinId, 'usd', 'max'),
             ]);
             if (!coinSearchResult) {
                 console.log(`No results for coinSearchResult ${coinId}`);
                 return;
             }
-            if (!priceHistoryData) {
-                console.log(`No results for priceHistoryData ${coinId}`);
+            if (!price30dHistoryData) {
+                console.log(`No results for price30dHistoryData ${coinId}`);
+                return;
+            }
+            if (!priceMaxHistoryData) {
+                console.log(`No results for priceMaxHistoryData ${coinId}`);
                 return;
             }
             console.log("coinSearchResult: ", coinSearchResult);
             setCoinInfo(coinSearchResult);
-            setPriceChartData(priceHistoryData);
+            setPrice30dChartData(FormatChartData(price30dHistoryData));
+            setPriceMaxChartData(FormatChartData(priceMaxHistoryData));
         }
         catch (error) {
             console.error(`fetchDetailedInfo: Error searching for coin: ${coinId}`, error);
         }
     });
+    const FormatChartData = (priceHistoryData) => {
+        // add all previous day-candle close data
+        let formattedChartData = [];
+        for (let i = 0; i < priceHistoryData.prices.length - 1; i++) {
+            const unixPriceArray = priceHistoryData.prices[i];
+            const unixVolumeArray = priceHistoryData.total_volumes[i];
+            const date = new Date(unixPriceArray[0] - 86400000);
+            formattedChartData.push({
+                date: date,
+                price: unixPriceArray[1],
+                totalVolume: unixVolumeArray[1],
+            });
+        }
+        // add today's current volume/price
+        const unixPriceArray = priceHistoryData.prices[formattedChartData.length];
+        const unixVolumeArray = priceHistoryData.total_volumes[formattedChartData.length];
+        const date = new Date(unixPriceArray[0]);
+        formattedChartData.push({
+            date: date,
+            price: unixPriceArray[1],
+            totalVolume: unixVolumeArray[1],
+        });
+        // Calculate the min and maximum price and volume value
+        let minPrice = Math.min(...formattedChartData.map(dateData => dateData.price));
+        let maxPrice = Math.max(...formattedChartData.map(dateData => dateData.price));
+        let maxVolume = Math.max(...formattedChartData.map(dateData => dateData.totalVolume));
+        // let maxFormattedPrice = (maxPrice - minPrice) / (maxPrice - minPrice) * 0.5
+        let maxFormattedPrice = 0.5;
+        const barHeightMultiplier = maxVolume / maxFormattedPrice;
+        // Add extraKey to each object for chart format
+        formattedChartData = formattedChartData.map(dateData => (Object.assign(Object.assign({}, dateData), { chartFormatPrice: (dateData.price - minPrice) / (maxPrice - minPrice) * 0.8 + 0.3, chartFormatVolume: dateData.totalVolume / barHeightMultiplier })));
+        return formattedChartData;
+    };
     const handleCoinOptionClick = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
         fetchDetailedInfo(coinId);
         setIsExpanded(false);
@@ -1046,6 +1088,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
+const bitcoinIcon = __webpack_require__(/*! ../static/images/icons/bitcoin-icon.png */ "./src/static/images/icons/bitcoin-icon.png");
 const blockchainIcon = __webpack_require__(/*! ../static/images/icons/blockchain-icon.png */ "./src/static/images/icons/blockchain-icon.png");
 const coingeckoIcon = __webpack_require__(/*! ../static/images/icons/coingecko-icon.png */ "./src/static/images/icons/coingecko-icon.png");
 const redditIcon = __webpack_require__(/*! ../static/images/icons/reddit-icon.png */ "./src/static/images/icons/reddit-icon.png");
@@ -1077,10 +1120,22 @@ const styles = {
 const App = () => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
-    const [priceChartData, setPriceChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
+    const [price30dChartData, setPrice30dChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
+    const [priceMaxChartData, setPriceMaxChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     // todo bring formatExchangeInfo function to exchangeBlock component
-    // todo use arrows to switch between charts 30d vs max
-    // todo set bitcoin icon as default
+    // todo add onchain txs chart
+    // todo improve rendering efficiency
+    // Avoid Complex Calculations in the Render Method: Move the calculation of minPrice, maxPrice, maxVolume, maxFormattedPrice, barHeightMultiplier and the map operation to format the chart data outside the Format30dChartData and FormatMaxChartData functions. Store these values in state variables and update them only when price30dHistorydata and priceMaxHistorydata change.
+    //
+    // Limit the Number of Re-Renders: Instead of using the useState hook for chartOption and listening for changes with useEffect, consider using the useMemo hook. This way, you only calculate the formatted chart data when chartOption, price30dHistorydata, and priceMaxHistorydata change.
+    //
+    // Memoize Components: React creates a new function instance for every render when you define CustomTooltip and CustomBar within the ChartsBlock component. To prevent unnecessary re-renders and optimize performance, memoize these components with React.memo.
+    //
+    // Efficient Event Listening: Instead of attaching and removing event listeners on every render, use the useEffect hook to attach the event listener when the component mounts and remove it when the component unmounts.
+    //
+    // Use React.PureComponent or React.memo for Child Components: If you have child components inside the ChartsBlock that receive props, and you want to prevent unnecessary renders, consider converting these child components to PureComponent or wrapping them with React.memo.
+    //
+    // Debounce or Throttle Event Handlers: If you're dealing with events that fire rapidly (like scrolling or keyboard events), you might want to limit how often your component re-renders in response to those events.
     // drag and zoom chart functionality
     // join a group via name/ code?
     // check watchlist etc.
@@ -1110,13 +1165,13 @@ const App = () => {
         formatExchangeInfo(coinInfo.tickers);
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.topContainer },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : blockchainIcon, setCoinInfo: setCoinInfo, setPriceChartData: setPriceChartData })),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : bitcoinIcon, setCoinInfo: setCoinInfo, setPrice30dChartData: setPrice30dChartData, setPriceMaxChartData: setPriceMaxChartData })),
         (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: coinInfo.name }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: coinInfo.symbol })),
-        (priceChartData === null || priceChartData === void 0 ? void 0 : priceChartData.prices.length) > 0 &&
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { priceHistorydata: priceChartData }),
+        (price30dChartData === null || price30dChartData === void 0 ? void 0 : price30dChartData.length) > 0 &&
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { price30dHistorydata: price30dChartData, priceMaxHistorydata: priceMaxChartData }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomContainer }, (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
@@ -2063,6 +2118,16 @@ function fetchNftList() {
 // 		}
 // }
 
+
+/***/ }),
+
+/***/ "./src/static/images/icons/bitcoin-icon.png":
+/*!**************************************************!*\
+  !*** ./src/static/images/icons/bitcoin-icon.png ***!
+  \**************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "3287eb6d896676d933c6.png";
 
 /***/ }),
 

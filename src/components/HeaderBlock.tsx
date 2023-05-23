@@ -15,14 +15,14 @@ const searchIcon = require( "../static/images/icons/search-icon.png")
 interface HeaderBlockProps {
     mainLogo: string;
     setCoinInfo: (coinInfo: IDetailedCoinInfo) => void;
-    setPriceChartData: (priceChartData: IPriceHistoryData) => void;
+    setPrice30dChartData: (priceChartData: IPriceHistoryData) => void;
+    setPriceMaxChartData: (priceChartData: IPriceHistoryData) => void;
 }
 
-const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPriceChartData }) => {
+const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPrice30dChartData, setPriceMaxChartData }) => {
     const searchResultsRef = useRef(null);
 
     const [searchInput, setSearchInput] = useState<string>('');
-    const [arrowCounter, setArrowCounter] = useState<number>(0);
     const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -128,36 +128,14 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
         };
     }, []);
 
+    // Close the expansion if the click is outside of the search results block
     const handleClickOutside = (event: MouseEvent) => {
-        // Close the expansion if the click is outside of the search results block
         if (searchResultsRef.current && !searchResultsRef.current.contains(event.target)) {
             setIsExpanded(false);
         }
     };
 
-    // check if right or left arrow key is pressed
-    // todo use arrows to switch between charts 30d vs max
-    // useEffect(() => {
-    //     const handleKeyDown = (event) => {
-    //         if (event.key === 'ArrowRight') {
-    //             const trendingCoins = getTrendingCoins()
-    //             // Right arrow key was pressed
-    //             console.log('Right arrow key was pressed');
-    //             console.log("trendingCoins:", trendingCoins)
-    //             fetchDetailedInfo(trendingCoins.[arrowCounter].id);
-    //             // Perform your desired action here
-    //         }
-    //     };
-    //
-    //     document.addEventListener('keydown', handleKeyDown);
-    //
-    //     return () => {
-    //         document.removeEventListener('keydown', handleKeyDown);
-    //     };
-    // }, []);
-
-
-
+    // get detailed coin info and trending info on startup
     useEffect(() => {
         getTrendingCoins()
         fetchDetailedInfo('bitcoin');
@@ -166,7 +144,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
     const getTrendingCoins = async () => {
         try {
             const trendingCoins: ITrendingCoinList = await fetchTrendingCoins();
-            console.log("getTrendingCoins: ", trendingCoins)
             let searchFormat:ISearchOptions = {tokens: [], total: 0}
             trendingCoins.coins.forEach((coin) => {
                 searchFormat.tokens.push(
@@ -247,6 +224,14 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
 
         } catch (error) {
             console.error("handleSearch: Error searching for coins:", error);
+            setDisplayResults( {tokens: [{
+                    id: "noResult",
+                    name: "No results",
+                    image: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256",
+                    marketCapRank: '',
+                    nft: false
+                }], total: 0});
+            setSearchInput("")
         }
     }
 
@@ -268,25 +253,77 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
 
     const fetchDetailedInfo = async (coinId: string) => {
         try {
-            const [coinSearchResult, priceHistoryData] = await Promise.all([
+            const [coinSearchResult, price30dHistoryData, priceMaxHistoryData] = await Promise.all([
                 fetchCoinInfo(coinId),
                 fetchPriceHistoryData(coinId, 'usd', '30'),
+                fetchPriceHistoryData(coinId, 'usd', 'max'),
             ]);
 
             if (!coinSearchResult) {
                 console.log(`No results for coinSearchResult ${coinId}`)
                 return
             }
-            if (!priceHistoryData) {
-                console.log(`No results for priceHistoryData ${coinId}`)
+            if (!price30dHistoryData) {
+                console.log(`No results for price30dHistoryData ${coinId}`)
+                return
+            }
+            if (!priceMaxHistoryData) {
+                console.log(`No results for priceMaxHistoryData ${coinId}`)
                 return
             }
             console.log("coinSearchResult: ", coinSearchResult)
+
+
+
             setCoinInfo(coinSearchResult)
-            setPriceChartData(priceHistoryData)
+            setPrice30dChartData(FormatChartData(price30dHistoryData))
+            setPriceMaxChartData(FormatChartData(priceMaxHistoryData))
         } catch (error) {
             console.error(`fetchDetailedInfo: Error searching for coin: ${coinId}`, error);
         }
+    }
+
+    const FormatChartData = (priceHistoryData) => {
+        // add all previous day-candle close data
+        let formattedChartData: any = []
+        for (let i = 0; i < priceHistoryData.prices.length - 1; i++) {
+            const unixPriceArray = priceHistoryData.prices[i];
+            const unixVolumeArray = priceHistoryData.total_volumes[i];
+            const date = new Date(unixPriceArray[0] - 86400000);
+            formattedChartData.push({
+                date: date,
+                price: unixPriceArray[1],
+                totalVolume: unixVolumeArray[1],
+            });
+        }
+        // add today's current volume/price
+        const unixPriceArray = priceHistoryData.prices[formattedChartData.length];
+        const unixVolumeArray = priceHistoryData.total_volumes[formattedChartData.length];
+        const date = new Date(unixPriceArray[0]);
+
+        formattedChartData.push({
+            date: date,
+            price: unixPriceArray[1],
+            totalVolume: unixVolumeArray[1],
+        });
+
+        // Calculate the min and maximum price and volume value
+        let minPrice = Math.min(...formattedChartData.map(dateData => dateData.price));
+        let maxPrice = Math.max(...formattedChartData.map(dateData => dateData.price));
+        let maxVolume = Math.max(...formattedChartData.map(dateData => dateData.totalVolume));
+
+        // let maxFormattedPrice = (maxPrice - minPrice) / (maxPrice - minPrice) * 0.5
+        let maxFormattedPrice = 0.5
+        const barHeightMultiplier = maxVolume / maxFormattedPrice;
+
+        // Add extraKey to each object for chart format
+        formattedChartData = formattedChartData.map(dateData => ({
+            ...dateData,
+            chartFormatPrice: (dateData.price - minPrice) / (maxPrice - minPrice) * 0.8 + 0.3,
+            chartFormatVolume: dateData.totalVolume / barHeightMultiplier,
+        }));
+
+        return formattedChartData
     }
 
     const handleCoinOptionClick = async (coinId: string) => {
