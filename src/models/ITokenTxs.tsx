@@ -20,7 +20,7 @@ export interface ITokenTxInfo {
 	value: string
 }
 
-export default interface ITokenTxs {
+export interface ITokenTxs {
 	message: string
 	result: ITokenTxInfo[]
 	status: string

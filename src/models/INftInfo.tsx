@@ -8,7 +8,7 @@ export interface ISimpleNftInfo {
 	symbol: string
 }
 
-export interface IAdvancedNftInfo {
+export interface IDetailedNftInfo {
 	id: string
 	contract_address: string
 	asset_platform_id: string

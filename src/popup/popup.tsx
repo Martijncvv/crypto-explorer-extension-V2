@@ -10,6 +10,7 @@ import ExchangeBlock from "../components/ExchangeBlock";
 import HeaderBlock from "../components/HeaderBlock";
 import ChartsBlock from "../components/ChartsBlock";
 import {IDetailedCoinInfo} from "../models/ICoinInfo";
+import {IDetailedNftInfo} from "../models/INftInfo";
 import TickerBlock from "../components/TickerBlock";
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 
@@ -46,15 +47,15 @@ const styles: { [key: string]: CSSProperties } = {
 
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
+	const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>()
 	const [price30dChartData, setPrice30dChartData] = useState<any>()
 	const [priceMaxChartData, setPriceMaxChartData] = useState<any>()
 
-	// todo improve x axis labels of max chart
 	// todo add onchain txs chart
-	// todo focus on search input at extension opening
 	// todo nft page
 
 	// improve rendering efficiency
+	// keep highest and lowest price on chart
 	// bring formatExchangeInfo function to exchangeBlock component
 	// drag and zoom chart functionality
 	// join a group via name/ code?
@@ -103,7 +104,9 @@ const App: React.FC = () => {
 	return (
 		<>
 			<div style={styles.topContainer}>
-				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : bitcoinIcon} setCoinInfo={setCoinInfo}
+				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : bitcoinIcon}
+							 setCoinInfo={setCoinInfo}
+							 setNftInfo={setNftInfo}
 							 setPrice30dChartData={setPrice30dChartData}
 							 setPriceMaxChartData={setPriceMaxChartData}
 				/>
@@ -138,12 +141,24 @@ const App: React.FC = () => {
 							<ExpandableTextField text={coinInfo.description?.en} />
 						</div>
 						<div style={{...styles.socialBlocks, ...styles.bottomMargin}}>
-							<SocialBlock image={websiteIcon} link={coinInfo.links?.homepage[0]}  />
-							<SocialBlock image={blockchainIcon}  link={coinInfo.links?.blockchain_site[0]} />
-							<SocialBlock image={coingeckoIcon} mainValue={coinInfo.watchlist_portfolio_users} link={`https://www.coingecko.com/en/coins/${coinInfo.id}`}  />
-							<SocialBlock image={twitterIcon} mainValue={coinInfo.community_data?.twitter_followers}  link={`https://twitter.com/${coinInfo.links.twitter_screen_name}`} />
-							<SocialBlock image={redditIcon} mainValue={coinInfo.community_data?.reddit_subscribers}   link={coinInfo.links?.subreddit_url} />
-							<SocialBlock image={telegramIcon} mainValue={coinInfo.community_data?.telegram_channel_user_count}   link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`} />
+							{coinInfo.links?.homepage[0] &&
+								<SocialBlock image={websiteIcon} link={coinInfo.links?.homepage[0]}  />
+							}
+							{coinInfo.links?.blockchain_site[0] &&
+								<SocialBlock image={blockchainIcon}  link={coinInfo.links?.blockchain_site[0]} />
+							}
+							{coinInfo.id &&
+								<SocialBlock image={coingeckoIcon} mainValue={coinInfo.watchlist_portfolio_users} link={`https://www.coingecko.com/en/coins/${coinInfo.id}`}  />
+							}
+							{coinInfo?.links?.twitter_screen_name &&
+								<SocialBlock image={twitterIcon} mainValue={coinInfo.community_data?.twitter_followers}  link={`https://twitter.com/${coinInfo.links.twitter_screen_name}`} />
+							}
+							{coinInfo?.links?.subreddit_url &&
+								<SocialBlock image={redditIcon} mainValue={coinInfo.community_data?.reddit_subscribers}   link={coinInfo.links?.subreddit_url} />
+							}
+							{coinInfo?.links?.telegram_channel_identifier &&
+								<SocialBlock image={telegramIcon} mainValue={coinInfo.community_data?.telegram_channel_user_count}   link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`} />
+							}
 							{/*/!*<SocialBlock image={discordIcon}  link={coinInfo.links.homepage[0]} />*!/ find out what to do with this*/}
 						</div>
 					</>

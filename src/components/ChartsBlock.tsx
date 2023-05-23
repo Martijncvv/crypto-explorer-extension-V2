@@ -1,5 +1,6 @@
 import React, {CSSProperties, useEffect, useState} from 'react';
 import colors from "../static/colors";
+import constants from "../static/constants";
 
 import {
     ComposedChart,
@@ -89,7 +90,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                     style={{
                         background: colors.primary_dark,
                         border: 'none',
-                        borderRadius: '4px',
+                        borderRadius: constants.border_radius_small,
                         color: '#fff',
                         padding: '10px',
                         fontSize: '14px',
@@ -106,7 +107,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
 
     const CustomBar = (props) => {
         const { x, y, width, height, date } = props;
-        let fill=  date.getDay() === 1 ? colors.secondary_dark : colors.primary_dark
+        let fill=  chartOption === 1 && date.getDay() === 1 ? colors.secondary_dark : colors.primary_dark
 
         return (
             <rect x={x} y={y} width={width} height={height} fill={fill} />
@@ -189,26 +190,29 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                         </ReferenceLine>
 
                         <XAxis
+                            padding={{ left: chartOption === 2 ? 24 : 12, right: 12 }}
                             dataKey="date"
+                            tickFormatter={(date, index) => {
+                                if (chartOption === 1 && date.getDay() === 1) {
+                                    return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
+                                }
+                                if (chartOption === 2) {
+                                    const totalDataPoints = formattedChartData.length;
+                                    const desiredTickCount = 5;
+                                    const interval = Math.ceil(totalDataPoints / desiredTickCount);
 
-                            tickFormatter={(date) => {
-                                if (chartOption === 1 && date.getDay() === 1) { // Show only Monday dates
-                                    return date.toLocaleDateString('en-US', {
-                                        day: 'numeric',
-                                        month: 'numeric',
-                                        timeZone: 'UTC'
-                                    }).replace(/\b0(?=\d)/g, '');
+                                    if (index  % interval === 0 && index !== totalDataPoints - 1) {
+                                        return date.toLocaleDateString('en-GB', { month: '2-digit', year: '2-digit' });
+                                    }
                                 }
                                 return '';
                             }}
-
                             interval={0}
                             height={28}
                             axisLine={{ stroke: 'none' }}
                             tickLine={{ stroke: 'none' }}
                             tick={{ fontSize: 12, fill: 'white' }}
                             tickMargin={2}
-                            padding={{ left: 9, right: 9 }}
                         />
                     </ComposedChart>
 

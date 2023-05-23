@@ -1,30 +1,13 @@
 import {
-	ICoinGeckoCoinList,
 	ITrendingCoinList,
 	IPriceHistoryData,
 	ISearchCoinList, IDetailedCoinInfo
 } from '../models/ICoinInfo'
-import { IAdvancedNftInfo, ICoinGeckoNftList } from '../models/INftInfo'
-import ITokenTxs from '../models/ITokenTxs'
+import { IDetailedNftInfo } from '../models/INftInfo'
+import { ITokenTxs } from '../models/ITokenTxs'
 
-const COINGECKO_COINS_LIST_API = 'https://api.coingecko.com/api/v3/coins/list'
-const COINGECKO_NFTS_LIST_API = 'https://api.coingecko.com/api/v3/nfts/list'
 // const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250'
 
-export async function fetchCoinsList(): Promise<ICoinGeckoCoinList> {
-	try {
-		const res = await fetch(COINGECKO_COINS_LIST_API);
-
-		if (!res.ok) {
-			throw new Error(`Fetch error, Coingecko Coins List: ${res.status} ${res.statusText}`);
-		}
-
-		return await res.json();
-	} catch (error) {
-		console.error('Error fetching Coingecko Coins List:', error);
-		throw error;
-	}
-}
 
 export async function fetchNameSearch(searchQuery: string): Promise<ISearchCoinList> {
 	try {
@@ -74,7 +57,7 @@ export async function fetchCoinInfo(coinId: string): Promise<IDetailedCoinInfo> 
 	}
 }
 
-export async function fetchNftInfo(coinId: string): Promise<IAdvancedNftInfo> {
+export async function fetchNftInfo(coinId: string): Promise<IDetailedNftInfo> {
 	try {
 		const res = await fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}`);
 
@@ -134,35 +117,6 @@ export async function fetchTokenTxs(
 		throw error;
 	}
 }
-
-export async function fetchNftList(): Promise<ICoinGeckoNftList> {
-	let allNfts: ICoinGeckoNftList = [];
-
-	for (let page = 1; page < 100; page++) {
-		try {
-			await new Promise((resolve) => setTimeout(resolve, 500));
-			const res = await fetch(`${COINGECKO_NFTS_LIST_API}?per_page=250&page=${page}`);
-
-			if (!res.ok) {
-				console.log(`Fetch error, API info page ${page}: ${res.status} ${res.statusText}`);
-				return allNfts;
-			}
-
-			const data: ICoinGeckoNftList = await res.json();
-			allNfts.push(...data);
-
-			if (data.length < 250) {
-				return allNfts;
-			}
-		} catch (error) {
-			console.error(`Error fetching API info page ${page}:`, error);
-			return allNfts;
-		}
-	}
-
-	return allNfts;
-}
-
 
 // used to fetch exchanges
 // export async function fetchExchangesList(): Promise<any> {

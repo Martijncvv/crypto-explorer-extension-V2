@@ -107,7 +107,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
         <div key={Date.now()} style={{ background: isExpanded ? 'linear-gradient(to bottom, #2F396D 0%, #3E6CB6 80%)' : colors.primary_dark, borderRadius: constants.border_radius }}>
             {exchanges.map((exchange, index) => (
                 <div
-                    key={exchange.id + exchange.quote}
+                    key={exchange.id + exchange.quote + index}
                     style={{
                         ...styles.exchangeWrapper,
                         ...(index === 0 && styles.firstExchange),

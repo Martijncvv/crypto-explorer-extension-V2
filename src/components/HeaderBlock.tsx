@@ -1,7 +1,14 @@
 import React, { CSSProperties, useState, useEffect, useRef } from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
-import {fetchCoinInfo, fetchPriceHistoryData, fetchNameSearch, fetchTrendingCoins} from "../utils/api";
+import {
+    fetchCoinInfo,
+    fetchPriceHistoryData,
+    fetchNameSearch,
+    fetchTrendingCoins,
+    fetchTokenTxs,
+    fetchNftInfo
+} from "../utils/api";
 import {
     IDetailedCoinInfo,
     IPriceHistoryData,
@@ -9,18 +16,22 @@ import {
     ISearchOptions,
     ITrendingCoinList
 } from "../models/ICoinInfo";
+import {IDetailedNftInfo} from "../models/INftInfo";
+import { ITokenTxs } from "../models/ITokenTxs";
 
 const menuIcon = require( "../static/images/icons/menu-icon.png")
 const searchIcon = require( "../static/images/icons/search-icon.png")
 interface HeaderBlockProps {
     mainLogo: string;
     setCoinInfo: (coinInfo: IDetailedCoinInfo) => void;
+    setNftInfo: (nftInfo: IDetailedNftInfo) => void;
     setPrice30dChartData: (priceChartData: IPriceHistoryData) => void;
     setPriceMaxChartData: (priceChartData: IPriceHistoryData) => void;
 }
 
-const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPrice30dChartData, setPriceMaxChartData }) => {
+const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setPrice30dChartData, setPriceMaxChartData }) => {
     const searchResultsRef = useRef(null);
+    const inputRef = useRef(null);
 
     const [searchInput, setSearchInput] = useState<string>('');
     const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
@@ -128,18 +139,23 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
         };
     }, []);
 
+
+
+    // get detailed coin info and trending info on startup
+    useEffect(() => {
+        getTrendingCoins()
+        fetchDetailedTokenInfo('bitcoin');
+        // if (inputRef.current) {
+        //     inputRef.current.focus();
+        // }
+    }, []);
+
     // Close the expansion if the click is outside of the search results block
     const handleClickOutside = (event: MouseEvent) => {
         if (searchResultsRef.current && !searchResultsRef.current.contains(event.target)) {
             setIsExpanded(false);
         }
     };
-
-    // get detailed coin info and trending info on startup
-    useEffect(() => {
-        getTrendingCoins()
-        fetchDetailedInfo('bitcoin');
-    }, []);
 
     const getTrendingCoins = async () => {
         try {
@@ -251,16 +267,16 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
         setIsExpanded(true);
     }
 
-    const fetchDetailedInfo = async (coinId: string) => {
+    const fetchDetailedTokenInfo = async (coinId: string) => {
         try {
-            const [coinSearchResult, price30dHistoryData, priceMaxHistoryData] = await Promise.all([
+            const [coinInfo, price30dHistoryData, priceMaxHistoryData] = await Promise.all([
                 fetchCoinInfo(coinId),
                 fetchPriceHistoryData(coinId, 'usd', '30'),
                 fetchPriceHistoryData(coinId, 'usd', 'max'),
             ]);
 
-            if (!coinSearchResult) {
-                console.log(`No results for coinSearchResult ${coinId}`)
+            if (!coinInfo) {
+                console.log(`No results for coinInfo ${coinId}`)
                 return
             }
             if (!price30dHistoryData) {
@@ -271,28 +287,44 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
                 console.log(`No results for priceMaxHistoryData ${coinId}`)
                 return
             }
-            console.log("coinSearchResult: ", coinSearchResult)
+            console.log("coinInfo: ", coinInfo)
 
-
-
-            setCoinInfo(coinSearchResult)
+            setCoinInfo(coinInfo)
+            setNftInfo(null)
 
             setPrice30dChartData(FormatChartData(price30dHistoryData))
             setPriceMaxChartData(FormatChartData(priceMaxHistoryData))
         } catch (error) {
-            console.error(`fetchDetailedInfo: Error searching for coin: ${coinId}`, error);
+            console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
+        }
+    }
+    const fetchDetailedNftInfo = async (coinId: string) => {
+        try {
+            const [nftInfo] = await Promise.all([
+                fetchNftInfo(coinId),
+            ]);
+            if (!nftInfo) {
+                console.log(`No results for nftInfo ${coinId}`)
+                return
+            }
+            console.log("nftInfo1: ", nftInfo)
+            setNftInfo(nftInfo)
+            setCoinInfo(null)
+            setPrice30dChartData(null)
+            setPriceMaxChartData(null)
+        } catch (error) {
+            console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
         }
     }
 
     const FormatChartData = (priceHistoryData) => {
-        console.log("priceHistoryData7: ", priceHistoryData)
         delete priceHistoryData.market_caps;
 
         if (priceHistoryData.prices.length > 100 ) {
             priceHistoryData.prices = downsampling(priceHistoryData.prices, 300)
             priceHistoryData.total_volumes = downsampling(priceHistoryData.total_volumes, 300)
         }
-        console.log("priceHistoryData7: ", priceHistoryData)
+
         // add all previous day-candle close data
         let formattedChartData: any = []
         for (let i = 0; i < priceHistoryData.prices.length - 1; i++) {
@@ -354,10 +386,48 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
         return newArray;
     }
 
-
-    const handleCoinOptionClick = async (coinId: string) => {
-        fetchDetailedInfo(coinId)
+    const handleCoinOptionClick = async (tokenInfo) => {
+        console.log("tokenInfo: ", tokenInfo)
+        if (!tokenInfo.nft) {
+         fetchDetailedTokenInfo(tokenInfo.id)
+        } else {
+          fetchDetailedNftInfo(tokenInfo.id)
+        }
         setIsExpanded(false);
+    }
+
+
+    async function getTxData(platformId, contractAddress) {
+        let domain, tokenTxData : ITokenTxs;
+
+        switch (platformId) {
+            case 'ethereum':
+                domain = 'etherscan.io';
+                break;
+            case 'binance-smart-chain':
+                domain = 'bscscan.com';
+                break;
+            case 'polygon-pos':
+                domain = 'polygonscan.com';
+                break;
+            case 'fantom':
+                domain = 'ftmscan.com';
+                break;
+            case 'cronos':
+                domain = 'cronoscan.com';
+                break;
+            case 'avalanche':
+                domain = 'snowtrace.io';
+                break;
+            case 'celo':
+                domain = 'celoscan.io';
+                break;
+            default:
+                throw new Error('Invalid platformId');
+        }
+
+        tokenTxData = await fetchTokenTxs(domain, contractAddress, 1000);
+        console.log('tokenTxData');
     }
 
     return (
@@ -374,6 +444,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
                     }}>
                             <img style={styles.searchbarImage} src={searchIcon} alt="Search" />
                             <input
+                                ref={inputRef}
                                 type="text"
                                 style={styles.searchInput}
                                 onChange={(e => setSearchInput(e.target.value))}
@@ -393,10 +464,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setPri
                                     key={tokenInfo.id + index}
                                     style={styles.coinSearchInfo}
                                     tabIndex={index}
-                                    onClick={() => handleCoinOptionClick(tokenInfo.id)}
+                                    onClick={() => handleCoinOptionClick(tokenInfo)}
                                     onKeyDown={(event) => {
                                         if (event.key === 'Enter') {
-                                            handleCoinOptionClick(tokenInfo.id);
+                                            handleCoinOptionClick(tokenInfo);
                                         }
                                     }}
                                 >
