@@ -97,18 +97,18 @@ export async function fetchPriceHistoryData(
 	}
 }
 
-export async function fetchTokenTxs(
+export async function fetchNftTxs(
 	domainName: string,
 	contractAddress: string,
 	txAmount: number
 ): Promise<ITokenTxs> {
 	try {
 		const res = await fetch(
-			`https://api.${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`
+			`https://api.${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc`
 		);
 
 		if (!res.ok) {
-			throw new Error(`Fetch error, Eth token txs info: ${res.status} ${res.statusText}`);
+			throw new Error(`Fetch error, ${domainName} token txs info: ${res.status} ${res.statusText}`);
 		}
 
 		return await res.json();

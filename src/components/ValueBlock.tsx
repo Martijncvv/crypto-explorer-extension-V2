@@ -5,16 +5,11 @@ import {amountFormatter} from "../utils/amountFormatter";
 
 interface ValueBlockProps {
     title: string;
-    mainValue: number;
-    mainPreFix?: string;
-    mainPostFix?: string;
-    secondaryValue?: any;
-    secondaryPreFix?: string;
-    secondaryPostFix?: string;
-    secondaryFormatter?: boolean;
+    mainValue: string;
+    secondaryValue?: string;
 }
 
-const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue,mainPreFix, mainPostFix, secondaryValue, secondaryPreFix, secondaryPostFix, secondaryFormatter = true }) => {
+const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue, secondaryValue }) => {
 
     const styles: { [key: string]: CSSProperties } = {
         rectangle: {
@@ -57,9 +52,9 @@ const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue,mainPreFix, ma
         <div style={styles.rectangle}>
             <div style={styles.title}>{title}</div>
             <div style={styles.values}>
-                <span style={styles.mainValue}>{mainPreFix}{mainValue ? amountFormatter(mainValue) : ' -'}{mainPostFix}</span>
+                <span style={styles.mainValue}>{mainValue}</span>
                 {secondaryValue &&
-                    <span style={styles.secondaryValue}>{secondaryPreFix}{!secondaryValue ? ' -' : secondaryFormatter ? amountFormatter(secondaryValue) : secondaryValue }{secondaryPostFix}</span>
+                    <span style={styles.secondaryValue}>{secondaryValue}</span>
                 }
             </div>
         </div>

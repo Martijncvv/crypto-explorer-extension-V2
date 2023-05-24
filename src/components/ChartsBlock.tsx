@@ -13,19 +13,20 @@ import {
     ReferenceLine
 } from 'recharts';
 import {IPriceHistoryData} from "../models/ICoinInfo";
+import {ITokenTxs} from "../models/ITokenTxs";
 import {amountFormatter} from "../utils/amountFormatter";
 
 interface ChartsBlockProps {
-    price30dHistorydata: IPriceHistoryData; // Ideally, you should use a specific type for the data instead of 'any'
-    priceMaxHistorydata: IPriceHistoryData; // Ideally, you should use a specific type for the data instead of 'any'
+    price30dHistorydata: IPriceHistoryData;
+    priceMaxHistorydata: IPriceHistoryData;
+    txsData: ITokenTxs;
 }
 
-const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMaxHistorydata} ) => {
+const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMaxHistorydata, txsData} ) => {
     const [chartOption, setChartOption] = useState<number>(1)
     // 30d HISTORY = 1
     // max HISTORY = 2
     const [formattedChartData, setFormattedChartData] = useState<any>([]);
-
     const styles: { [key: string]: CSSProperties } = {
         container: {
             width: 330,
@@ -51,13 +52,21 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         },
     };
 
+    const chartOptionCount = [price30dHistorydata, priceMaxHistorydata, txsData].filter(Boolean).length;
+    console.log("price30dHistorydata-chartblock: ", price30dHistorydata)
+    console.log("txsData-chartblock: ", txsData)
+    console.log("chartOptionCount: ", chartOptionCount)
 
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === 'ArrowRight') {
-                setChartOption(2)
+                if (chartOption < chartOptionCount) {
+                    setChartOption((chartOption) => chartOption + 1);
+                }
             } else if (event.key === 'ArrowLeft') {
-                setChartOption(1)
+                if (chartOption > 1) {
+                    setChartOption((chartOption) => chartOption - 1);
+                }
             }
         };
         document.addEventListener('keydown', handleKeyDown);
@@ -67,12 +76,31 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
     }, []);
 
     useEffect(() => {
-        if (chartOption === 2) {
-            setFormattedChartData(priceMaxHistorydata)
-        } else {
-            setFormattedChartData(price30dHistorydata)
+        if (price30dHistorydata && !txsData) {
+            if (chartOption === 1) {
+                console.log("price30dHistorydata1: ", price30dHistorydata)
+                setFormattedChartData(price30dHistorydata)
+            }
+            else {
+                setFormattedChartData(priceMaxHistorydata)
+            }
         }
-    }, [chartOption, price30dHistorydata]);
+        if (price30dHistorydata && txsData) {
+            if (chartOption === 1) {
+                setFormattedChartData(price30dHistorydata)
+            }
+            else if (chartOption === 2) {
+                setFormattedChartData(priceMaxHistorydata)
+            }
+            else {
+                setFormattedChartData(txsData)
+            }
+        }
+        if (price30dHistorydata && !priceMaxHistorydata) {
+            console.log("set tx chart")
+                setFormattedChartData(txsData)
+        }
+    }, [chartOption, price30dHistorydata, txsData]);
 
 
 
@@ -117,14 +145,15 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
     return (
         <div style={styles.container}>
             <div style={styles.menuOptions}>
-                <div
-                    onClick={() => setChartOption(1)}
-                    style={chartOption === 1 ? styles.activeOption : styles.menuOption}
-                />
-                <div
-                    onClick={() => setChartOption(2)}
-                    style={chartOption === 2 ? styles.activeOption : styles.menuOption}
-                />
+                {
+                    Array.from({ length: chartOptionCount }, (_, index) => index + 1).map((option) => (
+                        <div
+                            key={option}
+                            onClick={() => setChartOption(option)}
+                            style={chartOption === option ? styles.activeOption : styles.menuOption}
+                        />
+                    ))
+                }
             </div>
             <ResponsiveContainer width="100%" height="100%" >
                     <ComposedChart

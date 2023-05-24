@@ -12,6 +12,8 @@ import ChartsBlock from "../components/ChartsBlock";
 import {IDetailedCoinInfo} from "../models/ICoinInfo";
 import {IDetailedNftInfo} from "../models/INftInfo";
 import TickerBlock from "../components/TickerBlock";
+import {amountFormatter, numberFormatter, percentageFormatter} from "../utils/amountFormatter";
+import {ITokenTxs} from "../models/ITokenTxs";
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 
 const bitcoinIcon = require( "../static/images/icons/bitcoin-icon.png")
@@ -50,15 +52,15 @@ const App: React.FC = () => {
 	const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>()
 	const [price30dChartData, setPrice30dChartData] = useState<any>()
 	const [priceMaxChartData, setPriceMaxChartData] = useState<any>()
-
-	// todo add onchain txs chart
-	// todo nft page
+	const [txsData, setTxsData] = useState<any>()
+	console.log("txsData9: ", txsData)
+	console.log("priceMaxChartData9: ", priceMaxChartData)
+	// todo fix onchain txs chart, data formatting
 	// todo, check other social link names: reddit, telegram, explorer, conigecko id
-	// todo fix formatting of data valueblock
-	// todo add chart
-	// format 6000 as 6000, not 6k
 
+	// combine chart data in 1 fetch, get last 30 days from the max fetch
 	// improve rendering efficiency
+	// fix all anys
 	// keep highest and lowest price on chart
 	// bring formatExchangeInfo function to exchangeBlock component
 	// drag and zoom chart functionality
@@ -103,7 +105,7 @@ const App: React.FC = () => {
 	}
 
 	console.log("coinInfo1: ", coinInfo)
-	console.log("nftInfo2: ", nftInfo)
+	console.log("nftInfo-popup: ", nftInfo)
 	if (coinInfo?.tickers)	formatExchangeInfo(coinInfo.tickers)
 
 	return (
@@ -114,6 +116,8 @@ const App: React.FC = () => {
 							 setNftInfo={setNftInfo}
 							 setPrice30dChartData={setPrice30dChartData}
 							 setPriceMaxChartData={setPriceMaxChartData}
+							 setTxsData={setTxsData}
+
 				/>
 			</div>
 			{coinInfo?.name &&
@@ -129,10 +133,12 @@ const App: React.FC = () => {
 				</>
 			}
 
-			{price30dChartData?.length > 0 &&
+			{price30dChartData?.length > 0 || txsData?.length > 0 &&
 				<ChartsBlock
 					price30dHistorydata={price30dChartData}
-					priceMaxHistorydata={priceMaxChartData} />
+					priceMaxHistorydata={priceMaxChartData}
+					txsData={txsData}
+				/>
 			}
 
 			<div style={styles.bottomContainer}>
@@ -142,8 +148,8 @@ const App: React.FC = () => {
 							<PriceBar allTimeLow={coinInfo.market_data?.atl?.usd} allTimeHigh={coinInfo.market_data?.ath?.usd} price={coinInfo.market_data?.current_price?.usd} />
 						</div>
 						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
-							<ValueBlock title="Circ. Supply" mainValue={coinInfo.market_data?.circulating_supply} secondaryValue={coinInfo.market_data?.total_supply} secondaryPreFix='/ '/>
-							<ValueBlock title="Market Cap" mainValue={coinInfo.market_data?.market_cap.usd} mainPreFix='$' secondaryValue={coinInfo.market_cap_rank} secondaryPreFix='#' secondaryFormatter={false}/>
+							<ValueBlock title="Circ. Supply" mainValue={amountFormatter(coinInfo.market_data?.circulating_supply)} secondaryValue={`/ ${amountFormatter(coinInfo.market_data?.total_supply)}`}/>
+							<ValueBlock title="Market Cap" mainValue={`$${amountFormatter(coinInfo.market_data?.market_cap.usd)}`}  secondaryValue={`#${coinInfo.market_cap_rank}`}/>
 						</div>
 						<div  style={styles.bottomMargin}>
 							<ExchangeBlock exchanges={formatExchangeInfo(coinInfo.tickers)} />
@@ -179,16 +185,16 @@ const App: React.FC = () => {
 				{nftInfo?.name &&
 					<>
 						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
-							<ValueBlock title="Floor" mainValue={nftInfo.floor_price?.usd} mainPreFix='$' secondaryValue={nftInfo.floor_price_in_usd_24h_percentage_change} secondaryPostFix={'%'}/>
-							<ValueBlock title="Native" mainValue={nftInfo.floor_price?.native_currency} secondaryValue={nftInfo.native_currency} secondaryFormatter={false}/>
+							<ValueBlock title="Floor" mainValue={`$${amountFormatter(nftInfo.floor_price?.usd)}`} secondaryValue={`${percentageFormatter(nftInfo.floor_price_in_usd_24h_percentage_change)}%`} />
+							<ValueBlock title="Native" mainValue={`${amountFormatter(nftInfo.floor_price?.native_currency)}`} secondaryValue={nftInfo.native_currency?.charAt(0).toUpperCase() + nftInfo?.native_currency?.slice(1)}/>
 						</div>
 						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
-							<ValueBlock title="Total supply" mainValue={nftInfo.total_supply}/>
-							<ValueBlock title="Unique owners" mainValue={nftInfo.number_of_unique_addresses} secondaryValue={nftInfo.number_of_unique_addresses_24h_percentage_change} secondaryFormatter={true} secondaryPostFix={'%'}/>
+							<ValueBlock title="Total supply" mainValue={`${nftInfo.total_supply}`}/>
+							<ValueBlock title="Unique owners" mainValue={numberFormatter(nftInfo.number_of_unique_addresses)} secondaryValue={`${percentageFormatter(nftInfo.number_of_unique_addresses_24h_percentage_change)}%`}/>
 						</div>
 						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
-							<ValueBlock title="Market Cap" mainValue={nftInfo?.market_cap?.usd}/>
-							<ValueBlock title="volume" mainValue={nftInfo.volume_24h.usd} mainPreFix='$' secondaryValue={nftInfo.volume_in_usd_24h_percentage_change} secondaryFormatter={true} secondaryPostFix={'%'}/>
+							<ValueBlock title="Market Cap" mainValue={`$${amountFormatter(nftInfo?.market_cap?.usd)}`}/>
+							<ValueBlock title="Volume" mainValue={`$${amountFormatter(nftInfo.volume_24h.usd)}`} secondaryValue={`${percentageFormatter(nftInfo.volume_in_usd_24h_percentage_change)}%`}/>
 						</div>
 
 						<div  style={styles.bottomMargin}>

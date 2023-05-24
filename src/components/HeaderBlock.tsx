@@ -6,7 +6,7 @@ import {
     fetchPriceHistoryData,
     fetchNameSearch,
     fetchTrendingCoins,
-    fetchTokenTxs,
+    fetchNftTxs,
     fetchNftInfo
 } from "../utils/api";
 import {
@@ -27,9 +27,10 @@ interface HeaderBlockProps {
     setNftInfo: (nftInfo: IDetailedNftInfo) => void;
     setPrice30dChartData: (priceChartData: IPriceHistoryData) => void;
     setPriceMaxChartData: (priceChartData: IPriceHistoryData) => void;
+    setTxsData: (txsData: any) => void;
 }
 
-const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setPrice30dChartData, setPriceMaxChartData }) => {
+const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setPrice30dChartData, setPriceMaxChartData, setTxsData }) => {
     const searchResultsRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -144,8 +145,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     // get detailed coin info and trending info on startup
     useEffect(() => {
         getTrendingCoins()
-        // fetchDetailedTokenInfo('bitcoin');
-        fetchDetailedNftInfo('bored-ape-solana-club');
+        fetchDetailedTokenInfo('bitcoin');
+        // fetchDetailedNftInfo('bored-ape-yacht-club');
         // if (inputRef.current) {
         //     inputRef.current.focus();
         // }
@@ -288,12 +289,11 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 console.log(`No results for priceMaxHistoryData ${coinId}`)
                 return
             }
-            console.log("coinInfo: ", coinInfo)
 
             setCoinInfo(coinInfo)
             setNftInfo(null)
 
-            setPrice30dChartData(FormatChartData(price30dHistoryData))
+            setPrice30dChartData(FormatChartData(price30dHistoryData)) // combine this in 1 fetch, last 30 days from the max
             setPriceMaxChartData(FormatChartData(priceMaxHistoryData))
         } catch (error) {
             console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
@@ -308,13 +308,22 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 console.log(`No results for nftInfo ${coinId}`)
                 return
             }
-            console.log("nftInfo1: ", nftInfo)
+            console.log("nftInfo-header: ", nftInfo)
+
+            // todo check if has contract
+            const txData = await getTxData(nftInfo.asset_platform_id, nftInfo.contract_address)
+            console.log("txData: ", txData)
             setNftInfo(nftInfo)
             setCoinInfo(null)
+            setTxsData(txData)
             setPrice30dChartData(null)
             setPriceMaxChartData(null)
         } catch (error) {
-            console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
+            console.error(`fetchDetailedNftInfo: Error searching for coin: ${coinId}`, error);
+            setNftInfo(null)
+            setCoinInfo(null)
+            setPrice30dChartData(null)
+            setPriceMaxChartData(null)
         }
     }
 
@@ -388,7 +397,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     }
 
     const handleCoinOptionClick = async (tokenInfo) => {
-        console.log("tokenInfo: ", tokenInfo)
         if (!tokenInfo.nft) {
          fetchDetailedTokenInfo(tokenInfo.id)
         } else {
@@ -398,8 +406,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     }
 
 
-    async function getTxData(platformId, contractAddress) {
-        let domain, tokenTxData : ITokenTxs;
+    async function getTxData(platformId, contractAddress): Promise<any> {
+        let domain: string;
 
         switch (platformId) {
             case 'ethereum':
@@ -427,8 +435,22 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 throw new Error('Invalid platformId');
         }
 
-        tokenTxData = await fetchTokenTxs(domain, contractAddress, 1000);
-        console.log('tokenTxData');
+        const nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
+
+        const nftTxsChartFormat: { date: Date, volume: number }[] = Object.entries(nftTxsData.result.reduce((result: { [dateString: string]: { date: Date, volume: number } }, txInfo: any) => {
+            const date = new Date(Number(txInfo.timeStamp) * 1000);
+            const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
+
+            if (result[dateString]) {
+                result[dateString].volume += 1;
+            } else {
+                result[dateString] = { date: date, volume: 1 };
+            }
+
+            return result;
+        }, {})).map(([dateString, { date, volume }]) => ({ date, volume }));
+
+        return nftTxsChartFormat;
     }
 
     return (

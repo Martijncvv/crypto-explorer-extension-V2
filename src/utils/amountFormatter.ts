@@ -60,3 +60,18 @@ export function numberFormatter(amount: number | null | undefined): string {
 	// Default case
 	return `${amount.toFixed(0)}`;
 }
+export function percentageFormatter(amount: number | null | undefined): string {
+	if (amount === null || amount === undefined || amount === 0) {
+		return '';
+	}
+	if (amount >= 100) {
+		return  `+${Math.round(amount).toString()}`
+	}
+	if (amount >= 10) {
+		return `+${amount.toFixed(1)}`;
+	}
+	if (amount > 0) {
+		return `+${amount.toFixed(2)}`;
+	}
+	return amount.toFixed(2);
+}
