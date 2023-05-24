@@ -26,6 +26,7 @@ export interface IDetailedNftInfo {
 	number_of_unique_addresses: number
 	number_of_unique_addresses_24h_percentage_change: number
 	total_supply: number
+	txVolumeData: any
 }
 
 interface ISize {

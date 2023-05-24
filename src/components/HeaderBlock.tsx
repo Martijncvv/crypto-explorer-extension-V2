@@ -27,10 +27,9 @@ interface HeaderBlockProps {
     setNftInfo: (nftInfo: IDetailedNftInfo) => void;
     setPrice30dChartData: (priceChartData: IPriceHistoryData) => void;
     setPriceMaxChartData: (priceChartData: IPriceHistoryData) => void;
-    setTxsData: (txsData: any) => void;
 }
 
-const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setPrice30dChartData, setPriceMaxChartData, setTxsData }) => {
+const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setPrice30dChartData, setPriceMaxChartData }) => {
     const searchResultsRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -276,6 +275,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 fetchPriceHistoryData(coinId, 'usd', '30'),
                 fetchPriceHistoryData(coinId, 'usd', 'max'),
             ]);
+            // console.log("priceMaxHistoryData: ", priceMaxHistoryData)
+            // console.log("price30dHistoryData: ", price30dHistoryData)
 
             if (!coinInfo) {
                 console.log(`No results for coinInfo ${coinId}`)
@@ -289,9 +290,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 console.log(`No results for priceMaxHistoryData ${coinId}`)
                 return
             }
-
-            setCoinInfo(coinInfo)
             setNftInfo(null)
+            setCoinInfo(coinInfo)
 
             setPrice30dChartData(FormatChartData(price30dHistoryData)) // combine this in 1 fetch, last 30 days from the max
             setPriceMaxChartData(FormatChartData(priceMaxHistoryData))
@@ -308,14 +308,15 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 console.log(`No results for nftInfo ${coinId}`)
                 return
             }
-            console.log("nftInfo-header: ", nftInfo)
 
             // todo check if has contract
-            const txData = await getTxData(nftInfo.asset_platform_id, nftInfo.contract_address)
-            console.log("txData: ", txData)
+            if (nftInfo.asset_platform_id) {
+                const txVolumeData = await getTxData(nftInfo.asset_platform_id, nftInfo.contract_address)
+                nftInfo.txVolumeData = txVolumeData
+            }
+            console.log("nftInfo: ", nftInfo)
             setNftInfo(nftInfo)
             setCoinInfo(null)
-            setTxsData(txData)
             setPrice30dChartData(null)
             setPriceMaxChartData(null)
         } catch (error) {
@@ -446,7 +447,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             } else {
                 result[dateString] = { date: date, volume: 1 };
             }
-
             return result;
         }, {})).map(([dateString, { date, volume }]) => ({ date, volume }));
 

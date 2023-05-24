@@ -17,16 +17,21 @@ import {ITokenTxs} from "../models/ITokenTxs";
 import {amountFormatter} from "../utils/amountFormatter";
 
 interface ChartsBlockProps {
-    price30dHistorydata: IPriceHistoryData;
-    priceMaxHistorydata: IPriceHistoryData;
-    txsData: ITokenTxs;
+    price30dHistorydata?: IPriceHistoryData;
+    priceMaxHistorydata?: IPriceHistoryData;
+    txVolumeData?: any;
 }
 
-const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMaxHistorydata, txsData} ) => {
+const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMaxHistorydata, txVolumeData} ) => {
     const [chartOption, setChartOption] = useState<number>(1)
+    const chartOptionCount = [price30dHistorydata, priceMaxHistorydata, txVolumeData].filter(Boolean).length;
     // 30d HISTORY = 1
     // max HISTORY = 2
-    const [formattedChartData, setFormattedChartData] = useState<any>([]);
+    const [formattedPriceChartData, setFormattedPriceChartData] = useState<any>([]);
+    const [formattedOnchainChartData, setFormattedOnchainChartData] = useState<any>([]);
+
+    console.log("price30dHistorydata: ", price30dHistorydata)
+
     const styles: { [key: string]: CSSProperties } = {
         container: {
             width: 330,
@@ -52,20 +57,16 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         },
     };
 
-    const chartOptionCount = [price30dHistorydata, priceMaxHistorydata, txsData].filter(Boolean).length;
-    console.log("price30dHistorydata-chartblock: ", price30dHistorydata)
-    console.log("txsData-chartblock: ", txsData)
-    console.log("chartOptionCount: ", chartOptionCount)
 
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === 'ArrowRight') {
                 if (chartOption < chartOptionCount) {
-                    setChartOption((chartOption) => chartOption + 1);
+                    setChartOption((prevChartOption) => prevChartOption + 1);
                 }
             } else if (event.key === 'ArrowLeft') {
                 if (chartOption > 1) {
-                    setChartOption((chartOption) => chartOption - 1);
+                    setChartOption((prevChartOption) => prevChartOption - 1);
                 }
             }
         };
@@ -73,38 +74,36 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [chartOption, chartOptionCount]);
 
     useEffect(() => {
-        if (price30dHistorydata && !txsData) {
+        if (price30dHistorydata && !txVolumeData) {
             if (chartOption === 1) {
-                console.log("price30dHistorydata1: ", price30dHistorydata)
-                setFormattedChartData(price30dHistorydata)
+                setFormattedPriceChartData(price30dHistorydata)
             }
             else {
-                setFormattedChartData(priceMaxHistorydata)
+                setFormattedPriceChartData(priceMaxHistorydata)
             }
         }
-        if (price30dHistorydata && txsData) {
+
+        if (price30dHistorydata && txVolumeData) {
             if (chartOption === 1) {
-                setFormattedChartData(price30dHistorydata)
+                setFormattedPriceChartData(price30dHistorydata)
             }
             else if (chartOption === 2) {
-                setFormattedChartData(priceMaxHistorydata)
-            }
-            else {
-                setFormattedChartData(txsData)
+                setFormattedPriceChartData(priceMaxHistorydata)
             }
         }
-        if (price30dHistorydata && !priceMaxHistorydata) {
-            console.log("set tx chart")
-                setFormattedChartData(txsData)
+
+        if (txVolumeData && !price30dHistorydata) {
+            setChartOption(3)
         }
-    }, [chartOption, price30dHistorydata, txsData]);
+
+    }, [chartOption, price30dHistorydata, txVolumeData]);
 
 
 
-    const CustomTooltip = props => {
+    const CustomPriceTooltip = props => {
         const { active, payload } = props;
 
         if (active && payload && payload.length) {
@@ -132,8 +131,35 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         }
         return null;
     };
+    const CustomOnchainTooltip = props => {
+        const { active, payload } = props;
 
-    const CustomBar = (props) => {
+        if (active && payload && payload.length) {
+
+            const date = payload[0]?.payload.date;
+            const formattedDate = date.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit' });
+            const volume = payload[0].payload.volume
+
+            return (
+                <div
+                    style={{
+                        background: colors.primary_dark,
+                        border: 'none',
+                        borderRadius: constants.border_radius_small,
+                        color: '#fff',
+                        padding: '10px',
+                        fontSize: '14px',
+                    }}
+                >
+                    <p style={{ margin: 0, marginBottom: '6px' }}>{`${formattedDate}`}</p>
+                    <p style={{ margin: 0, marginBottom: '6px' }}>{`${volume} txs`}</p>
+                </div>
+            );
+        }
+        return null;
+    };
+
+    const CustomPriceBar = (props) => {
         const { x, y, width, height, date } = props;
         let fill=  chartOption === 1 && date.getDay() === 1 ? colors.secondary_dark : colors.primary_dark
 
@@ -141,111 +167,193 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
             <rect x={x} y={y} width={width} height={height} fill={fill} />
         );
     };
+    const CustomOnchainBar = (props) => {
+        const { x, y, width, height, date } = props;
+        let fill= date.getDay() === 1 ? colors.secondary_dark : colors.primary_dark
 
+        return (
+            <rect x={x} y={y} width={width} height={height} fill={fill} />
+        );
+    };
+console.log("chartOption: ", chartOption)
     return (
         <div style={styles.container}>
-            <div style={styles.menuOptions}>
-                {
-                    Array.from({ length: chartOptionCount }, (_, index) => index + 1).map((option) => (
-                        <div
-                            key={option}
-                            onClick={() => setChartOption(option)}
-                            style={chartOption === option ? styles.activeOption : styles.menuOption}
-                        />
-                    ))
-                }
-            </div>
-            <ResponsiveContainer width="100%" height="100%" >
-                    <ComposedChart
-                        data={formattedChartData}
-                        margin={{ top: 0, left: 0, right: 0, bottom: 0 }}
-                    >
-                        <defs>
-                            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
-                                <feOffset dx="2" dy="2" result="offsetblur" />
-                                <feComponentTransfer>
-                                    <feFuncA type="linear" slope="0.5" />
-                                </feComponentTransfer>
-                                <feMerge>
-                                    <feMergeNode />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                            </filter>
-                        </defs>
-
-                        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-
-                        <Line type="monotone"
-                              strokeWidth={2}
-                              dataKey="chartFormatPrice"
-                              stroke={colors.secondary_medium}
-                              filter="url(#shadow)"
-                              dot={false}
-                        />
-
-                        <Bar
-                            dataKey="chartFormatVolume"
-                            shape={<CustomBar />}
-                        />
-
-                        <ReferenceLine
-                            y={Math.max(...formattedChartData.map(dateData => dateData.chartFormatPrice))}
-                            stroke={colors.primary_dark}
-                            // fill={colors.white_medium}
-                            strokeDasharray="0 36 9 0"
-                            style={{ display: 'none' }}
-                        >
-                            <Label
-                                value={`$${amountFormatter(Math.max(...formattedChartData.map(dateData => dateData.price)))}`}
-                                position="insideTopLeft"
-                                fill={colors.secondary_light}
-                                // fill={colors.white_medium}
+            {chartOptionCount > 1 &&
+                <div style={styles.menuOptions}>
+                    {
+                        Array.from({ length: chartOptionCount }, (_, index) => index + 1).map((option) => (
+                            <div
+                                key={option}
+                                onClick={() => setChartOption(option)}
+                                style={chartOption === option ? styles.activeOption : styles.menuOption}
                             />
-                        </ReferenceLine>
-                        <ReferenceLine
-                            y={Math.min(...formattedChartData.map(dateData => dateData.chartFormatPrice))}
-                            stroke={colors.primary_dark}
-                            // fill={colors.white_medium}
-                            strokeDasharray="0 36 9 0"
-                            style={{ display: 'none' }}
+                        ))
+                    }
+                </div>
+            }
+            {(chartOption === 1 || chartOption === 2) &&
+                <ResponsiveContainer width="100%" height="100%" >
+                        <ComposedChart
+                            data={formattedPriceChartData}
+                            margin={{ top: 0, left: 0, right: 0, bottom: 0 }}
                         >
-                            <Label
-                                value={`$${amountFormatter(Math.min(...formattedChartData.map(dateData => dateData.price)))}`}
-                                position="insideBottomLeft"
-                                fill={colors.secondary_light}
-                                // fill={colors.white_medium}
-                            />
-                        </ReferenceLine>
+                            <XAxis
+                                padding={{ left: chartOption === 2 ? 24 : 12, right: 12 }}
+                                dataKey="date"
+                                tickFormatter={(date, index) => {
+                                    if (chartOption === 1 && formattedPriceChartData.length > 40 ) {
+                                        return '';
+                                    }
+                                    if (chartOption === 1 && date.getDay() === 1) {
+                                        return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
+                                    }
+                                    if (chartOption === 2) {
+                                        const totalDataPoints = formattedPriceChartData.length;
+                                        const desiredTickCount = 5;
+                                        const interval = Math.ceil(totalDataPoints / desiredTickCount);
 
-                        <XAxis
-                            padding={{ left: chartOption === 2 ? 24 : 12, right: 12 }}
-                            dataKey="date"
-                            tickFormatter={(date, index) => {
-                                if (chartOption === 1 && date.getDay() === 1) {
-                                    return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
-                                }
-                                if (chartOption === 2) {
-                                    const totalDataPoints = formattedChartData.length;
+                                        if (index  % interval === 0 && index !== totalDataPoints - 1) {
+                                            return date.toLocaleDateString('en-GB', { month: '2-digit', year: '2-digit' });
+                                        }
+                                    }
+                                    return '';
+                                }}
+                                interval={0}
+                                height={28}
+                                axisLine={{ stroke: 'none' }}
+                                tickLine={{ stroke: 'none' }}
+                                tick={{ fontSize: 12, fill: 'white' }}
+                                tickMargin={2}
+                            />
+
+                            <defs>
+                                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                                    <feOffset dx="2" dy="2" result="offsetblur" />
+                                    <feComponentTransfer>
+                                        <feFuncA type="linear" slope="0.5" />
+                                    </feComponentTransfer>
+                                    <feMerge>
+                                        <feMergeNode />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
+
+                            <Tooltip content={<CustomPriceTooltip />} cursor={{ fill: 'transparent' }} />
+
+                            <Line type="monotone"
+                                  strokeWidth={2}
+                                  dataKey="chartFormatPrice"
+                                  stroke={colors.secondary_medium}
+                                  filter="url(#shadow)"
+                                  dot={false}
+                            />
+
+                            <Bar
+                                dataKey="chartFormatVolume"
+                                shape={<CustomPriceBar />}
+                            />
+
+                            <ReferenceLine
+                                y={Math.max(...formattedPriceChartData.map(dateData => dateData.chartFormatPrice))}
+                                stroke={colors.primary_dark}
+                                // fill={colors.white_medium}
+                                strokeDasharray="0 36 9 0"
+                                style={{ display: 'none' }}
+                            >
+                                <Label
+                                    value={`$${amountFormatter(Math.max(...formattedPriceChartData.map(dateData => dateData.price)))}`}
+                                    position="insideTopLeft"
+                                    fill={colors.secondary_light}
+                                    // fill={colors.white_medium}
+                                />
+                            </ReferenceLine>
+                            <ReferenceLine
+                                y={Math.min(...formattedPriceChartData.map(dateData => dateData.chartFormatPrice))}
+                                stroke={colors.primary_dark}
+                                // fill={colors.white_medium}
+                                strokeDasharray="0 36 9 0"
+                                style={{ display: 'none' }}
+                            >
+                                <Label
+                                    value={`$${amountFormatter(Math.min(...formattedPriceChartData.map(dateData => dateData.price)))}`}
+                                    position="insideBottomLeft"
+                                    fill={colors.secondary_light}
+                                    // fill={colors.white_medium}
+                                />
+                            </ReferenceLine>
+
+
+                        </ComposedChart>
+                </ResponsiveContainer>
+            }
+            {(chartOption === 3 && txVolumeData.length > 0) &&
+                <ResponsiveContainer width="100%" height="100%" >
+                        <ComposedChart
+                            data={txVolumeData}
+                            margin={{ top: 0, left: 0, right: 0, bottom: 0 }}
+                        >
+                            <defs>
+                                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                                    <feOffset dx="2" dy="2" result="offsetblur" />
+                                    <feComponentTransfer>
+                                        <feFuncA type="linear" slope="0.5" />
+                                    </feComponentTransfer>
+                                    <feMerge>
+                                        <feMergeNode />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
+
+                            <Tooltip content={<CustomOnchainTooltip />} cursor={{ fill: 'transparent' }} />
+
+                            <Bar
+                                dataKey="volume"
+                                shape={<CustomOnchainBar />}
+                            />
+
+                            <ReferenceLine
+                                y={Math.max(...txVolumeData.map(dateData => dateData.volume))}
+                                stroke={colors.primary_dark}
+                                strokeDasharray="0 36 9 0"
+                            >
+                                <Label
+                                    value={`${Math.max(...txVolumeData.map(dateData => dateData.volume))}`}
+                                    position="insideBottomLeft"
+                                    fill={colors.secondary_light}
+                                />
+                            </ReferenceLine>
+
+                            <XAxis
+                                padding={{ left: 12, right: 12 }}
+                                dataKey="date"
+                                tickFormatter={(date, index) => {
+
+                                    const totalDataPoints = txVolumeData.length;
                                     const desiredTickCount = 5;
                                     const interval = Math.ceil(totalDataPoints / desiredTickCount);
 
                                     if (index  % interval === 0 && index !== totalDataPoints - 1) {
-                                        return date.toLocaleDateString('en-GB', { month: '2-digit', year: '2-digit' });
+                                        return date.toLocaleDateString('en-GB', {
+                                            month: '2-digit',
+                                            year: '2-digit'
+                                        });
                                     }
-                                }
-                                return '';
-                            }}
-                            interval={0}
-                            height={28}
-                            axisLine={{ stroke: 'none' }}
-                            tickLine={{ stroke: 'none' }}
-                            tick={{ fontSize: 12, fill: 'white' }}
-                            tickMargin={2}
-                        />
-                    </ComposedChart>
 
-            </ResponsiveContainer>
+                                }}
+                                interval={0}
+                                height={28}
+                                axisLine={{ stroke: 'none' }}
+                                tickLine={{ stroke: 'none' }}
+                                tick={{ fontSize: 12, fill: 'white' }}
+                                tickMargin={2}
+                            />
+                        </ComposedChart>
+                </ResponsiveContainer>
+            }
         </div>
     );
 }

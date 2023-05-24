@@ -53,8 +53,8 @@ const App: React.FC = () => {
 	const [price30dChartData, setPrice30dChartData] = useState<any>()
 	const [priceMaxChartData, setPriceMaxChartData] = useState<any>()
 	const [txsData, setTxsData] = useState<any>()
-	console.log("txsData9: ", txsData)
-	console.log("priceMaxChartData9: ", priceMaxChartData)
+
+
 	// todo fix onchain txs chart, data formatting
 	// todo, check other social link names: reddit, telegram, explorer, conigecko id
 
@@ -104,8 +104,6 @@ const App: React.FC = () => {
 		});
 	}
 
-	console.log("coinInfo1: ", coinInfo)
-	console.log("nftInfo-popup: ", nftInfo)
 	if (coinInfo?.tickers)	formatExchangeInfo(coinInfo.tickers)
 
 	return (
@@ -116,30 +114,33 @@ const App: React.FC = () => {
 							 setNftInfo={setNftInfo}
 							 setPrice30dChartData={setPrice30dChartData}
 							 setPriceMaxChartData={setPriceMaxChartData}
-							 setTxsData={setTxsData}
-
 				/>
 			</div>
 			{coinInfo?.name &&
 				<>
 					<TitleBlock title={coinInfo.name} />
 					<TickerBlock ticker={coinInfo.symbol} />
+					{(price30dChartData?.length > 0) &&
+						<ChartsBlock
+							price30dHistorydata={price30dChartData}
+							priceMaxHistorydata={priceMaxChartData}
+						/>
+					}
 				</>
 			}
 			{nftInfo?.name &&
 				<>
 					<TitleBlock title={nftInfo.name} />
 					<TickerBlock ticker={nftInfo.symbol} />
+					{(nftInfo?.txVolumeData?.length > 0) &&
+						<ChartsBlock
+							txVolumeData={nftInfo.txVolumeData}
+						/>
+					}
 				</>
 			}
 
-			{price30dChartData?.length > 0 || txsData?.length > 0 &&
-				<ChartsBlock
-					price30dHistorydata={price30dChartData}
-					priceMaxHistorydata={priceMaxChartData}
-					txsData={txsData}
-				/>
-			}
+
 
 			<div style={styles.bottomContainer}>
 				{coinInfo?.name &&
