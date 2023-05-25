@@ -1,6 +1,7 @@
 import React, { CSSProperties } from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface TickerBlockProps {
     ticker: string;
@@ -30,7 +31,7 @@ const TickerBlock: React.FC<TickerBlockProps> = ({ticker}) => {
 
     return (
         <div style={styles.container}>
-            <span style={styles.tickerText}>{ticker.toUpperCase()}</span>
+                <span style={styles.tickerText}>{ticker.toUpperCase()}</span>
         </div>
     );
 }

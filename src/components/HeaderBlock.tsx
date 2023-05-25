@@ -18,6 +18,9 @@ import {
 } from "../models/ICoinInfo";
 import {IDetailedNftInfo} from "../models/INftInfo";
 import { ITokenTxs } from "../models/ITokenTxs";
+import CircularProgress from "@mui/material/CircularProgress";
+import SearchOffIcon from '@mui/icons-material/SearchOff';
+import SearchIcon from '@mui/icons-material/Search';
 
 const menuIcon = require( "../static/images/icons/menu-icon.png")
 const searchIcon = require( "../static/images/icons/search-icon.png")
@@ -25,14 +28,14 @@ interface HeaderBlockProps {
     mainLogo: string;
     setCoinInfo: (coinInfo: IDetailedCoinInfo) => void;
     setNftInfo: (nftInfo: IDetailedNftInfo) => void;
-    setPrice30dChartData: (priceChartData: IPriceHistoryData) => void;
-    setPriceMaxChartData: (priceChartData: IPriceHistoryData) => void;
 }
 
-const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setPrice30dChartData, setPriceMaxChartData }) => {
+const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo }) => {
     const searchResultsRef = useRef(null);
     const inputRef = useRef(null);
 
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isError, setIsError] = useState<boolean>(false);
     const [searchInput, setSearchInput] = useState<string>('');
     const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -70,6 +73,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             width: 20,
             height: 20,
             marginLeft: 12,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
         },
         searchInput: {
             marginLeft: 12,
@@ -128,6 +134,16 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             height: 40,
             borderRadius: constants.border_radius_small,
         },
+        circularProgress: {
+            marginLeft: 12,
+            width: 40,
+            height: 40,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+
+
     };
 
     // functionality for clicking outside of the search results block
@@ -241,6 +257,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
         } catch (error) {
             console.error("handleSearch: Error searching for coins:", error);
+            setIsError(true);
             setDisplayResults( {tokens: [{
                     id: "noResult",
                     name: "No results",
@@ -270,61 +287,66 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
     const fetchDetailedTokenInfo = async (coinId: string) => {
         try {
-            const [coinInfo, price30dHistoryData, priceMaxHistoryData] = await Promise.all([
+            setIsLoading(true);
+            const [coinInfo, priceMaxHistoryDataRes] = await Promise.all([
                 fetchCoinInfo(coinId),
-                fetchPriceHistoryData(coinId, 'usd', '30'),
                 fetchPriceHistoryData(coinId, 'usd', 'max'),
             ]);
-            // console.log("priceMaxHistoryData: ", priceMaxHistoryData)
-            // console.log("price30dHistoryData: ", price30dHistoryData)
 
             if (!coinInfo) {
                 console.log(`No results for coinInfo ${coinId}`)
+                setIsError(true);
                 return
             }
-            if (!price30dHistoryData) {
-                console.log(`No results for price30dHistoryData ${coinId}`)
-                return
-            }
-            if (!priceMaxHistoryData) {
+            if (!priceMaxHistoryDataRes) {
                 console.log(`No results for priceMaxHistoryData ${coinId}`)
+                setIsError(true);
                 return
             }
-            setNftInfo(null)
-            setCoinInfo(coinInfo)
 
-            setPrice30dChartData(FormatChartData(price30dHistoryData)) // combine this in 1 fetch, last 30 days from the max
-            setPriceMaxChartData(FormatChartData(priceMaxHistoryData))
+            // get past 30 days
+            let price30dHistoryDataRes: any = {prices: [], total_volumes: []}
+            price30dHistoryDataRes.prices = priceMaxHistoryDataRes.prices.slice(-31);
+            price30dHistoryDataRes.total_volumes = priceMaxHistoryDataRes.total_volumes.slice(-31);
+            coinInfo.price30dHistoryData = FormatChartData(price30dHistoryDataRes)
+            coinInfo.priceMaxHistoryData = FormatChartData(priceMaxHistoryDataRes)
+            setIsLoading(false)
+            setCoinInfo(coinInfo)
+            setNftInfo(null)
         } catch (error) {
+            setIsError(true);
             console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
         }
     }
     const fetchDetailedNftInfo = async (coinId: string) => {
         try {
+            setIsLoading(true);
             const [nftInfo] = await Promise.all([
                 fetchNftInfo(coinId),
             ]);
             if (!nftInfo) {
+                setIsError(true);
                 console.log(`No results for nftInfo ${coinId}`)
                 return
             }
 
-            // todo check if has contract
             if (nftInfo.asset_platform_id) {
                 const txVolumeData = await getTxData(nftInfo.asset_platform_id, nftInfo.contract_address)
+                if (!txVolumeData) {
+                    setIsError(true);
+                    console.log(`No results for nftInfo ${coinId}`)
+                    return
+                }
                 nftInfo.txVolumeData = txVolumeData
             }
-            console.log("nftInfo: ", nftInfo)
             setNftInfo(nftInfo)
             setCoinInfo(null)
-            setPrice30dChartData(null)
-            setPriceMaxChartData(null)
+            setIsLoading(false)
         } catch (error) {
+            setIsError(true);
             console.error(`fetchDetailedNftInfo: Error searching for coin: ${coinId}`, error);
             setNftInfo(null)
             setCoinInfo(null)
-            setPrice30dChartData(null)
-            setPriceMaxChartData(null)
         }
     }
 
@@ -398,6 +420,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     }
 
     const handleCoinOptionClick = async (tokenInfo) => {
+
         if (!tokenInfo.nft) {
          fetchDetailedTokenInfo(tokenInfo.id)
         } else {
@@ -465,7 +488,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                         borderBottomLeftRadius:isExpanded ? 0 : constants.border_radius,
                         borderBottomRightRadius:isExpanded ? 0 : constants.border_radius,
                     }}>
-                            <img style={styles.searchbarImage} src={searchIcon} alt="Search" />
+
+                        <div style={styles.searchbarImage}>
+                            <SearchIcon style={{ fontSize: 24, color: colors.secondary_medium }}/>
+                        </div>
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -477,8 +503,21 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                                 value={searchInput}
                             />
                         </div>
+                {(!isLoading && !isError) &&
+                    <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
+                }
+                {isError &&
+                        <div style={styles.circularProgress}>
+                            <SearchOffIcon style={{ fontSize: 30, color: colors.secondary_medium }}/>
+                        </div>
+                }
 
-                        <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
+                {(isLoading && !isError) &&
+                        <div style={styles.circularProgress}>
+                            <CircularProgress size={30} style={{'color': colors.secondary_medium }}/>
+                        </div>
+                }
+
                     </div>
                     <div  style={ styles.searchResults } ref={searchResultsRef}>
                         {isExpanded && displayResults?.tokens.length > 0 &&

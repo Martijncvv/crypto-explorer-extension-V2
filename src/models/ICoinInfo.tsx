@@ -88,6 +88,9 @@ export interface IDetailedCoinInfo {
 	symbol: string
 	watchlist_portfolio_users: number
 	tickers: IExchangeTickerInfo[]
+	price30dHistoryData: any
+	priceMaxHistoryData: any
+	txVolumeData: any
 }
 
 

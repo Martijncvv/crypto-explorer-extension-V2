@@ -27,11 +27,10 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
     const chartOptionCount = [price30dHistorydata, priceMaxHistorydata, txVolumeData].filter(Boolean).length;
     // 30d HISTORY = 1
     // max HISTORY = 2
+    // txvolume = 3
     const [formattedPriceChartData, setFormattedPriceChartData] = useState<any>([]);
-    const [formattedOnchainChartData, setFormattedOnchainChartData] = useState<any>([]);
 
-    console.log("price30dHistorydata: ", price30dHistorydata)
-
+    console.log("txVolumeData44: ", txVolumeData)
     const styles: { [key: string]: CSSProperties } = {
         container: {
             width: 330,
@@ -54,6 +53,14 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
             marginRight: '9px',
             cursor: 'pointer',
             backgroundColor: colors.secondary_medium
+        },
+        emptyChartMessage: {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            fontSize: '16px',
+            color: colors.primary_medium,
         },
     };
 
@@ -175,9 +182,12 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
             <rect x={x} y={y} width={width} height={height} fill={fill} />
         );
     };
-console.log("chartOption: ", chartOption)
     return (
         <div style={styles.container}>
+            {chartOptionCount === 0 && (
+                <div style={styles.emptyChartMessage}>
+                    No chart data available</div>
+            )}
             {chartOptionCount > 1 &&
                 <div style={styles.menuOptions}>
                     {
@@ -258,7 +268,6 @@ console.log("chartOption: ", chartOption)
                             <ReferenceLine
                                 y={Math.max(...formattedPriceChartData.map(dateData => dateData.chartFormatPrice))}
                                 stroke={colors.primary_dark}
-                                // fill={colors.white_medium}
                                 strokeDasharray="0 36 9 0"
                                 style={{ display: 'none' }}
                             >
@@ -266,13 +275,11 @@ console.log("chartOption: ", chartOption)
                                     value={`$${amountFormatter(Math.max(...formattedPriceChartData.map(dateData => dateData.price)))}`}
                                     position="insideTopLeft"
                                     fill={colors.secondary_light}
-                                    // fill={colors.white_medium}
                                 />
                             </ReferenceLine>
                             <ReferenceLine
                                 y={Math.min(...formattedPriceChartData.map(dateData => dateData.chartFormatPrice))}
                                 stroke={colors.primary_dark}
-                                // fill={colors.white_medium}
                                 strokeDasharray="0 36 9 0"
                                 style={{ display: 'none' }}
                             >
@@ -280,20 +287,43 @@ console.log("chartOption: ", chartOption)
                                     value={`$${amountFormatter(Math.min(...formattedPriceChartData.map(dateData => dateData.price)))}`}
                                     position="insideBottomLeft"
                                     fill={colors.secondary_light}
-                                    // fill={colors.white_medium}
                                 />
                             </ReferenceLine>
-
-
                         </ComposedChart>
                 </ResponsiveContainer>
             }
-            {(chartOption === 3 && txVolumeData.length > 0) &&
+            {(chartOption === 3) &&
                 <ResponsiveContainer width="100%" height="100%" >
                         <ComposedChart
                             data={txVolumeData}
-                            margin={{ top: 0, left: 0, right: 0, bottom: 0 }}
+                            margin={{ top: 0, left: 24, right: 0, bottom: 0 }}
                         >
+
+                            <XAxis
+                                padding={{ left: 12, right: 12 }}
+                                dataKey="date"
+                                tickFormatter={(date, index) => {
+                                    const totalDataPoints = txVolumeData.length;
+                                    const desiredTickCount = 5;
+                                    const interval = Math.ceil(totalDataPoints / desiredTickCount);
+
+                                    if (index % interval === 0 && index !== totalDataPoints - 1) {
+                                        return date.toLocaleDateString('en-GB', {
+                                            month: '2-digit',
+                                            year: '2-digit'
+                                        });
+                                    } else {
+                                        return ''
+                                    }
+                                }}
+                                interval={0}
+                                height={28}
+                                axisLine={{ stroke: 'none' }}
+                                tickLine={{ stroke: 'none' }}
+                                tick={{ fontSize: 12, fill: 'white' }}
+                                tickMargin={2}
+                            />
+
                             <defs>
                                 <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
                                     <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
@@ -327,30 +357,7 @@ console.log("chartOption: ", chartOption)
                                 />
                             </ReferenceLine>
 
-                            <XAxis
-                                padding={{ left: 12, right: 12 }}
-                                dataKey="date"
-                                tickFormatter={(date, index) => {
 
-                                    const totalDataPoints = txVolumeData.length;
-                                    const desiredTickCount = 5;
-                                    const interval = Math.ceil(totalDataPoints / desiredTickCount);
-
-                                    if (index  % interval === 0 && index !== totalDataPoints - 1) {
-                                        return date.toLocaleDateString('en-GB', {
-                                            month: '2-digit',
-                                            year: '2-digit'
-                                        });
-                                    }
-
-                                }}
-                                interval={0}
-                                height={28}
-                                axisLine={{ stroke: 'none' }}
-                                tickLine={{ stroke: 'none' }}
-                                tick={{ fontSize: 12, fill: 'white' }}
-                                tickMargin={2}
-                            />
                         </ComposedChart>
                 </ResponsiveContainer>
             }

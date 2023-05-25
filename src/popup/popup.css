@@ -2,6 +2,7 @@ body,
 #root {
     background: radial-gradient(#5565b0, #344183);
     width: 330px;
+    min-height: 300px;
     max-height: 600px;
     margin: 0;
     padding: 0;

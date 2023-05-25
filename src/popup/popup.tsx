@@ -57,6 +57,8 @@ const App: React.FC = () => {
 
 	// todo fix onchain txs chart, data formatting
 	// todo, check other social link names: reddit, telegram, explorer, conigecko id
+	// todo exchangesblock: 'and 13 other exchanges'
+	// todo fix searchbar search image
 
 	// combine chart data in 1 fetch, get last 30 days from the max fetch
 	// improve rendering efficiency
@@ -77,10 +79,6 @@ const App: React.FC = () => {
 	// Use React.PureComponent or React.memo for Child Components: If you have child components inside the ChartsBlock that receive props, and you want to prevent unnecessary renders, consider converting these child components to PureComponent or wrapping them with React.memo.
 	//
 	// Debounce or Throttle Event Handlers: If you're dealing with events that fire rapidly (like scrolling or keyboard events), you might want to limit how often your component re-renders in response to those events.
-
-
-
-
 
 	const formatExchangeInfo = (tickers) => {
 		if (!tickers) return [];
@@ -106,41 +104,47 @@ const App: React.FC = () => {
 
 	if (coinInfo?.tickers)	formatExchangeInfo(coinInfo.tickers)
 
+	console.log("nfinfo3: ", nftInfo)
+	console.log("nfinfo3.txVolumeData: ", nftInfo?.txVolumeData)
+
 	return (
 		<>
 			<div style={styles.topContainer}>
 				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : nftInfo?.image?.small ?  nftInfo.image.small : bitcoinIcon}
 							 setCoinInfo={setCoinInfo}
 							 setNftInfo={setNftInfo}
-							 setPrice30dChartData={setPrice30dChartData}
-							 setPriceMaxChartData={setPriceMaxChartData}
 				/>
 			</div>
 			{coinInfo?.name &&
 				<>
 					<TitleBlock title={coinInfo.name} />
 					<TickerBlock ticker={coinInfo.symbol} />
-					{(price30dChartData?.length > 0) &&
-						<ChartsBlock
-							price30dHistorydata={price30dChartData}
-							priceMaxHistorydata={priceMaxChartData}
-						/>
-					}
+					<ChartsBlock
+						price30dHistorydata={coinInfo.price30dHistoryData}
+						priceMaxHistorydata={coinInfo.priceMaxHistoryData}
+						txVolumeData={coinInfo.txVolumeData}
+					/>
 				</>
 			}
+
 			{nftInfo?.name &&
 				<>
 					<TitleBlock title={nftInfo.name} />
 					<TickerBlock ticker={nftInfo.symbol} />
-					{(nftInfo?.txVolumeData?.length > 0) &&
-						<ChartsBlock
-							txVolumeData={nftInfo.txVolumeData}
-						/>
-					}
+					<ChartsBlock
+						txVolumeData={nftInfo.txVolumeData}
+					/>
 				</>
 			}
-
-
+			{(!nftInfo?.name && !coinInfo?.name) &&
+				<>
+					<TitleBlock title="Fetching data" />
+					<TickerBlock ticker="Loading..." />
+					<ChartsBlock
+						txVolumeData={[{date: new Date(), value: 1}]}
+					/>
+				</>
+			}
 
 			<div style={styles.bottomContainer}>
 				{coinInfo?.name &&
@@ -182,12 +186,19 @@ const App: React.FC = () => {
 					</>
 				}
 
-
 				{nftInfo?.name &&
 					<>
-						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
-							<ValueBlock title="Floor" mainValue={`$${amountFormatter(nftInfo.floor_price?.usd)}`} secondaryValue={`${percentageFormatter(nftInfo.floor_price_in_usd_24h_percentage_change)}%`} />
-							<ValueBlock title="Native" mainValue={`${amountFormatter(nftInfo.floor_price?.native_currency)}`} secondaryValue={nftInfo.native_currency?.charAt(0).toUpperCase() + nftInfo?.native_currency?.slice(1)}/>
+					<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
+						<ValueBlock
+							title="Floor"
+							mainValue={`$${amountFormatter(nftInfo.floor_price?.usd) || '-'}`}
+							secondaryValue={`${percentageFormatter(nftInfo.floor_price_in_usd_24h_percentage_change)}%`}
+						/>
+						<ValueBlock
+							title="Native"
+							mainValue={`${amountFormatter(nftInfo.floor_price?.native_currency) || '-'}`}
+							secondaryValue={nftInfo.native_currency?.charAt(0).toUpperCase() + nftInfo?.native_currency?.slice(1)}
+						/>
 						</div>
 						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
 							<ValueBlock title="Total supply" mainValue={`${nftInfo.total_supply}`}/>
