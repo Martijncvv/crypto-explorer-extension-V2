@@ -121,13 +121,16 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                             handleOpenTab(exchange.exchangeURL);
                         }
                     }}>
+                        {exchange.id ?
                         <img
                             src={EXCHANGE_ICONS[exchange.id]}
                             alt={exchange.exchangeName}
                             style={styles.image}
                         />
+                        : <div style={styles.image}/>
+                        }
                         <span style={styles.exchangeName}>{exchange.exchangeName}</span>
-                        <span style={styles.tradingVolume}>${amountFormatter(exchange.tradingVolume)}</span>
+                        <span style={styles.tradingVolume}>{exchange.tradingVolume ? amountFormatter(exchange.tradingVolume) : ''}</span>
                         {!isExpanded ? (
                             <span style={styles.staticText}>/ 24h</span>
                         ) : (

@@ -50,14 +50,9 @@ const styles: { [key: string]: CSSProperties } = {
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
 	const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>()
+	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 
-	// todo fix searchbar search image
 	// todo fix onchain txs chart; detailed txs info for coins
-	// todo: explanation text popup
-	// todo menu bar: coming soon
-
-	// todo empty values check
-	// todo exchangesblock: 'and 13 other exchanges'
 	// todo, check other social link names: reddit, telegram, explorer, conigecko id
 
 	// improve rendering efficiency
@@ -84,9 +79,10 @@ const App: React.FC = () => {
 		if (!tickers) return [];
 
 		const sortedTickers = tickers.sort((a, b) => b.converted_volume.usd - a.converted_volume.usd);
+		const totalExchanges = sortedTickers.length;
 		const top10Tickers = sortedTickers.slice(0, 10); // by volume
 
-		return top10Tickers.map(obj => {
+		const exchangesFormatted = top10Tickers.map(obj => {
 			let quote = String(obj.target)
 			if (quote.length > 5) {
 				quote = obj.target_coin_id.toUpperCase()
@@ -100,6 +96,18 @@ const App: React.FC = () => {
 				exchangeURL: obj.trade_url
 			};
 		});
+		if ((totalExchanges - top10Tickers.length) > 0) {
+			exchangesFormatted.push({
+				image: "",
+				id: "",
+				exchangeName: `${totalExchanges - top10Tickers.length} others`,
+				tradingVolume: 0,
+				quote: '',
+				exchangeURL: ''
+			})
+		}
+
+		return exchangesFormatted
 	}
 
 	if (coinInfo?.tickers)	formatExchangeInfo(coinInfo.tickers)
@@ -113,6 +121,7 @@ const App: React.FC = () => {
 				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : nftInfo?.image?.small ?  nftInfo.image.small : bitcoinIcon}
 							 setCoinInfo={setCoinInfo}
 							 setNftInfo={setNftInfo}
+							 setTxVolumeChartData={setTxVolumeChartData}
 				/>
 			</div>
 			{coinInfo?.name &&
@@ -132,14 +141,16 @@ const App: React.FC = () => {
 					<TitleBlock title={nftInfo.name} />
 					<TickerBlock ticker={nftInfo.symbol} />
 					<ChartsBlock
-						txVolumeData={nftInfo.txVolumeData}
+						txVolumeData={txVolumeChartData}
 					/>
 				</>
 			}
 			{(!nftInfo?.name && !coinInfo?.name) &&
 				<>
 					<TitleBlock title="Fetching data" />
-					<TickerBlock ticker="Loading" />
+					<TickerBlock ticker="" />
+					{/*<TitleBlock title="Fetching data" />*/}
+					{/*<TickerBlock ticker="Loading" />*/}
 					<ChartsBlock
 						txVolumeData={[{date: new Date(), value: 1}]}
 					/>
@@ -149,12 +160,12 @@ const App: React.FC = () => {
 			<div style={styles.bottomContainer}>
 				{coinInfo?.name &&
 					<>
-						<div  style={styles.bottomMargin}>
+						<div  style={styles.bottomMargin} title="ATL / Price / ATH">
 							<PriceBar allTimeLow={coinInfo.market_data?.atl?.usd} allTimeHigh={coinInfo.market_data?.ath?.usd} price={coinInfo.market_data?.current_price?.usd} />
 						</div>
-						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
-							<ValueBlock title="Circ. Supply" mainValue={amountFormatter(coinInfo.market_data?.circulating_supply)} secondaryValue={`/ ${amountFormatter(coinInfo.market_data?.total_supply)}`}/>
-							<ValueBlock title="Market Cap" mainValue={`$${amountFormatter(coinInfo.market_data?.market_cap.usd)}`}  secondaryValue={`#${coinInfo.market_cap_rank}`}/>
+						<div style={{...styles.dataBlocks, ...styles.bottomMargin}} >
+							<ValueBlock title="Circ. Supply" tooltipTitle="/ Total supply" mainValue={coinInfo.market_data?.circulating_supply ? amountFormatter(coinInfo.market_data?.circulating_supply) : "-"} secondaryValue={ coinInfo.market_data?.total_supply ? `/ ${amountFormatter(coinInfo.market_data?.total_supply)}` : "/ -"}/>
+							<ValueBlock title="Market Cap" tooltipTitle="# Rank" mainValue={ coinInfo.market_data?.market_cap.usd ? `$${amountFormatter(coinInfo.market_data?.market_cap.usd)}` : "-"}  secondaryValue={coinInfo.market_cap_rank ? `#${coinInfo.market_cap_rank}` : "/ -"}/>
 						</div>
 						<div  style={styles.bottomMargin}>
 							<ExchangeBlock exchanges={formatExchangeInfo(coinInfo.tickers)} />
@@ -191,22 +202,24 @@ const App: React.FC = () => {
 					<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
 						<ValueBlock
 							title="Floor"
+							tooltipTitle="24h change %"
 							mainValue={`$${amountFormatter(nftInfo.floor_price?.usd) || '-'}`}
 							secondaryValue={`${percentageFormatter(nftInfo.floor_price_in_usd_24h_percentage_change)}%`}
 						/>
 						<ValueBlock
 							title="Native"
+							tooltipTitle="Native floor/ platform"
 							mainValue={`${amountFormatter(nftInfo.floor_price?.native_currency) || '-'}`}
-							secondaryValue={nftInfo.native_currency?.charAt(0).toUpperCase() + nftInfo?.native_currency?.slice(1)}
+							secondaryValue={nftInfo.native_currency ? (nftInfo.native_currency.charAt(0).toUpperCase() + nftInfo.native_currency.slice(1)).substring(0, 8) : '-'}
 						/>
 						</div>
 						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
-							<ValueBlock title="Total supply" mainValue={`${nftInfo.total_supply}`}/>
-							<ValueBlock title="Unique owners" mainValue={numberFormatter(nftInfo.number_of_unique_addresses)} secondaryValue={`${percentageFormatter(nftInfo.number_of_unique_addresses_24h_percentage_change)}%`}/>
+							<ValueBlock title="Total supply" mainValue={nftInfo.total_supply ? `${nftInfo.total_supply}` : "-"}/>
+							<ValueBlock title="Unique owners" tooltipTitle="24h change %" mainValue={nftInfo.number_of_unique_addresses ? numberFormatter(nftInfo.number_of_unique_addresses) : "-"} secondaryValue={nftInfo.number_of_unique_addresses_24h_percentage_change ? `${percentageFormatter(nftInfo.number_of_unique_addresses_24h_percentage_change)}%` : "-"}/>
 						</div>
 						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
-							<ValueBlock title="Market Cap" mainValue={`$${amountFormatter(nftInfo?.market_cap?.usd)}`}/>
-							<ValueBlock title="Volume" mainValue={`$${amountFormatter(nftInfo.volume_24h.usd)}`} secondaryValue={`${percentageFormatter(nftInfo.volume_in_usd_24h_percentage_change)}%`}/>
+							<ValueBlock title="Market Cap" mainValue={nftInfo?.market_cap?.usd ? `$${amountFormatter(nftInfo?.market_cap?.usd)}`: "-"}/>
+							<ValueBlock title="Volume" tooltipTitle="24h change %" mainValue={nftInfo.volume_24h.usd ? `$${amountFormatter(nftInfo.volume_24h.usd)}` : "-"} secondaryValue={nftInfo.volume_in_usd_24h_percentage_change ? `${percentageFormatter(nftInfo.volume_in_usd_24h_percentage_change)}%` : "-%"}/>
 						</div>
 
 						<div  style={styles.bottomMargin}>

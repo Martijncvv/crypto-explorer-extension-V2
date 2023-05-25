@@ -28,9 +28,10 @@ interface HeaderBlockProps {
     mainLogo: string;
     setCoinInfo: (coinInfo: IDetailedCoinInfo) => void;
     setNftInfo: (nftInfo: IDetailedNftInfo) => void;
+    setTxVolumeChartData: (txVolumeChartData: any) => void;
 }
 
-const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo }) => {
+const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData }) => {
     const searchResultsRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -45,7 +46,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             display: 'flex',
             alignItems: 'center',
         },
-        rectangle: {
+        menuIconBlock: {
             width: 40,
             height: 40,
             borderRadius: constants.border_radius,
@@ -54,10 +55,12 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             justifyContent: 'center',
             alignItems: 'center',
         },
-        centeredImage: {
+
+        menuIcon: {
             width: 20,
             height: 20,
         },
+
         searchbar: {
             marginLeft: 12,
             width: 202,
@@ -132,15 +135,16 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             marginLeft: 12,
             width: 40,
             height: 40,
-            borderRadius: constants.border_radius_small,
+            borderRadius: 20,
         },
-        circularProgress: {
+        indicationIcon: {
             marginLeft: 12,
             width: 40,
             height: 40,
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1
         },
 
 
@@ -314,6 +318,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             setCoinInfo(coinInfo)
             setNftInfo(null)
         } catch (error) {
+            setIsLoading(false)
             setIsError(true);
             console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
         }
@@ -329,6 +334,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 console.log(`No results for nftInfo ${coinId}`)
                 return
             }
+            setNftInfo(nftInfo)
+            setCoinInfo(null)
 
             if (nftInfo.asset_platform_id) {
                 const txVolumeData = await getTxData(nftInfo.asset_platform_id, nftInfo.contract_address)
@@ -337,15 +344,15 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     console.log(`No results for nftInfo ${coinId}`)
                     return
                 }
-                nftInfo.txVolumeData = txVolumeData
+                setTxVolumeChartData(txVolumeData)
             }
-            setNftInfo(nftInfo)
-            setCoinInfo(null)
             setIsLoading(false)
         } catch (error) {
+            setIsLoading(false)
             setIsError(true);
             console.error(`fetchDetailedNftInfo: Error searching for coin: ${coinId}`, error);
             setNftInfo(null)
+            setTxVolumeChartData(null)
             setCoinInfo(null)
         }
     }
@@ -479,8 +486,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     return (
         <>
             <div style={styles.headerBlock}>
-                <div style={styles.rectangle}>
-                    <img style={styles.centeredImage} src={menuIcon} alt="Centered" />
+
+                <div style={styles.menuIconBlock}  title="Coming soon">
+                    <img style={styles.menuIcon} src={menuIcon} alt="Centered" />
                 </div>
 
                     <div  style={{
@@ -503,18 +511,16 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                                 value={searchInput}
                             />
                         </div>
-                {(!isLoading && !isError) &&
+                {(!isError) &&
                     <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
                 }
-                {isError &&
-                        <div style={styles.circularProgress}>
-                            <SearchOffIcon style={{ fontSize: 30, color: colors.secondary_medium }}/>
-                        </div>
-                }
-
                 {(isLoading && !isError) &&
-                        <div style={styles.circularProgress}>
-                            <CircularProgress size={30} style={{'color': colors.secondary_medium }}/>
+                            <CircularProgress size={40} thickness={1} style={{position: 'absolute', right: 12, zIndex: 1, color: "white" }}/>
+                }
+                {isError &&
+                        <div style={styles.indicationIcon}>
+                            <SearchOffIcon style={{ fontSize: 30, color: colors.secondary_medium }}/>
+                            <SearchOffIcon style={{ fontSize: 30, color: colors.secondary_medium }}/>
                         </div>
                 }
 

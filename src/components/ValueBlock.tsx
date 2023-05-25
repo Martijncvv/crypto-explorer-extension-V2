@@ -7,9 +7,10 @@ interface ValueBlockProps {
     title: string;
     mainValue: string;
     secondaryValue?: string;
+    tooltipTitle?: string
 }
 
-const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue, secondaryValue }) => {
+const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue, secondaryValue ,tooltipTitle}) => {
 
     const styles: { [key: string]: CSSProperties } = {
         rectangle: {
@@ -49,7 +50,7 @@ const ValueBlock: React.FC<ValueBlockProps> = ({ title, mainValue, secondaryValu
     };
 
     return (
-        <div style={styles.rectangle}>
+        <div style={styles.rectangle} title={tooltipTitle}>
             <div style={styles.title}>{title}</div>
             <div style={styles.values}>
                 <span style={styles.mainValue}>{mainValue}</span>
