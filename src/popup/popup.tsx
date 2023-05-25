@@ -50,24 +50,24 @@ const styles: { [key: string]: CSSProperties } = {
 const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
 	const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>()
-	const [price30dChartData, setPrice30dChartData] = useState<any>()
-	const [priceMaxChartData, setPriceMaxChartData] = useState<any>()
-	const [txsData, setTxsData] = useState<any>()
 
-
-	// todo fix onchain txs chart, data formatting
-	// todo, check other social link names: reddit, telegram, explorer, conigecko id
-	// todo exchangesblock: 'and 13 other exchanges'
 	// todo fix searchbar search image
+	// todo fix onchain txs chart; detailed txs info for coins
+	// todo: explanation text popup
+	// todo menu bar: coming soon
 
-	// combine chart data in 1 fetch, get last 30 days from the max fetch
+	// todo empty values check
+	// todo exchangesblock: 'and 13 other exchanges'
+	// todo, check other social link names: reddit, telegram, explorer, conigecko id
+
 	// improve rendering efficiency
 	// fix all anys
-	// keep highest and lowest price on chart
+	// keep highest and lowest price on max chart
 	// bring formatExchangeInfo function to exchangeBlock component
 	// drag and zoom chart functionality
 	// join a group via name/ code?
 	// check watchlist etc.
+
 	// Avoid Complex Calculations in the Render Method: Move the calculation of minPrice, maxPrice, maxVolume, maxFormattedPrice, barHeightMultiplier and the map operation to format the chart data outside the Format30dChartData and FormatMaxChartData functions. Store these values in state variables and update them only when price30dHistorydata and priceMaxHistorydata change.
 	//
 	// Limit the Number of Re-Renders: Instead of using the useState hook for chartOption and listening for changes with useEffect, consider using the useMemo hook. This way, you only calculate the formatted chart data when chartOption, price30dHistorydata, and priceMaxHistorydata change.
@@ -139,7 +139,7 @@ const App: React.FC = () => {
 			{(!nftInfo?.name && !coinInfo?.name) &&
 				<>
 					<TitleBlock title="Fetching data" />
-					<TickerBlock ticker="Loading..." />
+					<TickerBlock ticker="Loading" />
 					<ChartsBlock
 						txVolumeData={[{date: new Date(), value: 1}]}
 					/>

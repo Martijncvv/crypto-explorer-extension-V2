@@ -283,7 +283,7 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData })
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_11__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(Math.min(...formattedPriceChartData.map(dateData => dateData.price)))}`, position: "insideBottomLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })))),
         (chartOption === 3) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.ResponsiveContainer, { width: "100%", height: "100%" },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.ComposedChart, { data: txVolumeData, margin: { top: 0, left: 24, right: 0, bottom: 0 } },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.ComposedChart, { data: txVolumeData, margin: { top: 6, left: 24, right: 0, bottom: 0 } },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_6__.XAxis, { padding: { left: 12, right: 12 }, dataKey: "date", tickFormatter: (date, index) => {
                             const totalDataPoints = txVolumeData.length;
                             const desiredTickCount = 5;
@@ -1350,17 +1350,16 @@ const App = () => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
-    const [price30dChartData, setPrice30dChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
-    const [priceMaxChartData, setPriceMaxChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
-    const [txsData, setTxsData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
-    // todo fix onchain txs chart, data formatting
-    // todo, check other social link names: reddit, telegram, explorer, conigecko id
-    // todo exchangesblock: 'and 13 other exchanges'
     // todo fix searchbar search image
-    // combine chart data in 1 fetch, get last 30 days from the max fetch
+    // todo fix onchain txs chart; detailed txs info for coins
+    // todo: explanation text popup
+    // todo menu bar: coming soon
+    // todo empty values check
+    // todo exchangesblock: 'and 13 other exchanges'
+    // todo, check other social link names: reddit, telegram, explorer, conigecko id
     // improve rendering efficiency
     // fix all anys
-    // keep highest and lowest price on chart
+    // keep highest and lowest price on max chart
     // bring formatExchangeInfo function to exchangeBlock component
     // drag and zoom chart functionality
     // join a group via name/ code?
@@ -1416,7 +1415,7 @@ const App = () => {
         (!(nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) && !(coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name)) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: "Fetching data" }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: "Loading..." }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: "Loading" }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { txVolumeData: [{ date: new Date(), value: 1 }] })),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomContainer },
             (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
