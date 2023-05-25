@@ -51,6 +51,7 @@ const App: React.FC = () => {
 	const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>()
 	const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>()
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
+	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
 	// todo fix onchain txs chart; detailed txs info for coins
 	// todo, check other social link names: reddit, telegram, explorer, conigecko id
@@ -122,6 +123,7 @@ const App: React.FC = () => {
 							 setCoinInfo={setCoinInfo}
 							 setNftInfo={setNftInfo}
 							 setTxVolumeChartData={setTxVolumeChartData}
+							 setTokenTxsChartData={setTokenTxsChartData}
 				/>
 			</div>
 			{coinInfo?.name &&

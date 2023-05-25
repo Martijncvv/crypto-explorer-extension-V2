@@ -296,7 +296,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                 <ResponsiveContainer width="100%" height="100%" >
                         <ComposedChart
                             data={txVolumeData}
-                            margin={{ top: 8, left: 24, right: 0, bottom: 0 }}
+                            margin={{ top: 6, left: 24, right: 0, bottom: 0 }}
                         >
 
                             <XAxis

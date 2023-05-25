@@ -108,12 +108,33 @@ export async function fetchNftTxs(
 		);
 
 		if (!res.ok) {
+			throw new Error(`Fetch error, ${domainName} nft txs info: ${res.status} ${res.statusText}`);
+		}
+
+		return await res.json();
+	} catch (error) {
+		console.error('Error fetching nft token txs info:', error);
+		throw error;
+	}
+}
+
+export async function fetchTokenTxs(
+	domainName: string,
+	contractAddress: string,
+	txAmount: number
+): Promise<ITokenTxs> {
+	try {
+		const res = await fetch(
+			`https://api.${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`
+		)
+
+		if (!res.ok) {
 			throw new Error(`Fetch error, ${domainName} token txs info: ${res.status} ${res.statusText}`);
 		}
 
 		return await res.json();
 	} catch (error) {
-		console.error('Error fetching Eth token txs info:', error);
+		console.error('Error fetching token txs info:', error);
 		throw error;
 	}
 }
