@@ -20,9 +20,10 @@ interface ChartsBlockProps {
     price30dHistorydata?: IPriceHistoryData;
     priceMaxHistorydata?: IPriceHistoryData;
     txVolumeData?: any;
+    tokenTxsChartData?: any
 }
 
-const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMaxHistorydata, txVolumeData} ) => {
+const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData} ) => {
     const [chartOption, setChartOption] = useState<number>(1)
     const chartOptionCount = [price30dHistorydata, priceMaxHistorydata, txVolumeData].filter(Boolean).length;
     // 30d HISTORY = 1

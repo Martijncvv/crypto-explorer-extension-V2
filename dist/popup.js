@@ -110,7 +110,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData }) => {
+const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData }) => {
     const [chartOption, setChartOption] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1);
     const chartOptionCount = [price30dHistorydata, priceMaxHistorydata, txVolumeData].filter(Boolean).length;
     // 30d HISTORY = 1
@@ -808,8 +808,9 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             coinInfo.priceMaxHistoryData = FormatChartData(priceMaxHistoryDataRes);
             setCoinInfo(coinInfo);
             setNftInfo(null);
+            console.log("coinInfo: ", coinInfo);
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
-                const tokenTxChartData = yield getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address);
+                const tokenTxChartData = yield getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
                 if (!tokenTxChartData) {
                     setIsLoading(false);
                     setIsError(true);
@@ -951,7 +952,8 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     domain = 'celoscan.io';
                     break;
                 default:
-                    throw new Error('Invalid platformId');
+                    console.log(`getNftTxChartData error: Invalid platformId: ${platformId}`);
+                    return [];
             }
             const nftTxsData = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNftTxs)(domain, contractAddress, 10000);
             const nftTxsChartFormat = Object.entries(nftTxsData.result.reduce((result, txInfo) => {
@@ -968,7 +970,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             return nftTxsChartFormat;
         });
     }
-    function getTokenTxChartData(platformId, contractAddress) {
+    function getTokenTxChartData(platformId, contractAddress, tokenValue) {
         return __awaiter(this, void 0, void 0, function* () {
             let domain;
             switch (platformId) {
@@ -994,11 +996,29 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     domain = 'celoscan.io';
                     break;
                 default:
-                    throw new Error('Invalid platformId');
+                    console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
+                    return [];
             }
-            const tokenTxsData = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTokenTxs)(domain, contractAddress, 10000);
+            const tokenTxsRes = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTokenTxs)(domain, contractAddress, 10000);
+            const tokenTxsData = tokenTxsRes.result;
+            const maxValue = Math.max(...tokenTxsData.map(txInfo => Number(txInfo.value)));
+            let minValue = maxValue * 0.7;
+            console.log("maxValue: ", maxValue);
+            console.log("minValue: ", minValue);
             console.log("tokenTxsData8: ", tokenTxsData);
-            return true;
+            const filteredTokenTxsData = tokenTxsData.filter((txInfo) => Number(txInfo.value) > minValue);
+            console.log("filteredTokenTxsData8: ", filteredTokenTxsData);
+            let tokenTxsChartData = [];
+            filteredTokenTxsData.forEach((txInfo) => {
+                tokenTxsChartData.push({
+                    date: new Date(Number(txInfo.timeStamp) * 1000),
+                    amount: (parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal))),
+                    txHash: txInfo.hash,
+                    usdValue: (parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal))) * tokenValue,
+                });
+            });
+            console.log("tokenTxsChartData8: ", tokenTxsChartData);
+            return tokenTxsChartData;
         });
     }
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
@@ -1404,6 +1424,7 @@ const App = () => {
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     // todo fix onchain txs chart; detailed txs info for coins
+    // tab selection of coin menu
     // todo, check other social link names: reddit, telegram, explorer, conigecko id
     // improve rendering efficiency
     // fix all anys
@@ -1458,7 +1479,6 @@ const App = () => {
     if (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.tickers)
         formatExchangeInfo(coinInfo.tickers);
     console.log("nfinfo3: ", nftInfo);
-    console.log("nfinfo3.txVolumeData: ", nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.txVolumeData);
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.topContainer },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : ((_b = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.image) === null || _b === void 0 ? void 0 : _b.small) ? nftInfo.image.small : bitcoinIcon, setCoinInfo: setCoinInfo, setNftInfo: setNftInfo, setTxVolumeChartData: setTxVolumeChartData, setTokenTxsChartData: setTokenTxsChartData })),
@@ -1466,7 +1486,7 @@ const App = () => {
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: coinInfo.name }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: coinInfo.symbol }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { price30dHistorydata: coinInfo.price30dHistoryData, priceMaxHistorydata: coinInfo.priceMaxHistoryData, txVolumeData: coinInfo.txVolumeData })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { price30dHistorydata: coinInfo.price30dHistoryData, priceMaxHistorydata: coinInfo.priceMaxHistoryData, tokenTxsChartData: tokenTxsChartData })),
         (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: nftInfo.name }),
@@ -2201,22 +2221,37 @@ function amountFormatter(amount, precision = 3) {
     }
     // Quadrillion (Q) - 10^15
     if (amount >= 1e15) {
+        if (amount === 1e15) {
+            return `1 Q`;
+        }
         return `${(amount / 1e15).toPrecision(precision)} Q`;
     }
     // Trillion (T) - 10^12
     if (amount >= 1e12) {
+        if (amount === 1e12) {
+            return `1 T`;
+        }
         return `${(amount / 1e12).toPrecision(precision)} T`;
     }
     // Billion (B) - 10^9
     if (amount >= 1e9) {
+        if (amount === 1e9) {
+            return `1 B`;
+        }
         return `${(amount / 1e9).toPrecision(precision)} B`;
     }
     // Million (M) - 10^6
     if (amount > 1e6) {
+        if (amount === 1e6) {
+            return `1 M`;
+        }
         return `${(amount / 1e6).toPrecision(precision)} M`;
     }
     // Thousand (K) - 10^3
     if (amount > 1e3) {
+        if (amount === 1e3) {
+            return `1 K`;
+        }
         return `${(amount / 1e3).toPrecision(precision)} K`;
     }
     // 1 till 1000

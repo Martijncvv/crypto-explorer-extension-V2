@@ -54,6 +54,7 @@ const App: React.FC = () => {
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
 	// todo fix onchain txs chart; detailed txs info for coins
+	// tab selection of coin menu
 	// todo, check other social link names: reddit, telegram, explorer, conigecko id
 
 	// improve rendering efficiency
@@ -114,7 +115,6 @@ const App: React.FC = () => {
 	if (coinInfo?.tickers)	formatExchangeInfo(coinInfo.tickers)
 
 	console.log("nfinfo3: ", nftInfo)
-	console.log("nfinfo3.txVolumeData: ", nftInfo?.txVolumeData)
 
 	return (
 		<>
@@ -133,7 +133,7 @@ const App: React.FC = () => {
 					<ChartsBlock
 						price30dHistorydata={coinInfo.price30dHistoryData}
 						priceMaxHistorydata={coinInfo.priceMaxHistoryData}
-						txVolumeData={coinInfo.txVolumeData}
+						tokenTxsChartData={tokenTxsChartData}
 					/>
 				</>
 			}

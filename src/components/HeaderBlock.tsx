@@ -320,8 +320,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             setCoinInfo(coinInfo)
             setNftInfo(null)
 
+            console.log("coinInfo: ", coinInfo)
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
-                const tokenTxChartData = await getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address)
+                const tokenTxChartData = await getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd)
                 if (!tokenTxChartData) {
                     setIsLoading(false);
                     setIsError(true);
@@ -480,7 +481,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 domain = 'celoscan.io';
                 break;
             default:
-                throw new Error('Invalid platformId');
+                console.log(`getNftTxChartData error: Invalid platformId: ${platformId}`);
+                return []
         }
 
         const nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
@@ -499,7 +501,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
         return nftTxsChartFormat;
     }
-    async function getTokenTxChartData(platformId, contractAddress): Promise<any> {
+    async function getTokenTxChartData(platformId, contractAddress, tokenValue): Promise<any> {
         let domain: string;
 
         switch (platformId) {
@@ -525,13 +527,35 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 domain = 'celoscan.io';
                 break;
             default:
-                throw new Error('Invalid platformId');
+               console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
+               return []
         }
 
-        const tokenTxsData = await fetchTokenTxs(domain, contractAddress, 10000);
+        const tokenTxsRes = await fetchTokenTxs(domain, contractAddress, 10000);
+        const tokenTxsData = tokenTxsRes.result
+
+        const maxValue = Math.max(...tokenTxsData.map(txInfo => Number(txInfo.value)));
+        let minValue = maxValue * 0.7;
+        console.log("maxValue: ",maxValue)
+        console.log("minValue: ",minValue)
 
         console.log("tokenTxsData8: ",tokenTxsData)
-        return true
+        const filteredTokenTxsData = tokenTxsData.filter((txInfo) => Number(txInfo.value) > minValue);
+        console.log("filteredTokenTxsData8: ",filteredTokenTxsData)
+
+        let tokenTxsChartData = []
+
+        filteredTokenTxsData.forEach((txInfo) => {
+            tokenTxsChartData.push({
+                date: new Date(Number(txInfo.timeStamp) * 1000),
+                amount: (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)),
+                txHash: txInfo.hash,
+                usdValue: (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)) * tokenValue,
+            })
+        })
+        console.log("tokenTxsChartData8: ",tokenTxsChartData)
+
+        return tokenTxsChartData
     }
 
     return (
