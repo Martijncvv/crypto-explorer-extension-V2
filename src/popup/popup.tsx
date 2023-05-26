@@ -54,7 +54,7 @@ const App: React.FC = () => {
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
 	// todo fix onchain txs chart; detailed txs info for coins
-	// tab selection of coin menu
+	// todo tab selection of coin menu styling;  whiteblack edge
 	// todo, check other social link names: reddit, telegram, explorer, conigecko id
 
 	// improve rendering efficiency

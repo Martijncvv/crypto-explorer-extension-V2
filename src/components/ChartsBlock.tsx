@@ -17,21 +17,32 @@ import {ITokenTxs} from "../models/ITokenTxs";
 import {amountFormatter} from "../utils/amountFormatter";
 
 interface ChartsBlockProps {
-    price30dHistorydata?: IPriceHistoryData;
-    priceMaxHistorydata?: IPriceHistoryData;
+    price30dHistorydata?: any;
+    priceMaxHistorydata?: any;
     txVolumeData?: any;
     tokenTxsChartData?: any
 }
 
 const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData} ) => {
-    const [chartOption, setChartOption] = useState<number>(1)
-    const chartOptionCount = [price30dHistorydata, priceMaxHistorydata, txVolumeData].filter(Boolean).length;
-    // 30d HISTORY = 1
-    // max HISTORY = 2
-    // txvolume = 3
-    const [formattedPriceChartData, setFormattedPriceChartData] = useState<any>([]);
-
-    console.log("txVolumeData44: ", txVolumeData)
+    let availableCharts = []
+    if (price30dHistorydata) {
+        availableCharts.push('price30dHistorydata')
+    }
+    if (priceMaxHistorydata) {
+        availableCharts.push('priceMaxHistorydata')
+    }
+    if (txVolumeData) {
+        availableCharts.push('txVolumeData')
+    }
+    if (tokenTxsChartData) {
+        availableCharts.push('tokenTxsChartData')
+    }
+    const chartOptionCount = availableCharts.length - 1;
+    const [chartOption, setChartOption] = useState<number>(0)
+    //
+    // console.log("availableCharts44: ", availableCharts)
+    // console.log("txVolumeData44: ", txVolumeData)
+    // console.log("price30dHistorydata44: ", price30dHistorydata)
     const styles: { [key: string]: CSSProperties } = {
         container: {
             width: 330,
@@ -69,11 +80,11 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === 'ArrowRight') {
-                if (chartOption < chartOptionCount) {
+                if (chartOption + 1 < chartOptionCount) {
                     setChartOption((prevChartOption) => prevChartOption + 1);
                 }
             } else if (event.key === 'ArrowLeft') {
-                if (chartOption > 1) {
+                if (chartOption > 0) {
                     setChartOption((prevChartOption) => prevChartOption - 1);
                 }
             }
@@ -84,30 +95,6 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         };
     }, [chartOption, chartOptionCount]);
 
-    useEffect(() => {
-        if (price30dHistorydata && !txVolumeData) {
-            if (chartOption === 1) {
-                setFormattedPriceChartData(price30dHistorydata)
-            }
-            else {
-                setFormattedPriceChartData(priceMaxHistorydata)
-            }
-        }
-
-        if (price30dHistorydata && txVolumeData) {
-            if (chartOption === 1) {
-                setFormattedPriceChartData(price30dHistorydata)
-            }
-            else if (chartOption === 2) {
-                setFormattedPriceChartData(priceMaxHistorydata)
-            }
-        }
-
-        if (txVolumeData && !price30dHistorydata) {
-            setChartOption(3)
-        }
-
-    }, [chartOption, price30dHistorydata, txVolumeData]);
 
 
 
@@ -183,16 +170,17 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
             <rect x={x} y={y} width={width} height={height} fill={fill} />
         );
     };
+
     return (
         <div style={styles.container}>
-            {chartOptionCount === 0 && (
+            {availableCharts.length === 0 && (
                 <div style={styles.emptyChartMessage}>
                     No chart data available</div>
             )}
-            {chartOptionCount > 1 &&
+            {availableCharts.length > 0 &&
                 <div style={styles.menuOptions}>
                     {
-                        Array.from({ length: chartOptionCount }, (_, index) => index + 1).map((option) => (
+                        Array.from({ length: chartOptionCount }, (_, index) => index).map((option) => (
                             <div
                                 key={option}
                                 onClick={() => setChartOption(option)}
@@ -202,24 +190,24 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                     }
                 </div>
             }
-            {(chartOption === 1 || chartOption === 2) &&
+            {( (availableCharts[chartOption] === "price30dHistorydata") || (availableCharts[chartOption] === "priceMaxHistorydata")) &&
                 <ResponsiveContainer width="100%" height="100%" >
                         <ComposedChart
-                            data={formattedPriceChartData}
+                            data={availableCharts[chartOption] === "price30dHistorydata" ? price30dHistorydata : priceMaxHistorydata}
                             margin={{ top: 0, left: 0, right: 0, bottom: 0 }}
                         >
                             <XAxis
                                 padding={{ left: chartOption === 2 ? 24 : 12, right: 12 }}
                                 dataKey="date"
                                 tickFormatter={(date, index) => {
-                                    if (chartOption === 1 && formattedPriceChartData.length > 40 ) {
+                                    if (availableCharts[chartOption] === "price30dHistorydata" && price30dHistorydata.length > 40 ) {
                                         return '';
                                     }
-                                    if (chartOption === 1 && date.getDay() === 1) {
+                                    if (availableCharts[chartOption] === "price30dHistorydata"  && date.getDay() === 1) {
                                         return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
                                     }
-                                    if (chartOption === 2) {
-                                        const totalDataPoints = formattedPriceChartData.length;
+                                    if (availableCharts[chartOption] === "priceMaxHistorydata" ) {
+                                        const totalDataPoints = priceMaxHistorydata.length;
                                         const desiredTickCount = 5;
                                         const interval = Math.ceil(totalDataPoints / desiredTickCount);
 
@@ -236,7 +224,6 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                                 tick={{ fontSize: 12, fill: 'white' }}
                                 tickMargin={2}
                             />
-
                             <defs>
                                 <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
                                     <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
@@ -260,32 +247,31 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                                   filter="url(#shadow)"
                                   dot={false}
                             />
-
                             <Bar
                                 dataKey="chartFormatVolume"
                                 shape={<CustomPriceBar />}
                             />
 
                             <ReferenceLine
-                                y={Math.max(...formattedPriceChartData.map(dateData => dateData.chartFormatPrice))}
+                                y={(availableCharts[chartOption] === "price30dHistorydata") ? Math.max(...price30dHistorydata.map(dateData => dateData.chartFormatPrice)) :  Math.max(...priceMaxHistorydata.map(dateData => dateData.chartFormatPrice))}
                                 stroke={colors.primary_dark}
                                 strokeDasharray="0 36 9 0"
                                 style={{ display: 'none' }}
                             >
                                 <Label
-                                    value={`$${amountFormatter(Math.max(...formattedPriceChartData.map(dateData => dateData.price)))}`}
+                                    value={`$${amountFormatter((availableCharts[chartOption] === "price30dHistorydata") ? Math.max(...price30dHistorydata.map(dateData => dateData.price)) : Math.max(...priceMaxHistorydata.map(dateData => dateData.price)))}`}
                                     position="insideTopLeft"
                                     fill={colors.secondary_light}
                                 />
                             </ReferenceLine>
                             <ReferenceLine
-                                y={Math.min(...formattedPriceChartData.map(dateData => dateData.chartFormatPrice))}
+                                y={(availableCharts[chartOption] === "price30dHistorydata") ? Math.min(...price30dHistorydata.map(dateData => dateData.chartFormatPrice)) : Math.min(...priceMaxHistorydata.map(dateData => dateData.chartFormatPrice))}
                                 stroke={colors.primary_dark}
                                 strokeDasharray="0 36 9 0"
                                 style={{ display: 'none' }}
                             >
                                 <Label
-                                    value={`$${amountFormatter(Math.min(...formattedPriceChartData.map(dateData => dateData.price)))}`}
+                                    value={`$${amountFormatter((availableCharts[chartOption] === "price30dHistorydata") ? Math.min(...price30dHistorydata.map(dateData => dateData.price)) : Math.min(...priceMaxHistorydata.map(dateData => dateData.price)) )}`}
                                     position="insideBottomLeft"
                                     fill={colors.secondary_light}
                                 />
@@ -293,7 +279,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                         </ComposedChart>
                 </ResponsiveContainer>
             }
-            {(chartOption === 3) &&
+            {(availableCharts[chartOption] === "txVolumeData") &&
                 <ResponsiveContainer width="100%" height="100%" >
                         <ComposedChart
                             data={txVolumeData}

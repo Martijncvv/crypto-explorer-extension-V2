@@ -111,13 +111,25 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData }) => {
-    const [chartOption, setChartOption] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(1);
-    const chartOptionCount = [price30dHistorydata, priceMaxHistorydata, txVolumeData].filter(Boolean).length;
-    // 30d HISTORY = 1
-    // max HISTORY = 2
-    // txvolume = 3
-    const [formattedPriceChartData, setFormattedPriceChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    console.log("txVolumeData44: ", txVolumeData);
+    let availableCharts = [];
+    if (price30dHistorydata) {
+        availableCharts.push('price30dHistorydata');
+    }
+    if (priceMaxHistorydata) {
+        availableCharts.push('priceMaxHistorydata');
+    }
+    if (txVolumeData) {
+        availableCharts.push('txVolumeData');
+    }
+    if (tokenTxsChartData) {
+        availableCharts.push('tokenTxsChartData');
+    }
+    const chartOptionCount = availableCharts.length - 1;
+    const [chartOption, setChartOption] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
+    //
+    // console.log("availableCharts44: ", availableCharts)
+    // console.log("txVolumeData44: ", txVolumeData)
+    // console.log("price30dHistorydata44: ", price30dHistorydata)
     const styles = {
         container: {
             width: 330,
@@ -153,12 +165,12 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         const handleKeyDown = (event) => {
             if (event.key === 'ArrowRight') {
-                if (chartOption < chartOptionCount) {
+                if (chartOption + 1 < chartOptionCount) {
                     setChartOption((prevChartOption) => prevChartOption + 1);
                 }
             }
             else if (event.key === 'ArrowLeft') {
-                if (chartOption > 1) {
+                if (chartOption > 0) {
                     setChartOption((prevChartOption) => prevChartOption - 1);
                 }
             }
@@ -168,27 +180,6 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [chartOption, chartOptionCount]);
-    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-        if (price30dHistorydata && !txVolumeData) {
-            if (chartOption === 1) {
-                setFormattedPriceChartData(price30dHistorydata);
-            }
-            else {
-                setFormattedPriceChartData(priceMaxHistorydata);
-            }
-        }
-        if (price30dHistorydata && txVolumeData) {
-            if (chartOption === 1) {
-                setFormattedPriceChartData(price30dHistorydata);
-            }
-            else if (chartOption === 2) {
-                setFormattedPriceChartData(priceMaxHistorydata);
-            }
-        }
-        if (txVolumeData && !price30dHistorydata) {
-            setChartOption(3);
-        }
-    }, [chartOption, price30dHistorydata, txVolumeData]);
     const CustomPriceTooltip = props => {
         var _a;
         const { active, payload } = props;
@@ -242,21 +233,21 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: y, width: width, height: height, fill: fill }));
     };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
-        chartOptionCount === 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.emptyChartMessage }, "No chart data available")),
-        chartOptionCount > 1 &&
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.menuOptions }, Array.from({ length: chartOptionCount }, (_, index) => index + 1).map((option) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: option, onClick: () => setChartOption(option), style: chartOption === option ? styles.activeOption : styles.menuOption })))),
-        (chartOption === 1 || chartOption === 2) &&
+        availableCharts.length === 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.emptyChartMessage }, "No chart data available")),
+        availableCharts.length > 0 &&
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.menuOptions }, Array.from({ length: chartOptionCount }, (_, index) => index).map((option) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: option, onClick: () => setChartOption(option), style: chartOption === option ? styles.activeOption : styles.menuOption })))),
+        ((availableCharts[chartOption] === "price30dHistorydata") || (availableCharts[chartOption] === "priceMaxHistorydata")) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.ResponsiveContainer, { width: "100%", height: "100%" },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.ComposedChart, { data: formattedPriceChartData, margin: { top: 0, left: 0, right: 0, bottom: 0 } },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.ComposedChart, { data: availableCharts[chartOption] === "price30dHistorydata" ? price30dHistorydata : priceMaxHistorydata, margin: { top: 0, left: 0, right: 0, bottom: 0 } },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_6__.XAxis, { padding: { left: chartOption === 2 ? 24 : 12, right: 12 }, dataKey: "date", tickFormatter: (date, index) => {
-                            if (chartOption === 1 && formattedPriceChartData.length > 40) {
+                            if (availableCharts[chartOption] === "price30dHistorydata" && price30dHistorydata.length > 40) {
                                 return '';
                             }
-                            if (chartOption === 1 && date.getDay() === 1) {
+                            if (availableCharts[chartOption] === "price30dHistorydata" && date.getDay() === 1) {
                                 return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
                             }
-                            if (chartOption === 2) {
-                                const totalDataPoints = formattedPriceChartData.length;
+                            if (availableCharts[chartOption] === "priceMaxHistorydata") {
+                                const totalDataPoints = priceMaxHistorydata.length;
                                 const desiredTickCount = 5;
                                 const interval = Math.ceil(totalDataPoints / desiredTickCount);
                                 if (index % interval === 0 && index !== totalDataPoints - 1) {
@@ -277,11 +268,11 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_7__.Tooltip, { content: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CustomPriceTooltip, null), cursor: { fill: 'transparent' } }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_8__.Line, { type: "monotone", strokeWidth: 2, dataKey: "chartFormatPrice", stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium, filter: "url(#shadow)", dot: false }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_9__.Bar, { dataKey: "chartFormatVolume", shape: react__WEBPACK_IMPORTED_MODULE_0___default().createElement(CustomPriceBar, null) }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_10__.ReferenceLine, { y: Math.max(...formattedPriceChartData.map(dateData => dateData.chartFormatPrice)), stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, strokeDasharray: "0 36 9 0", style: { display: 'none' } },
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_11__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(Math.max(...formattedPriceChartData.map(dateData => dateData.price)))}`, position: "insideTopLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_10__.ReferenceLine, { y: Math.min(...formattedPriceChartData.map(dateData => dateData.chartFormatPrice)), stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, strokeDasharray: "0 36 9 0", style: { display: 'none' } },
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_11__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(Math.min(...formattedPriceChartData.map(dateData => dateData.price)))}`, position: "insideBottomLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })))),
-        (chartOption === 3) &&
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_10__.ReferenceLine, { y: (availableCharts[chartOption] === "price30dHistorydata") ? Math.max(...price30dHistorydata.map(dateData => dateData.chartFormatPrice)) : Math.max(...priceMaxHistorydata.map(dateData => dateData.chartFormatPrice)), stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, strokeDasharray: "0 36 9 0", style: { display: 'none' } },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_11__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)((availableCharts[chartOption] === "price30dHistorydata") ? Math.max(...price30dHistorydata.map(dateData => dateData.price)) : Math.max(...priceMaxHistorydata.map(dateData => dateData.price)))}`, position: "insideTopLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_10__.ReferenceLine, { y: (availableCharts[chartOption] === "price30dHistorydata") ? Math.min(...price30dHistorydata.map(dateData => dateData.chartFormatPrice)) : Math.min(...priceMaxHistorydata.map(dateData => dateData.chartFormatPrice)), stroke: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, strokeDasharray: "0 36 9 0", style: { display: 'none' } },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_11__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)((availableCharts[chartOption] === "price30dHistorydata") ? Math.min(...price30dHistorydata.map(dateData => dateData.price)) : Math.min(...priceMaxHistorydata.map(dateData => dateData.price)))}`, position: "insideBottomLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })))),
+        (availableCharts[chartOption] === "txVolumeData") &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.ResponsiveContainer, { width: "100%", height: "100%" },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.ComposedChart, { data: txVolumeData, margin: { top: 6, left: 24, right: 0, bottom: 0 } },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_6__.XAxis, { padding: { left: 12, right: 12 }, dataKey: "date", tickFormatter: (date, index) => {
@@ -1424,7 +1415,7 @@ const App = () => {
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     // todo fix onchain txs chart; detailed txs info for coins
-    // tab selection of coin menu
+    // todo tab selection of coin menu styling;  whiteblack edge
     // todo, check other social link names: reddit, telegram, explorer, conigecko id
     // improve rendering efficiency
     // fix all anys
