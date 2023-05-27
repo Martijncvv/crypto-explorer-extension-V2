@@ -161,7 +161,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     }, []);
 
 
-
     // get detailed coin info and trending info on startup
     useEffect(() => {
         getTrendingCoins()
@@ -294,6 +293,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     const fetchDetailedTokenInfo = async (coinId: string) => {
         try {
             setIsLoading(true);
+            setTxVolumeChartData([])
+            setTokenTxsChartData([])
             const [coinInfo, priceMaxHistoryDataRes] = await Promise.all([
                 fetchCoinInfo(coinId),
                 fetchPriceHistoryData(coinId, 'usd', 'max'),
@@ -311,27 +312,32 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 setIsError(true);
                 return
             }
+
             // get past 30 days
-            let price30dHistoryDataRes: any = {prices: [], total_volumes: []}
-            price30dHistoryDataRes.prices = priceMaxHistoryDataRes.prices.slice(-31);
-            price30dHistoryDataRes.total_volumes = priceMaxHistoryDataRes.total_volumes.slice(-31);
-            coinInfo.price30dHistoryData = FormatChartData(price30dHistoryDataRes)
-            coinInfo.priceMaxHistoryData = FormatChartData(priceMaxHistoryDataRes)
+            coinInfo.price30dHistoryData = FormatChartData({
+                prices: priceMaxHistoryDataRes.prices.slice(-31),
+                total_volumes: priceMaxHistoryDataRes.total_volumes.slice(-31)
+            });
+            coinInfo.priceMaxHistoryData = FormatChartData(priceMaxHistoryDataRes);
+
             setCoinInfo(coinInfo)
             setNftInfo(null)
-
+            setIsError(false)
             console.log("coinInfo: ", coinInfo)
+
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
                 const tokenTxChartData = await getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd)
                 if (!tokenTxChartData) {
                     setIsLoading(false);
                     setIsError(true);
+                    console.log("tokenTxChartData88: ", tokenTxChartData)
                     console.log(`No results for getTokenTxChartData ${coinId}`)
                     return
                 }
-                setTokenTxsChartData(tokenTxChartData)
+                if (tokenTxChartData.length > 0) {
+                        setTokenTxsChartData(tokenTxChartData)
+                }
             }
-
             setIsLoading(false)
         } catch (error) {
             setIsLoading(false)
@@ -342,6 +348,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     const fetchDetailedNftInfo = async (coinId: string) => {
         try {
             setIsLoading(true);
+            setTxVolumeChartData([])
+            setTokenTxsChartData([])
             const [nftInfo] = await Promise.all([
                 fetchNftInfo(coinId),
             ]);
@@ -353,6 +361,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             }
             setNftInfo(nftInfo)
             setCoinInfo(null)
+            setIsError(false)
 
             if (nftInfo.asset_platform_id) {
                 const txVolumeData = await getNftTxChartData(nftInfo.asset_platform_id, nftInfo.contract_address)
@@ -362,14 +371,16 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     console.log(`No results for getNftTxChartData ${coinId}`)
                     return
                 }
-                setTxVolumeChartData(txVolumeData)
+                if (txVolumeData.length > 0 ) {
+                    setTxVolumeChartData(txVolumeData)
+                }
             }
             setIsLoading(false)
         } catch (error) {
             setIsLoading(false)
             setIsError(true);
             setNftInfo(null)
-            setTxVolumeChartData(null)
+            setTxVolumeChartData([])
             setCoinInfo(null)
             console.error(`fetchDetailedNftInfo: Error searching for coin: ${coinId}`, error);
         }
@@ -487,19 +498,22 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
         const nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
 
-        const nftTxsChartFormat: { date: Date, volume: number }[] = Object.entries(nftTxsData.result.reduce((result: { [dateString: string]: { date: Date, volume: number } }, txInfo: any) => {
-            const date = new Date(Number(txInfo.timeStamp) * 1000);
-            const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        if (nftTxsData.result) {
+            const nftTxsChartFormat: { date: Date, volume: number }[] = Object.entries(nftTxsData.result.reduce((result: { [dateString: string]: { date: Date, volume: number } }, txInfo: any) => {
+                const date = new Date(Number(txInfo.timeStamp) * 1000);
+                const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
-            if (result[dateString]) {
-                result[dateString].volume += 1;
-            } else {
-                result[dateString] = { date: date, volume: 1 };
-            }
-            return result;
-        }, {})).map(([dateString, { date, volume }]) => ({ date, volume }));
-
-        return nftTxsChartFormat;
+                if (result[dateString]) {
+                    result[dateString].volume += 1;
+                } else {
+                    result[dateString] = { date: date, volume: 1 };
+                }
+                return result;
+            }, {})).map(([dateString, { date, volume }]) => ({ date, volume }));
+            return nftTxsChartFormat;
+        }
+        console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
+        return nftTxsData
     }
     async function getTokenTxChartData(platformId, contractAddress, tokenValue): Promise<any> {
         let domain: string;
@@ -534,28 +548,29 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         const tokenTxsRes = await fetchTokenTxs(domain, contractAddress, 10000);
         const tokenTxsData = tokenTxsRes.result
 
-        const maxValue = Math.max(...tokenTxsData.map(txInfo => Number(txInfo.value)));
-        let minValue = maxValue * 0.7;
-        console.log("maxValue: ",maxValue)
-        console.log("minValue: ",minValue)
+            console.log("tokenTxsData222: ",tokenTxsData)
+        if (tokenTxsData.length > 0) {
+            console.log("tokenTxsData8: ",tokenTxsData)
+            const maxValue = Math.max(...tokenTxsData.map(txInfo => Number(txInfo.value)));
+            let minValue = maxValue * 0.2;
+            const filteredTokenTxsData = tokenTxsData.filter((txInfo) => Number(txInfo.value) > minValue);
+            console.log("filteredTokenTxsData8: ",filteredTokenTxsData)
 
-        console.log("tokenTxsData8: ",tokenTxsData)
-        const filteredTokenTxsData = tokenTxsData.filter((txInfo) => Number(txInfo.value) > minValue);
-        console.log("filteredTokenTxsData8: ",filteredTokenTxsData)
+            let tokenTxsChartData = []
 
-        let tokenTxsChartData = []
-
-        filteredTokenTxsData.forEach((txInfo) => {
-            tokenTxsChartData.push({
-                date: new Date(Number(txInfo.timeStamp) * 1000),
-                amount: (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)),
-                txHash: txInfo.hash,
-                usdValue: (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)) * tokenValue,
+            filteredTokenTxsData.forEach((txInfo) => {
+                tokenTxsChartData.push({
+                    date: new Date(Number(txInfo.timeStamp) * 1000),
+                    amount: (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)),
+                    txHash: txInfo.hash,
+                    usdValue: (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)) * tokenValue,
+                })
             })
-        })
-        console.log("tokenTxsChartData8: ",tokenTxsChartData)
-
-        return tokenTxsChartData
+            // minValue = 10000
+            // tokenTxsChartData = tokenTxsChartData.filter((txInfo) => Number(txInfo.usdValue) > minValue);
+            return tokenTxsChartData
+        }
+        return tokenTxsRes
     }
 
     return (

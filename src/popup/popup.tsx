@@ -53,7 +53,8 @@ const App: React.FC = () => {
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
-	// todo fix onchain txs chart; detailed txs info for coins
+	// todo fix onchain txs chart, click on tx for blockchain explorer,
+	// todo check filter options
 	// todo tab selection of coin menu styling;  whiteblack edge
 	// todo, check other social link names: reddit, telegram, explorer, conigecko id
 
@@ -131,9 +132,9 @@ const App: React.FC = () => {
 					<TitleBlock title={coinInfo.name} />
 					<TickerBlock ticker={coinInfo.symbol} />
 					<ChartsBlock
-						price30dHistorydata={coinInfo.price30dHistoryData}
-						priceMaxHistorydata={coinInfo.priceMaxHistoryData}
-						tokenTxsChartData={tokenTxsChartData}
+						price30dHistorydata={coinInfo.price30dHistoryData.length && coinInfo.price30dHistoryData}
+						priceMaxHistorydata={coinInfo.priceMaxHistoryData.length && coinInfo.priceMaxHistoryData}
+						tokenTxsChartData={tokenTxsChartData.length && tokenTxsChartData}
 					/>
 				</>
 			}
@@ -143,7 +144,7 @@ const App: React.FC = () => {
 					<TitleBlock title={nftInfo.name} />
 					<TickerBlock ticker={nftInfo.symbol} />
 					<ChartsBlock
-						txVolumeData={txVolumeChartData}
+						txVolumeData={txVolumeChartData.length && txVolumeChartData}
 					/>
 				</>
 			}

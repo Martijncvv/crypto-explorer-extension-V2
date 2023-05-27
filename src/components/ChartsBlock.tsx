@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 import {IPriceHistoryData} from "../models/ICoinInfo";
 import {ITokenTxs} from "../models/ITokenTxs";
-import {amountFormatter} from "../utils/amountFormatter";
+import {amountFormatter, numberFormatter} from "../utils/amountFormatter";
 
 interface ChartsBlockProps {
     price30dHistorydata?: any;
@@ -37,12 +37,9 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
     if (tokenTxsChartData) {
         availableCharts.push('tokenTxsChartData')
     }
-    const chartOptionCount = availableCharts.length - 1;
+    const chartOptionCount = availableCharts.length;
     const [chartOption, setChartOption] = useState<number>(0)
-    //
-    // console.log("availableCharts44: ", availableCharts)
-    // console.log("txVolumeData44: ", txVolumeData)
-    // console.log("price30dHistorydata44: ", price30dHistorydata)
+
     const styles: { [key: string]: CSSProperties } = {
         container: {
             width: 330,
@@ -76,16 +73,17 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         },
     };
 
-
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === 'ArrowRight') {
-                if (chartOption + 1 < chartOptionCount) {
-                    setChartOption((prevChartOption) => prevChartOption + 1);
+                console.log("chartOptionCount: ", chartOptionCount)
+                console.log("chartOption: ", chartOption)
+                if (chartOption < chartOptionCount - 1) {
+                    setChartOption((prevOption) => prevOption + 1);
                 }
             } else if (event.key === 'ArrowLeft') {
                 if (chartOption > 0) {
-                    setChartOption((prevChartOption) => prevChartOption - 1);
+                    setChartOption((prevOption) => prevOption - 1);
                 }
             }
         };
@@ -93,10 +91,11 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [chartOption, chartOptionCount]);
+    }, [chartOptionCount, chartOption]);
 
-
-
+    useEffect(() => {
+        setChartOption(0)
+    }, [price30dHistorydata,priceMaxHistorydata, txVolumeData, tokenTxsChartData]);
 
     const CustomPriceTooltip = props => {
         const { active, payload } = props;
@@ -126,7 +125,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         }
         return null;
     };
-    const CustomOnchainTooltip = props => {
+    const CustomOnchainVolumeTooltip = props => {
         const { active, payload } = props;
 
         if (active && payload && payload.length) {
@@ -153,6 +152,36 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         }
         return null;
     };
+    const CustomOnchainTxsTooltip = props => {
+        const { active, payload } = props;
+
+        if (active && payload && payload.length) {
+
+            const date = payload[0]?.payload.date;
+            const formattedDate = date.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit' });
+            const amount = payload[0].payload.amount
+            const usdValue = payload[0].payload.usdValue
+            const txHash = payload[0].payload.txHash
+
+            return (
+                <div
+                    style={{
+                        background: colors.primary_dark,
+                        border: 'none',
+                        borderRadius: constants.border_radius_small,
+                        color: '#fff',
+                        padding: '10px',
+                        fontSize: '14px',
+                    }}
+                >
+                    <p style={{ margin: 0, marginBottom: '6px' }}>{`${formattedDate}`}</p>
+                    <p style={{ margin: 0, marginBottom: '6px' }}>{`${numberFormatter(amount)} tokens`}</p>
+                    <p style={{ margin: 0, marginBottom: '6px' }}>{`$${amountFormatter(usdValue)}`}</p>
+                </div>
+            );
+        }
+        return null;
+    };
 
     const CustomPriceBar = (props) => {
         const { x, y, width, height, date } = props;
@@ -162,7 +191,15 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
             <rect x={x} y={y} width={width} height={height} fill={fill} />
         );
     };
-    const CustomOnchainBar = (props) => {
+    const CustomOnchainVolumeBar = (props) => {
+        const { x, y, width, height, date } = props;
+        let fill= date.getDay() === 1 ? colors.secondary_dark : colors.primary_dark
+
+        return (
+            <rect x={x} y={y} width={width} height={height} fill={fill} />
+        );
+    };
+    const CustomOnchainTxsBar = (props) => {
         const { x, y, width, height, date } = props;
         let fill= date.getDay() === 1 ? colors.secondary_dark : colors.primary_dark
 
@@ -325,11 +362,11 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                                 </filter>
                             </defs>
 
-                            <Tooltip content={<CustomOnchainTooltip />} cursor={{ fill: 'transparent' }} />
+                            <Tooltip content={<CustomOnchainVolumeTooltip />} cursor={{ fill: 'transparent' }} />
 
                             <Bar
                                 dataKey="volume"
-                                shape={<CustomOnchainBar />}
+                                shape={<CustomOnchainVolumeBar />}
                             />
 
                             <ReferenceLine
@@ -339,6 +376,75 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                             >
                                 <Label
                                     value={`${Math.max(...txVolumeData.map(dateData => dateData.volume))}`}
+                                    position="insideBottomLeft"
+                                    fill={colors.secondary_light}
+                                />
+                            </ReferenceLine>
+
+
+                        </ComposedChart>
+                </ResponsiveContainer>
+            }
+            {(availableCharts[chartOption] === "tokenTxsChartData") &&
+                <ResponsiveContainer width="100%" height="100%" >
+                        <ComposedChart
+                            data={tokenTxsChartData}
+                            margin={{ top: 6, left: 24, right: 0, bottom: 0 }}
+                        >
+
+                            <XAxis
+                                padding={{ left: 12, right: 12 }}
+                                dataKey="date"
+                                tickFormatter={(date, index) => {
+                                    const totalDataPoints = tokenTxsChartData.length;
+                                    const desiredTickCount = 5;
+                                    const interval = Math.ceil(totalDataPoints / desiredTickCount);
+
+                                    if (index % interval === 0 && index !== totalDataPoints - 1) {
+                                        return date.toLocaleDateString('en-GB', {
+                                            month: '2-digit',
+                                            year: '2-digit'
+                                        });
+                                    } else {
+                                        return ''
+                                    }
+                                }}
+                                interval={0}
+                                height={28}
+                                axisLine={{ stroke: 'none' }}
+                                tickLine={{ stroke: 'none' }}
+                                tick={{ fontSize: 12, fill: 'white' }}
+                                tickMargin={2}
+                            />
+
+                            <defs>
+                                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                                    <feOffset dx="2" dy="2" result="offsetblur" />
+                                    <feComponentTransfer>
+                                        <feFuncA type="linear" slope="0.5" />
+                                    </feComponentTransfer>
+                                    <feMerge>
+                                        <feMergeNode />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
+
+                            <Tooltip content={<CustomOnchainTxsTooltip />} cursor={{ fill: 'transparent' }} />
+
+                            <Bar
+                                dataKey="usdValue"
+                                shape={<CustomOnchainTxsBar />}
+                            />
+
+                            <ReferenceLine
+                                y={Math.max(...tokenTxsChartData.map(dateData => dateData.usdValue))}
+                                stroke={colors.primary_dark}
+                                strokeDasharray="0 36 9 0"
+                            >
+                                <Label
+                                    value={`$${amountFormatter(Math.max(...tokenTxsChartData.map(dateData => dateData.usdValue)))}`}
                                     position="insideBottomLeft"
                                     fill={colors.secondary_light}
                                 />
