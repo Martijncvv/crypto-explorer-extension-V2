@@ -553,7 +553,21 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             console.log("tokenTxsData8: ",tokenTxsData)
             const maxValue = Math.max(...tokenTxsData.map(txInfo => Number(txInfo.value)));
             let minValue = maxValue * 0.2;
-            const filteredTokenTxsData = tokenTxsData.filter((txInfo) => Number(txInfo.value) > minValue);
+            // const filteredTokenTxsData = tokenTxsData.filter((txInfo) => Number(txInfo.value) > minValue);
+
+            const arrayWithIndices = tokenTxsData.map((item, index) => ({...item, index}));
+
+            // Step 2: Sort in descending order by 'value'
+            const sortedArray = arrayWithIndices.sort((a, b) => b.value - a.value);
+
+            // Step 3: Slice to keep first 300
+            const top300Array = sortedArray.slice(0, 300);
+
+            // Step 4: Sort back to original order
+            const originalOrderArray = top300Array.sort((a, b) => a.index - b.index);
+
+
+
             console.log("filteredTokenTxsData8: ",filteredTokenTxsData)
 
             let tokenTxsChartData = []
