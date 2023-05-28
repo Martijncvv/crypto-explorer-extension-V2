@@ -588,7 +588,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.ts");
 /* harmony import */ var _mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @mui/material/CircularProgress */ "./node_modules/@mui/material/CircularProgress/CircularProgress.js");
-/* harmony import */ var _mui_icons_material_SearchOff__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mui/icons-material/SearchOff */ "./node_modules/@mui/icons-material/SearchOff.js");
+/* harmony import */ var _mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mui/icons-material/SyncProblem */ "./node_modules/@mui/icons-material/SyncProblem.js");
 /* harmony import */ var _mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @mui/icons-material/Search */ "./node_modules/@mui/icons-material/Search.js");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -607,7 +607,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 const menuIcon = __webpack_require__(/*! ../static/images/icons/menu-icon.png */ "./src/static/images/icons/menu-icon.png");
-const searchIcon = __webpack_require__(/*! ../static/images/icons/search-icon.png */ "./src/static/images/icons/search-icon.png");
 const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData }) => {
     const searchResultsRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
     const inputRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
@@ -735,9 +734,9 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         // fetchDetailedTokenInfo('bitcoin');
         fetchDetailedTokenInfo('apecoin');
         // fetchDetailedNftInfo('bored-ape-yacht-club');
-        // if (inputRef.current) {
-        //     inputRef.current.focus();
-        // }
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
     }, []);
     // Close the expansion if the click is outside of the search results block
     const handleClickOutside = (event) => {
@@ -757,6 +756,13 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     marketCapRank: coin.item.market_cap_rank,
                     nft: false,
                 });
+            });
+            searchFormat.tokens.push({
+                id: '',
+                name: `Top Trending`,
+                image: '',
+                marketCapRank: '',
+                nft: true,
             });
             setDisplayResults(searchFormat);
             return searchFormat;
@@ -878,17 +884,18 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             setNftInfo(null);
             setIsError(false);
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
-                yield delay(300);
+                yield delay(1000);
+                console.log("FETCH TOKEN ONCHAIN TXS");
+                console.log("Platform: ", coinInfo.asset_platform_id);
                 const tokenTxChartData = yield getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
+                console.log("tokenTxChartData3: ", tokenTxChartData);
                 if (!tokenTxChartData) {
                     setIsLoading(false);
                     setIsError(true);
                     console.log(`No results for getTokenTxChartData ${coinId}`);
                     return;
                 }
-                if (tokenTxChartData.length > 0) {
-                    setTokenTxsChartData(tokenTxChartData);
-                }
+                setTokenTxsChartData(tokenTxChartData);
             }
             setIsLoading(false);
         }
@@ -916,7 +923,8 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             setCoinInfo(null);
             setIsError(false);
             if (nftInfo.asset_platform_id && nftInfo.contract_address) {
-                yield delay(300);
+                yield delay(1000);
+                console.log("FETCH NFT ONCHAIN TXS ");
                 const txVolumeData = yield getNftTxChartData(nftInfo.asset_platform_id, nftInfo.contract_address);
                 if (!txVolumeData) {
                     setIsLoading(false);
@@ -1007,26 +1015,32 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         return __awaiter(this, void 0, void 0, function* () {
             let domain;
             switch (platformId) {
-                case 'ethereum':
-                    domain = 'etherscan.io';
-                    break;
-                case 'binance-smart-chain':
-                    domain = 'bscscan.com';
-                    break;
-                case 'polygon-pos':
-                    domain = 'polygonscan.com';
-                    break;
-                case 'fantom':
-                    domain = 'ftmscan.com';
-                    break;
-                case 'cronos':
-                    domain = 'cronoscan.com';
+                case 'arbitrum-one':
+                    domain = 'api.arbiscan.io';
                     break;
                 case 'avalanche':
-                    domain = 'snowtrace.io';
+                    domain = 'api.snowtrace.io';
+                    break;
+                case 'binance-smart-chain':
+                    domain = 'api.bscscan.com';
                     break;
                 case 'celo':
-                    domain = 'celoscan.io';
+                    domain = 'api.celoscan.io';
+                    break;
+                case 'cronos':
+                    domain = 'api.cronoscan.com';
+                    break;
+                case 'ethereum':
+                    domain = 'api.etherscan.io';
+                    break;
+                case 'fantom':
+                    domain = 'api.ftmscan.com';
+                    break;
+                case 'polygon-pos':
+                    domain = 'api.polygonscan.com';
+                    break;
+                case 'optimistic-ethereum':
+                    domain = 'api-optimistic.etherscan.io';
                     break;
                 default:
                     console.log(`getNftTxChartData error: Invalid platformId: ${platformId}`);
@@ -1034,7 +1048,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             }
             const nftTxsData = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNftTxs)(domain, contractAddress, 10000);
             console.log(`getNftTxChartData:`, nftTxsData);
-            if (nftTxsData.result) {
+            if (nftTxsData.status !== "0" && nftTxsData.result) {
                 const nftTxsChartFormat = Object.entries(nftTxsData.result.reduce((result, txInfo) => {
                     const date = new Date(Number(txInfo.timeStamp) * 1000);
                     const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
@@ -1049,33 +1063,39 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 return nftTxsChartFormat.reverse();
             }
             console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
-            return false;
+            return null;
         });
     }
     function getTokenTxChartData(platformId, contractAddress, tokenValue) {
         return __awaiter(this, void 0, void 0, function* () {
             let domain;
             switch (platformId) {
-                case 'ethereum':
-                    domain = 'etherscan.io';
-                    break;
-                case 'binance-smart-chain':
-                    domain = 'bscscan.com';
-                    break;
-                case 'polygon-pos':
-                    domain = 'polygonscan.com';
-                    break;
-                case 'fantom':
-                    domain = 'ftmscan.com';
-                    break;
-                case 'cronos':
-                    domain = 'cronoscan.com';
+                case 'arbitrum-one':
+                    domain = 'api.arbiscan.io';
                     break;
                 case 'avalanche':
-                    domain = 'snowtrace.io';
+                    domain = 'api.snowtrace.io';
+                    break;
+                case 'binance-smart-chain':
+                    domain = 'api.bscscan.com';
                     break;
                 case 'celo':
-                    domain = 'celoscan.io';
+                    domain = 'api.celoscan.io';
+                    break;
+                case 'cronos':
+                    domain = 'api.cronoscan.com';
+                    break;
+                case 'ethereum':
+                    domain = 'api.etherscan.io';
+                    break;
+                case 'fantom':
+                    domain = 'api.ftmscan.com';
+                    break;
+                case 'polygon-pos':
+                    domain = 'api.polygonscan.com';
+                    break;
+                case 'optimistic-ethereum':
+                    domain = 'api-optimistic.etherscan.io';
                     break;
                 default:
                     console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
@@ -1101,7 +1121,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 });
                 return tokenTxsChartData;
             }
-            return tokenTxsRes;
+            return null;
         });
     }
     function delay(ms) {
@@ -1121,7 +1141,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_5__["default"], { size: 40, thickness: 1, style: { position: 'absolute', right: 12, zIndex: 1, color: "white" } }),
             isError &&
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.indicationIcon, title: "Refresh limit: 5/sec" },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_SearchOff__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { fontSize: 30, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } }))),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { fontSize: 30, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } }))),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults, ref: searchResultsRef }, isExpanded && (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.length) > 0 &&
             (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.slice(0, 12).map((tokenInfo, index) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: tokenInfo.id + index, style: index === focusedOptionIndex
                     ? Object.assign(Object.assign({}, styles.coinSearchInfo), styles.coinSearchInfoFocus) : styles.coinSearchInfo, tabIndex: index, onClick: () => handleCoinOptionClick(tokenInfo), onKeyDown: (event) => {
@@ -1510,10 +1530,8 @@ const App = () => {
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    // todo: HeaderBlock.tsx:345 fetchDetailedNftInfo: Error searching for coin: carbon-capture-zancan TypeError: nftTxsData.result.reduce is not a functio
-    // todo nft  onchain tx loading animation doesn't always work
-    // todo set focus on first option after search
-    // todo: NFT fix unique owners UI, 2nd value remove
+    // add arbitrum
+    // add support
     // improve rendering efficiency
     // fix all anys
     // keep highest and lowest price on max chart
@@ -1617,10 +1635,10 @@ const App = () => {
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Native", tooltipTitle: "Native floor/ platform", mainValue: `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)((_3 = nftInfo.floor_price) === null || _3 === void 0 ? void 0 : _3.native_currency) || '-'}`, secondaryValue: nftInfo.native_currency ? (nftInfo.native_currency.charAt(0).toUpperCase() + nftInfo.native_currency.slice(1)).substring(0, 8) : '-' })),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Total supply", mainValue: nftInfo.total_supply ? `${nftInfo.total_supply}` : "-" }),
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Unique owners", tooltipTitle: "24h change %", mainValue: nftInfo.number_of_unique_addresses ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.numberFormatter)(nftInfo.number_of_unique_addresses) : "-", secondaryValue: nftInfo.number_of_unique_addresses_24h_percentage_change ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.percentageFormatter)(nftInfo.number_of_unique_addresses_24h_percentage_change)}%` : "-" })),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Unique owners", tooltipTitle: "24h change %", mainValue: nftInfo.number_of_unique_addresses ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.numberFormatter)(nftInfo.number_of_unique_addresses) : "-", secondaryValue: nftInfo.number_of_unique_addresses_24h_percentage_change ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.percentageFormatter)(nftInfo.number_of_unique_addresses_24h_percentage_change)}%` : "" })),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Market Cap", mainValue: ((_4 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _4 === void 0 ? void 0 : _4.usd) ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)((_5 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _5 === void 0 ? void 0 : _5.usd)}` : "-" }),
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Volume", tooltipTitle: "24h change %", mainValue: nftInfo.volume_24h.usd ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)(nftInfo.volume_24h.usd)}` : "-", secondaryValue: nftInfo.volume_in_usd_24h_percentage_change ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.percentageFormatter)(nftInfo.volume_in_usd_24h_percentage_change)}%` : "-%" })),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Volume", tooltipTitle: "24h change %", mainValue: nftInfo.volume_24h.usd ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)(nftInfo.volume_24h.usd)}` : "-", secondaryValue: nftInfo.volume_in_usd_24h_percentage_change ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.percentageFormatter)(nftInfo.volume_in_usd_24h_percentage_change)}%` : "" })),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__["default"], { text: nftInfo.description })),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.socialBlocks), styles.bottomMargin) },
@@ -2503,7 +2521,7 @@ function fetchPriceHistoryData(coinId, quote, chartRange) {
 function fetchNftTxs(domainName, contractAddress, txAmount) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const res = yield fetch(`https://api.${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc`);
+            const res = yield fetch(`https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc`);
             if (!res.ok) {
                 throw new Error(`Fetch error, ${domainName} nft txs info: ${res.status} ${res.statusText}`);
             }
@@ -2518,7 +2536,7 @@ function fetchNftTxs(domainName, contractAddress, txAmount) {
 function fetchTokenTxs(domainName, contractAddress, txAmount) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const res = yield fetch(`https://api.${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`);
+            const res = yield fetch(`https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`);
             if (!res.ok) {
                 throw new Error(`Fetch error, ${domainName} token txs info: ${res.status} ${res.statusText}`);
             }
@@ -2637,16 +2655,6 @@ module.exports = __webpack_require__.p + "f4ba429b501f76efc5ef.png";
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 module.exports = __webpack_require__.p + "c9ba47d35142132fba34.png";
-
-/***/ }),
-
-/***/ "./src/static/images/icons/search-icon.png":
-/*!*************************************************!*\
-  !*** ./src/static/images/icons/search-icon.png ***!
-  \*************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-module.exports = __webpack_require__.p + "265a38582130035fe898.png";
 
 /***/ }),
 
@@ -2892,7 +2900,7 @@ module.exports = __webpack_require__.p + "275488b8325f50682b7c.png";
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_mui_icons-material_Search_js-node_modules_mui_icons-material_SearchOff_j-5176d3"], () => (__webpack_require__("./src/popup/popup.tsx")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_mui_icons-material_Search_js-node_modules_mui_icons-material_SyncProblem-d7246e"], () => (__webpack_require__("./src/popup/popup.tsx")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

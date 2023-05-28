@@ -53,10 +53,8 @@ const App: React.FC = () => {
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
-	// todo: HeaderBlock.tsx:345 fetchDetailedNftInfo: Error searching for coin: carbon-capture-zancan TypeError: nftTxsData.result.reduce is not a functio
-	// todo nft  onchain tx loading animation doesn't always work
-	// todo set focus on first option after search
-	// todo: NFT fix unique owners UI, 2nd value remove
+	// add arbitrum
+	// add support
 	// improve rendering efficiency
 	// fix all anys
 	// keep highest and lowest price on max chart
@@ -217,11 +215,11 @@ const App: React.FC = () => {
 						</div>
 						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
 							<ValueBlock title="Total supply" mainValue={nftInfo.total_supply ? `${nftInfo.total_supply}` : "-"}/>
-							<ValueBlock title="Unique owners" tooltipTitle="24h change %" mainValue={nftInfo.number_of_unique_addresses ? numberFormatter(nftInfo.number_of_unique_addresses) : "-"} secondaryValue={nftInfo.number_of_unique_addresses_24h_percentage_change ? `${percentageFormatter(nftInfo.number_of_unique_addresses_24h_percentage_change)}%` : "-"}/>
+							<ValueBlock title="Unique owners" tooltipTitle="24h change %" mainValue={nftInfo.number_of_unique_addresses ? numberFormatter(nftInfo.number_of_unique_addresses) : "-"} secondaryValue={nftInfo.number_of_unique_addresses_24h_percentage_change ? `${percentageFormatter(nftInfo.number_of_unique_addresses_24h_percentage_change)}%` : ""}/>
 						</div>
 						<div style={{...styles.dataBlocks, ...styles.bottomMargin}}>
 							<ValueBlock title="Market Cap" mainValue={nftInfo?.market_cap?.usd ? `$${amountFormatter(nftInfo?.market_cap?.usd)}`: "-"}/>
-							<ValueBlock title="Volume" tooltipTitle="24h change %" mainValue={nftInfo.volume_24h.usd ? `$${amountFormatter(nftInfo.volume_24h.usd)}` : "-"} secondaryValue={nftInfo.volume_in_usd_24h_percentage_change ? `${percentageFormatter(nftInfo.volume_in_usd_24h_percentage_change)}%` : "-%"}/>
+							<ValueBlock title="Volume" tooltipTitle="24h change %" mainValue={nftInfo.volume_24h.usd ? `$${amountFormatter(nftInfo.volume_24h.usd)}` : "-"} secondaryValue={nftInfo.volume_in_usd_24h_percentage_change ? `${percentageFormatter(nftInfo.volume_in_usd_24h_percentage_change)}%` : ""}/>
 						</div>
 
 						<div  style={styles.bottomMargin}>

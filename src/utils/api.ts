@@ -104,7 +104,7 @@ export async function fetchNftTxs(
 ): Promise<ITokenTxs> {
 	try {
 		const res = await fetch(
-			`https://api.${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc`
+			`https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc`
 		);
 
 		if (!res.ok) {
@@ -125,7 +125,7 @@ export async function fetchTokenTxs(
 ): Promise<ITokenTxs> {
 	try {
 		const res = await fetch(
-			`https://api.${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`
+			`https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`
 		)
 
 		if (!res.ok) {

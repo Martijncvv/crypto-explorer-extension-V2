@@ -19,11 +19,11 @@ import {
 import {IDetailedNftInfo} from "../models/INftInfo";
 import { ITokenTxs } from "../models/ITokenTxs";
 import CircularProgress from "@mui/material/CircularProgress";
-import SearchOffIcon from '@mui/icons-material/SearchOff';
+import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import SearchIcon from '@mui/icons-material/Search';
 
 const menuIcon = require( "../static/images/icons/menu-icon.png")
-const searchIcon = require( "../static/images/icons/search-icon.png")
+
 interface HeaderBlockProps {
     mainLogo: string;
     setCoinInfo: (coinInfo: IDetailedCoinInfo) => void;
@@ -176,9 +176,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         // fetchDetailedTokenInfo('bitcoin');
         fetchDetailedTokenInfo('apecoin');
         // fetchDetailedNftInfo('bored-ape-yacht-club');
-        // if (inputRef.current) {
-        //     inputRef.current.focus();
-        // }
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
     }, []);
 
     // Close the expansion if the click is outside of the search results block
@@ -203,6 +203,15 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     }
                 )
             })
+            searchFormat.tokens.push(
+                {
+                    id: '',
+                    name: `Top Trending`,
+                    image: '',
+                    marketCapRank: '',
+                    nft: true,
+                }
+            )
             setDisplayResults(searchFormat);
             return searchFormat
         } catch (error) {
@@ -333,17 +342,19 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             setIsError(false)
 
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
-                await delay(300)
+                await delay(1000)
+                console.log("FETCH TOKEN ONCHAIN TXS")
+                console.log("Platform: ", coinInfo.asset_platform_id)
                 const tokenTxChartData = await getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd)
+                console.log("tokenTxChartData3: ", tokenTxChartData)
                 if (!tokenTxChartData) {
                     setIsLoading(false);
                     setIsError(true);
                     console.log(`No results for getTokenTxChartData ${coinId}`)
                     return
                 }
-                if (tokenTxChartData.length > 0) {
-                        setTokenTxsChartData(tokenTxChartData)
-                }
+
+                setTokenTxsChartData(tokenTxChartData)
             }
             setIsLoading(false)
         } catch (error) {
@@ -371,8 +382,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             setIsError(false)
 
             if (nftInfo.asset_platform_id && nftInfo.contract_address) {
-                await delay(300)
+                await delay(1000)
+                console.log("FETCH NFT ONCHAIN TXS ")
                 const txVolumeData = await getNftTxChartData(nftInfo.asset_platform_id, nftInfo.contract_address)
+
                 if (!txVolumeData) {
                     setIsLoading(false);
                     setIsError(true);
@@ -478,27 +491,35 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         let domain: string;
 
         switch (platformId) {
-            case 'ethereum':
-                domain = 'etherscan.io';
-                break;
-            case 'binance-smart-chain':
-                domain = 'bscscan.com';
-                break;
-            case 'polygon-pos':
-                domain = 'polygonscan.com';
-                break;
-            case 'fantom':
-                domain = 'ftmscan.com';
-                break;
-            case 'cronos':
-                domain = 'cronoscan.com';
+
+            case 'arbitrum-one':
+                domain = 'api.arbiscan.io';
                 break;
             case 'avalanche':
-                domain = 'snowtrace.io';
+                domain = 'api.snowtrace.io';
+                break;
+            case 'binance-smart-chain':
+                domain = 'api.bscscan.com';
                 break;
             case 'celo':
-                domain = 'celoscan.io';
+                domain = 'api.celoscan.io';
                 break;
+            case 'cronos':
+                domain = 'api.cronoscan.com';
+                break;
+            case 'ethereum':
+                domain = 'api.etherscan.io';
+                break;
+            case 'fantom':
+                domain = 'api.ftmscan.com';
+                break;
+            case 'polygon-pos':
+                domain = 'api.polygonscan.com';
+                break;
+            case 'optimistic-ethereum':
+                domain = 'api-optimistic.etherscan.io';
+                break;
+
             default:
                 console.log(`getNftTxChartData error: Invalid platformId: ${platformId}`);
                 return []
@@ -507,7 +528,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         const nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
 
         console.log(`getNftTxChartData:`, nftTxsData)
-        if (nftTxsData.result) {
+        if (nftTxsData.status !== "0" && nftTxsData.result) {
             const nftTxsChartFormat: { date: Date, volume: number }[] = Object.entries(nftTxsData.result.reduce((result: { [dateString: string]: { date: Date, volume: number } }, txInfo: any) => {
                 const date = new Date(Number(txInfo.timeStamp) * 1000);
                 const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
@@ -522,32 +543,38 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             return nftTxsChartFormat.reverse();
         }
         console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
-        return false
+        return null
     }
     async function getTokenTxChartData(platformId, contractAddress, tokenValue): Promise<any> {
         let domain: string;
 
         switch (platformId) {
-            case 'ethereum':
-                domain = 'etherscan.io';
-                break;
-            case 'binance-smart-chain':
-                domain = 'bscscan.com';
-                break;
-            case 'polygon-pos':
-                domain = 'polygonscan.com';
-                break;
-            case 'fantom':
-                domain = 'ftmscan.com';
-                break;
-            case 'cronos':
-                domain = 'cronoscan.com';
+            case 'arbitrum-one':
+                domain = 'api.arbiscan.io';
                 break;
             case 'avalanche':
-                domain = 'snowtrace.io';
+                domain = 'api.snowtrace.io';
+                break;
+            case 'binance-smart-chain':
+                domain = 'api.bscscan.com';
                 break;
             case 'celo':
-                domain = 'celoscan.io';
+                domain = 'api.celoscan.io';
+                break;
+            case 'cronos':
+                domain = 'api.cronoscan.com';
+                break;
+            case 'ethereum':
+                domain = 'api.etherscan.io';
+                break;
+            case 'fantom':
+                domain = 'api.ftmscan.com';
+                break;
+            case 'polygon-pos':
+                domain = 'api.polygonscan.com';
+                break;
+            case 'optimistic-ethereum':
+                domain = 'api-optimistic.etherscan.io';
                 break;
             default:
                console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
@@ -576,7 +603,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             })
             return tokenTxsChartData
         }
-        return tokenTxsRes
+        return null
     }
 
     function delay(ms) {
@@ -619,7 +646,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 }
                 {isError &&
                         <div style={styles.indicationIcon} title={"Refresh limit: 5/sec"}>
-                            <SearchOffIcon style={{ fontSize: 30, color: colors.secondary_medium }}/>
+                            <SyncProblemIcon style={{ fontSize: 30, color: colors.secondary_medium }}/>
                         </div>
                 }
 
