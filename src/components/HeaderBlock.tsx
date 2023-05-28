@@ -11,13 +11,11 @@ import {
 } from "../utils/api";
 import {
     IDetailedCoinInfo,
-    IPriceHistoryData,
     ISearchCoinList,
     ISearchOptions,
     ITrendingCoinList
 } from "../models/ICoinInfo";
 import {IDetailedNftInfo} from "../models/INftInfo";
-import { ITokenTxs } from "../models/ITokenTxs";
 import CircularProgress from "@mui/material/CircularProgress";
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import SearchIcon from '@mui/icons-material/Search';
@@ -57,6 +55,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            cursor: "pointer",
         },
 
         menuIcon: {
@@ -467,8 +466,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             for (let key in chunk[0]) {
                 if (chunk[0].hasOwnProperty(key)) {
                     const values = chunk.map(obj => obj[key]);
-                    const averageValue = values.reduce((sum, value) => sum + value, 0) / values.length;
-                    averagedObject[key] = averageValue;
+                    averagedObject[key] = values.reduce((sum, value) => sum + value, 0) / values.length;
                 }
             }
             newArray.push(averagedObject);
@@ -484,6 +482,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
           fetchDetailedNftInfo(tokenInfo.id)
         }
         setIsExpanded(false);
+    }
+
+    const handleMenuClick = async () => {
+        chrome.tabs.create({ url: "https://twitter.com/Marty_cFly", active: false })
     }
 
 
@@ -527,7 +529,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
         const nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
 
-        console.log(`getNftTxChartData:`, nftTxsData)
         if (nftTxsData.status !== "0" && nftTxsData.result) {
             const nftTxsChartFormat: { date: Date, volume: number }[] = Object.entries(nftTxsData.result.reduce((result: { [dateString: string]: { date: Date, volume: number } }, txInfo: any) => {
                 const date = new Date(Number(txInfo.timeStamp) * 1000);
@@ -614,7 +615,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         <>
             <div style={styles.headerBlock}>
 
-                <div style={styles.menuIconBlock}  title="Coming soon">
+                <div style={styles.menuIconBlock}  title="Coming soon"  onClick={() => handleMenuClick()}>
                     <img style={styles.menuIcon} src={menuIcon} alt="Centered" />
                 </div>
 

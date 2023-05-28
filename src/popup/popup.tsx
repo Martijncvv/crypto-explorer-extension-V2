@@ -13,7 +13,6 @@ import {IDetailedCoinInfo} from "../models/ICoinInfo";
 import {IDetailedNftInfo} from "../models/INftInfo";
 import TickerBlock from "../components/TickerBlock";
 import {amountFormatter, numberFormatter, percentageFormatter} from "../utils/amountFormatter";
-import {ITokenTxs} from "../models/ITokenTxs";
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 
 const bitcoinIcon = require( "../static/images/icons/bitcoin-icon.png")
@@ -53,13 +52,11 @@ const App: React.FC = () => {
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
-	// add arbitrum
-	// add support
 	// improve rendering efficiency
-	// fix all anys
 	// keep highest and lowest price on max chart
 	// bring formatExchangeInfo function to exchangeBlock component
 	// drag and zoom chart functionality
+	// fix all anys
 	// add favourite/ home opening token
 	// join a group via name/ code?
 	// check watchlist etc.

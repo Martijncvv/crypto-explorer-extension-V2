@@ -629,6 +629,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            cursor: "pointer",
         },
         menuIcon: {
             width: 20,
@@ -994,8 +995,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             for (let key in chunk[0]) {
                 if (chunk[0].hasOwnProperty(key)) {
                     const values = chunk.map(obj => obj[key]);
-                    const averageValue = values.reduce((sum, value) => sum + value, 0) / values.length;
-                    averagedObject[key] = averageValue;
+                    averagedObject[key] = values.reduce((sum, value) => sum + value, 0) / values.length;
                 }
             }
             newArray.push(averagedObject);
@@ -1010,6 +1010,9 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             fetchDetailedNftInfo(tokenInfo.id);
         }
         setIsExpanded(false);
+    });
+    const handleMenuClick = () => __awaiter(void 0, void 0, void 0, function* () {
+        chrome.tabs.create({ url: "https://twitter.com/Marty_cFly", active: false });
     });
     function getNftTxChartData(platformId, contractAddress) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1047,7 +1050,6 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     return [];
             }
             const nftTxsData = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNftTxs)(domain, contractAddress, 10000);
-            console.log(`getNftTxChartData:`, nftTxsData);
             if (nftTxsData.status !== "0" && nftTxsData.result) {
                 const nftTxsChartFormat = Object.entries(nftTxsData.result.reduce((result, txInfo) => {
                     const date = new Date(Number(txInfo.timeStamp) * 1000);
@@ -1129,7 +1131,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     }
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.menuIconBlock, title: "Coming soon" },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.menuIconBlock, title: "Coming soon", onClick: () => handleMenuClick() },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.menuIcon, src: menuIcon, alt: "Centered" })),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.searchbar), { borderBottomLeftRadius: isExpanded ? 0 : _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius, borderBottomRightRadius: isExpanded ? 0 : _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius }) },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchbarImage },
@@ -1530,13 +1532,11 @@ const App = () => {
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    // add arbitrum
-    // add support
     // improve rendering efficiency
-    // fix all anys
     // keep highest and lowest price on max chart
     // bring formatExchangeInfo function to exchangeBlock component
     // drag and zoom chart functionality
+    // fix all anys
     // add favourite/ home opening token
     // join a group via name/ code?
     // check watchlist etc.
