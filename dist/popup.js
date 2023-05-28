@@ -248,17 +248,20 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
     const CustomPriceBar = (props) => {
         const { x, y, width, height, date } = props;
         let fill = chartOption === 1 && date.getDay() === 1 ? _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_dark : _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark;
-        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: y, width: width, height: height, fill: fill }));
+        const yString = isNaN(y) ? "0" : y.toString();
+        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: yString, width: width, height: height, fill: fill }));
     };
     const CustomOnchainVolumeBar = (props) => {
         const { x, y, width, height, date } = props;
         let fill = date.getDay() === 1 ? _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_dark : _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark;
-        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: y, width: width, height: height, fill: fill }));
+        const yString = isNaN(y) ? "0" : y.toString();
+        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: yString, width: width, height: height, fill: fill }));
     };
     const CustomOnchainTxsBar = (props) => {
         const { x, y, width, height, date } = props;
-        let fill = date.getDay() === 1 ? _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_dark : _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark;
-        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: y, width: width, height: height, fill: fill }));
+        let fill = _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark;
+        const yString = isNaN(y) ? "0" : y.toString();
+        return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: yString, width: width, height: height, fill: fill }));
     };
     const handleTokenTxsBarClick = (event) => {
         chrome.tabs.create({
@@ -587,9 +590,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.ts");
-/* harmony import */ var _mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @mui/material/CircularProgress */ "./node_modules/@mui/material/CircularProgress/CircularProgress.js");
-/* harmony import */ var _mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mui/icons-material/SyncProblem */ "./node_modules/@mui/icons-material/SyncProblem.js");
-/* harmony import */ var _mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @mui/icons-material/Search */ "./node_modules/@mui/icons-material/Search.js");
+/* harmony import */ var _mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mui/material/CircularProgress */ "./node_modules/@mui/material/CircularProgress/CircularProgress.js");
+/* harmony import */ var _mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mui/icons-material/SyncProblem */ "./node_modules/@mui/icons-material/SyncProblem.js");
+/* harmony import */ var _mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @mui/icons-material/Search */ "./node_modules/@mui/icons-material/Search.js");
+/* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -599,6 +603,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -729,12 +734,18 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+    const getSelectedStorageToken = () => __awaiter(void 0, void 0, void 0, function* () {
+        const selectedToken = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.getSelectedToken)();
+        if (selectedToken) {
+            setSearchInput(selectedToken);
+            searchCoinNames();
+        }
+    });
     // get detailed coin info and trending info on startup
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         getTrendingCoins();
-        // fetchDetailedTokenInfo('bitcoin');
-        fetchDetailedTokenInfo('apecoin');
-        // fetchDetailedNftInfo('bored-ape-yacht-club');
+        getSelectedStorageToken();
+        fetchDetailedTokenInfo('bitcoin');
         if (inputRef.current) {
             inputRef.current.focus();
         }
@@ -886,10 +897,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             setIsError(false);
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
                 yield delay(1000);
-                console.log("FETCH TOKEN ONCHAIN TXS");
-                console.log("Platform: ", coinInfo.asset_platform_id);
                 const tokenTxChartData = yield getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
-                console.log("tokenTxChartData3: ", tokenTxChartData);
                 if (!tokenTxChartData) {
                     setIsLoading(false);
                     setIsError(true);
@@ -925,7 +933,6 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             setIsError(false);
             if (nftInfo.asset_platform_id && nftInfo.contract_address) {
                 yield delay(1000);
-                console.log("FETCH NFT ONCHAIN TXS ");
                 const txVolumeData = yield getNftTxChartData(nftInfo.asset_platform_id, nftInfo.contract_address);
                 if (!txVolumeData) {
                     setIsLoading(false);
@@ -1135,15 +1142,15 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.menuIcon, src: menuIcon, alt: "Centered" })),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.searchbar), { borderBottomLeftRadius: isExpanded ? 0 : _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius, borderBottomRightRadius: isExpanded ? 0 : _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius }) },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchbarImage },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_4__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_5__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } })),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { ref: inputRef, type: "text", style: styles.searchInput, onChange: (e => setSearchInput(e.target.value)), onKeyDown: handleSearch, onClick: () => setSearchInput(""), onFocus: handleFocus, value: searchInput })),
             (!isError) &&
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo, alt: "Main Logo" }),
             (isLoading && !isError) &&
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_5__["default"], { size: 40, thickness: 1, style: { position: 'absolute', right: 12, zIndex: 1, color: "white" } }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_6__["default"], { size: 40, thickness: 1, style: { position: 'absolute', right: 12, zIndex: 1, color: "white" } }),
             isError &&
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.indicationIcon, title: "Refresh limit: 5/sec" },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { fontSize: 30, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } }))),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { fontSize: 30, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } }))),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults, ref: searchResultsRef }, isExpanded && (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.length) > 0 &&
             (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.slice(0, 12).map((tokenInfo, index) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: tokenInfo.id + index, style: index === focusedOptionIndex
                     ? Object.assign(Object.assign({}, styles.coinSearchInfo), styles.coinSearchInfoFocus) : styles.coinSearchInfo, tabIndex: index, onClick: () => handleCoinOptionClick(tokenInfo), onKeyDown: (event) => {
@@ -1532,6 +1539,7 @@ const App = () => {
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+    //todo  check ticker selection functionality
     // improve rendering efficiency
     // keep highest and lowest price on max chart
     // bring formatExchangeInfo function to exchangeBlock component
@@ -2584,6 +2592,68 @@ function fetchTokenTxs(domainName, contractAddress, txAmount) {
 // 			throw error;
 // 		}
 // }
+
+
+/***/ }),
+
+/***/ "./src/utils/storage.ts":
+/*!******************************!*\
+  !*** ./src/utils/storage.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getSelectedToken": () => (/* binding */ getSelectedToken),
+/* harmony export */   "getStoredFavouriteToken": () => (/* binding */ getStoredFavouriteToken),
+/* harmony export */   "setFavouriteToken": () => (/* binding */ setFavouriteToken),
+/* harmony export */   "setSelectedToken": () => (/* binding */ setSelectedToken)
+/* harmony export */ });
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+function setSelectedToken(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ selectedToken: token }, () => {
+                resolve();
+            });
+        });
+    });
+}
+function getSelectedToken() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['selectedToken'], (res) => {
+                resolve(res.selectedToken);
+            });
+        });
+    });
+}
+function setFavouriteToken(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ favouriteToken: token }, () => {
+                resolve();
+            });
+        });
+    });
+}
+function getStoredFavouriteToken() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['favouriteToken'], (res) => {
+                resolve(res.favouriteToken);
+            });
+        });
+    });
+}
 
 
 /***/ }),

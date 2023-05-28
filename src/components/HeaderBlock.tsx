@@ -19,6 +19,7 @@ import {IDetailedNftInfo} from "../models/INftInfo";
 import CircularProgress from "@mui/material/CircularProgress";
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import SearchIcon from '@mui/icons-material/Search';
+import {getSelectedToken} from "../utils/storage";
 
 const menuIcon = require( "../static/images/icons/menu-icon.png")
 
@@ -168,13 +169,21 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         };
     }, []);
 
+    const getSelectedStorageToken = async () => {
+        const selectedToken = await getSelectedToken()
+        if (selectedToken) {
+            setSearchInput(selectedToken)
+            searchCoinNames()
+        }
+    }
 
     // get detailed coin info and trending info on startup
     useEffect(() => {
+
         getTrendingCoins()
-        // fetchDetailedTokenInfo('bitcoin');
-        fetchDetailedTokenInfo('apecoin');
-        // fetchDetailedNftInfo('bored-ape-yacht-club');
+        getSelectedStorageToken()
+        fetchDetailedTokenInfo('bitcoin');
+
         if (inputRef.current) {
             inputRef.current.focus();
         }
@@ -342,10 +351,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
                 await delay(1000)
-                console.log("FETCH TOKEN ONCHAIN TXS")
-                console.log("Platform: ", coinInfo.asset_platform_id)
                 const tokenTxChartData = await getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd)
-                console.log("tokenTxChartData3: ", tokenTxChartData)
+
                 if (!tokenTxChartData) {
                     setIsLoading(false);
                     setIsError(true);
@@ -382,7 +389,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
             if (nftInfo.asset_platform_id && nftInfo.contract_address) {
                 await delay(1000)
-                console.log("FETCH NFT ONCHAIN TXS ")
                 const txVolumeData = await getNftTxChartData(nftInfo.asset_platform_id, nftInfo.contract_address)
 
                 if (!txVolumeData) {

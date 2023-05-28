@@ -1,20 +1,35 @@
-import { ICoinGeckoCoinList, ISimpleCoinInfo } from '../models/ICoinInfo'
-import { ICoinGeckoNftList, ISimpleNftInfo } from '../models/INftInfo'
 
 export interface LocalStorageData {
-	coins?: ICoinGeckoCoinList;
-	coinIds?: ISimpleCoinInfo[];
-	nfts?: ICoinGeckoNftList;
-	nftIds?: ISimpleNftInfo[];
+	favouriteToken?: string;
+	selectedToken?: string;
 }
 
-// settings storage
-
-
-export async function getStoredNftList(): Promise<ICoinGeckoNftList> {
+export async function setSelectedToken(token: string): Promise<void> {
 	return new Promise((resolve) => {
-		chrome.storage.local.get(['nfts'], (res: LocalStorageData) => {
-			resolve(res.nfts ?? []);
+		chrome.storage.local.set({ selectedToken: token }, () => {
+			resolve();
+		});
+	});
+}
+export async function getSelectedToken(): Promise<string> {
+	return new Promise((resolve) => {
+		chrome.storage.local.get(['selectedToken'], (res: LocalStorageData) => {
+			resolve(res.selectedToken);
+		});
+	});
+}
+
+export async function setFavouriteToken(token: string): Promise<void> {
+	return new Promise((resolve) => {
+		chrome.storage.local.set({ favouriteToken: token }, () => {
+			resolve();
+		});
+	});
+}
+export async function getStoredFavouriteToken(): Promise<string> {
+	return new Promise((resolve) => {
+		chrome.storage.local.get(['favouriteToken'], (res: LocalStorageData) => {
+			resolve(res.favouriteToken);
 		});
 	});
 }

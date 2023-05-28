@@ -186,24 +186,25 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         const { x, y, width, height, date } = props;
         let fill=  chartOption === 1 && date.getDay() === 1 ? colors.secondary_dark : colors.primary_dark
 
+        const yString = isNaN(y) ? "0" : y.toString();
         return (
-            <rect x={x} y={y} width={width} height={height} fill={fill} />
+            <rect x={x} y={yString} width={width} height={height} fill={fill} />
         );
     };
     const CustomOnchainVolumeBar = (props) => {
         const { x, y, width, height, date } = props;
         let fill= date.getDay() === 1 ? colors.secondary_dark : colors.primary_dark
-
+        const yString = isNaN(y) ? "0" : y.toString();
         return (
-            <rect x={x} y={y} width={width} height={height} fill={fill} />
+            <rect x={x} y={yString} width={width} height={height} fill={fill} />
         );
     };
     const CustomOnchainTxsBar = (props) => {
         const { x, y, width, height, date } = props;
-        let fill= date.getDay() === 1 ? colors.secondary_dark : colors.primary_dark
-
+        let fill= colors.primary_dark
+        const yString = isNaN(y) ? "0" : y.toString();
         return (
-            <rect x={x} y={y} width={width} height={height} fill={fill} />
+            <rect x={x} y={yString} width={width} height={height} fill={fill} />
         );
     };
 

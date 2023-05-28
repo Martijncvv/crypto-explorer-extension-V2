@@ -52,6 +52,7 @@ const App: React.FC = () => {
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
+	//todo  check ticker selection functionality
 	// improve rendering efficiency
 	// keep highest and lowest price on max chart
 	// bring formatExchangeInfo function to exchangeBlock component
