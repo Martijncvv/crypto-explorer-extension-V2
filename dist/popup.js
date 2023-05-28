@@ -1513,6 +1513,7 @@ const App = () => {
     // todo: HeaderBlock.tsx:345 fetchDetailedNftInfo: Error searching for coin: carbon-capture-zancan TypeError: nftTxsData.result.reduce is not a functio
     // todo nft  onchain tx loading animation doesn't always work
     // todo set focus on first option after search
+    // todo: NFT fix unique owners UI, 2nd value remove
     // improve rendering efficiency
     // fix all anys
     // keep highest and lowest price on max chart
