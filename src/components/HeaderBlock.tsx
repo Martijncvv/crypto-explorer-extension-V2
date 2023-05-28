@@ -333,6 +333,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             setIsError(false)
 
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
+                await delay(300)
                 const tokenTxChartData = await getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd)
                 if (!tokenTxChartData) {
                     setIsLoading(false);
@@ -369,7 +370,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             setCoinInfo(null)
             setIsError(false)
 
-            if (nftInfo.asset_platform_id) {
+            if (nftInfo.asset_platform_id && nftInfo.contract_address) {
+                await delay(300)
                 const txVolumeData = await getNftTxChartData(nftInfo.asset_platform_id, nftInfo.contract_address)
                 if (!txVolumeData) {
                     setIsLoading(false);
@@ -504,6 +506,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
         const nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
 
+        console.log(`getNftTxChartData:`, nftTxsData)
         if (nftTxsData.result) {
             const nftTxsChartFormat: { date: Date, volume: number }[] = Object.entries(nftTxsData.result.reduce((result: { [dateString: string]: { date: Date, volume: number } }, txInfo: any) => {
                 const date = new Date(Number(txInfo.timeStamp) * 1000);
@@ -516,10 +519,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 }
                 return result;
             }, {})).map(([dateString, { date, volume }]) => ({ date, volume }));
-            return nftTxsChartFormat;
+            return nftTxsChartFormat.reverse();
         }
         console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
-        return nftTxsData
+        return false
     }
     async function getTokenTxChartData(platformId, contractAddress, tokenValue): Promise<any> {
         let domain: string;
@@ -574,6 +577,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             return tokenTxsChartData
         }
         return tokenTxsRes
+    }
+
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     return (

@@ -54,9 +54,9 @@ const App: React.FC = () => {
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
 	// todo: HeaderBlock.tsx:345 fetchDetailedNftInfo: Error searching for coin: carbon-capture-zancan TypeError: nftTxsData.result.reduce is not a functio
-	// todo onchain volume chart dates is inverted
 	// todo nft  onchain tx loading animation doesn't always work
-	// todo nft coingecko link should change to "NFT"
+	// todo set focus on first option after search
+
 	// improve rendering efficiency
 	// fix all anys
 	// keep highest and lowest price on max chart
@@ -235,7 +235,7 @@ const App: React.FC = () => {
 							{/*	<SocialBlock image={blockchainIcon}  link={coinInfo.links?.blockchain} />*/}
 						{/*todo find out what to do with this*/}
 							{nftInfo?.id &&
-								<SocialBlock image={coingeckoIcon}  link={`https://www.coingecko.com/en/coins/${nftInfo.id}`}  />
+								<SocialBlock image={coingeckoIcon}  link={`https://www.coingecko.com/en/nft/${nftInfo.id}`}  />
 							}
 							{nftInfo?.links?.twitter &&
 								<SocialBlock image={twitterIcon}   link={nftInfo?.links?.twitter} />

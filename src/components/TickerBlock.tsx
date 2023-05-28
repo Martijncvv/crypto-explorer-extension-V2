@@ -24,7 +24,7 @@ const TickerBlock: React.FC<TickerBlockProps> = ({ticker}) => {
             // backgroundColor: 'red'
         },
         tickerText: {
-            fontSize: ticker.length > 5 ? 40 : 64,
+            fontSize: ticker.length > 9 ?  32 : ticker.length > 5 ? 40 : 64,
             wordWrap: 'break-word',
         },
     };

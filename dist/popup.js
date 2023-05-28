@@ -267,7 +267,7 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
         });
     };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container, title: "Tip: Use arrow keys" },
-        availableCharts.length === 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.emptyChartMessage }, "No chart data available")),
+        availableCharts.length === 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.emptyChartMessage }, "Data not (yet) available")),
         availableCharts.length > 0 &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.menuOptions }, Array.from({ length: chartOptionCount }, (_, index) => index).map((option) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: option, onClick: () => setChartOption(option), style: chartOption === option ? styles.activeOption : styles.menuOption })))),
         ((availableCharts[chartOption] === "price30dHistorydata") || (availableCharts[chartOption] === "priceMaxHistorydata")) &&
@@ -308,7 +308,7 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_11__.Label, { value: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)((availableCharts[chartOption] === "price30dHistorydata") ? Math.min(...price30dHistorydata.map(dateData => dateData.price)) : Math.min(...priceMaxHistorydata.map(dateData => dateData.price)))}`, position: "insideBottomLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })))),
         (availableCharts[chartOption] === "txVolumeData") &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.ResponsiveContainer, { width: "100%", height: "100%" },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.ComposedChart, { data: txVolumeData, margin: { top: 9, left: 24, right: 0, bottom: 0 } },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.ComposedChart, { data: txVolumeData, margin: { top: 12, left: 24, right: 0, bottom: 0 } },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_6__.XAxis, { padding: { left: 12, right: 12 }, dataKey: "date", tickFormatter: (date, index) => {
                             const totalDataPoints = txVolumeData.length;
                             const desiredTickCount = 5;
@@ -338,7 +338,7 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_11__.Label, { value: `${Math.max(...txVolumeData.map(dateData => dateData.volume))}`, position: "insideBottomLeft", fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light })))),
         (availableCharts[chartOption] === "tokenTxsChartData") &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.ResponsiveContainer, { width: "100%", height: "100%" },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.ComposedChart, { data: tokenTxsChartData, margin: { top: 9, left: 24, right: 0, bottom: 0 }, style: { cursor: 'pointer' } },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.ComposedChart, { data: tokenTxsChartData, margin: { top: 12, left: 24, right: 0, bottom: 0 }, style: { cursor: 'pointer' } },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_6__.XAxis, { padding: { left: 12, right: 12 }, dataKey: "date", tickFormatter: (date, index) => {
                             const totalDataPoints = tokenTxsChartData.length;
                             const desiredTickCount = 5;
@@ -878,6 +878,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             setNftInfo(null);
             setIsError(false);
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
+                yield delay(300);
                 const tokenTxChartData = yield getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
                 if (!tokenTxChartData) {
                     setIsLoading(false);
@@ -914,7 +915,8 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             setNftInfo(nftInfo);
             setCoinInfo(null);
             setIsError(false);
-            if (nftInfo.asset_platform_id) {
+            if (nftInfo.asset_platform_id && nftInfo.contract_address) {
+                yield delay(300);
                 const txVolumeData = yield getNftTxChartData(nftInfo.asset_platform_id, nftInfo.contract_address);
                 if (!txVolumeData) {
                     setIsLoading(false);
@@ -1031,6 +1033,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     return [];
             }
             const nftTxsData = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNftTxs)(domain, contractAddress, 10000);
+            console.log(`getNftTxChartData:`, nftTxsData);
             if (nftTxsData.result) {
                 const nftTxsChartFormat = Object.entries(nftTxsData.result.reduce((result, txInfo) => {
                     const date = new Date(Number(txInfo.timeStamp) * 1000);
@@ -1043,10 +1046,10 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     }
                     return result;
                 }, {})).map(([dateString, { date, volume }]) => ({ date, volume }));
-                return nftTxsChartFormat;
+                return nftTxsChartFormat.reverse();
             }
             console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
-            return nftTxsData;
+            return false;
         });
     }
     function getTokenTxChartData(platformId, contractAddress, tokenValue) {
@@ -1100,6 +1103,9 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             }
             return tokenTxsRes;
         });
+    }
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
@@ -1320,7 +1326,7 @@ const TickerBlock = ({ ticker }) => {
             // backgroundColor: 'red'
         },
         tickerText: {
-            fontSize: ticker.length > 5 ? 40 : 64,
+            fontSize: ticker.length > 9 ? 32 : ticker.length > 5 ? 40 : 64,
             wordWrap: 'break-word',
         },
     };
@@ -1505,9 +1511,8 @@ const App = () => {
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     // todo: HeaderBlock.tsx:345 fetchDetailedNftInfo: Error searching for coin: carbon-capture-zancan TypeError: nftTxsData.result.reduce is not a functio
-    // todo onchain volume chart dates is inverted
     // todo nft  onchain tx loading animation doesn't always work
-    // todo nft coingecko link should change to "NFT"
+    // todo set focus on first option after search
     // improve rendering efficiency
     // fix all anys
     // keep highest and lowest price on max chart
@@ -1621,7 +1626,7 @@ const App = () => {
                         ((_6 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _6 === void 0 ? void 0 : _6.homepage) &&
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: websiteIcon, link: (_7 = nftInfo.links) === null || _7 === void 0 ? void 0 : _7.homepage }),
                         (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.id) &&
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, link: `https://www.coingecko.com/en/coins/${nftInfo.id}` }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, link: `https://www.coingecko.com/en/nft/${nftInfo.id}` }),
                         ((_8 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _8 === void 0 ? void 0 : _8.twitter) &&
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, link: (_9 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _9 === void 0 ? void 0 : _9.twitter }),
                         ((_10 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _10 === void 0 ? void 0 : _10.reddit) &&

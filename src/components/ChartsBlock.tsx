@@ -218,7 +218,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         <div style={styles.container} title="Tip: Use arrow keys">
             {availableCharts.length === 0 && (
                 <div style={styles.emptyChartMessage}>
-                    No chart data available</div>
+                    Data not (yet) available</div>
             )}
             {availableCharts.length > 0 &&
                 <div style={styles.menuOptions}>
@@ -326,7 +326,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                 <ResponsiveContainer width="100%" height="100%" >
                         <ComposedChart
                             data={txVolumeData}
-                            margin={{ top: 9, left: 24, right: 0, bottom: 0 }}
+                            margin={{ top: 12, left: 24, right: 0, bottom: 0 }}
                         >
 
                             <XAxis
@@ -395,7 +395,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                 <ResponsiveContainer width="100%" height="100%">
                         <ComposedChart
                             data={tokenTxsChartData}
-                            margin={{ top: 9, left: 24, right: 0, bottom: 0 }}
+                            margin={{ top: 12, left: 24, right: 0, bottom: 0 }}
                             style={{ cursor: 'pointer' }}
                         >
 
