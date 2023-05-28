@@ -23,6 +23,7 @@ interface ExchangeBlockProps {
 
 const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
+    const [focusedOptionIndex, setFocusedOptionIndex] = useState<number>(-1);
     const toggleExpanded = () => {
         setIsExpanded(!isExpanded);
     };
@@ -45,6 +46,11 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
             padding: constants.default_padding,
             cursor: "pointer",
 
+        },
+        exchangeWrapperFocused: {
+            boxShadow: `inset 0 0 4px 3px rgba(255, 255, 255, 0.5)`,
+            outline: 'none',
+            borderRadius: constants.border_radius_small,
         },
         firstExchange: {
             borderTopLeftRadius: constants.border_radius,
@@ -113,14 +119,22 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                         ...(index === 0 && styles.firstExchange),
                         ...(index === exchanges.length - 1 && styles.lastExchange),
                         display: isExpanded || index === 0 ? "flex" : "none",
+                        ...(index === focusedOptionIndex && styles.exchangeWrapperFocused),
                     }}
+
                 >
                     <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={(event) => {
                         if (exchange.exchangeURL) {
                             event.stopPropagation();
                             handleOpenTab(exchange.exchangeURL);
                         }
-                    }}>
+
+                    }}
+                         onFocus={() => setFocusedOptionIndex(index)}
+                         onBlur={() => setFocusedOptionIndex(-1)}
+                         onMouseEnter={() => setFocusedOptionIndex(index)}
+                         onMouseLeave={() => setFocusedOptionIndex(-1)}
+                    >
                         {exchange.id ?
                         <img
                             src={EXCHANGE_ICONS[exchange.id]}

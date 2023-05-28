@@ -38,9 +38,11 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
+    const [focusedOptionIndex, setFocusedOptionIndex] = useState<number>(-1);
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
     const [searchInput, setSearchInput] = useState<string>('');
     const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
-    const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
     const styles: { [key: string]: CSSProperties } = {
         headerBlock: {
@@ -106,7 +108,14 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         coinSearchInfo: {
             display: 'flex',
             padding: 9,
+            alignItems: 'center',
             cursor: "pointer",
+        } as any,
+
+        coinSearchInfoFocus: {
+            boxShadow: `inset 0 0 4px 3px rgba(255, 255, 255, 0.5)`,
+            outline: 'none',
+            borderRadius: constants.border_radius_small,
         } as any,
 
         coinImage: {
@@ -257,7 +266,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 }
             )
             }
-            console.log("searchResults: ", searchResults)
             setDisplayResults(searchFormat);
 
         } catch (error) {
@@ -323,14 +331,12 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             setCoinInfo(coinInfo)
             setNftInfo(null)
             setIsError(false)
-            console.log("coinInfo: ", coinInfo)
 
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
                 const tokenTxChartData = await getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd)
                 if (!tokenTxChartData) {
                     setIsLoading(false);
                     setIsError(true);
-                    console.log("tokenTxChartData88: ", tokenTxChartData)
                     console.log(`No results for getTokenTxChartData ${coinId}`)
                     return
                 }
@@ -548,40 +554,23 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         const tokenTxsRes = await fetchTokenTxs(domain, contractAddress, 10000);
         const tokenTxsData = tokenTxsRes.result
 
-            console.log("tokenTxsData222: ",tokenTxsData)
         if (tokenTxsData.length > 0) {
-            console.log("tokenTxsData8: ",tokenTxsData)
-            const maxValue = Math.max(...tokenTxsData.map(txInfo => Number(txInfo.value)));
-            let minValue = maxValue * 0.2;
-            // const filteredTokenTxsData = tokenTxsData.filter((txInfo) => Number(txInfo.value) > minValue);
-
-            const arrayWithIndices = tokenTxsData.map((item, index) => ({...item, index}));
-
-            // Step 2: Sort in descending order by 'value'
-            const sortedArray = arrayWithIndices.sort((a, b) => b.value - a.value);
-
-            // Step 3: Slice to keep first 300
-            const top300Array = sortedArray.slice(0, 300);
-
-            // Step 4: Sort back to original order
-            const originalOrderArray = top300Array.sort((a, b) => a.index - b.index);
-
-
-
-            console.log("filteredTokenTxsData8: ",filteredTokenTxsData)
-
+            const arrayWithIndices: any = tokenTxsData.map((item, index) => ({...item, index}));
+            const sortedArray = arrayWithIndices.sort((a: { value: number }, b: { value: number }) => b.value - a.value);
+            const top50Array = sortedArray.slice(0, 50);
+            const originalOrderArray = top50Array.sort((a, b) => b.index - a.index);
             let tokenTxsChartData = []
 
-            filteredTokenTxsData.forEach((txInfo) => {
+            originalOrderArray.forEach((txInfo) => {
                 tokenTxsChartData.push({
                     date: new Date(Number(txInfo.timeStamp) * 1000),
                     amount: (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)),
                     txHash: txInfo.hash,
+                    explorerUrl: 'https://' + domain + '/tx/' + txInfo.hash,
                     usdValue: (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)) * tokenValue,
+                    native: platformId
                 })
             })
-            // minValue = 10000
-            // tokenTxsChartData = tokenTxsChartData.filter((txInfo) => Number(txInfo.usdValue) > minValue);
             return tokenTxsChartData
         }
         return tokenTxsRes
@@ -622,7 +611,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                             <CircularProgress size={40} thickness={1} style={{position: 'absolute', right: 12, zIndex: 1, color: "white" }}/>
                 }
                 {isError &&
-                        <div style={styles.indicationIcon}>
+                        <div style={styles.indicationIcon} title={"Refresh limit: 5/sec"}>
                             <SearchOffIcon style={{ fontSize: 30, color: colors.secondary_medium }}/>
                         </div>
                 }
@@ -633,7 +622,11 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                             displayResults?.tokens.slice(0, 12).map((tokenInfo, index) =>
                                 <div
                                     key={tokenInfo.id + index}
-                                    style={styles.coinSearchInfo}
+                                    style={
+                                        index === focusedOptionIndex
+                                            ? { ...styles.coinSearchInfo, ...styles.coinSearchInfoFocus }
+                                            : styles.coinSearchInfo
+                                    }
                                     tabIndex={index}
                                     onClick={() => handleCoinOptionClick(tokenInfo)}
                                     onKeyDown={(event) => {
@@ -641,6 +634,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                                             handleCoinOptionClick(tokenInfo);
                                         }
                                     }}
+                                    onFocus={() => setFocusedOptionIndex(index)}
+                                    onBlur={() => setFocusedOptionIndex(-1)}
+                                    onMouseEnter={() => setFocusedOptionIndex(index)}
+                                    onMouseLeave={() => setFocusedOptionIndex(-1)}
                                 >
                                     {tokenInfo.image ?
                                     <img

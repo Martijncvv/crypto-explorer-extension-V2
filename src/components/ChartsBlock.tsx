@@ -76,8 +76,6 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === 'ArrowRight') {
-                console.log("chartOptionCount: ", chartOptionCount)
-                console.log("chartOption: ", chartOption)
                 if (chartOption < chartOptionCount - 1) {
                     setChartOption((prevOption) => prevOption + 1);
                 }
@@ -161,7 +159,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
             const formattedDate = date.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit' });
             const amount = payload[0].payload.amount
             const usdValue = payload[0].payload.usdValue
-            const txHash = payload[0].payload.txHash
+            const native = payload[0].payload.native;
 
             return (
                 <div
@@ -175,8 +173,9 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                     }}
                 >
                     <p style={{ margin: 0, marginBottom: '6px' }}>{`${formattedDate}`}</p>
-                    <p style={{ margin: 0, marginBottom: '6px' }}>{`${numberFormatter(amount)} tokens`}</p>
+                    <p style={{ margin: 0, marginBottom: '6px',}}>{`${numberFormatter(amount)}`}</p>
                     <p style={{ margin: 0, marginBottom: '6px' }}>{`$${amountFormatter(usdValue)}`}</p>
+                    <p style={{ margin: 0, marginBottom: '3px', color: colors.accent_medium, textTransform: 'capitalize'  }}>{`Top 50 / Recent 10k ${native} txs`}</p>
                 </div>
             );
         }
@@ -208,8 +207,15 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         );
     };
 
+    const handleTokenTxsBarClick = (event) => {
+        chrome.tabs.create({
+            url: event.explorerUrl,
+            active: false,
+        })
+    }
+
     return (
-        <div style={styles.container}>
+        <div style={styles.container} title="Tip: Use arrow keys">
             {availableCharts.length === 0 && (
                 <div style={styles.emptyChartMessage}>
                     No chart data available</div>
@@ -320,7 +326,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                 <ResponsiveContainer width="100%" height="100%" >
                         <ComposedChart
                             data={txVolumeData}
-                            margin={{ top: 6, left: 24, right: 0, bottom: 0 }}
+                            margin={{ top: 9, left: 24, right: 0, bottom: 0 }}
                         >
 
                             <XAxis
@@ -386,10 +392,11 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                 </ResponsiveContainer>
             }
             {(availableCharts[chartOption] === "tokenTxsChartData") &&
-                <ResponsiveContainer width="100%" height="100%" >
+                <ResponsiveContainer width="100%" height="100%">
                         <ComposedChart
                             data={tokenTxsChartData}
-                            margin={{ top: 6, left: 24, right: 0, bottom: 0 }}
+                            margin={{ top: 9, left: 24, right: 0, bottom: 0 }}
+                            style={{ cursor: 'pointer' }}
                         >
 
                             <XAxis
@@ -436,6 +443,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                             <Bar
                                 dataKey="usdValue"
                                 shape={<CustomOnchainTxsBar />}
+                                onClick={(event) => handleTokenTxsBarClick(event)}
                             />
 
                             <ReferenceLine

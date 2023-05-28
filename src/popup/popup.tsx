@@ -53,18 +53,16 @@ const App: React.FC = () => {
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
-	// todo fix onchain txs chart:
-	//  tooltip high amounts $PEPE
-	//  click on tx for blockchain explorer
-	// todo check filter option: > $1000, ask gpt how to get 300 highest txs
-	// todo tab selection of coin menu styling;  whiteblack edge
-	// todo, check other social link names: reddit, telegram, explorer, conigecko id
-
+	// todo: HeaderBlock.tsx:345 fetchDetailedNftInfo: Error searching for coin: carbon-capture-zancan TypeError: nftTxsData.result.reduce is not a functio
+	// todo onchain volume chart dates is inverted
+	// todo nft  onchain tx loading animation doesn't always work
+	// todo nft coingecko link should change to "NFT"
 	// improve rendering efficiency
 	// fix all anys
 	// keep highest and lowest price on max chart
 	// bring formatExchangeInfo function to exchangeBlock component
 	// drag and zoom chart functionality
+	// add favourite/ home opening token
 	// join a group via name/ code?
 	// check watchlist etc.
 
@@ -117,7 +115,6 @@ const App: React.FC = () => {
 
 	if (coinInfo?.tickers)	formatExchangeInfo(coinInfo.tickers)
 
-	console.log("nfinfo3: ", nftInfo)
 
 	return (
 		<>
