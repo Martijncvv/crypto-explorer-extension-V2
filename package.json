@@ -1,7 +1,7 @@
 {
-	"name": "crypto-explorer-extension-v2",
-	"version": "0.0.1",
-	"description": "Extension to explorer cryptocurrencies and NFTs.",
+	"name": "Crypto Tracker: Blockchain & Crypto Explorer",
+	"version": "2.0.1",
+	"description": "Your Comprehensive Real-Time (on-chain) Cryptocurrency and NFT Explorer.",
 	"scripts": {
 		"start": "webpack --watch --progress --config webpack.dev.js",
 		"build": "webpack --watch --progress --config webpack.prod.js"

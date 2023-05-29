@@ -565,34 +565,44 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     }
     async function getTokenTxChartData(platformId, contractAddress, tokenValue): Promise<any> {
         let domain: string;
+        let explorerUrl: string;
 
         switch (platformId) {
             case 'arbitrum-one':
                 domain = 'api.arbiscan.io';
+                explorerUrl = 'arbiscan.io';
                 break;
             case 'avalanche':
                 domain = 'api.snowtrace.io';
+                explorerUrl = 'snowtrace.io';
                 break;
             case 'binance-smart-chain':
                 domain = 'api.bscscan.com';
+                explorerUrl = 'bscscan.com';
                 break;
             case 'celo':
                 domain = 'api.celoscan.io';
+                explorerUrl = 'celoscan.io';
                 break;
             case 'cronos':
                 domain = 'api.cronoscan.com';
+                explorerUrl = 'cronoscan.com';
                 break;
             case 'ethereum':
                 domain = 'api.etherscan.io';
+                explorerUrl = 'etherscan.io';
                 break;
             case 'fantom':
                 domain = 'api.ftmscan.com';
+                explorerUrl = 'ftmscan.com';
                 break;
             case 'polygon-pos':
                 domain = 'api.polygonscan.com';
+                explorerUrl = 'polygonscan.com';
                 break;
             case 'optimistic-ethereum':
                 domain = 'api-optimistic.etherscan.io';
+                explorerUrl = 'optimistic.etherscan.io';
                 break;
             default:
                console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
@@ -613,7 +623,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     date: new Date(Number(txInfo.timeStamp) * 1000),
                     amount: (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)),
                     txHash: txInfo.hash,
-                    explorerUrl: 'https://' + domain + '/tx/' + txInfo.hash,
+                    explorerUrl: 'https://' + explorerUrl + '/tx/' + txInfo.hash,
                     usdValue: (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)) * tokenValue,
                     native: platformId
                 })
