@@ -516,7 +516,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         let domain: string;
 
         switch (platformId) {
-
             case 'arbitrum-one':
                 domain = 'api.arbiscan.io';
                 break;
