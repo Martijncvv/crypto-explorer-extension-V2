@@ -4,7 +4,6 @@ import {setSelectedToken} from "../utils/storage";
 document.addEventListener('selectionchange', handleSelection);
 
 async function handleSelection() {
-	// Get the selected text, remove special characters, and convert to lowercase
 	let selectedTicker = window
 		.getSelection()
 		.toString()
@@ -16,9 +15,4 @@ async function handleSelection() {
 			setSelectedToken(selectedTicker)
 		}
 	}
-
-
-	// Process the selected text if it's not empty and shorter than 7 characters //
-	// todo check if this can be improved
-
 }

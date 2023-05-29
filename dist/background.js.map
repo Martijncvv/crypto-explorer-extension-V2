@@ -1,1 +1,0 @@
-{"version":3,"file":"background.js","mappings":";;;;;AAAA;AACA;AACA","sources":["webpack://crypto-explorer-extension-v2/./src/background/background.ts"],"sourcesContent":["// async function fetchData() {\n// todo what to do with background this, needed?\n// }//\n"],"names":[],"sourceRoot":""}

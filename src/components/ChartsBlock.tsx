@@ -12,8 +12,6 @@ import {
     ResponsiveContainer,
     ReferenceLine
 } from 'recharts';
-import {IPriceHistoryData} from "../models/ICoinInfo";
-import {ITokenTxs} from "../models/ITokenTxs";
 import {amountFormatter, numberFormatter} from "../utils/amountFormatter";
 
 interface ChartsBlockProps {
@@ -90,10 +88,6 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [chartOptionCount, chartOption]);
-
-    useEffect(() => {
-        setChartOption(0)
-    }, [price30dHistorydata,priceMaxHistorydata, txVolumeData, tokenTxsChartData]);
 
     const CustomPriceTooltip = props => {
         const { active, payload } = props;
@@ -200,7 +194,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
         );
     };
     const CustomOnchainTxsBar = (props) => {
-        const { x, y, width, height, date } = props;
+        const { x, y, width, height } = props;
         let fill= colors.primary_dark
         const yString = isNaN(y) ? "0" : y.toString();
         return (

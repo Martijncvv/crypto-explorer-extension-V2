@@ -11,8 +11,6 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getSelectedToken": () => (/* binding */ getSelectedToken),
-/* harmony export */   "getStoredFavouriteToken": () => (/* binding */ getStoredFavouriteToken),
-/* harmony export */   "setFavouriteToken": () => (/* binding */ setFavouriteToken),
 /* harmony export */   "setSelectedToken": () => (/* binding */ setSelectedToken)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -26,40 +24,45 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 function setSelectedToken(token) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.storage.local.set({ selectedToken: token }, () => {
-                resolve();
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.set({ selectedToken: token }, () => {
+                    resolve();
+                });
             });
-        });
+        }
+        catch (error) {
+            console.log("setSelectedToken error: ", error);
+        }
     });
 }
 function getSelectedToken() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
             chrome.storage.local.get(['selectedToken'], (res) => {
-                resolve(res.selectedToken);
+                if (res === null || res === void 0 ? void 0 : res.selectedToken) {
+                    resolve(res.selectedToken);
+                }
             });
         });
     });
 }
-function setFavouriteToken(token) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.storage.local.set({ favouriteToken: token }, () => {
-                resolve();
-            });
-        });
-    });
-}
-function getStoredFavouriteToken() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.storage.local.get(['favouriteToken'], (res) => {
-                resolve(res.favouriteToken);
-            });
-        });
-    });
-}
+// export async function setFavouriteToken(token: string): Promise<void> {
+// 	return new Promise((resolve) => {
+// 		chrome.storage.local.set({ favouriteToken: token }, () => {
+// 			resolve();
+// 		});
+// 	});
+// }
+// export async function getStoredFavouriteToken(): Promise<string> {
+// 	return new Promise((resolve) => {
+// 		chrome.storage.local.get(['favouriteToken'], (res: LocalStorageData) => {
+// 			if (res?.selectedToken) {
+// 				resolve(res.favouriteToken);
+// 			}
+// 		});
+// 	});
+// }
 
 
 /***/ })
@@ -142,7 +145,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 document.addEventListener('selectionchange', handleSelection);
 function handleSelection() {
     return __awaiter(this, void 0, void 0, function* () {
-        // Get the selected text, remove special characters, and convert to lowercase
         let selectedTicker = window
             .getSelection()
             .toString()
@@ -153,8 +155,6 @@ function handleSelection() {
                 (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.setSelectedToken)(selectedTicker);
             }
         }
-        // Process the selected text if it's not empty and shorter than 7 characters //
-        // todo check if this can be improved
     });
 }
 

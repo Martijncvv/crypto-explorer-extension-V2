@@ -19,7 +19,7 @@ import {IDetailedNftInfo} from "../models/INftInfo";
 import CircularProgress from "@mui/material/CircularProgress";
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import SearchIcon from '@mui/icons-material/Search';
-import {getSelectedToken} from "../utils/storage";
+import {getSelectedToken, setSelectedToken} from "../utils/storage";
 
 const menuIcon = require( "../static/images/icons/menu-icon.png")
 
@@ -169,11 +169,12 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         };
     }, []);
 
-    const getSelectedStorageToken = async () => {
+    const checkSelectedTokenStorage = async () => {
         const selectedToken = await getSelectedToken()
         if (selectedToken) {
+            setSelectedToken("")
             setSearchInput(selectedToken)
-            searchCoinNames()
+            searchCoinNames(selectedToken)
         }
     }
 
@@ -181,7 +182,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     useEffect(() => {
 
         getTrendingCoins()
-        getSelectedStorageToken()
+        checkSelectedTokenStorage()
         fetchDetailedTokenInfo('bitcoin');
 
         if (inputRef.current) {
@@ -227,9 +228,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         }
     }
 
-    const searchCoinNames = async () => {
+    const searchCoinNames = async (searchInputProp?: string) => {
         try {
-            const searchResults: ISearchCoinList = await fetchNameSearch(searchInput);
+            const searchResults: ISearchCoinList = await fetchNameSearch(searchInputProp || searchInput);
             if (searchResults.coins.length === 0 && searchResults.nfts.length === 0) {
                 console.log("No results")
                 setDisplayResults( {tokens: [{

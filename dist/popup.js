@@ -176,9 +176,6 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [chartOptionCount, chartOption]);
-    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-        setChartOption(0);
-    }, [price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData]);
     const CustomPriceTooltip = props => {
         var _a;
         const { active, payload } = props;
@@ -258,7 +255,7 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: yString, width: width, height: height, fill: fill }));
     };
     const CustomOnchainTxsBar = (props) => {
-        const { x, y, width, height, date } = props;
+        const { x, y, width, height } = props;
         let fill = _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark;
         const yString = isNaN(y) ? "0" : y.toString();
         return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("rect", { x: x, y: yString, width: width, height: height, fill: fill }));
@@ -734,17 +731,18 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-    const getSelectedStorageToken = () => __awaiter(void 0, void 0, void 0, function* () {
+    const checkSelectedTokenStorage = () => __awaiter(void 0, void 0, void 0, function* () {
         const selectedToken = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.getSelectedToken)();
         if (selectedToken) {
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.setSelectedToken)("");
             setSearchInput(selectedToken);
-            searchCoinNames();
+            searchCoinNames(selectedToken);
         }
     });
     // get detailed coin info and trending info on startup
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         getTrendingCoins();
-        getSelectedStorageToken();
+        checkSelectedTokenStorage();
         fetchDetailedTokenInfo('bitcoin');
         if (inputRef.current) {
             inputRef.current.focus();
@@ -783,9 +781,9 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             console.error("getTrendingCoins: Error fetching trending coins:", error);
         }
     });
-    const searchCoinNames = () => __awaiter(void 0, void 0, void 0, function* () {
+    const searchCoinNames = (searchInputProp) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const searchResults = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNameSearch)(searchInput);
+            const searchResults = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNameSearch)(searchInputProp || searchInput);
             if (searchResults.coins.length === 0 && searchResults.nfts.length === 0) {
                 console.log("No results");
                 setDisplayResults({ tokens: [{
@@ -1539,7 +1537,6 @@ const App = () => {
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    //todo  check ticker selection functionality
     // improve rendering efficiency
     // keep highest and lowest price on max chart
     // bring formatExchangeInfo function to exchangeBlock component
@@ -2605,8 +2602,6 @@ function fetchTokenTxs(domainName, contractAddress, txAmount) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getSelectedToken": () => (/* binding */ getSelectedToken),
-/* harmony export */   "getStoredFavouriteToken": () => (/* binding */ getStoredFavouriteToken),
-/* harmony export */   "setFavouriteToken": () => (/* binding */ setFavouriteToken),
 /* harmony export */   "setSelectedToken": () => (/* binding */ setSelectedToken)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -2620,40 +2615,45 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 function setSelectedToken(token) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.storage.local.set({ selectedToken: token }, () => {
-                resolve();
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.set({ selectedToken: token }, () => {
+                    resolve();
+                });
             });
-        });
+        }
+        catch (error) {
+            console.log("setSelectedToken error: ", error);
+        }
     });
 }
 function getSelectedToken() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
             chrome.storage.local.get(['selectedToken'], (res) => {
-                resolve(res.selectedToken);
+                if (res === null || res === void 0 ? void 0 : res.selectedToken) {
+                    resolve(res.selectedToken);
+                }
             });
         });
     });
 }
-function setFavouriteToken(token) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.storage.local.set({ favouriteToken: token }, () => {
-                resolve();
-            });
-        });
-    });
-}
-function getStoredFavouriteToken() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.storage.local.get(['favouriteToken'], (res) => {
-                resolve(res.favouriteToken);
-            });
-        });
-    });
-}
+// export async function setFavouriteToken(token: string): Promise<void> {
+// 	return new Promise((resolve) => {
+// 		chrome.storage.local.set({ favouriteToken: token }, () => {
+// 			resolve();
+// 		});
+// 	});
+// }
+// export async function getStoredFavouriteToken(): Promise<string> {
+// 	return new Promise((resolve) => {
+// 		chrome.storage.local.get(['favouriteToken'], (res: LocalStorageData) => {
+// 			if (res?.selectedToken) {
+// 				resolve(res.favouriteToken);
+// 			}
+// 		});
+// 	});
+// }
 
 
 /***/ }),
