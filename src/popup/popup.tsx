@@ -52,6 +52,10 @@ const App: React.FC = () => {
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
+	// Create HQ pics
+	// Generate good description text with GPT
+	// Think about improved extension name for better search algo: GPT
+
 	// improve rendering efficiency
 	// keep highest and lowest price on max chart
 	// bring formatExchangeInfo function to exchangeBlock component

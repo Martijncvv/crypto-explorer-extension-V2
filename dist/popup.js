@@ -1537,6 +1537,9 @@ const App = () => {
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+    // Create HQ pics
+    // Generate good description text with GPT
+    // Think about improved extension name for better search algo: GPT
     // improve rendering efficiency
     // keep highest and lowest price on max chart
     // bring formatExchangeInfo function to exchangeBlock component
