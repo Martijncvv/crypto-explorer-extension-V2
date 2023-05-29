@@ -165,13 +165,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     const checkSelectedTokenStorage = async () => {
         const selectedToken = await getSelectedToken()
         if (selectedToken) {
-            setSelectedToken("")
             setSearchInput(selectedToken)
             searchCoinNames(selectedToken)
-        } else {
-            fetchDetailedTokenInfo('bitcoin');
-            // setSearchInput('bitcoin')
-            // searchCoinNames('bitcoin')
+            setSelectedToken("")
         }
     }
 
@@ -186,9 +182,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
     // get detailed coin info and trending info on startup
     useEffect(() => {
-
         getTrendingCoins()
-        // checkSelectedTokenStorage()
+        checkSelectedTokenStorage()
+        fetchDetailedTokenInfo('bitcoin');
         if (inputRef.current) {
             inputRef.current.focus();
         }
@@ -440,12 +436,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     const FormatChartData = (priceHistoryData) => {
         delete priceHistoryData.market_caps;
 
-        if (priceHistoryData.prices.length > 100 ) {
-            console.log("FormatChartData  555: ")
+        if (priceHistoryData.prices.length > 300 ) {
             priceHistoryData.prices = downsampling(priceHistoryData.prices, 300)
             priceHistoryData.total_volumes = downsampling(priceHistoryData.total_volumes, 300)
         }
-        console.log("FormatChartData  11: ")
         // add all previous day-candle close data
         let formattedChartData: any = []
         for (let i = 0; i < priceHistoryData.prices.length - 1; i++) {
@@ -462,7 +456,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         const unixPriceArray = priceHistoryData.prices[formattedChartData.length];
         const unixVolumeArray = priceHistoryData.total_volumes[formattedChartData.length];
         const date = new Date(unixPriceArray[0]);
-        console.log("FormatChartData  222: ")
         formattedChartData.push({
             date: date,
             price: unixPriceArray[1],
@@ -479,40 +472,30 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         const barHeightMultiplier = maxVolume / maxFormattedPrice;
 
         // Add extraKey to each object for chart format
-        console.log("FormatChartData  333: ")
         formattedChartData = formattedChartData.map(dateData => ({
             ...dateData,
             chartFormatPrice: (dateData.price - minPrice) / (maxPrice - minPrice) * 0.8 + 0.3,
             chartFormatVolume: dateData.totalVolume / barHeightMultiplier,
         }));
-        console.log("FormatChartData  444: ")
         return formattedChartData
     }
 
     function downsampling(originalArray, maxDataPoints) {
-        console.log("downsampling  666: ")
-        const decimationFactor = Math.floor(originalArray.length / maxDataPoints);
+        const decimationFactor = Math.floor(originalArray.length / maxDataPoints) || 1;
         const newArray = [];
-        console.log("downsampling  777: ")
-        console.log("originalArray5: ", originalArray)
-        //todo infinite loop
 
-        // for (let i = 0; i < originalArray.length; i += decimationFactor) {
-        //     const chunk = originalArray.slice(i, i + decimationFactor);
-        //     const averagedObject = {};
-        //
-        //
-        //
-        //
-        //     for (let key in chunk[0]) {
-        //         if (chunk[0].hasOwnProperty(key)) {
-        //             const values = chunk.map(obj => obj[key]);
-        //             averagedObject[key] = values.reduce((sum, value) => sum + value, 0) / values.length;
-        //         }
-        //     }
-        //     newArray.push(averagedObject);
-        // }
-        console.log("downsampling  888: ")
+        for (let i = 0; i < originalArray.length; i += decimationFactor) {
+            const chunk = originalArray.slice(i, i + decimationFactor);
+            const averagedObject = {};
+
+            for (let key in chunk[0]) {
+                if (chunk[0].hasOwnProperty(key)) {
+                    const values = chunk.map(obj => obj[key]);
+                    averagedObject[key] = values.reduce((sum, value) => sum + value, 0) / values.length;
+                }
+            }
+            newArray.push(averagedObject);
+        }
         return newArray;
     }
 
@@ -704,16 +687,17 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                                             : styles.coinSearchInfo
                                     }
                                     tabIndex={index}
-                                    onClick={() => handleCoinOptionClick(tokenInfo)}
+                                    onClick={() => tokenInfo.id.length && handleCoinOptionClick(tokenInfo)}
                                     onKeyDown={(event) => {
-                                        if (event.key === 'Enter') {
+                                        if (tokenInfo.id.length && event.key === 'Enter') {
                                             handleCoinOptionClick(tokenInfo);
                                         }
                                     }}
-                                    onFocus={() => setFocusedOptionIndex(index)}
-                                    onBlur={() => setFocusedOptionIndex(-1)}
-                                    onMouseEnter={() => setFocusedOptionIndex(index)}
-                                    onMouseLeave={() => setFocusedOptionIndex(-1)}
+                                    onFocus={() =>tokenInfo.id.length &&  setFocusedOptionIndex(index)}
+                                    onBlur={() => tokenInfo.id.length && setFocusedOptionIndex(-1)}
+                                    onMouseEnter={() => tokenInfo.id.length && setFocusedOptionIndex(index)}
+                                    onMouseLeave={() => tokenInfo.id.length && setFocusedOptionIndex(-1)}
+
                                 >
                                     {tokenInfo.image ?
                                     <img

@@ -22,7 +22,6 @@ interface ExchangeBlockProps {
 }
 
 const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
-    console.log("ExchangeBlock")
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const [focusedOptionIndex, setFocusedOptionIndex] = useState<number>(-1);
     const toggleExpanded = () => {
@@ -124,17 +123,18 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                     }}
 
                 >
-                    <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={(event) => {
-                        if (exchange.exchangeURL) {
+                    <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+                         onClick={(event) => {
+                        if (exchange.exchangeURL && exchange.id.length) {
                             event.stopPropagation();
                             handleOpenTab(exchange.exchangeURL);
                         }
 
                     }}
-                         onFocus={() => setFocusedOptionIndex(index)}
-                         onBlur={() => setFocusedOptionIndex(-1)}
-                         onMouseEnter={() => setFocusedOptionIndex(index)}
-                         onMouseLeave={() => setFocusedOptionIndex(-1)}
+                         onFocus={() => exchange.id.length && setFocusedOptionIndex(index)}
+                         onBlur={() => exchange.id.length && setFocusedOptionIndex(-1)}
+                         onMouseEnter={() => exchange.id.length && setFocusedOptionIndex(index)}
+                         onMouseLeave={() => exchange.id.length && setFocusedOptionIndex(-1)}
                     >
                         {exchange.id ?
                         <img

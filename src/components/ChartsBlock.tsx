@@ -22,7 +22,6 @@ interface ChartsBlockProps {
 }
 
 const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData} ) => {
-    console.log("ChartsBlock")
     let availableCharts = []
     if (price30dHistorydata) {
         availableCharts.push('price30dHistorydata')

@@ -17,6 +17,7 @@ import {amountFormatter, numberFormatter, percentageFormatter} from "../utils/am
 
 const bitcoinIcon = require( "../static/images/icons/bitcoin-icon.png")
 const blockchainIcon = require( "../static/images/icons/blockchain-icon.png")
+const openseaIcon = require( "../static/images/icons/opensea-icon.png")
 const coingeckoIcon = require( "../static/images/icons/coingecko-icon.png")
 const redditIcon = require( "../static/images/icons/reddit-icon.png")
 const telegramIcon = require( "../static/images/icons/telegram-icon.png")
@@ -54,8 +55,8 @@ const App: React.FC = () => {
 	console.log("\n\n")
 	console.log("MAIN")
 
-	// console.log("coinInfo1", coinInfo)
-	// console.log("nftInfo1", nftInfo)
+	console.log("coinInfo1", coinInfo)
+	console.log("nftInfo1", nftInfo)
 
 	// todo check render efficiency
 	// Create HQ pics
@@ -88,9 +89,9 @@ const App: React.FC = () => {
 
 		const sortedTickers = tickers.sort((a, b) => b.converted_volume.usd - a.converted_volume.usd);
 		const totalExchanges = sortedTickers.length;
-		const top10Tickers = sortedTickers.slice(0, 10); // by volume
+		const top15Tickers = sortedTickers.slice(0, 15); // by volume
 
-		const exchangesFormatted = top10Tickers.map(obj => {
+		const exchangesFormatted = top15Tickers.map(obj => {
 			let quote = String(obj.target)
 			if (quote.length > 5) {
 				quote = obj.target_coin_id.toUpperCase()
@@ -104,11 +105,11 @@ const App: React.FC = () => {
 				exchangeURL: obj.trade_url
 			};
 		});
-		if ((totalExchanges - top10Tickers.length) > 0) {
+		if ((totalExchanges - top15Tickers.length) > 0) {
 			exchangesFormatted.push({
 				image: "",
 				id: "",
-				exchangeName: `${totalExchanges - top10Tickers.length} others`,
+				exchangeName: `${totalExchanges - top15Tickers.length} others`,
 				tradingVolume: 0,
 				quote: '',
 				exchangeURL: ''
@@ -185,18 +186,18 @@ const App: React.FC = () => {
 								<SocialBlock image={blockchainIcon}  link={coinInfo.links?.blockchain_site[0]} />
 							}
 							{coinInfo.id &&
-								<SocialBlock image={coingeckoIcon} mainValue={coinInfo.watchlist_portfolio_users} link={`https://www.coingecko.com/en/coins/${coinInfo.id}`}  />
+								<SocialBlock image={coingeckoIcon} title={"Coingecko watchlist portfolios"} mainValue={coinInfo.watchlist_portfolio_users} link={`https://www.coingecko.com/en/coins/${coinInfo.id}`}  />
 							}
 							{coinInfo?.links?.twitter_screen_name &&
-								<SocialBlock image={twitterIcon} mainValue={coinInfo.community_data?.twitter_followers}  link={`https://twitter.com/${coinInfo.links.twitter_screen_name}`} />
+								<SocialBlock image={twitterIcon} title={"Twitter followers"}  mainValue={coinInfo.community_data?.twitter_followers}  link={`https://twitter.com/${coinInfo.links.twitter_screen_name}`} />
 							}
 							{coinInfo?.links?.subreddit_url &&
-								<SocialBlock image={redditIcon} mainValue={coinInfo.community_data?.reddit_subscribers}   link={coinInfo.links?.subreddit_url} />
+								<SocialBlock image={redditIcon}  title={"Reddit subs"} mainValue={coinInfo.community_data?.reddit_subscribers}   link={coinInfo.links?.subreddit_url} />
 							}
 							{coinInfo?.links?.telegram_channel_identifier &&
-								<SocialBlock image={telegramIcon} mainValue={coinInfo.community_data?.telegram_channel_user_count}   link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`} />
+								<SocialBlock image={telegramIcon}  title={"Telegram channel size"} mainValue={coinInfo.community_data?.telegram_channel_user_count}   link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`} />
 							}
-							{/*/!*<SocialBlock image={discordIcon}  link={coinInfo.links.homepage[0]} />*!/ find out what to do with this*/}
+							{/*/!*<SocialBlock image={discordIcon}  title={"Discord channel size"}  link={coinInfo.links.homepage[0]} />*!/ find out what to do with this*/}
 						</div>
 					</>
 				}
@@ -235,21 +236,23 @@ const App: React.FC = () => {
 							}
 							{/*{nftInfo.links?.blockchain_site &&*/}
 							{/*	<SocialBlock image={blockchainIcon}  link={coinInfo.links?.blockchain} />*/}
-						{/*todo find out what to do with this*/}
 							{nftInfo?.id &&
-								<SocialBlock image={coingeckoIcon}  link={`https://www.coingecko.com/en/nft/${nftInfo.id}`}  />
+								<SocialBlock image={coingeckoIcon} title={"Coingecko watchlist portfolios"} link={`https://www.coingecko.com/en/nft/${nftInfo.id}`}  />
+							}
+							{nftInfo?.contract_address &&
+								<SocialBlock image={openseaIcon} title={"Opensea page"} link={`https://opensea.io/assets?search[query]=${nftInfo.contract_address}`}  />
 							}
 							{nftInfo?.links?.twitter &&
-								<SocialBlock image={twitterIcon}   link={nftInfo?.links?.twitter} />
+								<SocialBlock image={twitterIcon}  title={"Twitter followers"} link={nftInfo?.links?.twitter} />
 							}
 							{nftInfo?.links?.reddit &&
-								<SocialBlock image={redditIcon}  link={nftInfo?.links?.reddit} />
+								<SocialBlock image={redditIcon} title={"Reddit subs"} link={nftInfo?.links?.reddit} />
 							}
 							{nftInfo?.links?.telegram &&
-								<SocialBlock image={telegramIcon}  link={nftInfo?.links?.telegram} />
+								<SocialBlock image={telegramIcon} title={"Telegram channel size"} link={nftInfo?.links?.telegram} />
 							}
 							{nftInfo?.links?.discord &&
-								<SocialBlock image={telegramIcon}  link={nftInfo?.links?.discord} />
+								<SocialBlock image={telegramIcon} title={"Discord channel size"} link={nftInfo?.links?.discord} />
 							}
 						</div>
 					</>

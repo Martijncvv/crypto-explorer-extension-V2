@@ -111,7 +111,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData }) => {
-    console.log("ChartsBlock");
     let availableCharts = [];
     if (price30dHistorydata) {
         availableCharts.push('price30dHistorydata');
@@ -399,7 +398,6 @@ __webpack_require__.r(__webpack_exports__);
 const ExpandMoreIcon = __webpack_require__(/*! ../static/images/icons/expand-more-icon.png */ "./src/static/images/icons/expand-more-icon.png");
 const ExpandLessIcon = __webpack_require__(/*! ../static/images/icons/expand-less-icon.png */ "./src/static/images/icons/expand-less-icon.png");
 const ExchangeBlock = ({ exchanges }) => {
-    console.log("ExchangeBlock");
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const [focusedOptionIndex, setFocusedOptionIndex] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(-1);
     const toggleExpanded = () => {
@@ -480,11 +478,11 @@ const ExchangeBlock = ({ exchanges }) => {
     }
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: Date.now(), style: { background: isExpanded ? 'linear-gradient(to bottom, #2F396D 0%, #3E6CB6 80%)' : _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark, borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius } }, exchanges.map((exchange, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: exchange.id + exchange.quote + index, style: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, styles.exchangeWrapper), (index === 0 && styles.firstExchange)), (index === exchanges.length - 1 && styles.lastExchange)), { display: isExpanded || index === 0 ? "flex" : "none" }), (index === focusedOptionIndex && styles.exchangeWrapperFocused)) },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: { display: "flex", alignItems: "center", cursor: "pointer" }, onClick: (event) => {
-                if (exchange.exchangeURL) {
+                if (exchange.exchangeURL && exchange.id.length) {
                     event.stopPropagation();
                     handleOpenTab(exchange.exchangeURL);
                 }
-            }, onFocus: () => setFocusedOptionIndex(index), onBlur: () => setFocusedOptionIndex(-1), onMouseEnter: () => setFocusedOptionIndex(index), onMouseLeave: () => setFocusedOptionIndex(-1) },
+            }, onFocus: () => exchange.id.length && setFocusedOptionIndex(index), onBlur: () => exchange.id.length && setFocusedOptionIndex(-1), onMouseEnter: () => exchange.id.length && setFocusedOptionIndex(index), onMouseLeave: () => exchange.id.length && setFocusedOptionIndex(-1) },
             exchange.id ?
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: _static_exchangeIcons__WEBPACK_IMPORTED_MODULE_3__["default"][exchange.id], alt: exchange.exchangeName, style: styles.image })
                 : react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.image }),
@@ -732,14 +730,9 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     const checkSelectedTokenStorage = () => __awaiter(void 0, void 0, void 0, function* () {
         const selectedToken = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.getSelectedToken)();
         if (selectedToken) {
-            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.setSelectedToken)("");
             setSearchInput(selectedToken);
             searchCoinNames(selectedToken);
-        }
-        else {
-            fetchDetailedTokenInfo('bitcoin');
-            // setSearchInput('bitcoin')
-            // searchCoinNames('bitcoin')
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.setSelectedToken)("");
         }
     });
     // functionality for clicking outside of the search results block
@@ -752,7 +745,8 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     // get detailed coin info and trending info on startup
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         getTrendingCoins();
-        // checkSelectedTokenStorage()
+        checkSelectedTokenStorage();
+        fetchDetailedTokenInfo('bitcoin');
         if (inputRef.current) {
             inputRef.current.focus();
         }
@@ -987,12 +981,10 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     });
     const FormatChartData = (priceHistoryData) => {
         delete priceHistoryData.market_caps;
-        if (priceHistoryData.prices.length > 100) {
-            console.log("FormatChartData  555: ");
+        if (priceHistoryData.prices.length > 300) {
             priceHistoryData.prices = downsampling(priceHistoryData.prices, 300);
             priceHistoryData.total_volumes = downsampling(priceHistoryData.total_volumes, 300);
         }
-        console.log("FormatChartData  11: ");
         // add all previous day-candle close data
         let formattedChartData = [];
         for (let i = 0; i < priceHistoryData.prices.length - 1; i++) {
@@ -1009,7 +1001,6 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         const unixPriceArray = priceHistoryData.prices[formattedChartData.length];
         const unixVolumeArray = priceHistoryData.total_volumes[formattedChartData.length];
         const date = new Date(unixPriceArray[0]);
-        console.log("FormatChartData  222: ");
         formattedChartData.push({
             date: date,
             price: unixPriceArray[1],
@@ -1023,34 +1014,23 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         let maxFormattedPrice = 0.5;
         const barHeightMultiplier = maxVolume / maxFormattedPrice;
         // Add extraKey to each object for chart format
-        console.log("FormatChartData  333: ");
         formattedChartData = formattedChartData.map(dateData => (Object.assign(Object.assign({}, dateData), { chartFormatPrice: (dateData.price - minPrice) / (maxPrice - minPrice) * 0.8 + 0.3, chartFormatVolume: dateData.totalVolume / barHeightMultiplier })));
-        console.log("FormatChartData  444: ");
         return formattedChartData;
     };
     function downsampling(originalArray, maxDataPoints) {
-        console.log("downsampling  666: ");
-        const decimationFactor = Math.floor(originalArray.length / maxDataPoints);
+        const decimationFactor = Math.floor(originalArray.length / maxDataPoints) || 1;
         const newArray = [];
-        console.log("downsampling  777: ");
-        console.log("originalArray5: ", originalArray);
-        //todo infinite loop
-        // for (let i = 0; i < originalArray.length; i += decimationFactor) {
-        //     const chunk = originalArray.slice(i, i + decimationFactor);
-        //     const averagedObject = {};
-        //
-        //
-        //
-        //
-        //     for (let key in chunk[0]) {
-        //         if (chunk[0].hasOwnProperty(key)) {
-        //             const values = chunk.map(obj => obj[key]);
-        //             averagedObject[key] = values.reduce((sum, value) => sum + value, 0) / values.length;
-        //         }
-        //     }
-        //     newArray.push(averagedObject);
-        // }
-        console.log("downsampling  888: ");
+        for (let i = 0; i < originalArray.length; i += decimationFactor) {
+            const chunk = originalArray.slice(i, i + decimationFactor);
+            const averagedObject = {};
+            for (let key in chunk[0]) {
+                if (chunk[0].hasOwnProperty(key)) {
+                    const values = chunk.map(obj => obj[key]);
+                    averagedObject[key] = values.reduce((sum, value) => sum + value, 0) / values.length;
+                }
+            }
+            newArray.push(averagedObject);
+        }
         return newArray;
     }
     const handleCoinOptionClick = (tokenInfo) => __awaiter(void 0, void 0, void 0, function* () {
@@ -1196,11 +1176,11 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { fontSize: 30, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } }))),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults, ref: searchResultsRef }, isExpanded && (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.length) > 0 &&
             (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.slice(0, 12).map((tokenInfo, index) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: tokenInfo.id + index, style: index === focusedOptionIndex
-                    ? Object.assign(Object.assign({}, styles.coinSearchInfo), styles.coinSearchInfoFocus) : styles.coinSearchInfo, tabIndex: index, onClick: () => handleCoinOptionClick(tokenInfo), onKeyDown: (event) => {
-                    if (event.key === 'Enter') {
+                    ? Object.assign(Object.assign({}, styles.coinSearchInfo), styles.coinSearchInfoFocus) : styles.coinSearchInfo, tabIndex: index, onClick: () => tokenInfo.id.length && handleCoinOptionClick(tokenInfo), onKeyDown: (event) => {
+                    if (tokenInfo.id.length && event.key === 'Enter') {
                         handleCoinOptionClick(tokenInfo);
                     }
-                }, onFocus: () => setFocusedOptionIndex(index), onBlur: () => setFocusedOptionIndex(-1), onMouseEnter: () => setFocusedOptionIndex(index), onMouseLeave: () => setFocusedOptionIndex(-1) },
+                }, onFocus: () => tokenInfo.id.length && setFocusedOptionIndex(index), onBlur: () => tokenInfo.id.length && setFocusedOptionIndex(-1), onMouseEnter: () => tokenInfo.id.length && setFocusedOptionIndex(index), onMouseLeave: () => tokenInfo.id.length && setFocusedOptionIndex(-1) },
                 tokenInfo.image ?
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: tokenInfo.image, alt: tokenInfo.name, style: styles.coinImage }) :
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.coinImage }),
@@ -1326,7 +1306,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const SocialBlock = ({ image, mainValue, link }) => {
+const SocialBlock = ({ image, mainValue, link, title }) => {
+    const [isHovered, setIsHovered] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const styles = {
         container: {
             width: 38,
@@ -1346,6 +1327,10 @@ const SocialBlock = ({ image, mainValue, link }) => {
             borderRadius: '50%',
             marginTop: 8,
         },
+        imageFocused: {
+            boxShadow: '0 0 3px 2px rgba(255, 255, 255, 0.5)',
+            outline: 'none',
+        },
         mainValue: {
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_micro,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
@@ -1361,8 +1346,8 @@ const SocialBlock = ({ image, mainValue, link }) => {
     function handleOpenTab() {
         chrome.tabs.create({ url: link, active: false });
     }
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container, onClick: handleOpenTab },
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: image, alt: "Social image", style: styles.image }),
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign({}, styles.container), onClick: handleOpenTab, onMouseEnter: () => setIsHovered(true), onMouseLeave: () => setIsHovered(false), title: title },
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: image, alt: "Social image", style: Object.assign(Object.assign({}, styles.image), (isHovered && styles.imageFocused)) }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue }, (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.numberFormatter)(mainValue))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SocialBlock);
@@ -1428,7 +1413,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const TitleBlock = ({ title }) => {
-    console.log("TitleBlock");
     const styles = {
         container: {
             height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
@@ -1550,6 +1534,7 @@ __webpack_require__.r(__webpack_exports__);
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 const bitcoinIcon = __webpack_require__(/*! ../static/images/icons/bitcoin-icon.png */ "./src/static/images/icons/bitcoin-icon.png");
 const blockchainIcon = __webpack_require__(/*! ../static/images/icons/blockchain-icon.png */ "./src/static/images/icons/blockchain-icon.png");
+const openseaIcon = __webpack_require__(/*! ../static/images/icons/opensea-icon.png */ "./src/static/images/icons/opensea-icon.png");
 const coingeckoIcon = __webpack_require__(/*! ../static/images/icons/coingecko-icon.png */ "./src/static/images/icons/coingecko-icon.png");
 const redditIcon = __webpack_require__(/*! ../static/images/icons/reddit-icon.png */ "./src/static/images/icons/reddit-icon.png");
 const telegramIcon = __webpack_require__(/*! ../static/images/icons/telegram-icon.png */ "./src/static/images/icons/telegram-icon.png");
@@ -1585,8 +1570,8 @@ const App = () => {
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     console.log("\n\n");
     console.log("MAIN");
-    // console.log("coinInfo1", coinInfo)
-    // console.log("nftInfo1", nftInfo)
+    console.log("coinInfo1", coinInfo);
+    console.log("nftInfo1", nftInfo);
     // todo check render efficiency
     // Create HQ pics
     // Generate good description text with GPT, mention to use arrow keys
@@ -1615,8 +1600,8 @@ const App = () => {
             return [];
         const sortedTickers = tickers.sort((a, b) => b.converted_volume.usd - a.converted_volume.usd);
         const totalExchanges = sortedTickers.length;
-        const top10Tickers = sortedTickers.slice(0, 10); // by volume
-        const exchangesFormatted = top10Tickers.map(obj => {
+        const top15Tickers = sortedTickers.slice(0, 15); // by volume
+        const exchangesFormatted = top15Tickers.map(obj => {
             let quote = String(obj.target);
             if (quote.length > 5) {
                 quote = obj.target_coin_id.toUpperCase();
@@ -1630,11 +1615,11 @@ const App = () => {
                 exchangeURL: obj.trade_url
             };
         });
-        if ((totalExchanges - top10Tickers.length) > 0) {
+        if ((totalExchanges - top15Tickers.length) > 0) {
             exchangesFormatted.push({
                 image: "",
                 id: "",
-                exchangeName: `${totalExchanges - top10Tickers.length} others`,
+                exchangeName: `${totalExchanges - top15Tickers.length} others`,
                 tradingVolume: 0,
                 quote: '',
                 exchangeURL: ''
@@ -1680,13 +1665,13 @@ const App = () => {
                         ((_t = coinInfo.links) === null || _t === void 0 ? void 0 : _t.blockchain_site[0]) &&
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: blockchainIcon, link: (_u = coinInfo.links) === null || _u === void 0 ? void 0 : _u.blockchain_site[0] }),
                         coinInfo.id &&
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, mainValue: coinInfo.watchlist_portfolio_users, link: `https://www.coingecko.com/en/coins/${coinInfo.id}` }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, title: "Coingecko watchlist portfolios", mainValue: coinInfo.watchlist_portfolio_users, link: `https://www.coingecko.com/en/coins/${coinInfo.id}` }),
                         ((_v = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _v === void 0 ? void 0 : _v.twitter_screen_name) &&
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, mainValue: (_w = coinInfo.community_data) === null || _w === void 0 ? void 0 : _w.twitter_followers, link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, title: "Twitter followers", mainValue: (_w = coinInfo.community_data) === null || _w === void 0 ? void 0 : _w.twitter_followers, link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` }),
                         ((_x = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _x === void 0 ? void 0 : _x.subreddit_url) &&
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: redditIcon, mainValue: (_y = coinInfo.community_data) === null || _y === void 0 ? void 0 : _y.reddit_subscribers, link: (_z = coinInfo.links) === null || _z === void 0 ? void 0 : _z.subreddit_url }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: redditIcon, title: "Reddit subs", mainValue: (_y = coinInfo.community_data) === null || _y === void 0 ? void 0 : _y.reddit_subscribers, link: (_z = coinInfo.links) === null || _z === void 0 ? void 0 : _z.subreddit_url }),
                         ((_0 = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _0 === void 0 ? void 0 : _0.telegram_channel_identifier) &&
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, mainValue: (_1 = coinInfo.community_data) === null || _1 === void 0 ? void 0 : _1.telegram_channel_user_count, link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` }))),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, title: "Telegram channel size", mainValue: (_1 = coinInfo.community_data) === null || _1 === void 0 ? void 0 : _1.telegram_channel_user_count, link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` }))),
             (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) &&
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
@@ -1704,15 +1689,17 @@ const App = () => {
                         ((_6 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _6 === void 0 ? void 0 : _6.homepage) &&
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: websiteIcon, link: (_7 = nftInfo.links) === null || _7 === void 0 ? void 0 : _7.homepage }),
                         (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.id) &&
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, link: `https://www.coingecko.com/en/nft/${nftInfo.id}` }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, title: "Coingecko watchlist portfolios", link: `https://www.coingecko.com/en/nft/${nftInfo.id}` }),
+                        (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.contract_address) &&
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: openseaIcon, title: "Opensea page", link: `https://opensea.io/assets?search[query]=${nftInfo.contract_address}` }),
                         ((_8 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _8 === void 0 ? void 0 : _8.twitter) &&
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, link: (_9 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _9 === void 0 ? void 0 : _9.twitter }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, title: "Twitter followers", link: (_9 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _9 === void 0 ? void 0 : _9.twitter }),
                         ((_10 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _10 === void 0 ? void 0 : _10.reddit) &&
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: redditIcon, link: (_11 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _11 === void 0 ? void 0 : _11.reddit }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: redditIcon, title: "Reddit subs", link: (_11 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _11 === void 0 ? void 0 : _11.reddit }),
                         ((_12 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _12 === void 0 ? void 0 : _12.telegram) &&
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, link: (_13 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _13 === void 0 ? void 0 : _13.telegram }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, title: "Telegram channel size", link: (_13 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _13 === void 0 ? void 0 : _13.telegram }),
                         ((_14 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _14 === void 0 ? void 0 : _14.discord) &&
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, link: (_15 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _15 === void 0 ? void 0 : _15.discord }))))));
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, title: "Discord channel size", link: (_15 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _15 === void 0 ? void 0 : _15.discord }))))));
 };
 const root = document.createElement('div');
 document.body.appendChild(root);
@@ -2769,6 +2756,16 @@ module.exports = __webpack_require__.p + "559b02f9d985feb71f8a.png";
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 module.exports = __webpack_require__.p + "f4ba429b501f76efc5ef.png";
+
+/***/ }),
+
+/***/ "./src/static/images/icons/opensea-icon.png":
+/*!**************************************************!*\
+  !*** ./src/static/images/icons/opensea-icon.png ***!
+  \**************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "5a605124878b6be913b6.png";
 
 /***/ }),
 
