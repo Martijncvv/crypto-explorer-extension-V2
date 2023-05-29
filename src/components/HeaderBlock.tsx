@@ -40,7 +40,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     });
     const [focusedOptionIndex, setFocusedOptionIndex] = useState<number>(-1);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
-
     const [searchInput, setSearchInput] = useState<string>('');
     const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
 
