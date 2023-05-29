@@ -52,6 +52,8 @@ const App: React.FC = () => {
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 
+	console.log("coinInfo1", coinInfo)
+	console.log("nftInfo1", nftInfo)
 	// Create HQ pics
 	// Generate good description text with GPT
 	// Think about improved extension name for better search algo: GPT

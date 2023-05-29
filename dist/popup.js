@@ -1537,6 +1537,8 @@ const App = () => {
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+    console.log("coinInfo1", coinInfo);
+    console.log("nftInfo1", nftInfo);
     // Create HQ pics
     // Generate good description text with GPT
     // Think about improved extension name for better search algo: GPT
@@ -2667,7 +2669,7 @@ function getSelectedToken() {
   \**************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-module.exports = __webpack_require__.p + "3287eb6d896676d933c6.png";
+module.exports = __webpack_require__.p + "d0a1ce55e106304d4bdf.png";
 
 /***/ }),
 
