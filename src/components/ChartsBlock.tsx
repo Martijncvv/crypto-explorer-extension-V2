@@ -390,7 +390,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                 <ResponsiveContainer width="100%" height="100%">
                         <ComposedChart
                             data={tokenTxsChartData}
-                            margin={{ top: 12, left: 24, right: 0, bottom: 0 }}
+                            margin={{ top: 14, left: 24, right: 0, bottom: 0 }}
                             style={{ cursor: 'pointer' }}
                         >
 

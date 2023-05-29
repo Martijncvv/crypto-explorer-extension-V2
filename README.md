@@ -1,5 +1,5 @@
 # Cryptocurrency Explorer Chrome Extension V2
-Discover a world of in-depth, real-time (on-chain) information about your favorite cryptocurrencies and NFTs with the Crypto Tracker. This easy-to-use tool simplifies blockchain data, giving you key insights at the tip of your fingers, all from your browser at any page.
+Discover a world of in-depth, real-time (on-chain) information about your favorite cryptocurrencies and NFTs with the Crypto Tracker. This easy-to-use tool simplifies cryptocurrency data, giving you key insights at the tip of your fingers, all from your browser at any page.
 
 Features
 - Hotkeys Integration: Simply select a ticker (BTC, ETH, DOGE) and press Ctrl+Shift+DownKey (or Command+Shift+DownKey for Mac) to display the related information instantly. You can also access the extension via the menu icon or hotkeys.
@@ -11,7 +11,6 @@ Features
 - Easy Navigation: Utilize Arrow and Tab keys to switch between different options and view detailed charts. For even easier usability, you can pin the extension icon to your bookmark bar.
 
 - To begin your journey into the crypto world, install the extension and explore crypto like never before!
-
 ### General
 - a. Select a ticker and press Ctrl+Shift+DownKey/ Command+Shift+DownKey to display ticker information.
 - b. Open the extension via the menu icon or hotkeys and search for a coin or NFT.
@@ -52,6 +51,31 @@ I would like to thank CoinGecko and Etherscan for providing real-time cryptocurr
 
 # Previews
 
+### BTC
 
+<p align="center">
+  <img src="preview-images/btc_1280-800.jpg" alt="Bitcoin USD" width="800" >
+</p>
+
+### Doge
+
+<p align="center">
+  <img src="preview-images/doge-1280-800.jpg" alt="Doge USD" width="800" >
+</p>
+
+### Shiba 
+<p align="center">
+  <img src="preview-images/shib-1280-800.jpg" alt="Shib USD" width="800" >
+</p>
+
+### Pudgy NFT info
+<p align="center">
+  <img src="preview-images/pudgy-1280-800.jpg" alt="Pudgy USD" width="800" >
+</p>
+
+### Trending coins
+<p align="center">
+  <img src="preview-images/trending-1280-800.jpg" alt="Trending" width="800" >
+</p>
 
 

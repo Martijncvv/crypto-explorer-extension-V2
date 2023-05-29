@@ -1,6 +1,6 @@
 {
-	"name": "Crypto Tracker Pro: Blockchain & Cryptocurrency Explorer",
-	"description": "Display information about a token or NFT; check the top trending coins and on-chain data.",
+	"name": "Crypto Tracker: Blockchain & Crypto Explorer",
+	"description": "Your Comprehensive Real-Time (on-chain) Cryptocurrency and NFT Explorer.",
 	"version": "2.0.0",
 	"manifest_version": 3,
 	"icons": {
