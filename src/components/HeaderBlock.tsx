@@ -650,7 +650,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
                 }
                 {(isLoading && !isError) &&
-                            <CircularProgress size={40} thickness={1} style={{position: 'absolute', right: 12, zIndex: 1, color: "white" }}/>
+                            <CircularProgress size={41} thickness={1} style={{position: 'absolute', right: 12, zIndex: 1, color: "white" }}/>
                 }
                 {isError &&
                         <div style={styles.indicationIcon} title={"Refresh limit: 5/sec"}>
