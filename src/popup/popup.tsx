@@ -134,7 +134,7 @@ const App: React.FC = () => {
 			</div>
 			{coinInfo?.name &&
 				<>
-					<TitleBlock title={coinInfo.name} />
+					<TitleBlock tokenTitle={coinInfo.name} title={"Use arrow keys to navigate"}/>
 					<TickerBlock ticker={coinInfo.symbol} />
 					<ChartsBlock
 						price30dHistorydata={coinInfo.price30dHistoryData.length && coinInfo.price30dHistoryData}
@@ -146,7 +146,7 @@ const App: React.FC = () => {
 
 			{nftInfo?.name &&
 				<>
-					<TitleBlock title={nftInfo.name} />
+					<TitleBlock tokenTitle={nftInfo.name} title={"Use arrow keys to navigate"} />
 					<TickerBlock ticker={nftInfo.symbol} />
 					<ChartsBlock
 						txVolumeData={txVolumeChartData.length && txVolumeChartData}
@@ -155,7 +155,7 @@ const App: React.FC = () => {
 			}
 			{(!nftInfo?.name && !coinInfo?.name) &&
 				<>
-					<TitleBlock title="Fetching data" />
+					<TitleBlock tokenTitle="Fetching data" title={"Use arrow keys to navigate"} />
 					<TickerBlock ticker="" />
 					<ChartsBlock
 					/>

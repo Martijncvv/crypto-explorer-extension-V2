@@ -3,10 +3,11 @@ import colors from "../static/colors";
 import constants from "../static/constants";
 
 interface TitleBlockProps {
-    title: string;
+    tokenTitle: string;
+    title?: string;
 }
 
-const TitleBlock: React.FC<TitleBlockProps> = ({title}) => {
+const TitleBlock: React.FC<TitleBlockProps> = ({tokenTitle, title}) => {
     const styles: { [key: string]: CSSProperties } = {
         container: {
             height: constants.font_large,
@@ -20,8 +21,8 @@ const TitleBlock: React.FC<TitleBlockProps> = ({title}) => {
     };
 
     return (
-        <div style={styles.container}>
-            {title}
+        <div style={styles.container} title={title}>
+            {tokenTitle}
         </div>
     );
 }

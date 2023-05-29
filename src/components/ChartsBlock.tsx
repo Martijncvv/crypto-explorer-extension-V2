@@ -210,7 +210,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
     }
 
     return (
-        <div style={styles.container} title="Tip: Use arrow keys">
+        <div style={styles.container} title="Use arrow keys to navigate">
             {availableCharts.length === 0 && (
                 <div style={styles.emptyChartMessage}>
                     Data not (yet) available</div>

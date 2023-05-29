@@ -266,7 +266,7 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
             active: false,
         });
     };
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container, title: "Tip: Use arrow keys" },
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container, title: "Use arrow keys to navigate" },
         availableCharts.length === 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.emptyChartMessage }, "Data not (yet) available")),
         availableCharts.length > 0 &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.menuOptions }, Array.from({ length: chartOptionCount }, (_, index) => index).map((option) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: option, onClick: () => setChartOption(option), style: chartOption === option ? styles.activeOption : styles.menuOption })))),
@@ -1412,7 +1412,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const TitleBlock = ({ title }) => {
+const TitleBlock = ({ tokenTitle, title }) => {
     const styles = {
         container: {
             height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
@@ -1424,7 +1424,7 @@ const TitleBlock = ({ title }) => {
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium
         },
     };
-    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container }, title));
+    return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container, title: title }, tokenTitle));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TitleBlock);
 
@@ -1634,17 +1634,17 @@ const App = () => {
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : ((_b = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.image) === null || _b === void 0 ? void 0 : _b.small) ? nftInfo.image.small : bitcoinIcon, setCoinInfo: setCoinInfo, setNftInfo: setNftInfo, setTxVolumeChartData: setTxVolumeChartData, setTokenTxsChartData: setTokenTxsChartData })),
         (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: coinInfo.name }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { tokenTitle: coinInfo.name, title: "Use arrow keys to navigate" }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: coinInfo.symbol }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { price30dHistorydata: coinInfo.price30dHistoryData.length && coinInfo.price30dHistoryData, priceMaxHistorydata: coinInfo.priceMaxHistoryData.length && coinInfo.priceMaxHistoryData, tokenTxsChartData: tokenTxsChartData.length && tokenTxsChartData })),
         (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: nftInfo.name }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { tokenTitle: nftInfo.name, title: "Use arrow keys to navigate" }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: nftInfo.symbol }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { txVolumeData: txVolumeChartData.length && txVolumeChartData })),
         (!(nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) && !(coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name)) &&
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: "Fetching data" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { tokenTitle: "Fetching data", title: "Use arrow keys to navigate" }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: "" }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], null)),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomContainer },
