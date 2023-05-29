@@ -1,12 +1,23 @@
 # Cryptocurrency Explorer Chrome Extension V2
+Discover a world of in-depth, real-time (on-chain) information about your favorite cryptocurrencies and NFTs with the Crypto Tracker. This easy-to-use tool simplifies blockchain data, giving you key insights at the tip of your fingers, all from your browser at any page.
 
-A Google Chrome extension which displays information about a coin or NFT in a popup when the user selects a ticker (BTC/ ETH/ XYZ) and presses the hotkeys.
+Features
+- Hotkeys Integration: Simply select a ticker (BTC, ETH, DOGE) and press Ctrl+Shift+DownKey (or Command+Shift+DownKey for Mac) to display the related information instantly. You can also access the extension via the menu icon or hotkeys.
+- Trending Coins: Keep up-to-date with the market by checking the top trending searched coins.
+- Coins and Tokens: Gain access to real-time price and coin-specific data. Leverage our On-chain Whale Finder to track the top 50 transactions out of the last 10,000 for any given coin.
+- Non-Fungible Tokens (NFTs): Get your hands on general price information and daily on-chain transaction volumes for various NFTs.
+  Comprehensive Information
+- Wide On-chain Insights Support: The explorer supports a variety of blockchain networks (9) including Arbitrum, Avalanche, Binance Smart Chain, Celo, Cronos, Ethereum, Fantom, Optimism, and Polygon. This ensures you get extensive and diverse crypto information, irrespective of the network.
+- Easy Navigation: Utilize Arrow and Tab keys to switch between different options and view detailed charts. For even easier usability, you can pin the extension icon to your bookmark bar.
+
+- To begin your journey into the crypto world, install the extension and explore crypto like never before!
 
 ### General
 - a. Select a ticker and press Ctrl+Shift+DownKey/ Command+Shift+DownKey to display ticker information.
 - b. Open the extension via the menu icon or hotkeys and search for a coin or NFT.
 - Use Arrow and Tab keys to easily switch between options and charts. 
 - Check the top trending searched coins.
+- 
 ### Coins and Tokens
 - Check general price and coin information.
 - On-chain Whale Finder: Follow the top 50 transactions of a coin of the last 10000 transactions.
@@ -25,6 +36,9 @@ A Google Chrome extension which displays information about a coin or NFT in a po
 - Optimism
 - Polygon
 
+### Tips
+- Pin extension icon at bookmark bar for easier usability.
+- Refresh the browser after installation.
 
 [Chrome Store Extension Link](https://chrome.google.com/webstore/detail/crypto-explorer/pkaheoacmbdgnemgmcdbekniooabcnmc)
 
@@ -37,3 +51,7 @@ I would like to thank CoinGecko and Etherscan for providing real-time cryptocurr
 [Etherscan-API](https://docs.etherscan.io/).
 
 # Previews
+
+
+
+

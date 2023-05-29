@@ -1,7 +1,7 @@
 {
-	"name": "Crypto Explorer V2",
-	"description": "Display information about a token or NFT; check the top trending coins, on-chain data and compare market caps.",
-	"version": "0.0.2",
+	"name": "Crypto Tracker Pro: Blockchain & Cryptocurrency Explorer",
+	"description": "Display information about a token or NFT; check the top trending coins and on-chain data.",
+	"version": "2.0.0",
 	"manifest_version": 3,
 	"icons": {
 		"16": "images/CryptoExplorer_logo_128.png",
@@ -10,7 +10,7 @@
 	},
 	"action": {
 		"default_popup": "popup.html",
-		"default_title": "Crypto Explorer",
+		"default_title": "Crypto Tracker Pro: Blockchain & Cryptocurrency Explorer",
 		"default_icon": "images/CryptoExplorer_logo_128.png"
 	},
 	"permissions": ["storage", "activeTab"],
@@ -27,7 +27,7 @@
 				"default": "Ctrl+Shift+Down",
 				"mac": "Command+Shift+Down"
 			},
-			"description": "Opens crypto explorer"
+			"description": "Opens Explorer"
 		}
 	}
 }

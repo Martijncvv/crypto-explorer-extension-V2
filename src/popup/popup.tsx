@@ -61,6 +61,7 @@ const App: React.FC = () => {
 	// Generate good description text with GPT, mention to use arrow keys
 	// Think about improved extension name for better search algo: GPT
 
+	// splash screen
 	// improve rendering efficiency
 	// keep highest and lowest price on max chart
 	// bring formatExchangeInfo function to exchangeBlock component
