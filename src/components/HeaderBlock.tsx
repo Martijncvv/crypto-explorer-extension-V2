@@ -190,6 +190,21 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         }
     }, []);
 
+    // handle arrow up key press, collapse
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'ArrowUp') {
+                setIsExpanded(false)
+            } else if (event.key === 'ArrowDown') {
+                setIsExpanded(true)
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
     // Close the expansion if the click is outside of the search results block
     const handleClickOutside = (event: MouseEvent) => {
         if (searchResultsRef.current && !searchResultsRef.current.contains(event.target)) {

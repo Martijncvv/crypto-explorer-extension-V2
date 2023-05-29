@@ -54,8 +54,9 @@ const App: React.FC = () => {
 
 	console.log("coinInfo1", coinInfo)
 	console.log("nftInfo1", nftInfo)
+	// todo check render efficiency
 	// Create HQ pics
-	// Generate good description text with GPT
+	// Generate good description text with GPT, mention to use arrow keys
 	// Think about improved extension name for better search algo: GPT
 
 	// improve rendering efficiency

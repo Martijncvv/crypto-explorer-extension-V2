@@ -748,6 +748,21 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             inputRef.current.focus();
         }
     }, []);
+    // handle arrow up key press, collapse
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'ArrowUp') {
+                setIsExpanded(false);
+            }
+            else if (event.key === 'ArrowDown') {
+                setIsExpanded(true);
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
     // Close the expansion if the click is outside of the search results block
     const handleClickOutside = (event) => {
         if (searchResultsRef.current && !searchResultsRef.current.contains(event.target)) {
@@ -1539,8 +1554,9 @@ const App = () => {
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     console.log("coinInfo1", coinInfo);
     console.log("nftInfo1", nftInfo);
+    // todo check render efficiency
     // Create HQ pics
-    // Generate good description text with GPT
+    // Generate good description text with GPT, mention to use arrow keys
     // Think about improved extension name for better search algo: GPT
     // improve rendering efficiency
     // keep highest and lowest price on max chart
