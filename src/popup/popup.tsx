@@ -51,9 +51,12 @@ const App: React.FC = () => {
 	const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>()
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
+	console.log("\n\n")
+	console.log("MAIN")
 
-	console.log("coinInfo1", coinInfo)
-	console.log("nftInfo1", nftInfo)
+	// console.log("coinInfo1", coinInfo)
+	// console.log("nftInfo1", nftInfo)
+
 	// todo check render efficiency
 	// Create HQ pics
 	// Generate good description text with GPT, mention to use arrow keys
@@ -153,10 +156,7 @@ const App: React.FC = () => {
 				<>
 					<TitleBlock title="Fetching data" />
 					<TickerBlock ticker="" />
-					{/*<TitleBlock title="Fetching data" />*/}
-					{/*<TickerBlock ticker="Loading" />*/}
 					<ChartsBlock
-						txVolumeData={[{date: new Date(), value: 1}]}
 					/>
 				</>
 			}

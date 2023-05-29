@@ -22,6 +22,7 @@ interface ExchangeBlockProps {
 }
 
 const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
+    console.log("ExchangeBlock")
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const [focusedOptionIndex, setFocusedOptionIndex] = useState<number>(-1);
     const toggleExpanded = () => {

@@ -111,6 +111,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData }) => {
+    console.log("ChartsBlock");
     let availableCharts = [];
     if (price30dHistorydata) {
         availableCharts.push('price30dHistorydata');
@@ -398,6 +399,7 @@ __webpack_require__.r(__webpack_exports__);
 const ExpandMoreIcon = __webpack_require__(/*! ../static/images/icons/expand-more-icon.png */ "./src/static/images/icons/expand-more-icon.png");
 const ExpandLessIcon = __webpack_require__(/*! ../static/images/icons/expand-less-icon.png */ "./src/static/images/icons/expand-less-icon.png");
 const ExchangeBlock = ({ exchanges }) => {
+    console.log("ExchangeBlock");
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const [focusedOptionIndex, setFocusedOptionIndex] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(-1);
     const toggleExpanded = () => {
@@ -612,12 +614,15 @@ const menuIcon = __webpack_require__(/*! ../static/images/icons/menu-icon.png */
 const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData }) => {
     const searchResultsRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
     const inputRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
-    const [isLoading, setIsLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-    const [isError, setIsError] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+    const [loadingError, setLoadingError] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+        isLoading: false,
+        isError: false,
+    });
     const [focusedOptionIndex, setFocusedOptionIndex] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(-1);
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
     const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ tokens: [], total: 0 });
+    console.log("HeaderBlock");
     const styles = {
         headerBlock: {
             display: 'flex',
@@ -724,13 +729,6 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             zIndex: 1
         },
     };
-    // functionality for clicking outside of the search results block
-    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
     const checkSelectedTokenStorage = () => __awaiter(void 0, void 0, void 0, function* () {
         const selectedToken = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.getSelectedToken)();
         if (selectedToken) {
@@ -738,19 +736,30 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             setSearchInput(selectedToken);
             searchCoinNames(selectedToken);
         }
+        else {
+            fetchDetailedTokenInfo('bitcoin');
+            // setSearchInput('bitcoin')
+            // searchCoinNames('bitcoin')
+        }
     });
+    // functionality for clicking outside of the search results block
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
     // get detailed coin info and trending info on startup
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         getTrendingCoins();
-        checkSelectedTokenStorage();
-        fetchDetailedTokenInfo('bitcoin');
+        // checkSelectedTokenStorage()
         if (inputRef.current) {
             inputRef.current.focus();
         }
     }, []);
     // handle arrow up key press, collapse
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-        const handleKeyDown = (event) => {
+        const handleKeyDownSearch = (event) => {
             if (event.key === 'ArrowUp' && isExpanded) {
                 console.log("focusedOptionIndex: ", focusedOptionIndex);
                 if (focusedOptionIndex > 0) {
@@ -769,9 +778,9 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 }
             }
         };
-        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keydown', handleKeyDownSearch);
         return () => {
-            document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('keydown', handleKeyDownSearch);
         };
     }, [focusedOptionIndex]);
     // Close the expansion if the click is outside of the search results block
@@ -859,7 +868,6 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         }
         catch (error) {
             console.error("handleSearch: Error searching for coins:", error);
-            setIsError(true);
             setDisplayResults({ tokens: [{
                         id: "noResult",
                         name: "No results",
@@ -891,23 +899,24 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     }
     const fetchDetailedTokenInfo = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            setIsLoading(true);
+            setLoadingError({ isLoading: true, isError: false });
             setTxVolumeChartData([]);
             setTokenTxsChartData([]);
             const [coinInfo, priceMaxHistoryDataRes] = yield Promise.all([
                 (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchCoinInfo)(coinId),
                 (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchPriceHistoryData)(coinId, 'usd', 'max'),
             ]);
+            // console.log("COINFETCH: ", coinInfo)
+            console.log(coinInfo);
+            console.log("PRICEFETCH: ", priceMaxHistoryDataRes);
             if (!coinInfo) {
                 console.log(`No results for coinInfo ${coinId}`);
-                setIsLoading(false);
-                setIsError(true);
+                setLoadingError({ isLoading: false, isError: true });
                 return;
             }
             if (!priceMaxHistoryDataRes) {
                 console.log(`No results for priceMaxHistoryData ${coinId}`);
-                setIsLoading(false);
-                setIsError(true);
+                setLoadingError({ isLoading: false, isError: true });
                 return;
             }
             // get past 30 days
@@ -915,52 +924,50 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 prices: priceMaxHistoryDataRes.prices.slice(-31),
                 total_volumes: priceMaxHistoryDataRes.total_volumes.slice(-31)
             });
+            console.log("price30dHistoryData: ");
             coinInfo.priceMaxHistoryData = FormatChartData(priceMaxHistoryDataRes);
+            console.log("priceMaxHistoryData: ");
             setCoinInfo(coinInfo);
             setNftInfo(null);
-            setIsError(false);
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
                 yield delay(1000);
                 const tokenTxChartData = yield getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
+                console.log("ONCHAINFETCH: ", priceMaxHistoryDataRes);
                 if (!tokenTxChartData) {
-                    setIsLoading(false);
-                    setIsError(true);
+                    setLoadingError({ isLoading: false, isError: true });
                     console.log(`No results for getTokenTxChartData ${coinId}`);
                     return;
                 }
                 setTokenTxsChartData(tokenTxChartData);
             }
-            setIsLoading(false);
+            setLoadingError({ isLoading: false, isError: false });
+            return;
         }
         catch (error) {
-            setIsLoading(false);
-            setIsError(true);
+            setLoadingError({ isLoading: false, isError: true });
             console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
         }
     });
     const fetchDetailedNftInfo = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            setIsLoading(true);
+            setLoadingError({ isLoading: true, isError: false });
             setTxVolumeChartData([]);
             setTokenTxsChartData([]);
             const [nftInfo] = yield Promise.all([
                 (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNftInfo)(coinId),
             ]);
             if (!nftInfo) {
-                setIsLoading(false);
-                setIsError(true);
+                setLoadingError({ isLoading: false, isError: true });
                 console.log(`No results for nftInfo ${coinId}`);
                 return;
             }
             setNftInfo(nftInfo);
             setCoinInfo(null);
-            setIsError(false);
             if (nftInfo.asset_platform_id && nftInfo.contract_address) {
                 yield delay(1000);
                 const txVolumeData = yield getNftTxChartData(nftInfo.asset_platform_id, nftInfo.contract_address);
                 if (!txVolumeData) {
-                    setIsLoading(false);
-                    setIsError(true);
+                    setLoadingError({ isLoading: false, isError: true });
                     console.log(`No results for getNftTxChartData ${coinId}`);
                     return;
                 }
@@ -968,11 +975,10 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     setTxVolumeChartData(txVolumeData);
                 }
             }
-            setIsLoading(false);
+            setLoadingError({ isLoading: false, isError: false });
         }
         catch (error) {
-            setIsLoading(false);
-            setIsError(true);
+            setLoadingError({ isLoading: false, isError: true });
             setNftInfo(null);
             setTxVolumeChartData([]);
             setCoinInfo(null);
@@ -982,9 +988,11 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     const FormatChartData = (priceHistoryData) => {
         delete priceHistoryData.market_caps;
         if (priceHistoryData.prices.length > 100) {
+            console.log("FormatChartData  555: ");
             priceHistoryData.prices = downsampling(priceHistoryData.prices, 300);
             priceHistoryData.total_volumes = downsampling(priceHistoryData.total_volumes, 300);
         }
+        console.log("FormatChartData  11: ");
         // add all previous day-candle close data
         let formattedChartData = [];
         for (let i = 0; i < priceHistoryData.prices.length - 1; i++) {
@@ -1001,6 +1009,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         const unixPriceArray = priceHistoryData.prices[formattedChartData.length];
         const unixVolumeArray = priceHistoryData.total_volumes[formattedChartData.length];
         const date = new Date(unixPriceArray[0]);
+        console.log("FormatChartData  222: ");
         formattedChartData.push({
             date: date,
             price: unixPriceArray[1],
@@ -1014,23 +1023,34 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         let maxFormattedPrice = 0.5;
         const barHeightMultiplier = maxVolume / maxFormattedPrice;
         // Add extraKey to each object for chart format
+        console.log("FormatChartData  333: ");
         formattedChartData = formattedChartData.map(dateData => (Object.assign(Object.assign({}, dateData), { chartFormatPrice: (dateData.price - minPrice) / (maxPrice - minPrice) * 0.8 + 0.3, chartFormatVolume: dateData.totalVolume / barHeightMultiplier })));
+        console.log("FormatChartData  444: ");
         return formattedChartData;
     };
     function downsampling(originalArray, maxDataPoints) {
+        console.log("downsampling  666: ");
         const decimationFactor = Math.floor(originalArray.length / maxDataPoints);
         const newArray = [];
-        for (let i = 0; i < originalArray.length; i += decimationFactor) {
-            const chunk = originalArray.slice(i, i + decimationFactor);
-            const averagedObject = {};
-            for (let key in chunk[0]) {
-                if (chunk[0].hasOwnProperty(key)) {
-                    const values = chunk.map(obj => obj[key]);
-                    averagedObject[key] = values.reduce((sum, value) => sum + value, 0) / values.length;
-                }
-            }
-            newArray.push(averagedObject);
-        }
+        console.log("downsampling  777: ");
+        console.log("originalArray5: ", originalArray);
+        //todo infinite loop
+        // for (let i = 0; i < originalArray.length; i += decimationFactor) {
+        //     const chunk = originalArray.slice(i, i + decimationFactor);
+        //     const averagedObject = {};
+        //
+        //
+        //
+        //
+        //     for (let key in chunk[0]) {
+        //         if (chunk[0].hasOwnProperty(key)) {
+        //             const values = chunk.map(obj => obj[key]);
+        //             averagedObject[key] = values.reduce((sum, value) => sum + value, 0) / values.length;
+        //         }
+        //     }
+        //     newArray.push(averagedObject);
+        // }
+        console.log("downsampling  888: ");
         return newArray;
     }
     const handleCoinOptionClick = (tokenInfo) => __awaiter(void 0, void 0, void 0, function* () {
@@ -1134,10 +1154,9 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
                     return [];
             }
-            const tokenTxsRes = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTokenTxs)(domain, contractAddress, 10000);
-            const tokenTxsData = tokenTxsRes.result;
-            if (tokenTxsData.length > 0) {
-                const arrayWithIndices = tokenTxsData.map((item, index) => (Object.assign(Object.assign({}, item), { index })));
+            const nftTxsData = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTokenTxs)(domain, contractAddress, 10000);
+            if (nftTxsData.status !== "0" && nftTxsData.result) {
+                const arrayWithIndices = nftTxsData.result.map((item, index) => (Object.assign(Object.assign({}, item), { index })));
                 const sortedArray = arrayWithIndices.sort((a, b) => b.value - a.value);
                 const top50Array = sortedArray.slice(0, 50);
                 const originalOrderArray = top50Array.sort((a, b) => b.index - a.index);
@@ -1168,11 +1187,11 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchbarImage },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_5__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } })),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { ref: inputRef, type: "text", style: styles.searchInput, onChange: (e => setSearchInput(e.target.value)), onKeyDown: handleSearch, onClick: () => setSearchInput(""), onFocus: handleFocus, value: searchInput })),
-            (!isError) &&
+            (!loadingError.isError) &&
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo, alt: "Main Logo" }),
-            (isLoading && !isError) &&
+            (loadingError.isLoading && !loadingError.isError) &&
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_6__["default"], { size: 41, thickness: 1, style: { position: 'absolute', right: 12, zIndex: 1, color: "white" } }),
-            isError &&
+            loadingError.isError &&
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.indicationIcon, title: "Refresh limit: 5/sec" },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { fontSize: 30, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } }))),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults, ref: searchResultsRef }, isExpanded && (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.length) > 0 &&
@@ -1409,6 +1428,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const TitleBlock = ({ title }) => {
+    console.log("TitleBlock");
     const styles = {
         container: {
             height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
@@ -1563,8 +1583,10 @@ const App = () => {
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    console.log("coinInfo1", coinInfo);
-    console.log("nftInfo1", nftInfo);
+    console.log("\n\n");
+    console.log("MAIN");
+    // console.log("coinInfo1", coinInfo)
+    // console.log("nftInfo1", nftInfo)
     // todo check render efficiency
     // Create HQ pics
     // Generate good description text with GPT, mention to use arrow keys
@@ -1639,7 +1661,7 @@ const App = () => {
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { title: "Fetching data" }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: "" }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { txVolumeData: [{ date: new Date(), value: 1 }] })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], null)),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomContainer },
             (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,

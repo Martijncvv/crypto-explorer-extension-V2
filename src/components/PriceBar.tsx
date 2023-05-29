@@ -11,7 +11,7 @@ interface PriceBarProps {
 
 const PriceBar: React.FC<PriceBarProps> = ({ allTimeLow, allTimeHigh, price }) => {
     const percentage = ((price - allTimeLow) / (allTimeHigh - allTimeLow)) * 100;
-   const gradientWidth = Math.ceil(306 * (percentage / 100));
+    const gradientWidth = Math.ceil(306 * (percentage / 100));
 
     const styles: { [key: string]: CSSProperties } = {
         container: {

@@ -7,6 +7,7 @@ interface TitleBlockProps {
 }
 
 const TitleBlock: React.FC<TitleBlockProps> = ({title}) => {
+    console.log("TitleBlock")
     const styles: { [key: string]: CSSProperties } = {
         container: {
             height: constants.font_large,
