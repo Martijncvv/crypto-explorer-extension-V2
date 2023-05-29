@@ -192,7 +192,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     useEffect(() => {
         const handleKeyDownSearch = (event) => {
             if (event.key === 'ArrowUp' && isExpanded) {
-                console.log("focusedOptionIndex: ", focusedOptionIndex)
                 if (focusedOptionIndex > 0) {
                     setFocusedOptionIndex((focusedOptionIndex ) => focusedOptionIndex - 1)
                 } else {
@@ -347,9 +346,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 fetchCoinInfo(coinId),
                 fetchPriceHistoryData(coinId, 'usd', 'max'),
             ]);
-            // console.log("COINFETCH: ", coinInfo)
-            console.log(coinInfo)
-            console.log("PRICEFETCH: ", priceMaxHistoryDataRes)
 
             if (!coinInfo) {
                 console.log(`No results for coinInfo ${coinId}`)
@@ -367,16 +363,15 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 prices: priceMaxHistoryDataRes.prices.slice(-31),
                 total_volumes: priceMaxHistoryDataRes.total_volumes.slice(-31)
             });
-            console.log("price30dHistoryData: ")
             coinInfo.priceMaxHistoryData = FormatChartData(priceMaxHistoryDataRes);
-            console.log("priceMaxHistoryData: ")
+
             setCoinInfo(coinInfo)
             setNftInfo(null)
 
             if (coinInfo.asset_platform_id && coinInfo.contract_address) {
                 await delay(1000)
                 const tokenTxChartData = await getTokenTxChartData(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd)
-                console.log("ONCHAINFETCH: ", priceMaxHistoryDataRes)
+
                 if (!tokenTxChartData) {
                     setLoadingError({ isLoading: false, isError: true });
                     console.log(`No results for getTokenTxChartData ${coinId}`)
