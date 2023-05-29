@@ -44,7 +44,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     const [searchInput, setSearchInput] = useState<string>('');
     const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
 
-    console.log("HeaderBlock")
     const styles: { [key: string]: CSSProperties } = {
         headerBlock: {
             display: 'flex',

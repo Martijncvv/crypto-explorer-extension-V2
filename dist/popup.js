@@ -620,7 +620,6 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
     const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ tokens: [], total: 0 });
-    console.log("HeaderBlock");
     const styles = {
         headerBlock: {
             display: 'flex',
@@ -1568,11 +1567,10 @@ const App = () => {
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    console.log("\n\n");
-    console.log("MAIN");
-    console.log("coinInfo1", coinInfo);
-    console.log("nftInfo1", nftInfo);
-    // todo check render efficiency
+    // console.log("\n\n")
+    // console.log("MAIN")
+    // console.log("coinInfo1", coinInfo)
+    // console.log("nftInfo1", nftInfo)
     // Create HQ pics
     // Generate good description text with GPT, mention to use arrow keys
     // Think about improved extension name for better search algo: GPT
