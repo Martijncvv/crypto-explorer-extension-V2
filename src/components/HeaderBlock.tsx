@@ -193,17 +193,27 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     // handle arrow up key press, collapse
     useEffect(() => {
         const handleKeyDown = (event) => {
-            if (event.key === 'ArrowUp') {
-                setIsExpanded(false)
+            if (event.key === 'ArrowUp' && isExpanded) {
+                console.log("focusedOptionIndex: ", focusedOptionIndex)
+                if (focusedOptionIndex > 0) {
+                    setFocusedOptionIndex((focusedOptionIndex ) => focusedOptionIndex - 1)
+                } else {
+                    setIsExpanded(false)
+                }
+
             } else if (event.key === 'ArrowDown') {
-                setIsExpanded(true)
+                if (isExpanded) {
+                    setFocusedOptionIndex((focusedOptionIndex ) => focusedOptionIndex + 1)
+                } else {
+                    setIsExpanded(true)
+                }
             }
         };
         document.addEventListener('keydown', handleKeyDown);
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [focusedOptionIndex]);
 
     // Close the expansion if the click is outside of the search results block
     const handleClickOutside = (event: MouseEvent) => {
