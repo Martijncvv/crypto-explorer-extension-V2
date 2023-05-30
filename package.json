@@ -1,7 +1,7 @@
 {
-	"name": "crypto-explorer-extension-v2",
-	"version": "0.0.1",
-	"description": "Extension to explorer cryptocurrencies and NFTs.",
+	"name": "Crypto Tracker: Blockchain & Crypto Explorer",
+	"version": "2.0.1",
+	"description": "Your Comprehensive Real-Time (on-chain) Cryptocurrency and NFT Explorer.",
 	"scripts": {
 		"start": "webpack --watch --progress --config webpack.dev.js",
 		"build": "webpack --watch --progress --config webpack.prod.js"
@@ -27,7 +27,11 @@
 		"webpack-merge": "^5.8.0"
 	},
 	"dependencies": {
+		"@emotion/react": "^11.11.0",
+		"@emotion/styled": "^11.11.0",
+		"@mui/icons-material": "^5.11.16",
+		"@mui/material": "^5.13.2",
 		"npm-check-updates": "^16.10.9",
-		"recharts": "^2.5.0"
+		"recharts": "^2.6.2"
 	}
 }

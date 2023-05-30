@@ -1,53 +1,44 @@
-import { ICoinGeckoCoinList, ISimpleCoinInfo } from '../models/ICoinInfo'
-import { ICoinGeckoNftList, ISimpleNftInfo } from '../models/INftInfo'
 
 export interface LocalStorageData {
-	coins?: ICoinGeckoCoinList;
-	coinIds?: ISimpleCoinInfo[];
-	nfts?: ICoinGeckoNftList;
-	nftIds?: ISimpleNftInfo[];
+	favouriteToken?: string;
+	selectedToken?: string;
 }
 
-
-export async function setStoredCoinList(coins: ICoinGeckoCoinList): Promise<void> {
+export async function setSelectedToken(token: string): Promise<void> {
+	try {
 	return new Promise((resolve) => {
-		chrome.storage.local.set({ coins }, resolve);
+		chrome.storage.local.set({ selectedToken: token }, () => {
+			resolve();
+		});
 	});
+	} catch (error) {
+		console.log("setSelectedToken error: ", error);
+	}
 }
 
-export async function getStoredCoinList(): Promise<ICoinGeckoCoinList> {
+export async function getSelectedToken(): Promise<string> {
 	return new Promise((resolve) => {
-		chrome.storage.local.get(['coins'], (res: LocalStorageData) => {
-			resolve(res.coins ?? []);
+		chrome.storage.local.get(['selectedToken'], (res: LocalStorageData) => {
+			if (res?.selectedToken) {
+				resolve(res.selectedToken);
+			}
 		});
 	});
 }
 
-export async function setStoredCoins(coinIds: ISimpleCoinInfo[]): Promise<void> {
-	return new Promise((resolve) => {
-		chrome.storage.local.set({ coinIds }, resolve);
-	});
-}
-
-export async function getStoredCoins(): Promise<ISimpleCoinInfo[]> {
-	return new Promise((resolve) => {
-		chrome.storage.local.get(['coinIds'], (res: LocalStorageData) => {
-			resolve(res.coinIds ?? []);
-		});
-	});
-}
-
-// NFTs
-export async function setStoredNftList(nfts: ICoinGeckoNftList): Promise<void> {
-	return new Promise((resolve) => {
-		chrome.storage.local.set({ nfts }, resolve);
-	});
-}
-
-export async function getStoredNftList(): Promise<ICoinGeckoNftList> {
-	return new Promise((resolve) => {
-		chrome.storage.local.get(['nfts'], (res: LocalStorageData) => {
-			resolve(res.nfts ?? []);
-		});
-	});
-}
+// export async function setFavouriteToken(token: string): Promise<void> {
+// 	return new Promise((resolve) => {
+// 		chrome.storage.local.set({ favouriteToken: token }, () => {
+// 			resolve();
+// 		});
+// 	});
+// }
+// export async function getStoredFavouriteToken(): Promise<string> {
+// 	return new Promise((resolve) => {
+// 		chrome.storage.local.get(['favouriteToken'], (res: LocalStorageData) => {
+// 			if (res?.selectedToken) {
+// 				resolve(res.favouriteToken);
+// 			}
+// 		});
+// 	});
+// }
