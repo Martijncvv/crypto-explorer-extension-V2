@@ -16,9 +16,6 @@ import {
     ITrendingCoinList
 } from "../models/ICoinInfo";
 import {IDetailedNftInfo} from "../models/INftInfo";
-import CircularProgress from "@mui/material/CircularProgress";
-import SyncProblemIcon from '@mui/icons-material/SyncProblem';
-import SearchIcon from '@mui/icons-material/Search';
 import {
     getSearchPrefStorage,
     getSearchResultNftAmountStorage,
@@ -26,7 +23,10 @@ import {
     setSelectedTokenStorage
 } from "../utils/storage";
 
-const menuIcon = require( "../static/images/icons/menu-icon.png")
+import CircularProgress from "@mui/material/CircularProgress";
+import SyncProblemIcon from '@mui/icons-material/SyncProblem';
+import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
 
 interface HeaderBlockProps {
     mainLogo: string;
@@ -64,11 +64,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             justifyContent: 'center',
             alignItems: 'center',
             cursor: "pointer",
-        },
-
-        menuIcon: {
-            width: 20,
-            height: 20,
         },
 
         searchbar: {
@@ -691,8 +686,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         <>
             <div style={styles.headerBlock}>
 
-                <div style={styles.menuIconBlock}  title="Coming soon"  onClick={() => setMenuIsOpen(true)}>
-                    <img style={styles.menuIcon} src={menuIcon} alt="Centered" />
+                <div style={styles.menuIconBlock}  title="Menu"  onClick={() => setMenuIsOpen(true)}>
+                  <MenuIcon style={{ fontSize: 24, color: colors.secondary_medium }}/>
                 </div>
 
                     <div  style={{
