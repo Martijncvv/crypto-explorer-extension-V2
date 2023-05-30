@@ -3,25 +3,25 @@ import colors from "../static/colors";
 import constants from "../static/constants";
 import EXCHANGE_ICONS from "../static/exchangeIcons";
 import {amountFormatter} from "../utils/amountFormatter";
+import {stringify} from "npm-check-updates/build/src/lib/version-util";
 // import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 // import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 const ExpandMoreIcon = require( "../static/images/icons/expand-more-icon.png")
 const ExpandLessIcon = require( "../static/images/icons/expand-less-icon.png")
 
-interface Exchange {
-    id: string;
-    image: string;
-    exchangeName: string;
-    tradingVolume: number;
-    quote: string;
-    exchangeURL: string;
+interface ITickers {
+    market: {name: string, identifier: string};
+    converted_volume: {usd: number};
+    target: string;
+    target_coin_id: string;
+    trade_url: string;
 }
 
 interface ExchangeBlockProps {
-    exchanges: Exchange[];
+    tickers: ITickers[];
 }
 
-const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
+const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ tickers }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const [focusedOptionIndex, setFocusedOptionIndex] = useState<number>(-1);
     const toggleExpanded = () => {
@@ -30,8 +30,40 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
 
     useEffect(() => {
         setIsExpanded(false);
-    }, [exchanges]);
+    }, [tickers]);
 
+    const formatExchangeInfo = (tickers) => {
+        if (!tickers) return [];
+
+        const sortedTickers = tickers.sort((a, b) => b.converted_volume.usd - a.converted_volume.usd);
+        const totalExchanges = sortedTickers.length;
+        const top15Tickers = sortedTickers.slice(0, 15); // by volume
+
+        const exchangesFormatted = top15Tickers.map(obj => {
+            let quote = String(obj.target)
+            if (quote.length > 5) {
+                quote = obj.target_coin_id.toUpperCase()
+            }
+            return {
+                id: obj.market.identifier,
+                exchangeName: obj.market.name,
+                tradingVolume: obj.converted_volume.usd,
+                quote,
+                exchangeURL: obj.trade_url
+            };
+        });
+        if ((totalExchanges - top15Tickers.length) > 0) {
+            exchangesFormatted.push({
+                id: "",
+                exchangeName: `${totalExchanges - top15Tickers.length} others`,
+                tradingVolume: 0,
+                quote: '',
+                exchangeURL: ''
+            })
+        }
+
+        return exchangesFormatted
+    }
 
 
     const styles: { [key: string]: CSSProperties } = {
@@ -39,13 +71,10 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
             boxSizing: "border-box",
             width: 306,
             height: 40,
-
-
             display: "flex",
             alignItems: "center",
             padding: constants.default_padding,
             cursor: "pointer",
-
         },
         exchangeWrapperFocused: {
             boxShadow: `inset 0 0 4px 3px rgba(255, 255, 255, 0.5)`,
@@ -111,13 +140,13 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
 
     return (
         <div key={Date.now()} style={{ background: isExpanded ? 'linear-gradient(to bottom, #2F396D 0%, #3E6CB6 80%)' : colors.primary_dark, borderRadius: constants.border_radius }}>
-            {exchanges.map((exchange, index) => (
+            {formatExchangeInfo(tickers).map((exchange, index) => (
                 <div
                     key={exchange.id + exchange.quote + index}
                     style={{
                         ...styles.exchangeWrapper,
                         ...(index === 0 && styles.firstExchange),
-                        ...(index === exchanges.length - 1 && styles.lastExchange),
+                        ...(index === formatExchangeInfo(tickers).length - 1 && styles.lastExchange),
                         display: isExpanded || index === 0 ? "flex" : "none",
                         ...(index === focusedOptionIndex && styles.exchangeWrapperFocused),
                     }}
@@ -153,7 +182,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ exchanges }) => {
                         )}
                     </div>
 
-                    {index === 0 && exchanges.length > 1 && (
+                    {index === 0 && formatExchangeInfo(tickers).length > 1 && (
                         isExpanded ? (
                             <img src={ExpandLessIcon} alt="expand-less-icon" style={styles.arrowIcon} onClick={toggleExpanded} />
                         ) : (

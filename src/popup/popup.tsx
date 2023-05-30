@@ -13,6 +13,7 @@ import {IDetailedCoinInfo} from "../models/ICoinInfo";
 import {IDetailedNftInfo} from "../models/INftInfo";
 import TickerBlock from "../components/TickerBlock";
 import {amountFormatter, numberFormatter, percentageFormatter} from "../utils/amountFormatter";
+import OverlayMenu from "../components/OverlayMenu";
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 
 const bitcoinIcon = require( "../static/images/icons/bitcoin-icon.png")
@@ -52,21 +53,22 @@ const App: React.FC = () => {
 	const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>()
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
+	const [menuIsOpen, setMenuIsOpen] = useState(true);
+
+
 	// console.log("\n\n")
 	// console.log("MAIN")
 	// console.log("coinInfo1", coinInfo)
 	// console.log("nftInfo1", nftInfo)
 
-	// Create HQ pics
-	// Generate good description text with GPT, mention to use arrow keys
-	// Think about improved extension name for better search algo: GPT
 
-	// splash screen
-	// improve rendering efficiency
+
+	// splash screen/ new icon
 	// keep highest and lowest price on max chart
 	// bring formatExchangeInfo function to exchangeBlock component
 	// drag and zoom chart functionality
 	// fix all anys
+	// new icon
 	// add favourite/ home opening token
 	// join a group via name/ code?
 	// check watchlist etc.
@@ -83,52 +85,18 @@ const App: React.FC = () => {
 	//
 	// Debounce or Throttle Event Handlers: If you're dealing with events that fire rapidly (like scrolling or keyboard events), you might want to limit how often your component re-renders in response to those events.
 
-	const formatExchangeInfo = (tickers) => {
-		if (!tickers) return [];
-
-		const sortedTickers = tickers.sort((a, b) => b.converted_volume.usd - a.converted_volume.usd);
-		const totalExchanges = sortedTickers.length;
-		const top15Tickers = sortedTickers.slice(0, 15); // by volume
-
-		const exchangesFormatted = top15Tickers.map(obj => {
-			let quote = String(obj.target)
-			if (quote.length > 5) {
-				quote = obj.target_coin_id.toUpperCase()
-			}
-			return {
-				image: redditIcon,
-				id: obj.market.identifier,
-				exchangeName: obj.market.name,
-				tradingVolume: obj.converted_volume.usd,
-				quote,
-				exchangeURL: obj.trade_url
-			};
-		});
-		if ((totalExchanges - top15Tickers.length) > 0) {
-			exchangesFormatted.push({
-				image: "",
-				id: "",
-				exchangeName: `${totalExchanges - top15Tickers.length} others`,
-				tradingVolume: 0,
-				quote: '',
-				exchangeURL: ''
-			})
-		}
-
-		return exchangesFormatted
-	}
-
-	if (coinInfo?.tickers)	formatExchangeInfo(coinInfo.tickers)
 
 
 	return (
 		<>
+			<OverlayMenu menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
 			<div style={styles.topContainer}>
 				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : nftInfo?.image?.small ?  nftInfo.image.small : bitcoinIcon}
 							 setCoinInfo={setCoinInfo}
 							 setNftInfo={setNftInfo}
 							 setTxVolumeChartData={setTxVolumeChartData}
 							 setTokenTxsChartData={setTokenTxsChartData}
+							 setMenuIsOpen={setMenuIsOpen}
 				/>
 			</div>
 			{coinInfo?.name &&
@@ -172,7 +140,7 @@ const App: React.FC = () => {
 							<ValueBlock title="Market Cap" tooltipTitle="# Rank" mainValue={ coinInfo.market_data?.market_cap.usd ? `$${amountFormatter(coinInfo.market_data?.market_cap.usd)}` : "-"}  secondaryValue={coinInfo.market_cap_rank ? `#${coinInfo.market_cap_rank}` : "/ -"}/>
 						</div>
 						<div  style={styles.bottomMargin}>
-							<ExchangeBlock exchanges={formatExchangeInfo(coinInfo.tickers)} />
+							<ExchangeBlock tickers={coinInfo.tickers} />
 						</div>
 						<div  style={styles.bottomMargin}>
 							<ExpandableTextField text={coinInfo.description?.en} />

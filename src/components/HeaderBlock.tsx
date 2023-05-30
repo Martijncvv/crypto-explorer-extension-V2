@@ -29,9 +29,10 @@ interface HeaderBlockProps {
     setNftInfo: (nftInfo: IDetailedNftInfo) => void;
     setTxVolumeChartData: (txVolumeChartData: any) => void;
     setTokenTxsChartData: (tokenTxsChartData: any) => void;
+    setMenuIsOpen: (menuIsOpen: any) => void;
 }
 
-const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData }) => {
+const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData, setMenuIsOpen }) => {
     const searchResultsRef = useRef(null);
     const inputRef = useRef(null);
     const [loadingError, setLoadingError] = useState<{ isLoading: boolean, isError: boolean }>({
@@ -502,9 +503,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         setIsExpanded(false);
     }
 
-    const handleMenuClick = async () => {
-        chrome.tabs.create({ url: "https://twitter.com/Marty_cFly", active: false })
-    }
+
 
 
     async function getNftTxChartData(platformId, contractAddress): Promise<any> {
@@ -641,7 +640,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         <>
             <div style={styles.headerBlock}>
 
-                <div style={styles.menuIconBlock}  title="Coming soon"  onClick={() => handleMenuClick()}>
+                <div style={styles.menuIconBlock}  title="Coming soon"  onClick={() => setMenuIsOpen(true)}>
                     <img style={styles.menuIcon} src={menuIcon} alt="Centered" />
                 </div>
 
