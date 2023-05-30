@@ -106,8 +106,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
             color: colors.white_medium,
         },
         activePrefButton: {
-                // backgroundColor: colors.primary_medium,
-            backgroundImage: 'radial-gradient(#5565b0, #344183)', // Add radial gradient background
+            backgroundImage: 'radial-gradient(#5565b0, #344183)',
             boxShadow: '0 0 8px rgba(85, 101, 176, 0.8)',
         } ,
         togglePrefButtonIcon: {

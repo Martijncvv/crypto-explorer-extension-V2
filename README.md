@@ -53,6 +53,11 @@ I would like to thank CoinGecko and Etherscan for providing real-time cryptocurr
 
 # Previews
 
+### Figma design
+
+<p align="center">
+  <img src="preview-images/figma-design.png" alt="Figma design" width="800" >
+</p>
 ### BTC
 
 <p align="center">

@@ -168,12 +168,11 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     };
 
     const checkStorage = async () => {
-        const selectedTokenStorage = await getSelectedTokenStorage();
-        setSearchInput((searchInput) => (selectedTokenStorage || searchInput));
-
+        const selectedTokenStorage = await getSelectedTokenStorage()
         if (selectedTokenStorage) {
-            await searchCoinNames(selectedTokenStorage);
-            setSelectedTokenStorage('');
+            setSearchInput(selectedTokenStorage)
+            searchCoinNames(selectedTokenStorage)
+            setSelectedTokenStorage("")
         }
     }
 
