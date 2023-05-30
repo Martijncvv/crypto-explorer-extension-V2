@@ -169,7 +169,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                     <p style={{ margin: 0, marginBottom: '6px' }}>{`${formattedDate}`}</p>
                     <p style={{ margin: 0, marginBottom: '6px',}}>{`${numberFormatter(amount)}`}</p>
                     <p style={{ margin: 0, marginBottom: '6px' }}>{`$${amountFormatter(usdValue)}`}</p>
-                    <p style={{ margin: 0, marginBottom: '3px', color: colors.accent_medium, textTransform: 'capitalize'  }}>{`Top 50 / Recent 10k ${native} txs`}</p>
+                    <p style={{ margin: 0, marginBottom: '3px', color: colors.accent_medium, textTransform: 'capitalize'  }}>{`Top 50/ 10k ${native} txs`}</p>
                 </div>
             );
         }

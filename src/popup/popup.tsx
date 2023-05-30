@@ -53,15 +53,12 @@ const App: React.FC = () => {
 	const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>()
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
-	const [menuIsOpen, setMenuIsOpen] = useState(true);
-
-
+	const [menuIsOpen, setMenuIsOpen] = useState(false);
+	
 	// console.log("\n\n")
 	// console.log("MAIN")
 	// console.log("coinInfo1", coinInfo)
 	// console.log("nftInfo1", nftInfo)
-
-
 
 	// splash screen/ new icon
 	// keep highest and lowest price on max chart
