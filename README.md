@@ -7,6 +7,8 @@ Features
 - Coins and Tokens: Gain access to real-time price and coin-specific data. Leverage our On-chain Whale Finder to track the top 50 transactions out of the last 10,000 for any given coin.
 - Non-Fungible Tokens (NFTs): Get your hands on general price information and daily on-chain transaction volumes for various NFTs.
   Comprehensive Information
+- Pick your search priority: Focus on coins or NFTs.
+- Community metrics: Get an understanding of each website's impact and reach with follower sizes.
 - Wide On-chain Insights Support: The explorer supports a variety of blockchain networks (9) including Arbitrum, Avalanche, Binance Smart Chain, Celo, Cronos, Ethereum, Fantom, Optimism, and Polygon. This ensures you get extensive and diverse crypto information, irrespective of the network.
 - Easy Navigation: Utilize Arrow and Tab keys to switch between different options and view detailed charts. For even easier usability, you can pin the extension icon to your bookmark bar.
 
@@ -51,6 +53,11 @@ I would like to thank CoinGecko and Etherscan for providing real-time cryptocurr
 
 # Previews
 
+### Figma design
+
+<p align="center">
+  <img src="preview-images/figma-design.png" alt="Figma design" width="800" >
+</p>
 ### BTC
 
 <p align="center">

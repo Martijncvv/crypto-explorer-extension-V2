@@ -1,1 +1,220 @@
-(()=>{"use strict";document.addEventListener("selectionchange",(function(){return n=this,e=void 0,o=function*(){let n=window.getSelection().toString().trim();(n.includes("$")||n.includes("#"))&&(n=n.replace(/[#$?!.,:"']/g,"").toLowerCase(),""!==n&&n.length<7&&function(n){var e,t,o,c;e=this,t=void 0,c=function*(){try{return new Promise((e=>{chrome.storage.local.set({selectedToken:n},(()=>{e()}))}))}catch(n){console.log("setSelectedToken error: ",n)}},new((o=void 0)||(o=Promise))((function(n,i){function r(n){try{a(c.next(n))}catch(n){i(n)}}function u(n){try{a(c.throw(n))}catch(n){i(n)}}function a(e){var t;e.done?n(e.value):(t=e.value,t instanceof o?t:new o((function(n){n(t)}))).then(r,u)}a((c=c.apply(e,t||[])).next())}))}(n))},new((t=void 0)||(t=Promise))((function(c,i){function r(n){try{a(o.next(n))}catch(n){i(n)}}function u(n){try{a(o.throw(n))}catch(n){i(n)}}function a(n){var e;n.done?c(n.value):(e=n.value,e instanceof t?e:new t((function(n){n(e)}))).then(r,u)}a((o=o.apply(n,e||[])).next())}));var n,e,t,o}))})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/utils/storage.ts":
+/*!******************************!*\
+  !*** ./src/utils/storage.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getSearchPrefStorage": () => (/* binding */ getSearchPrefStorage),
+/* harmony export */   "getSearchResultNftAmountStorage": () => (/* binding */ getSearchResultNftAmountStorage),
+/* harmony export */   "getSelectedTokenStorage": () => (/* binding */ getSelectedTokenStorage),
+/* harmony export */   "setSearchPrefStorage": () => (/* binding */ setSearchPrefStorage),
+/* harmony export */   "setSearchResultNftAmountStorage": () => (/* binding */ setSearchResultNftAmountStorage),
+/* harmony export */   "setSelectedTokenStorage": () => (/* binding */ setSelectedTokenStorage)
+/* harmony export */ });
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+// SETTERS
+function setSelectedTokenStorage(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.set({ selectedToken: token }, () => {
+                    resolve();
+                });
+            });
+        }
+        catch (error) {
+            console.log("setSelectedToken error: ", error);
+        }
+    });
+}
+function setSearchPrefStorage(searchPref) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.set({ searchPref: searchPref }, () => {
+                    resolve();
+                });
+            });
+        }
+        catch (error) {
+            console.log("setSearchPrefStorage error: ", error);
+        }
+    });
+}
+function setSearchResultNftAmountStorage(searchResultNftAmount) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.set({ searchResultNftAmount }, () => {
+                    resolve();
+                });
+            });
+        }
+        catch (error) {
+            console.log("setSearchResultNftAmountStorage error: ", error);
+        }
+    });
+}
+// GETTERS
+function getSelectedTokenStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['selectedToken'], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.selectedToken) {
+                    resolve(res.selectedToken);
+                }
+            });
+        });
+    });
+}
+function getSearchPrefStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['searchPref'], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.searchPref) {
+                    resolve(res.searchPref);
+                }
+            });
+        });
+    });
+}
+function getSearchResultNftAmountStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['searchResultNftAmount'], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.searchResultNftAmount) {
+                    resolve(res.searchResultNftAmount);
+                }
+            });
+        });
+    });
+}
+// export async function setFavouriteToken(token: string): Promise<void> {
+// 	return new Promise((resolve) => {
+// 		chrome.storage.local.set({ favouriteToken: token }, () => {
+// 			resolve();
+// 		});
+// 	});
+// }
+// export async function getStoredFavouriteToken(): Promise<string> {
+// 	return new Promise((resolve) => {
+// 		chrome.storage.local.get(['favouriteToken'], (res: LocalStorageData) => {
+// 			if (res?.selectedToken) {
+// 				resolve(res.favouriteToken);
+// 			}
+// 		});
+// 	});
+// }
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+/*!********************************************!*\
+  !*** ./src/contentScript/contentScript.ts ***!
+  \********************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+// Listen for the 'selectionchange' event to process the selected text
+
+document.addEventListener('selectionchange', handleSelection);
+function handleSelection() {
+    var _a, _b, _c;
+    return __awaiter(this, void 0, void 0, function* () {
+        let selectedTicker = (_b = (_a = window
+            .getSelection()) === null || _a === void 0 ? void 0 : _a.toString()) === null || _b === void 0 ? void 0 : _b.trim();
+        if (selectedTicker.includes('$') || selectedTicker.includes('#')) {
+            selectedTicker = (_c = selectedTicker === null || selectedTicker === void 0 ? void 0 : selectedTicker.replace(/[#$?!.,:"']/g, '')) === null || _c === void 0 ? void 0 : _c.toLowerCase();
+            if (selectedTicker !== '' && selectedTicker !== null && selectedTicker.length < 7) {
+                (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.setSelectedTokenStorage)(selectedTicker);
+            }
+        }
+    });
+}
+
+})();
+
+/******/ })()
+;
+//# sourceMappingURL=contentScript.js.map

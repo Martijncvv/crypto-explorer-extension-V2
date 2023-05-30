@@ -19,7 +19,12 @@ import {IDetailedNftInfo} from "../models/INftInfo";
 import CircularProgress from "@mui/material/CircularProgress";
 import SyncProblemIcon from '@mui/icons-material/SyncProblem';
 import SearchIcon from '@mui/icons-material/Search';
-import {getSelectedToken, setSelectedToken} from "../utils/storage";
+import {
+    getSearchPrefStorage,
+    getSearchResultNftAmountStorage,
+    getSelectedTokenStorage,
+    setSelectedTokenStorage
+} from "../utils/storage";
 
 const menuIcon = require( "../static/images/icons/menu-icon.png")
 
@@ -29,9 +34,10 @@ interface HeaderBlockProps {
     setNftInfo: (nftInfo: IDetailedNftInfo) => void;
     setTxVolumeChartData: (txVolumeChartData: any) => void;
     setTokenTxsChartData: (tokenTxsChartData: any) => void;
+    setMenuIsOpen: (menuIsOpen: any) => void;
 }
 
-const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData }) => {
+const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData, setMenuIsOpen }) => {
     const searchResultsRef = useRef(null);
     const inputRef = useRef(null);
     const [loadingError, setLoadingError] = useState<{ isLoading: boolean, isError: boolean }>({
@@ -40,8 +46,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
     });
     const [focusedOptionIndex, setFocusedOptionIndex] = useState<number>(-1);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
-    const [searchInput, setSearchInput] = useState<string>('');
     const [displayResults, setDisplayResults] = useState<ISearchOptions>({tokens: [], total: 0});
+
+    const [searchInput, setSearchInput] = useState<string>('');
 
     const styles: { [key: string]: CSSProperties } = {
         headerBlock: {
@@ -160,33 +167,25 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
 
     };
 
-    const checkSelectedTokenStorage = async () => {
-        const selectedToken = await getSelectedToken()
-        if (selectedToken) {
-            setSearchInput(selectedToken)
-            searchCoinNames(selectedToken)
-            setSelectedToken("")
+    const checkStorage = async () => {
+        const selectedTokenStorage = await getSelectedTokenStorage()
+        if (selectedTokenStorage) {
+            setSearchInput(selectedTokenStorage)
+            searchCoinNames(selectedTokenStorage)
+            setSelectedTokenStorage("")
         }
     }
-
-    // functionality for clicking outside of the search results block
-    useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
 
     // get detailed coin info and trending info on startup
     useEffect(() => {
         getTrendingCoins()
-        checkSelectedTokenStorage()
+        checkStorage()
         fetchDetailedTokenInfo('bitcoin');
         if (inputRef.current) {
             inputRef.current.focus();
         }
     }, []);
+
 
     // handle arrow up key press, collapse
     useEffect(() => {
@@ -211,6 +210,14 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             document.removeEventListener('keydown', handleKeyDownSearch);
         };
     }, [focusedOptionIndex]);
+
+    // functionality for clicking outside of the search results block
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     // Close the expansion if the click is outside of the search results block
     const handleClickOutside = (event: MouseEvent) => {
@@ -262,15 +269,19 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     marketCapRank: '',
                     nft: false
                 }], total: 0});
-                setSearchInput("")
+
+                setSearchInput('');
+
                 return
             }
-
-            let displayNrOfNfts: number = Math.min(searchResults.nfts.length, 3);
+            const nrOfNfts = await getSearchResultNftAmountStorage() || 3
+            let displayNrOfNfts: number = Math.min(searchResults.nfts.length, nrOfNfts);
             let displayNrOfCoins: number = 11 - displayNrOfNfts
 
-            // SET COINS
+            const searchpreference = await getSearchPrefStorage() || 'coins'
+        if (searchpreference === "coins") {
             let searchFormat:ISearchOptions = {tokens: [], total: 0}
+            // SET COINS
             searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
                 searchFormat.tokens.push(
                     {
@@ -296,17 +307,58 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             })
             searchFormat.total = searchResults.coins.length + searchResults.nfts.length
             if (searchFormat.total > 11) {
-            searchFormat.tokens.push(
-                {
-                    id: '',
-                    name: `${searchFormat.total - 11} others`,
-                    image: '',
-                    marketCapRank: '',
-                    nft: true,
-                }
-            )
+                searchFormat.tokens.push(
+                    {
+                        id: '',
+                        name: `${searchFormat.total - 11} others`,
+                        image: '',
+                        marketCapRank: '',
+                        nft: true,
+                    }
+                )
             }
             setDisplayResults(searchFormat);
+        } else {
+            let searchFormat:ISearchOptions = {tokens: [], total: 0}
+            // SET NFTs
+            searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
+                searchFormat.tokens.push(
+                    {
+                        id: nft.id,
+                        name: nft.name,
+                        image: nft.thumb,
+                        marketCapRank: 'NFT',
+                        nft: true,
+                    }
+                )
+            })
+            // SET COINS
+            searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
+                searchFormat.tokens.push(
+                    {
+                        id: coin.id,
+                        name: coin.name,
+                        image: coin.large,
+                        marketCapRank: coin.market_cap_rank,
+                        nft: false,
+                    }
+                )
+            })
+
+            searchFormat.total = searchResults.coins.length + searchResults.nfts.length
+            if (searchFormat.total > 11) {
+                searchFormat.tokens.push(
+                    {
+                        id: '',
+                        name: `${searchFormat.total - 11} others`,
+                        image: '',
+                        marketCapRank: '',
+                        nft: true,
+                    }
+                )
+            }
+            setDisplayResults(searchFormat);
+        }
 
         } catch (error) {
             console.error("handleSearch: Error searching for coins:", error);
@@ -317,7 +369,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     marketCapRank: '',
                     nft: false
                 }], total: 0});
-            setSearchInput("")
+            setSearchInput('');
         }
     }
 
@@ -502,9 +554,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         setIsExpanded(false);
     }
 
-    const handleMenuClick = async () => {
-        chrome.tabs.create({ url: "https://twitter.com/Marty_cFly", active: false })
-    }
+
 
 
     async function getNftTxChartData(platformId, contractAddress): Promise<any> {
@@ -641,7 +691,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         <>
             <div style={styles.headerBlock}>
 
-                <div style={styles.menuIconBlock}  title="Coming soon"  onClick={() => handleMenuClick()}>
+                <div style={styles.menuIconBlock}  title="Coming soon"  onClick={() => setMenuIsOpen(true)}>
                     <img style={styles.menuIcon} src={menuIcon} alt="Centered" />
                 </div>
 
@@ -654,16 +704,20 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                         <div style={styles.searchbarImage}>
                             <SearchIcon style={{ fontSize: 24, color: colors.secondary_medium }}/>
                         </div>
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                style={styles.searchInput}
-                                onChange={(e => setSearchInput(e.target.value))}
-                                onKeyDown={handleSearch}
-                                onClick={() => setSearchInput("")}
-                                onFocus={handleFocus}
-                                value={searchInput}
-                            />
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            style={styles.searchInput}
+                            onChange={(e) =>
+                                setSearchInput(
+                                   e.target.value
+                                )
+                            }
+                            onKeyDown={handleSearch}
+                            onClick={() =>                                setSearchInput(                                    ""                               )}
+                            onFocus={handleFocus}
+                            value={searchInput}
+                        />
                         </div>
                 {(!loadingError.isError) &&
                     <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
