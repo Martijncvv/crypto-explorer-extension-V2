@@ -1828,6 +1828,7 @@ const App = () => {
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [menuIsOpen, setMenuIsOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+    // todo add to favourite add social blocks
     // console.log("\n\n")
     // console.log("MAIN")
     // console.log("coinInfo1", coinInfo)

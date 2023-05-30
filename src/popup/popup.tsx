@@ -54,7 +54,8 @@ const App: React.FC = () => {
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
 	const [menuIsOpen, setMenuIsOpen] = useState(false);
-	
+
+	// todo add to favourite add social blocks
 	// console.log("\n\n")
 	// console.log("MAIN")
 	// console.log("coinInfo1", coinInfo)
