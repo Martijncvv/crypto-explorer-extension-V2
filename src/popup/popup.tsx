@@ -146,7 +146,7 @@ const App: React.FC = () => {
 							{coinInfo.links?.blockchain_site[0] &&
 								<SocialBlock image={blockchainIcon}  link={coinInfo.links?.blockchain_site[0]} />
 							}
-							{coinInfo.id &&
+							{coinInfo?.id &&
 								<SocialBlock image={coingeckoIcon} title={"Coingecko watchlist portfolios"} mainValue={coinInfo.watchlist_portfolio_users} link={`https://www.coingecko.com/en/coins/${coinInfo.id}`}  />
 							}
 							{coinInfo?.links?.twitter_screen_name &&

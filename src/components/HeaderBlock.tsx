@@ -171,10 +171,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             setSelectedTokenStorage("")
         } else {
             const homeCoinStorage = await getHomeCoinStorage()
-            if (homeCoinStorage.id && homeCoinStorage.nft) {
+            if (homeCoinStorage?.id && homeCoinStorage?.nft) {
                 fetchDetailedNftInfo(homeCoinStorage.id);
             }
-            else if (homeCoinStorage.id) {
+            else if (homeCoinStorage?.id) {
                 fetchDetailedTokenInfo(homeCoinStorage.id);
             }
             else {

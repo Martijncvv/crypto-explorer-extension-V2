@@ -166,7 +166,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
     }, []);
 
     const handleHomePress = async () => {
-        if (homeCoin.id === coinInfo?.id || homeCoin.id === nftInfo?.id) {
+        if (homeCoin?.id === coinInfo?.id || homeCoin?.id === nftInfo?.id) {
             setHomeCoinStorage({id: '', nft: false})
             setHomeCoin({id: '', nft: false})
         } else if (coinInfo) {
