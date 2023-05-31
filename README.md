@@ -1,4 +1,4 @@
-# Cryptocurrency Explorer Chrome Extension V2
+# Crypto Tracker: Blockchain & Crypto Explorer
 Discover a world of in-depth, real-time (on-chain) information about your favorite cryptocurrencies and NFTs with the Crypto Tracker. This easy-to-use tool simplifies cryptocurrency data, giving you key insights at the tip of your fingers, all from your browser at any page.
 
 Features
@@ -58,19 +58,20 @@ I would like to thank CoinGecko and Etherscan for providing real-time cryptocurr
 <p align="center">
   <img src="preview-images/figma-design.png" alt="Figma design" width="800" >
 </p>
-### BTC
+
+### BTC main info
 
 <p align="center">
   <img src="preview-images/btc_1280-800.jpg" alt="Bitcoin USD" width="800" >
 </p>
 
-### Doge
+### Doge price chart
 
 <p align="center">
   <img src="preview-images/doge-1280-800.jpg" alt="Doge USD" width="800" >
 </p>
 
-### Shiba 
+### Shiba exchanges
 <p align="center">
   <img src="preview-images/shib-1280-800.jpg" alt="Shib USD" width="800" >
 </p>
