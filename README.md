@@ -18,13 +18,13 @@ Features
 - b. Open the extension via the menu icon or hotkeys and search for a coin or NFT.
 - Use Arrow and Tab keys to easily switch between options and charts. 
 - Check the top trending searched coins.
-- 
+
 ### Coins and Tokens
 - Check general price and coin information.
 - On-chain Whale Finder: Follow the top 50 transactions of a coin of the last 10000 transactions.
 ### NFTs
 - Check general price and NFT information.
-- NFT, Check on-chain transaction volumes by day
+- Check on-chain transaction volumes by day.
 
 ### On-chain insights support
 - Arbitrum
