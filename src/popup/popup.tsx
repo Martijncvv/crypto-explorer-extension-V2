@@ -64,11 +64,8 @@ const App: React.FC = () => {
 
 	// splash screen/ new icon
 	// keep highest and lowest price on max chart
-	// bring formatExchangeInfo function to exchangeBlock component
 	// drag and zoom chart functionality
 	// fix all anys
-	// new icon
-	// add favourite/ home opening token
 	// join a group via name/ code?
 	// check watchlist etc.
 

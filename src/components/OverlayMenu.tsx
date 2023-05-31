@@ -31,7 +31,6 @@ interface OverlayMenuProps {
     nftInfo?:IDetailedNftInfo
 }
 
-// todo favo coin
 // todo # onchain txs
 
 const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coinInfo, nftInfo}) => {
@@ -166,21 +165,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
         checkStorage()
     }, []);
 
-    // todo check this error during homepress clicking
-    // T chrome-extension://dhclcipmlgplemngimcjaagnhmahdaak/missing_large.png net::ERR_FILE_NOT_FOUND
-    // Image (async)
-    // commitMount @ react-dom.development.js:11038
-    // commitLayoutEffectOnFiber @ react-dom.development.js:23407
-    // commitLayoutMountEffects_complete @ react-dom.development.js:24688
-    // commitLayoutEffects_begin @ react-dom.development.js:24674
-    // commitLayoutEffects @ react-dom.development.js:24612
-    // commitRootImpl @ react-dom.development.js:26823
-    // commitRoot @ react-dom.development.js:26682
-    // performSyncWorkOnRoot @ react-dom.development.js:26117
-    // flushSyncCallbacks @ react-dom.development.js:12042
-    // (anonymous) @ react-dom.development.js:25651
-
-
     const handleHomePress = async () => {
         if (homeCoin.id === coinInfo?.id || homeCoin.id === nftInfo?.id) {
             setHomeCoinStorage({id: '', nft: false})
@@ -193,8 +177,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
             setHomeCoinStorage({id: nftInfo.id, nft: true})
             setHomeCoin({id: nftInfo.id, nft: true})
         }
-        console.log("homeCoin1: ", homeCoin)
-        console.log("coinInfo?.id1: ", coinInfo?.id)
     }
 
     return (
@@ -206,8 +188,23 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
                     </div>
                     {menuIsOpen &&
                         <>
+                            <div style={styles.sectionHeader}>Homepage</div>
+                            <div style={styles.explanationSubtext}>{`${homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ? 'Unset' : 'Set'} current startup coin`}</div>
+                                <ToggleButton
+                                    value="home"
+                                    style={styles.togglePrefButton}
+                                    onClick={handleHomePress}
+                                >
+                                    {homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ?
+                                        <HomeRoundedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />
+                                        :
+                                        <HomeOutlinedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />
+                                    }
+                                </ToggleButton>
+
+
                             <div style={styles.sectionHeader} >Search Priority</div>
-                            <div style={styles.explanationSubtext}>Show Coins/ NFTs first</div>
+                            <div style={styles.explanationSubtext}>Show Coins/ Nfts first</div>
                             <ToggleButtonGroup
                                 size="small"
                                 color="primary"
@@ -233,11 +230,11 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
 
 
                             <div style={styles.sectionHeader}>Search Results</div>
-                            <div style={styles.explanationSubtext}>{`Nr of NFTs of results (${searchResultNftAmount}/11)`}</div>
+                            <div style={styles.explanationSubtext}>{`Max number of Nfts from 11 results (${searchResultNftAmount})`}</div>
                             <Box sx={{ width: 180 }}>
                                     <Slider
                                         size="small"
-                                        aria-label="Max NFTs out of 11 search results"
+                                        aria-label="Max Nfts out of 11 search results"
                                         value={searchResultNftAmount}
                                         valueLabelDisplay="auto"
                                         onChange={(event, newTokenNftRatio) => {
@@ -248,8 +245,8 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
                                             }
                                         }}
                                         step={1}
-                                        marks={[{ value: 3, label:  <span style={styles.sliderMark}>3 NFTs</span> }, { value: 9, label:  <span style={styles.sliderMark}>9 NFTs</span> }]}
-                                        min={3}
+                                        marks={[{ value: 2, label:  <span style={styles.sliderMark}>3 Nfts</span> }, { value: 9, label:  <span style={styles.sliderMark}>9 Nfts</span> }]}
+                                        min={2}
                                         max={9}
                                         style={{ color: colors.white_medium }}
                                     />
@@ -257,13 +254,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
 
                             <div style={styles.sectionHeader}>Contact Me!</div>
                             <div style={styles.explanationSubtext}>Any feature requests or ideas</div>
-
-                            <ToggleButtonGroup
-                                size="small"
-                                color="primary"
-                                exclusive
-                                aria-label="questionButton"
-                            >
                                 <ToggleButton
                                     value="question"
                                     style={styles.togglePrefButton}
@@ -271,29 +261,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
                                 >
                                     <QuestionAnswerIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }}/>
                                 </ToggleButton>
-                            </ToggleButtonGroup>
 
-                            <div style={styles.sectionHeader}>Homepage</div>
-                            <div style={styles.explanationSubtext}>Set coin/ NFT as startup screen</div>
-                            <ToggleButtonGroup
-                                size="small"
-                                color="primary"
-                                exclusive // todo what is this for?
-                                aria-label="homepressButton"
-                            >
-                                <ToggleButton
-                                    value="home"
-                                    style={styles.togglePrefButton}
-                                    onClick={handleHomePress}
-                                >
-                                    {homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ?
-                                        <HomeRoundedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />
-                                        :
-                                        <HomeOutlinedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />
-                                    }
-                                </ToggleButton>
-
-                            </ToggleButtonGroup>
                         </>
                     }
                 </div>

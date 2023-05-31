@@ -17,6 +17,7 @@ import {
 } from "../models/ICoinInfo";
 import {IDetailedNftInfo} from "../models/INftInfo";
 import {
+    getHomeCoinStorage,
     getSearchPrefStorage,
     getSearchResultNftAmountStorage,
     getSelectedTokenStorage,
@@ -168,14 +169,25 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             setSearchInput(selectedTokenStorage)
             searchCoinNames(selectedTokenStorage)
             setSelectedTokenStorage("")
+        } else {
+            const homeCoinStorage = await getHomeCoinStorage()
+            if (homeCoinStorage.id && homeCoinStorage.nft) {
+                fetchDetailedNftInfo(homeCoinStorage.id);
+            }
+            else if (homeCoinStorage.id) {
+                fetchDetailedTokenInfo(homeCoinStorage.id);
+            }
+            else {
+                fetchDetailedTokenInfo('bitcoin');
+            }
         }
     }
 
     // get detailed coin info and trending info on startup
     useEffect(() => {
-        getTrendingCoins()
         checkStorage()
-        fetchDetailedTokenInfo('bitcoin');
+        getTrendingCoins()
+
         if (inputRef.current) {
             inputRef.current.focus();
         }
@@ -602,7 +614,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     result[dateString] = { date: date, volume: 1 };
                 }
                 return result;
-            }, {})).map(([dateString, { date, volume }]) => ({ date, volume }));
+            }, {})).map(([, { date, volume }]) => ({ date, volume }));
             return nftTxsChartFormat.reverse();
         }
         console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
@@ -715,7 +727,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                         />
                         </div>
                 {(!loadingError.isError) &&
-                    <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
+                    <img style={styles.mainLogo} src={mainLogo || "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256"} alt="Main Logo" />
                 }
                 {(loadingError.isLoading && !loadingError.isError) &&
                             <CircularProgress size={41} thickness={1} style={{position: 'absolute', right: 12, zIndex: 1, color: "white" }}/>
@@ -752,7 +764,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                                 >
                                     {tokenInfo.image ?
                                     <img
-                                        src={tokenInfo.image}
+                                        src={tokenInfo.image || "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256"}
                                         alt={tokenInfo.name}
                                         style={styles.coinImage}
                                     /> :

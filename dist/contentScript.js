@@ -71,40 +71,6 @@ function setSearchResultNftAmountStorage(searchResultNftAmount) {
         }
     });
 }
-// GETTERS
-function getSelectedTokenStorage() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.storage.local.get(['selectedToken'], (res) => {
-                if (res === null || res === void 0 ? void 0 : res.selectedToken) {
-                    resolve(res.selectedToken);
-                }
-            });
-        });
-    });
-}
-function getSearchPrefStorage() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.storage.local.get(['searchPref'], (res) => {
-                if (res === null || res === void 0 ? void 0 : res.searchPref) {
-                    resolve(res.searchPref);
-                }
-            });
-        });
-    });
-}
-function getSearchResultNftAmountStorage() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.storage.local.get(['searchResultNftAmount'], (res) => {
-                if (res === null || res === void 0 ? void 0 : res.searchResultNftAmount) {
-                    resolve(res.searchResultNftAmount);
-                }
-            });
-        });
-    });
-}
 function setHomeCoinStorage(homeCoinData) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -119,12 +85,58 @@ function setHomeCoinStorage(homeCoinData) {
         }
     });
 }
+// GETTERS
+function getSelectedTokenStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['selectedToken'], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.selectedToken) {
+                    resolve(res.selectedToken);
+                }
+                else {
+                    resolve(null);
+                }
+            });
+        });
+    });
+}
+function getSearchPrefStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['searchPref'], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.searchPref) {
+                    resolve(res.searchPref);
+                }
+                else {
+                    resolve(null);
+                }
+            });
+        });
+    });
+}
+function getSearchResultNftAmountStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['searchResultNftAmount'], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.searchResultNftAmount) {
+                    resolve(res.searchResultNftAmount);
+                }
+                else {
+                    resolve(null);
+                }
+            });
+        });
+    });
+}
 function getHomeCoinStorage() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
             chrome.storage.local.get(['homeCoinData'], (res) => {
                 if (res === null || res === void 0 ? void 0 : res.homeCoinData) {
                     resolve(res.homeCoinData);
+                }
+                else {
+                    resolve(null);
                 }
             });
         });
