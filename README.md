@@ -1,7 +1,7 @@
 # Crypto Tracker: Blockchain & Crypto Explorer
 Discover a world of in-depth, real-time (on-chain) information about your favorite cryptocurrencies and NFTs with the Crypto Tracker. This easy-to-use tool simplifies cryptocurrency data, giving you key insights at the tip of your fingers, all from your browser at any page.
 
-Features
+### Features
 - Hotkeys Integration: Simply select a ticker (BTC, ETH, DOGE) and press Ctrl+Shift+DownKey (or Command+Shift+DownKey for Mac) to display the related information instantly. You can also access the extension via the menu icon or hotkeys.
 - Trending Coins: Keep up-to-date with the market by checking the top trending searched coins.
 - Coins and Tokens: Gain access to real-time price and coin-specific data. Leverage our On-chain Whale Finder to track the top 50 transactions out of the last 10,000 for any given coin.
