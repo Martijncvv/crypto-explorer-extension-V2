@@ -1284,6 +1284,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mui_icons_material_CurrencyBitcoin__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mui/icons-material/CurrencyBitcoin */ "./node_modules/@mui/icons-material/CurrencyBitcoin.js");
 /* harmony import */ var _mui_icons_material_Wallpaper__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mui/icons-material/Wallpaper */ "./node_modules/@mui/icons-material/Wallpaper.js");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
+/* harmony import */ var _mui_icons_material_HomeRounded__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @mui/icons-material/HomeRounded */ "./node_modules/@mui/icons-material/HomeRounded.js");
+/* harmony import */ var _mui_icons_material_HomeOutlined__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @mui/icons-material/HomeOutlined */ "./node_modules/@mui/icons-material/HomeOutlined.js");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1305,9 +1307,11 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
+
 // todo favo coin
 // todo # onchain txs
-const OverlayMenu = ({ menuIsOpen, setMenuIsOpen }) => {
+const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo }) => {
     const styles = {
         overlayMenu: {
             position: 'fixed',
@@ -1393,6 +1397,7 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen }) => {
     };
     const [searchPref, setSearchPref] = react__WEBPACK_IMPORTED_MODULE_0___default().useState('coins');
     const [searchResultNftAmount, setSearchResultNftAmount] = react__WEBPACK_IMPORTED_MODULE_0___default().useState(3);
+    const [homeCoin, setHomeCoin] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ id: "", nft: false });
     const handleSearchPref = (newSearchPref) => {
         if (newSearchPref !== null) {
             setSearchPref(newSearchPref);
@@ -1406,9 +1411,10 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen }) => {
         }
     };
     const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
-        const [searchPrefStorage, searchResultNftAmountStorage] = yield Promise.all([
+        const [searchPrefStorage, searchResultNftAmountStorage, currentHomeCoin] = yield Promise.all([
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getSearchPrefStorage)(),
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getSearchResultNftAmountStorage)(),
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getHomeCoinStorage)()
         ]);
         if (searchPrefStorage) {
             setSearchPref(searchPrefStorage);
@@ -1416,10 +1422,42 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen }) => {
         if (searchResultNftAmountStorage) {
             setSearchResultNftAmount(searchResultNftAmountStorage);
         }
+        if (currentHomeCoin) {
+            setHomeCoin(currentHomeCoin);
+        }
     });
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         checkStorage();
     }, []);
+    // todo check this error during homepress clicking
+    // T chrome-extension://dhclcipmlgplemngimcjaagnhmahdaak/missing_large.png net::ERR_FILE_NOT_FOUND
+    // Image (async)
+    // commitMount @ react-dom.development.js:11038
+    // commitLayoutEffectOnFiber @ react-dom.development.js:23407
+    // commitLayoutMountEffects_complete @ react-dom.development.js:24688
+    // commitLayoutEffects_begin @ react-dom.development.js:24674
+    // commitLayoutEffects @ react-dom.development.js:24612
+    // commitRootImpl @ react-dom.development.js:26823
+    // commitRoot @ react-dom.development.js:26682
+    // performSyncWorkOnRoot @ react-dom.development.js:26117
+    // flushSyncCallbacks @ react-dom.development.js:12042
+    // (anonymous) @ react-dom.development.js:25651
+    const handleHomePress = () => __awaiter(void 0, void 0, void 0, function* () {
+        if (homeCoin.id === (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.id) || homeCoin.id === (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.id)) {
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setHomeCoinStorage)({ id: '', nft: false });
+            setHomeCoin({ id: '', nft: false });
+        }
+        else if (coinInfo) {
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setHomeCoinStorage)({ id: coinInfo.id, nft: false });
+            setHomeCoin({ id: coinInfo.id, nft: false });
+        }
+        else if (nftInfo) {
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setHomeCoinStorage)({ id: nftInfo.id, nft: true });
+            setHomeCoin({ id: nftInfo.id, nft: true });
+        }
+        console.log("homeCoin1: ", homeCoin);
+        console.log("coinInfo?.id1: ", coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.id);
+    });
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: menuIsOpen ? Object.assign(Object.assign({}, styles.overlayMenu), styles.overlayMenuOpen) : styles.overlayMenu },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: menuIsOpen ? Object.assign(Object.assign({}, styles.menuContent), styles.menuContentOpen) : styles.menuContent },
@@ -1447,7 +1485,17 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen }) => {
                                 }, step: 1, marks: [{ value: 3, label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.sliderMark }, "3 NFTs") }, { value: 9, label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.sliderMark }, "9 NFTs") }], min: 3, max: 9, style: { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } })),
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Contact Me!"),
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Any feature requests or ideas"),
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_11__["default"], { style: { fontSize: 24, cursor: 'pointer', color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium }, onClick: handleSupportClick }))))));
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButtonGroup__WEBPACK_IMPORTED_MODULE_5__["default"], { size: "small", color: "primary", exclusive: true, "aria-label": "questionButton" },
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_6__["default"], { value: "question", style: styles.togglePrefButton, onClick: handleSupportClick },
+                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_11__["default"], { style: { fontSize: 24, cursor: 'pointer', color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } }))),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Homepage"),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Set coin/ NFT as startup screen"),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButtonGroup__WEBPACK_IMPORTED_MODULE_5__["default"], { size: "small", color: "primary", exclusive // todo what is this for?
+                            : true, "aria-label": "homepressButton" },
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_6__["default"], { value: "home", style: styles.togglePrefButton, onClick: handleHomePress }, (homeCoin === null || homeCoin === void 0 ? void 0 : homeCoin.id) === (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.id) || (homeCoin === null || homeCoin === void 0 ? void 0 : homeCoin.id) === (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.id) ?
+                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_HomeRounded__WEBPACK_IMPORTED_MODULE_12__["default"], { style: { fontSize: 24, cursor: 'pointer', color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } })
+                                :
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_HomeOutlined__WEBPACK_IMPORTED_MODULE_13__["default"], { style: { fontSize: 24, cursor: 'pointer', color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } }))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (OverlayMenu);
 
@@ -1828,7 +1876,6 @@ const App = () => {
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [menuIsOpen, setMenuIsOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-    // todo add to favourite add social blocks
     // console.log("\n\n")
     // console.log("MAIN")
     // console.log("coinInfo1", coinInfo)
@@ -1854,7 +1901,7 @@ const App = () => {
     //
     // Debounce or Throttle Event Handlers: If you're dealing with events that fire rapidly (like scrolling or keyboard events), you might want to limit how often your component re-renders in response to those events.
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_OverlayMenu__WEBPACK_IMPORTED_MODULE_13__["default"], { menuIsOpen: menuIsOpen, setMenuIsOpen: setMenuIsOpen }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_OverlayMenu__WEBPACK_IMPORTED_MODULE_13__["default"], { menuIsOpen: menuIsOpen, setMenuIsOpen: setMenuIsOpen, coinInfo: coinInfo, nftInfo: nftInfo }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.topContainer },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) ? coinInfo.image.small : ((_b = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.image) === null || _b === void 0 ? void 0 : _b.small) ? nftInfo.image.small : bitcoinIcon, setCoinInfo: setCoinInfo, setNftInfo: setNftInfo, setTxVolumeChartData: setTxVolumeChartData, setTokenTxsChartData: setTokenTxsChartData, setMenuIsOpen: setMenuIsOpen })),
         (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) &&
@@ -2867,9 +2914,11 @@ function fetchTokenTxs(domainName, contractAddress, txAmount) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getHomeCoinStorage": () => (/* binding */ getHomeCoinStorage),
 /* harmony export */   "getSearchPrefStorage": () => (/* binding */ getSearchPrefStorage),
 /* harmony export */   "getSearchResultNftAmountStorage": () => (/* binding */ getSearchResultNftAmountStorage),
 /* harmony export */   "getSelectedTokenStorage": () => (/* binding */ getSelectedTokenStorage),
+/* harmony export */   "setHomeCoinStorage": () => (/* binding */ setHomeCoinStorage),
 /* harmony export */   "setSearchPrefStorage": () => (/* binding */ setSearchPrefStorage),
 /* harmony export */   "setSearchResultNftAmountStorage": () => (/* binding */ setSearchResultNftAmountStorage),
 /* harmony export */   "setSelectedTokenStorage": () => (/* binding */ setSelectedTokenStorage)
@@ -2960,22 +3009,31 @@ function getSearchResultNftAmountStorage() {
         });
     });
 }
-// export async function setFavouriteToken(token: string): Promise<void> {
-// 	return new Promise((resolve) => {
-// 		chrome.storage.local.set({ favouriteToken: token }, () => {
-// 			resolve();
-// 		});
-// 	});
-// }
-// export async function getStoredFavouriteToken(): Promise<string> {
-// 	return new Promise((resolve) => {
-// 		chrome.storage.local.get(['favouriteToken'], (res: LocalStorageData) => {
-// 			if (res?.selectedToken) {
-// 				resolve(res.favouriteToken);
-// 			}
-// 		});
-// 	});
-// }
+function setHomeCoinStorage(homeCoinData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.set({ homeCoinData }, () => {
+                    resolve();
+                });
+            });
+        }
+        catch (error) {
+            console.log("setHomeCoinStorage error: ", error);
+        }
+    });
+}
+function getHomeCoinStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['homeCoinData'], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.homeCoinData) {
+                    resolve(res.homeCoinData);
+                }
+            });
+        });
+    });
+}
 
 
 /***/ }),
@@ -3292,7 +3350,7 @@ module.exports = __webpack_require__.p + "275488b8325f50682b7c.png";
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_mui_icons-material_Close_js-node_modules_mui_icons-material_CurrencyBitc-a98774"], () => (__webpack_require__("./src/popup/popup.tsx")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_mui_icons-material_Close_js-node_modules_mui_icons-material_CurrencyBitc-5d140d"], () => (__webpack_require__("./src/popup/popup.tsx")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

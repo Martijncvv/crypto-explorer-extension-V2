@@ -1,6 +1,6 @@
 
 export interface LocalStorageData {
-	favouriteToken?: string;
+	homeCoinData?: {id: string, nft: boolean};
 	selectedToken?: string;
 	searchPref?: string;
 	searchResultNftAmount?: number;
@@ -75,20 +75,23 @@ export async function getSearchResultNftAmountStorage(): Promise<number> {
 
 
 
-
-// export async function setFavouriteToken(token: string): Promise<void> {
-// 	return new Promise((resolve) => {
-// 		chrome.storage.local.set({ favouriteToken: token }, () => {
-// 			resolve();
-// 		});
-// 	});
-// }
-// export async function getStoredFavouriteToken(): Promise<string> {
-// 	return new Promise((resolve) => {
-// 		chrome.storage.local.get(['favouriteToken'], (res: LocalStorageData) => {
-// 			if (res?.selectedToken) {
-// 				resolve(res.favouriteToken);
-// 			}
-// 		});
-// 	});
-// }
+export async function setHomeCoinStorage( homeCoinData: LocalStorageData['homeCoinData']): Promise<void> {
+	try {
+		return new Promise((resolve) => {
+			chrome.storage.local.set({ homeCoinData }, () => {
+				resolve();
+			});
+		});
+	} catch (error) {
+		console.log("setHomeCoinStorage error: ", error);
+	}
+}
+export async function getHomeCoinStorage(): Promise<any> {
+	return new Promise((resolve) => {
+		chrome.storage.local.get(['homeCoinData'], (res: LocalStorageData) => {
+			if (res?.homeCoinData) {
+				resolve(res.homeCoinData);
+			}
+		});
+	});
+}

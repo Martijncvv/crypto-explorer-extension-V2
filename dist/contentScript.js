@@ -10,9 +10,11 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getHomeCoinStorage": () => (/* binding */ getHomeCoinStorage),
 /* harmony export */   "getSearchPrefStorage": () => (/* binding */ getSearchPrefStorage),
 /* harmony export */   "getSearchResultNftAmountStorage": () => (/* binding */ getSearchResultNftAmountStorage),
 /* harmony export */   "getSelectedTokenStorage": () => (/* binding */ getSelectedTokenStorage),
+/* harmony export */   "setHomeCoinStorage": () => (/* binding */ setHomeCoinStorage),
 /* harmony export */   "setSearchPrefStorage": () => (/* binding */ setSearchPrefStorage),
 /* harmony export */   "setSearchResultNftAmountStorage": () => (/* binding */ setSearchResultNftAmountStorage),
 /* harmony export */   "setSelectedTokenStorage": () => (/* binding */ setSelectedTokenStorage)
@@ -103,22 +105,31 @@ function getSearchResultNftAmountStorage() {
         });
     });
 }
-// export async function setFavouriteToken(token: string): Promise<void> {
-// 	return new Promise((resolve) => {
-// 		chrome.storage.local.set({ favouriteToken: token }, () => {
-// 			resolve();
-// 		});
-// 	});
-// }
-// export async function getStoredFavouriteToken(): Promise<string> {
-// 	return new Promise((resolve) => {
-// 		chrome.storage.local.get(['favouriteToken'], (res: LocalStorageData) => {
-// 			if (res?.selectedToken) {
-// 				resolve(res.favouriteToken);
-// 			}
-// 		});
-// 	});
-// }
+function setHomeCoinStorage(homeCoinData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.set({ homeCoinData }, () => {
+                    resolve();
+                });
+            });
+        }
+        catch (error) {
+            console.log("setHomeCoinStorage error: ", error);
+        }
+    });
+}
+function getHomeCoinStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['homeCoinData'], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.homeCoinData) {
+                    resolve(res.homeCoinData);
+                }
+            });
+        });
+    });
+}
 
 
 /***/ })

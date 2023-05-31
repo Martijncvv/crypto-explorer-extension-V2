@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect} from 'react';
+import React, {CSSProperties, useEffect, useState} from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
@@ -13,21 +13,28 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import {
+    getHomeCoinStorage,
     getSearchPrefStorage,
-    getSearchResultNftAmountStorage,
+    getSearchResultNftAmountStorage, setHomeCoinStorage,
     setSearchPrefStorage,
     setSearchResultNftAmountStorage
 } from "../utils/storage";
+import {IDetailedNftInfo} from "../models/INftInfo";
+import {IDetailedCoinInfo} from "../models/ICoinInfo";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 interface OverlayMenuProps {
     menuIsOpen: boolean;
     setMenuIsOpen: (menuIsOpen: any) => void;
+    coinInfo?:IDetailedCoinInfo;
+    nftInfo?:IDetailedNftInfo
 }
 
 // todo favo coin
 // todo # onchain txs
 
-const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) => {
+const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coinInfo, nftInfo}) => {
 
     const styles: { [key: string]: CSSProperties } = {
         overlayMenu: {
@@ -122,6 +129,8 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
 
     const [searchPref, setSearchPref] = React.useState<string>('coins');
     const [searchResultNftAmount, setSearchResultNftAmount] = React.useState<number>(3);
+    const [homeCoin, setHomeCoin] = useState<{id: string, nft: boolean}>({ id: "", nft: false });
+
 
     const handleSearchPref = (newSearchPref: string) => {
         if (newSearchPref !== null) {
@@ -137,9 +146,10 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
     }
 
     const checkStorage = async () => {
-        const [searchPrefStorage, searchResultNftAmountStorage] = await Promise.all([
+        const [searchPrefStorage, searchResultNftAmountStorage, currentHomeCoin] = await Promise.all([
             getSearchPrefStorage(),
             getSearchResultNftAmountStorage(),
+            getHomeCoinStorage()
         ]);
         if (searchPrefStorage) {
             setSearchPref(searchPrefStorage);
@@ -147,11 +157,45 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
         if (searchResultNftAmountStorage) {
             setSearchResultNftAmount(searchResultNftAmountStorage);
         }
+        if (currentHomeCoin) {
+            setHomeCoin(currentHomeCoin);
+        }
     }
 
     useEffect(() => {
         checkStorage()
     }, []);
+
+    // todo check this error during homepress clicking
+    // T chrome-extension://dhclcipmlgplemngimcjaagnhmahdaak/missing_large.png net::ERR_FILE_NOT_FOUND
+    // Image (async)
+    // commitMount @ react-dom.development.js:11038
+    // commitLayoutEffectOnFiber @ react-dom.development.js:23407
+    // commitLayoutMountEffects_complete @ react-dom.development.js:24688
+    // commitLayoutEffects_begin @ react-dom.development.js:24674
+    // commitLayoutEffects @ react-dom.development.js:24612
+    // commitRootImpl @ react-dom.development.js:26823
+    // commitRoot @ react-dom.development.js:26682
+    // performSyncWorkOnRoot @ react-dom.development.js:26117
+    // flushSyncCallbacks @ react-dom.development.js:12042
+    // (anonymous) @ react-dom.development.js:25651
+
+
+    const handleHomePress = async () => {
+        if (homeCoin.id === coinInfo?.id || homeCoin.id === nftInfo?.id) {
+            setHomeCoinStorage({id: '', nft: false})
+            setHomeCoin({id: '', nft: false})
+        } else if (coinInfo) {
+            setHomeCoinStorage({id: coinInfo.id, nft: false})
+            setHomeCoin({id: coinInfo.id, nft: false})
+        }
+        else if (nftInfo) {
+            setHomeCoinStorage({id: nftInfo.id, nft: true})
+            setHomeCoin({id: nftInfo.id, nft: true})
+        }
+        console.log("homeCoin1: ", homeCoin)
+        console.log("coinInfo?.id1: ", coinInfo?.id)
+    }
 
     return (
         <>
@@ -213,8 +257,43 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
 
                             <div style={styles.sectionHeader}>Contact Me!</div>
                             <div style={styles.explanationSubtext}>Any feature requests or ideas</div>
-                            <QuestionAnswerIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} onClick={handleSupportClick}/>
 
+                            <ToggleButtonGroup
+                                size="small"
+                                color="primary"
+                                exclusive
+                                aria-label="questionButton"
+                            >
+                                <ToggleButton
+                                    value="question"
+                                    style={styles.togglePrefButton}
+                                    onClick={handleSupportClick}
+                                >
+                                    <QuestionAnswerIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }}/>
+                                </ToggleButton>
+                            </ToggleButtonGroup>
+
+                            <div style={styles.sectionHeader}>Homepage</div>
+                            <div style={styles.explanationSubtext}>Set coin/ NFT as startup screen</div>
+                            <ToggleButtonGroup
+                                size="small"
+                                color="primary"
+                                exclusive // todo what is this for?
+                                aria-label="homepressButton"
+                            >
+                                <ToggleButton
+                                    value="home"
+                                    style={styles.togglePrefButton}
+                                    onClick={handleHomePress}
+                                >
+                                    {homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ?
+                                        <HomeRoundedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />
+                                        :
+                                        <HomeOutlinedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />
+                                    }
+                                </ToggleButton>
+
+                            </ToggleButtonGroup>
                         </>
                     }
                 </div>
