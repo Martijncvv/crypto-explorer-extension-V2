@@ -245,7 +245,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
                                             }
                                         }}
                                         step={1}
-                                        marks={[{ value: 2, label:  <span style={styles.sliderMark}>3 Nfts</span> }, { value: 9, label:  <span style={styles.sliderMark}>9 Nfts</span> }]}
+                                        marks={[{ value: 2, label:  <span style={styles.sliderMark}>2 Nfts</span> }, { value: 9, label:  <span style={styles.sliderMark}>9 Nfts</span> }]}
                                         min={2}
                                         max={9}
                                         style={{ color: colors.white_medium }}
