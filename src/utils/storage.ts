@@ -1,6 +1,6 @@
 
 export interface LocalStorageData {
-	favouriteToken?: string;
+	homeCoinData?: {id: string, nft: boolean};
 	selectedToken?: string;
 	searchPref?: string;
 	searchResultNftAmount?: number;
@@ -42,6 +42,17 @@ export async function setSearchResultNftAmountStorage(searchResultNftAmount: num
 		console.log("setSearchResultNftAmountStorage error: ", error);
 	}
 }
+export async function setHomeCoinStorage( homeCoinData: LocalStorageData['homeCoinData']): Promise<void> {
+	try {
+		return new Promise((resolve) => {
+			chrome.storage.local.set({ homeCoinData }, () => {
+				resolve();
+			});
+		});
+	} catch (error) {
+		console.log("setHomeCoinStorage error: ", error);
+	}
+}
 
 
 // GETTERS
@@ -50,6 +61,8 @@ export async function getSelectedTokenStorage(): Promise<string> {
 		chrome.storage.local.get(['selectedToken'], (res: LocalStorageData) => {
 			if (res?.selectedToken) {
 				resolve(res.selectedToken);
+			} else {
+				resolve(null);
 			}
 		});
 	});
@@ -59,6 +72,8 @@ export async function getSearchPrefStorage(): Promise<string> {
 		chrome.storage.local.get(['searchPref'], (res: LocalStorageData) => {
 			if (res?.searchPref) {
 				resolve(res.searchPref);
+			}else {
+				resolve(null);
 			}
 		});
 	});
@@ -68,27 +83,21 @@ export async function getSearchResultNftAmountStorage(): Promise<number> {
 		chrome.storage.local.get(['searchResultNftAmount'], (res: LocalStorageData) => {
 			if (res?.searchResultNftAmount) {
 				resolve(res.searchResultNftAmount);
+			} else {
+				resolve(null);
 			}
 		});
 	});
 }
 
-
-
-
-// export async function setFavouriteToken(token: string): Promise<void> {
-// 	return new Promise((resolve) => {
-// 		chrome.storage.local.set({ favouriteToken: token }, () => {
-// 			resolve();
-// 		});
-// 	});
-// }
-// export async function getStoredFavouriteToken(): Promise<string> {
-// 	return new Promise((resolve) => {
-// 		chrome.storage.local.get(['favouriteToken'], (res: LocalStorageData) => {
-// 			if (res?.selectedToken) {
-// 				resolve(res.favouriteToken);
-// 			}
-// 		});
-// 	});
-// }
+export async function getHomeCoinStorage(): Promise<any> {
+	return new Promise((resolve) => {
+		chrome.storage.local.get(['homeCoinData'], (res: LocalStorageData) => {
+			if (res?.homeCoinData) {
+				resolve(res.homeCoinData);
+			} else {
+				resolve(null);
+			}
+		});
+	});
+}

@@ -3,9 +3,6 @@ import colors from "../static/colors";
 import constants from "../static/constants";
 import EXCHANGE_ICONS from "../static/exchangeIcons";
 import {amountFormatter} from "../utils/amountFormatter";
-import {stringify} from "npm-check-updates/build/src/lib/version-util";
-// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-// import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 const ExpandMoreIcon = require( "../static/images/icons/expand-more-icon.png")
 const ExpandLessIcon = require( "../static/images/icons/expand-less-icon.png")
 
@@ -167,7 +164,7 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ tickers }) => {
                     >
                         {exchange.id ?
                         <img
-                            src={EXCHANGE_ICONS[exchange.id]}
+                            src={EXCHANGE_ICONS[exchange.id] || "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256"}
                             alt={exchange.exchangeName}
                             style={styles.image}
                         />

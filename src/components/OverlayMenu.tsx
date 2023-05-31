@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect} from 'react';
+import React, {CSSProperties, useEffect, useState} from 'react';
 import colors from "../static/colors";
 import constants from "../static/constants";
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
@@ -13,21 +13,27 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import {
+    getHomeCoinStorage,
     getSearchPrefStorage,
-    getSearchResultNftAmountStorage,
+    getSearchResultNftAmountStorage, setHomeCoinStorage,
     setSearchPrefStorage,
     setSearchResultNftAmountStorage
 } from "../utils/storage";
+import {IDetailedNftInfo} from "../models/INftInfo";
+import {IDetailedCoinInfo} from "../models/ICoinInfo";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 interface OverlayMenuProps {
     menuIsOpen: boolean;
     setMenuIsOpen: (menuIsOpen: any) => void;
+    coinInfo?:IDetailedCoinInfo;
+    nftInfo?:IDetailedNftInfo
 }
 
-// todo favo coin
 // todo # onchain txs
 
-const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) => {
+const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coinInfo, nftInfo}) => {
 
     const styles: { [key: string]: CSSProperties } = {
         overlayMenu: {
@@ -122,6 +128,8 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
 
     const [searchPref, setSearchPref] = React.useState<string>('coins');
     const [searchResultNftAmount, setSearchResultNftAmount] = React.useState<number>(3);
+    const [homeCoin, setHomeCoin] = useState<{id: string, nft: boolean}>({ id: "", nft: false });
+
 
     const handleSearchPref = (newSearchPref: string) => {
         if (newSearchPref !== null) {
@@ -137,9 +145,10 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
     }
 
     const checkStorage = async () => {
-        const [searchPrefStorage, searchResultNftAmountStorage] = await Promise.all([
+        const [searchPrefStorage, searchResultNftAmountStorage, currentHomeCoin] = await Promise.all([
             getSearchPrefStorage(),
             getSearchResultNftAmountStorage(),
+            getHomeCoinStorage()
         ]);
         if (searchPrefStorage) {
             setSearchPref(searchPrefStorage);
@@ -147,11 +156,28 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
         if (searchResultNftAmountStorage) {
             setSearchResultNftAmount(searchResultNftAmountStorage);
         }
+        if (currentHomeCoin) {
+            setHomeCoin(currentHomeCoin);
+        }
     }
 
     useEffect(() => {
         checkStorage()
     }, []);
+
+    const handleHomePress = async () => {
+        if (homeCoin?.id === coinInfo?.id || homeCoin?.id === nftInfo?.id) {
+            setHomeCoinStorage({id: '', nft: false})
+            setHomeCoin({id: '', nft: false})
+        } else if (coinInfo) {
+            setHomeCoinStorage({id: coinInfo.id, nft: false})
+            setHomeCoin({id: coinInfo.id, nft: false})
+        }
+        else if (nftInfo) {
+            setHomeCoinStorage({id: nftInfo.id, nft: true})
+            setHomeCoin({id: nftInfo.id, nft: true})
+        }
+    }
 
     return (
         <>
@@ -162,8 +188,23 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
                     </div>
                     {menuIsOpen &&
                         <>
+                            <div style={styles.sectionHeader}>Homepage</div>
+                            <div style={styles.explanationSubtext}>{`${homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ? 'Unset' : 'Set'} current startup coin`}</div>
+                                <ToggleButton
+                                    value="home"
+                                    style={styles.togglePrefButton}
+                                    onClick={handleHomePress}
+                                >
+                                    {homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ?
+                                        <HomeRoundedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />
+                                        :
+                                        <HomeOutlinedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />
+                                    }
+                                </ToggleButton>
+
+
                             <div style={styles.sectionHeader} >Search Priority</div>
-                            <div style={styles.explanationSubtext}>Show Coins/ NFTs first</div>
+                            <div style={styles.explanationSubtext}>Show Coins/ Nfts first</div>
                             <ToggleButtonGroup
                                 size="small"
                                 color="primary"
@@ -189,11 +230,11 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
 
 
                             <div style={styles.sectionHeader}>Search Results</div>
-                            <div style={styles.explanationSubtext}>{`Nr of NFTs of results (${searchResultNftAmount}/11)`}</div>
+                            <div style={styles.explanationSubtext}>{`Max number of Nfts from 11 results (${searchResultNftAmount})`}</div>
                             <Box sx={{ width: 180 }}>
                                     <Slider
                                         size="small"
-                                        aria-label="Max NFTs out of 11 search results"
+                                        aria-label="Max Nfts out of 11 search results"
                                         value={searchResultNftAmount}
                                         valueLabelDisplay="auto"
                                         onChange={(event, newTokenNftRatio) => {
@@ -204,8 +245,8 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
                                             }
                                         }}
                                         step={1}
-                                        marks={[{ value: 3, label:  <span style={styles.sliderMark}>3 NFTs</span> }, { value: 9, label:  <span style={styles.sliderMark}>9 NFTs</span> }]}
-                                        min={3}
+                                        marks={[{ value: 2, label:  <span style={styles.sliderMark}>2 Nfts</span> }, { value: 9, label:  <span style={styles.sliderMark}>9 Nfts</span> }]}
+                                        min={2}
                                         max={9}
                                         style={{ color: colors.white_medium }}
                                     />
@@ -213,7 +254,13 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen}) =>
 
                             <div style={styles.sectionHeader}>Contact Me!</div>
                             <div style={styles.explanationSubtext}>Any feature requests or ideas</div>
-                            <QuestionAnswerIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} onClick={handleSupportClick}/>
+                                <ToggleButton
+                                    value="question"
+                                    style={styles.togglePrefButton}
+                                    onClick={handleSupportClick}
+                                >
+                                    <QuestionAnswerIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }}/>
+                                </ToggleButton>
 
                         </>
                     }

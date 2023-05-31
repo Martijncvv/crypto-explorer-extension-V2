@@ -16,17 +16,18 @@ import {
     ITrendingCoinList
 } from "../models/ICoinInfo";
 import {IDetailedNftInfo} from "../models/INftInfo";
-import CircularProgress from "@mui/material/CircularProgress";
-import SyncProblemIcon from '@mui/icons-material/SyncProblem';
-import SearchIcon from '@mui/icons-material/Search';
 import {
+    getHomeCoinStorage,
     getSearchPrefStorage,
     getSearchResultNftAmountStorage,
     getSelectedTokenStorage,
     setSelectedTokenStorage
 } from "../utils/storage";
 
-const menuIcon = require( "../static/images/icons/menu-icon.png")
+import CircularProgress from "@mui/material/CircularProgress";
+import SyncProblemIcon from '@mui/icons-material/SyncProblem';
+import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
 
 interface HeaderBlockProps {
     mainLogo: string;
@@ -64,11 +65,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             justifyContent: 'center',
             alignItems: 'center',
             cursor: "pointer",
-        },
-
-        menuIcon: {
-            width: 20,
-            height: 20,
         },
 
         searchbar: {
@@ -173,14 +169,25 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
             setSearchInput(selectedTokenStorage)
             searchCoinNames(selectedTokenStorage)
             setSelectedTokenStorage("")
+        } else {
+            const homeCoinStorage = await getHomeCoinStorage()
+            if (homeCoinStorage?.id && homeCoinStorage?.nft) {
+                fetchDetailedNftInfo(homeCoinStorage.id);
+            }
+            else if (homeCoinStorage?.id) {
+                fetchDetailedTokenInfo(homeCoinStorage.id);
+            }
+            else {
+                fetchDetailedTokenInfo('bitcoin');
+            }
         }
     }
 
     // get detailed coin info and trending info on startup
     useEffect(() => {
-        getTrendingCoins()
         checkStorage()
-        fetchDetailedTokenInfo('bitcoin');
+        getTrendingCoins()
+
         if (inputRef.current) {
             inputRef.current.focus();
         }
@@ -607,7 +614,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     result[dateString] = { date: date, volume: 1 };
                 }
                 return result;
-            }, {})).map(([dateString, { date, volume }]) => ({ date, volume }));
+            }, {})).map(([, { date, volume }]) => ({ date, volume }));
             return nftTxsChartFormat.reverse();
         }
         console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
@@ -691,8 +698,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         <>
             <div style={styles.headerBlock}>
 
-                <div style={styles.menuIconBlock}  title="Coming soon"  onClick={() => setMenuIsOpen(true)}>
-                    <img style={styles.menuIcon} src={menuIcon} alt="Centered" />
+                <div style={styles.menuIconBlock}  title="Menu"  onClick={() => setMenuIsOpen(true)}>
+                  <MenuIcon style={{ fontSize: 24, color: colors.secondary_medium }}/>
                 </div>
 
                     <div  style={{
@@ -720,7 +727,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                         />
                         </div>
                 {(!loadingError.isError) &&
-                    <img style={styles.mainLogo} src={mainLogo} alt="Main Logo" />
+                    <img style={styles.mainLogo} src={mainLogo || "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256"} alt="Main Logo" />
                 }
                 {(loadingError.isLoading && !loadingError.isError) &&
                             <CircularProgress size={41} thickness={1} style={{position: 'absolute', right: 12, zIndex: 1, color: "white" }}/>
@@ -757,7 +764,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                                 >
                                     {tokenInfo.image ?
                                     <img
-                                        src={tokenInfo.image}
+                                        src={tokenInfo.image || "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256"}
                                         alt={tokenInfo.name}
                                         style={styles.coinImage}
                                     /> :

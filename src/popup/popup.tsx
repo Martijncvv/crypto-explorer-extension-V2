@@ -14,6 +14,8 @@ import {IDetailedNftInfo} from "../models/INftInfo";
 import TickerBlock from "../components/TickerBlock";
 import {amountFormatter, numberFormatter, percentageFormatter} from "../utils/amountFormatter";
 import OverlayMenu from "../components/OverlayMenu";
+
+
 // import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 
 const bitcoinIcon = require( "../static/images/icons/bitcoin-icon.png")
@@ -53,8 +55,8 @@ const App: React.FC = () => {
 	const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>()
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
-	const [menuIsOpen, setMenuIsOpen] = useState(false);
-	
+	const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+
 	// console.log("\n\n")
 	// console.log("MAIN")
 	// console.log("coinInfo1", coinInfo)
@@ -62,11 +64,8 @@ const App: React.FC = () => {
 
 	// splash screen/ new icon
 	// keep highest and lowest price on max chart
-	// bring formatExchangeInfo function to exchangeBlock component
 	// drag and zoom chart functionality
 	// fix all anys
-	// new icon
-	// add favourite/ home opening token
 	// join a group via name/ code?
 	// check watchlist etc.
 
@@ -82,11 +81,9 @@ const App: React.FC = () => {
 	//
 	// Debounce or Throttle Event Handlers: If you're dealing with events that fire rapidly (like scrolling or keyboard events), you might want to limit how often your component re-renders in response to those events.
 
-
-
 	return (
 		<>
-			<OverlayMenu menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
+			<OverlayMenu menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} coinInfo={coinInfo} nftInfo={nftInfo}/>
 			<div style={styles.topContainer}>
 				<HeaderBlock mainLogo={coinInfo?.image?.small ? coinInfo.image.small : nftInfo?.image?.small ?  nftInfo.image.small : bitcoinIcon}
 							 setCoinInfo={setCoinInfo}
@@ -149,7 +146,7 @@ const App: React.FC = () => {
 							{coinInfo.links?.blockchain_site[0] &&
 								<SocialBlock image={blockchainIcon}  link={coinInfo.links?.blockchain_site[0]} />
 							}
-							{coinInfo.id &&
+							{coinInfo?.id &&
 								<SocialBlock image={coingeckoIcon} title={"Coingecko watchlist portfolios"} mainValue={coinInfo.watchlist_portfolio_users} link={`https://www.coingecko.com/en/coins/${coinInfo.id}`}  />
 							}
 							{coinInfo?.links?.twitter_screen_name &&
@@ -161,6 +158,7 @@ const App: React.FC = () => {
 							{coinInfo?.links?.telegram_channel_identifier &&
 								<SocialBlock image={telegramIcon}  title={"Telegram channel size"} mainValue={coinInfo.community_data?.telegram_channel_user_count}   link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`} />
 							}
+
 							{/*/!*<SocialBlock image={discordIcon}  title={"Discord channel size"}  link={coinInfo.links.homepage[0]} />*!/ find out what to do with this*/}
 						</div>
 					</>
@@ -218,6 +216,7 @@ const App: React.FC = () => {
 							{nftInfo?.links?.discord &&
 								<SocialBlock image={telegramIcon} title={"Discord channel size"} link={nftInfo?.links?.discord} />
 							}
+
 						</div>
 					</>
 				}
