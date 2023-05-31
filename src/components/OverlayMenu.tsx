@@ -189,7 +189,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
                     {menuIsOpen &&
                         <>
                             <div style={styles.sectionHeader}>Homepage</div>
-                            <div style={styles.explanationSubtext}>{`${homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ? 'Unset' : 'Set'} current startup coin`}</div>
+                            <div style={styles.explanationSubtext}>{`${homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ? 'Unset' : 'Set'} startup coin`}</div>
                                 <ToggleButton
                                     value="home"
                                     style={styles.togglePrefButton}

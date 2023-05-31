@@ -87,3 +87,9 @@ I would like to thank CoinGecko and Etherscan for providing real-time cryptocurr
 </p>
 
 
+### Settings menu
+<p align="center">
+  <img src="preview-images/settings-menu-1280-800.jpg" alt="Trending" width="800" >
+</p>
+
+
