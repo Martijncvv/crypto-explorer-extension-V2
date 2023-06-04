@@ -4,7 +4,7 @@ import './popup.css'
 import TitleBlock from '../components/TitleBlock';
 import PriceBar from '../components/PriceBar';
 import ValueBlock from '../components/ValueBlock';
-import ExpandableTextField from "../components/ExpandableTextField";
+import ExpandableTextBlock from "../components/ExpandableTextBlock";
 import SocialBlock from "../components/SocialBlock";
 import ExchangeBlock from "../components/ExchangeBlock";
 import HeaderBlock from "../components/HeaderBlock";
@@ -62,7 +62,16 @@ const App: React.FC = () => {
 	// console.log("coinInfo1", coinInfo)
 	// console.log("nftInfo1", nftInfo)
 
-	// splash screen/ new icon
+	// todo onchain txs, if api limit hit, re-try after 6s and then show rugg
+	// todo onchain chart popup covers chart
+	// todo reset onchain txs chart when click new coin
+	// todo splash screen/ new icon
+	// todo, make ref links of all exchange buttons
+
+	//  zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
+	// ideas: store notes for accounts (discord/ twitter)
+
+
 	// keep highest and lowest price on max chart
 	// drag and zoom chart functionality
 	// fix all anys
@@ -137,7 +146,7 @@ const App: React.FC = () => {
 							<ExchangeBlock tickers={coinInfo.tickers} />
 						</div>
 						<div  style={styles.bottomMargin}>
-							<ExpandableTextField text={coinInfo.description?.en} />
+							<ExpandableTextBlock text={coinInfo.description?.en} />
 						</div>
 						<div style={{...styles.socialBlocks, ...styles.bottomMargin}}>
 							{coinInfo.links?.homepage[0] &&
@@ -190,7 +199,7 @@ const App: React.FC = () => {
 						</div>
 
 						<div  style={styles.bottomMargin}>
-							<ExpandableTextField text={nftInfo.description} />
+							<ExpandableTextBlock text={nftInfo.description} />
 						</div>
 						<div style={{...styles.socialBlocks, ...styles.bottomMargin}}>
 							{nftInfo?.links?.homepage &&

@@ -237,7 +237,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
         try {
             const trendingCoins: ITrendingCoinList = await fetchTrendingCoins();
             let searchFormat:ISearchOptions = {tokens: [], total: 0}
+            let trendingTickers = 'Top Searched Coins of the Day\n'
             trendingCoins.coins.forEach((coin) => {
+                trendingTickers = trendingTickers + `- ${coin.item.name}, $${coin.item.symbol.toUpperCase()} #${coin.item.market_cap_rank}\n`
                 searchFormat.tokens.push(
                     {
                         id: coin.item.id,
@@ -248,6 +250,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     }
                 )
             })
+            trendingTickers = trendingTickers + '\nCrypto Explorer Extension\n' +
+                'https://chrome.google.com/webstore/detail/crypto-tracker-blockchain/pkaheoacmbdgnemgmcdbekniooabcnmc?hl=en&authuser=0'
+            trendingTickers = trendingTickers + '\n#BTC $ETH'
+
             searchFormat.tokens.push(
                 {
                     id: '',
@@ -257,6 +263,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                     nft: true,
                 }
             )
+            console.log(trendingTickers)
             setDisplayResults(searchFormat);
             return searchFormat
         } catch (error) {
@@ -601,7 +608,13 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                 return []
         }
 
-        const nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
+        let nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
+
+        if (nftTxsData.status === "0") {
+            console.log("nftTxsData.status ==== 0: ", nftTxsData)
+            await delay(5500)
+            nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
+        }
 
         if (nftTxsData.status !== "0" && nftTxsData.result) {
             const nftTxsChartFormat: { date: Date, volume: number }[] = Object.entries(nftTxsData.result.reduce((result: { [dateString: string]: { date: Date, volume: number } }, txInfo: any) => {
@@ -666,10 +679,15 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({ mainLogo, setCoinInfo, setNft
                return []
         }
 
-        const nftTxsData = await fetchTokenTxs(domain, contractAddress, 10000);
+        let tokenTxsData = await fetchTokenTxs(domain, contractAddress, 10000);
 
-        if (nftTxsData.status !== "0" && nftTxsData.result) {
-            const arrayWithIndices: any = nftTxsData.result.map((item, index) => ({...item, index}));
+        if (tokenTxsData.status === "0") {
+            console.log("tokenTxsData.status ==== 0: ", tokenTxsData)
+            await delay(5500)
+            tokenTxsData = await fetchTokenTxs(domain, contractAddress, 10000);
+        }
+        if (tokenTxsData.status !== "0" && tokenTxsData.result) {
+            const arrayWithIndices: any = tokenTxsData.result.map((item, index) => ({...item, index}));
             const sortedArray = arrayWithIndices.sort((a: { value: number }, b: { value: number }) => b.value - a.value);
             const top50Array = sortedArray.slice(0, 50);
             const originalOrderArray = top50Array.sort((a, b) => b.index - a.index);

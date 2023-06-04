@@ -5,7 +5,7 @@ interface ExpandableTextFieldProps {
     text: string;
 }
 
-const ExpandableTextField: React.FC<ExpandableTextFieldProps> = ({ text }) => {
+const ExpandableTextBlock: React.FC<ExpandableTextFieldProps> = ({ text }) => {
     const [expanded, setExpanded] = useState(false);
 
     const handleClick = () => {
@@ -73,4 +73,4 @@ const ExpandableTextField: React.FC<ExpandableTextFieldProps> = ({ text }) => {
     );
 };
 
-export default ExpandableTextField;
+export default ExpandableTextBlock;

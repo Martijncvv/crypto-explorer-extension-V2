@@ -1,7 +1,7 @@
 {
 	"name": "Crypto Tracker: Blockchain & Crypto Explorer",
 	"description": "Your Comprehensive Real-Time (on-chain) Cryptocurrency and NFT Explorer.",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"manifest_version": 3,
 	"icons": {
 		"16": "images/CryptoExplorer_logo_128.png",
