@@ -23,21 +23,21 @@ interface ChartsBlockProps {
 
 const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData} ) => {
     let availableCharts = []
-    if (price30dHistorydata) {
+    if (price30dHistorydata?.length > 0) {
         availableCharts.push('price30dHistorydata')
     }
-    if (priceMaxHistorydata) {
+    if (priceMaxHistorydata?.length > 0) {
         availableCharts.push('priceMaxHistorydata')
     }
-    if (txVolumeData) {
+    if (txVolumeData?.length > 0) {
         availableCharts.push('txVolumeData')
     }
-    if (tokenTxsChartData) {
+    if (tokenTxsChartData?.length > 0) {
         availableCharts.push('tokenTxsChartData')
     }
     const chartOptionCount = availableCharts.length;
     const [chartOption, setChartOption] = useState<number>(0)
-
+console.log("tokenTxsChartData: ", tokenTxsChartData)
     const styles: { [key: string]: CSSProperties } = {
         container: {
             width: 330,
@@ -88,6 +88,11 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [chartOptionCount, chartOption]);
+
+    useEffect(() => {
+            setChartOption(0)
+
+    }, [price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData])
 
     const CustomPriceTooltip = props => {
         const { active, payload } = props;
@@ -153,7 +158,6 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
             const formattedDate = date.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: '2-digit', year: '2-digit' });
             const amount = payload[0].payload.amount
             const usdValue = payload[0].payload.usdValue
-            const native = payload[0].payload.native;
 
             return (
                 <div
@@ -167,9 +171,8 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                     }}
                 >
                     <p style={{ margin: 0, marginBottom: '6px' }}>{`${formattedDate}`}</p>
-                    <p style={{ margin: 0, marginBottom: '6px',}}>{`${numberFormatter(amount)}`}</p>
+                    <p style={{ margin: 0, marginBottom: '6px',}}>{`${numberFormatter(amount)} coins`}</p>
                     <p style={{ margin: 0, marginBottom: '6px' }}>{`$${amountFormatter(usdValue)}`}</p>
-                    <p style={{ margin: 0, marginBottom: '3px', color: colors.accent_medium, textTransform: 'capitalize'  }}>{`Top 50/ 10k ${native} txs`}</p>
                 </div>
             );
         }
@@ -208,6 +211,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
             active: false,
         })
     }
+
 
     return (
         <div style={styles.container} title="Use arrow keys to navigate">
@@ -434,7 +438,6 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                             </defs>
 
                             <Tooltip content={<CustomOnchainTxsTooltip />} cursor={{ fill: 'transparent' }} />
-
                             <Bar
                                 dataKey="usdValue"
                                 shape={<CustomOnchainTxsBar />}
@@ -453,6 +456,28 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
                                 />
                             </ReferenceLine>
 
+                            <ReferenceLine
+                                y={20}
+                                style={{ display: 'none' }}
+                            >
+
+                                <Label
+                                    value={`Top 50 / 10k ${tokenTxsChartData[0].native} txs`}
+                                    position="insideBottom"
+                                    style={{
+                                        textTransform: 'capitalize',
+                                }}
+                                    fill={colors.accent_medium}
+                                />
+                            </ReferenceLine>
+
+                            {/*style={{*/}
+                            {/*textTransform: 'capitalize',*/}
+                            {/*backgroundColor: colors.primary_dark,*/}
+                            {/*border: 'none',*/}
+                            {/*color: "red",*/}
+                            {/*borderRadius: constants.border_radius_small,*/}
+                            {/*padding: '3px',}}*/}
 
                         </ComposedChart>
                 </ResponsiveContainer>

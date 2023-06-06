@@ -60,6 +60,12 @@ export function numberFormatter(amount: number | null | undefined): string {
 	if (amount === null || amount === undefined || amount === 0) {
 		return '';
 	}
+	if (amount >= 1e15) {
+		return `${(amount / 1e15).toFixed(1)} Q`;
+	}
+	if (amount >= 1e9) {
+		return `${(amount / 1e9).toFixed(1)} B`;
+	}
 // Million (M) - 10^6
 	if (amount >= 1e6) {
 		return `${(amount / 1e6).toFixed(1)} M`;

@@ -62,9 +62,6 @@ const App: React.FC = () => {
 	// console.log("coinInfo1", coinInfo)
 	// console.log("nftInfo1", nftInfo)
 
-	// todo onchain txs, if api limit hit, re-try after 6s and then show rugg
-	// todo onchain chart popup covers chart
-	// todo reset onchain txs chart when click new coin
 	// todo splash screen/ new icon
 	// todo, make ref links of all exchange buttons
 
@@ -107,9 +104,9 @@ const App: React.FC = () => {
 					<TitleBlock tokenTitle={coinInfo.name} title={"Use arrow keys to navigate"}/>
 					<TickerBlock ticker={coinInfo.symbol} />
 					<ChartsBlock
-						price30dHistorydata={coinInfo.price30dHistoryData.length && coinInfo.price30dHistoryData}
-						priceMaxHistorydata={coinInfo.priceMaxHistoryData.length && coinInfo.priceMaxHistoryData}
-						tokenTxsChartData={tokenTxsChartData.length && tokenTxsChartData}
+						price30dHistorydata={coinInfo.price30dHistoryData && coinInfo.price30dHistoryData}
+						priceMaxHistorydata={coinInfo.priceMaxHistoryData && coinInfo.priceMaxHistoryData}
+						tokenTxsChartData={tokenTxsChartData && tokenTxsChartData}
 					/>
 				</>
 			}
@@ -119,7 +116,7 @@ const App: React.FC = () => {
 					<TitleBlock tokenTitle={nftInfo.name} title={"Use arrow keys to navigate"} />
 					<TickerBlock ticker={nftInfo.symbol} />
 					<ChartsBlock
-						txVolumeData={txVolumeChartData.length && txVolumeChartData}
+						txVolumeData={txVolumeChartData && txVolumeChartData}
 					/>
 				</>
 			}
