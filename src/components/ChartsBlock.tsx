@@ -92,7 +92,7 @@ console.log("tokenTxsChartData: ", tokenTxsChartData)
     useEffect(() => {
             setChartOption(0)
 
-    }, [price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData])
+    }, [txVolumeData, tokenTxsChartData])
 
     const CustomPriceTooltip = props => {
         const { active, payload } = props;

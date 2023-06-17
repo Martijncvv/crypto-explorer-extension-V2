@@ -55,13 +55,16 @@ const App: React.FC = () => {
 	const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>()
 	const [txVolumeChartData, setTxVolumeChartData] = useState<any>([])
 	const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([])
-	const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+	const [menuIsOpen, setMenuIsOpen] = useState<boolean>(true);
 
 	// console.log("\n\n")
 	// console.log("MAIN")
 	// console.log("coinInfo1", coinInfo)
 	// console.log("nftInfo1", nftInfo)
 
+	// todo: large community metrics amount data wrap: BNB
+	// todo; add 24h price difference
+	// todo portfolio page
 	// todo splash screen/ new icon
 	// todo, make ref links of all exchange buttons
 

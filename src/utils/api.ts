@@ -131,7 +131,6 @@ export async function fetchTokenTxs(
 		if (!res.ok) {
 			throw new Error(`Fetch error, ${domainName} token txs info: ${res.status} ${res.statusText}`);
 		}
-
 		return await res.json();
 	} catch (error) {
 		console.error('Error fetching token txs info:', error);

@@ -120,6 +120,59 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
             fontSize: 24,
             color: colors.white_medium,
         },
+
+        // PORTFOLIO
+        portfolioHeader:{
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "53px",
+            marginBottom: "2px"
+        },
+        portfolioHeaderValue: {
+            width: "60px",
+            marginRight: "4px",
+            color: colors.accent_medium,
+            fontSize: constants.font_micro,
+            fontWeight: constants.font_weight_medium
+        },
+        portfolioItem: {
+            height: "32px",
+            width: "220px",
+            display: "flex",
+            alignItems: "center",
+            // marginLeft: "12px",
+        },
+        portfolioItemImage: {
+            width: "22px",
+            height: "22px",
+        },
+        portfolioItemTopRow: {
+            height: "16px",
+            fontSize: constants.font_small,
+            display: "flex",
+            alignItems: "flex-end",
+            fontWeight: constants.font_weight_large
+        },
+        portfolioItemBottomRow : {
+            height: "16px",
+            fontSize: constants.font_micro,
+            display: "flex",
+            alignItems: "flex-end",
+            fontWeight: constants.font_weight_medium
+        },
+        portfolioItemValue: {
+            width: "50px",
+            marginLeft: "16px",
+            color: colors.white_medium,
+        },
+        portfolioItemDivider: {
+            backgroundImage: colors.accent_medium,
+            marginTop: "6px",
+            marginBottom: "6px",
+            height: "0px",
+            width: "100%",
+            borderBottom: `2px solid ${colors.accent_light}`
+        }
     };
 
     const handleSupportClick = () => {
@@ -188,6 +241,64 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
                     </div>
                     {menuIsOpen &&
                         <>
+                            <div style={styles.sectionHeader}>Portfolio</div>
+                            <div style={styles.portfolioHeader}>
+                                <div style={styles.portfolioHeaderValue}></div>
+                                <span style={styles.portfolioHeaderValue}>Amount</span>
+                                <span style={styles.portfolioHeaderValue}>Total/ 24h</span>
+                            </div>
+                            <div style={styles.portfolioItem}>
+                                <img  style={styles.portfolioItemImage} src={"https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256"} alt="Portfolio coin Logo"/>
+                                <div style={styles.portfolioItemDataField}>
+                                    <div style={styles.portfolioItemTopRow}>
+                                        <span style={styles.portfolioItemValue}>$0.151</span>
+                                        <span style={styles.portfolioItemValue}>100.2 K</span>
+                                        <span style={styles.portfolioItemValue}>$13.6 K</span>
+                                    </div>
+                                    <div style={styles.portfolioItemBottomRow}>
+                                        <span style={{...styles.portfolioItemValue, color: colors.accent_medium}}>WOO</span>
+                                        <div style={styles.portfolioItemValue}></div>
+                                        <span style={{...styles.portfolioItemValue, color: colors.red_medium}}>-6.6%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={styles.portfolioItemDivider}/>
+                            <div style={styles.portfolioItem}>
+                                <img  style={styles.portfolioItemImage} src={"https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256"} alt="Portfolio coin Logo"/>
+                                <div style={styles.portfolioItemDataField}>
+                                    <div style={styles.portfolioItemTopRow}>
+                                        <span style={styles.portfolioItemValue}>$0.151</span>
+                                        <span style={styles.portfolioItemValue}>100.2 K</span>
+                                        <span style={styles.portfolioItemValue}>$13.6 K</span>
+                                    </div>
+                                    <div style={styles.portfolioItemBottomRow}>
+                                        <span style={{...styles.portfolioItemValue, color: colors.accent_medium}}>WOO</span>
+                                        <div style={styles.portfolioItemValue}></div>
+                                        <span style={{...styles.portfolioItemValue, color: colors.red_medium}}>-6.6%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={styles.portfolioItemDivider}/>
+                            <div style={styles.portfolioItem}>
+                                <img  style={styles.portfolioItemImage} src={"https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256"} alt="Portfolio coin Logo"/>
+                                <div style={styles.portfolioItemDataField}>
+                                    <div style={styles.portfolioItemTopRow}>
+                                        <span style={styles.portfolioItemValue}>$0.151</span>
+                                        <span style={styles.portfolioItemValue}>100.2 K</span>
+                                        <span style={styles.portfolioItemValue}>$13.6 K</span>
+                                    </div>
+                                    <div style={styles.portfolioItemBottomRow}>
+                                        <span style={{...styles.portfolioItemValue, color: colors.accent_medium}}>WOO</span>
+                                        <div style={styles.portfolioItemValue}></div>
+                                        <span style={{...styles.portfolioItemValue, color: colors.red_medium}}>-6.6%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={styles.portfolioItemDivider}/>
+
+
+
+                             {/*HOMEPAGE*/}
                             <div style={styles.sectionHeader}>Homepage</div>
                             <div style={styles.explanationSubtext}>{`${homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ? 'Unset' : 'Set'} startup coin`}</div>
                                 <ToggleButton

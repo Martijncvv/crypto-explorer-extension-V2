@@ -21,7 +21,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    min-height: 300px;\n    max-height: 600px;\n    margin: 0;\n    padding: 0;\n}\n\n.overlay-menu {\n    position: fixed;\n    z-index: 100;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: rgba(0,0,0,0.7);\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    transition: visibility 0.3s, opacity 0.3s;\n    visibility: hidden;\n    opacity: 0;\n}\n\n\n\n::-webkit-scrollbar {\n    width: 0px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}", "",{"version":3,"sources":["webpack://./src/popup/popup.css"],"names":[],"mappings":"AAAA;;IAEI,6CAA6C;IAC7C,YAAY;IACZ,iBAAiB;IACjB,iBAAiB;IACjB,SAAS;IACT,UAAU;AACd;;AAEA;IACI,eAAe;IACf,YAAY;IACZ,OAAO;IACP,MAAM;IACN,WAAW;IACX,YAAY;IACZ,2BAA2B;IAC3B,aAAa;IACb,uBAAuB;IACvB,mBAAmB;IACnB,yCAAyC;IACzC,kBAAkB;IAClB,UAAU;AACd;;;;AAIA;IACI,UAAU;AACd;AACA;IACI,gDAAgD;AACpD;AACA;IACI,iCAAiC;IACjC,kBAAkB;AACtB","sourcesContent":["body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    min-height: 300px;\n    max-height: 600px;\n    margin: 0;\n    padding: 0;\n}\n\n.overlay-menu {\n    position: fixed;\n    z-index: 100;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: rgba(0,0,0,0.7);\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    transition: visibility 0.3s, opacity 0.3s;\n    visibility: hidden;\n    opacity: 0;\n}\n\n\n\n::-webkit-scrollbar {\n    width: 0px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    min-height: 500px;\n    max-height: 600px;\n    margin: 0;\n    padding: 0;\n}\n\n.overlay-menu {\n    position: fixed;\n    z-index: 100;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: rgba(0,0,0,0.7);\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    transition: visibility 0.3s, opacity 0.3s;\n    visibility: hidden;\n    opacity: 0;\n}\n\n\n\n::-webkit-scrollbar {\n    width: 0px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}", "",{"version":3,"sources":["webpack://./src/popup/popup.css"],"names":[],"mappings":"AAAA;;IAEI,6CAA6C;IAC7C,YAAY;IACZ,iBAAiB;IACjB,iBAAiB;IACjB,SAAS;IACT,UAAU;AACd;;AAEA;IACI,eAAe;IACf,YAAY;IACZ,OAAO;IACP,MAAM;IACN,WAAW;IACX,YAAY;IACZ,2BAA2B;IAC3B,aAAa;IACb,uBAAuB;IACvB,mBAAmB;IACnB,yCAAyC;IACzC,kBAAkB;IAClB,UAAU;AACd;;;;AAIA;IACI,UAAU;AACd;AACA;IACI,gDAAgD;AACpD;AACA;IACI,iCAAiC;IACjC,kBAAkB;AACtB","sourcesContent":["body,\n#root {\n    background: radial-gradient(#5565b0, #344183);\n    width: 330px;\n    min-height: 500px;\n    max-height: 600px;\n    margin: 0;\n    padding: 0;\n}\n\n.overlay-menu {\n    position: fixed;\n    z-index: 100;\n    left: 0;\n    top: 0;\n    width: 100%;\n    height: 100%;\n    background: rgba(0,0,0,0.7);\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    transition: visibility 0.3s, opacity 0.3s;\n    visibility: hidden;\n    opacity: 0;\n}\n\n\n\n::-webkit-scrollbar {\n    width: 0px;\n}\n::-webkit-scrollbar-track {\n    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);\n}\n::-webkit-scrollbar-thumb {\n    background: rgba(255, 139, 79, 0);\n    border-radius: 2px;\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -179,7 +179,7 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
     }, [chartOptionCount, chartOption]);
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         setChartOption(0);
-    }, [price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData]);
+    }, [txVolumeData, tokenTxsChartData]);
     const CustomPriceTooltip = props => {
         var _a;
         const { active, payload } = props;
@@ -1421,6 +1421,58 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo }) => {
             fontSize: 24,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
         },
+        // PORTFOLIO
+        portfolioHeader: {
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "53px",
+            marginBottom: "2px"
+        },
+        portfolioHeaderValue: {
+            width: "60px",
+            marginRight: "4px",
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium,
+            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_micro,
+            fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium
+        },
+        portfolioItem: {
+            height: "32px",
+            width: "220px",
+            display: "flex",
+            alignItems: "center",
+            // marginLeft: "12px",
+        },
+        portfolioItemImage: {
+            width: "22px",
+            height: "22px",
+        },
+        portfolioItemTopRow: {
+            height: "16px",
+            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
+            display: "flex",
+            alignItems: "flex-end",
+            fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_large
+        },
+        portfolioItemBottomRow: {
+            height: "16px",
+            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_micro,
+            display: "flex",
+            alignItems: "flex-end",
+            fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium
+        },
+        portfolioItemValue: {
+            width: "50px",
+            marginLeft: "16px",
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
+        },
+        portfolioItemDivider: {
+            backgroundImage: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium,
+            marginTop: "6px",
+            marginBottom: "6px",
+            height: "0px",
+            width: "100%",
+            borderBottom: `2px solid ${_static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_light}`
+        }
     };
     const handleSupportClick = () => {
         chrome.tabs.create({ url: "https://twitter.com/Marty_cFly", active: false });
@@ -1480,6 +1532,47 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo }) => {
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_4__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium }, onClick: () => setMenuIsOpen(false) })),
                 menuIsOpen &&
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Portfolio"),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioHeader },
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioHeaderValue }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioHeaderValue }, "Amount"),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioHeaderValue }, "Total/ 24h")),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItem },
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.portfolioItemImage, src: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256", alt: "Portfolio coin Logo" }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDataField },
+                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemTopRow },
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, "$0.151"),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, "100.2 K"),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, "$13.6 K")),
+                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemBottomRow },
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium }) }, "WOO"),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemValue }),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium }) }, "-6.6%")))),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDivider }),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItem },
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.portfolioItemImage, src: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256", alt: "Portfolio coin Logo" }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDataField },
+                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemTopRow },
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, "$0.151"),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, "100.2 K"),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, "$13.6 K")),
+                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemBottomRow },
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium }) }, "WOO"),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemValue }),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium }) }, "-6.6%")))),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDivider }),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItem },
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.portfolioItemImage, src: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256", alt: "Portfolio coin Logo" }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDataField },
+                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemTopRow },
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, "$0.151"),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, "100.2 K"),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, "$13.6 K")),
+                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemBottomRow },
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium }) }, "WOO"),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemValue }),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium }) }, "-6.6%")))),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDivider }),
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Homepage"),
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, `${(homeCoin === null || homeCoin === void 0 ? void 0 : homeCoin.id) === (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.id) || (homeCoin === null || homeCoin === void 0 ? void 0 : homeCoin.id) === (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.id) ? 'Unset' : 'Set'} startup coin`),
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_5__["default"], { value: "home", style: styles.togglePrefButton, onClick: handleHomePress }, (homeCoin === null || homeCoin === void 0 ? void 0 : homeCoin.id) === (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.id) || (homeCoin === null || homeCoin === void 0 ? void 0 : homeCoin.id) === (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.id) ?
@@ -1887,11 +1980,14 @@ const App = () => {
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    const [menuIsOpen, setMenuIsOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+    const [menuIsOpen, setMenuIsOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
     // console.log("\n\n")
     // console.log("MAIN")
     // console.log("coinInfo1", coinInfo)
     // console.log("nftInfo1", nftInfo)
+    // todo: large community metrics amount data wrap: BNB
+    // todo; add 24h price difference
+    // todo portfolio page
     // todo splash screen/ new icon
     // todo, make ref links of all exchange buttons
     //  zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
@@ -2009,6 +2105,7 @@ const colors = {
     secondary_medium: '#6778CE',
     secondary_dark: '#5b61c2',
     accent_medium: '#FFFFFF80',
+    accent_light: 'rgba(255,255,255,0.1)',
     red_medium: '#FD8E8E',
     green_medium: '#88EE58',
     white_medium: '#F5F5F5',
