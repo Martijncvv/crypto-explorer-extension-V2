@@ -11,10 +11,12 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getHomeCoinStorage": () => (/* binding */ getHomeCoinStorage),
+/* harmony export */   "getPortfolioDataStorage": () => (/* binding */ getPortfolioDataStorage),
 /* harmony export */   "getSearchPrefStorage": () => (/* binding */ getSearchPrefStorage),
 /* harmony export */   "getSearchResultNftAmountStorage": () => (/* binding */ getSearchResultNftAmountStorage),
 /* harmony export */   "getSelectedTokenStorage": () => (/* binding */ getSelectedTokenStorage),
 /* harmony export */   "setHomeCoinStorage": () => (/* binding */ setHomeCoinStorage),
+/* harmony export */   "setPortfolioDataStorage": () => (/* binding */ setPortfolioDataStorage),
 /* harmony export */   "setSearchPrefStorage": () => (/* binding */ setSearchPrefStorage),
 /* harmony export */   "setSearchResultNftAmountStorage": () => (/* binding */ setSearchResultNftAmountStorage),
 /* harmony export */   "setSelectedTokenStorage": () => (/* binding */ setSelectedTokenStorage)
@@ -85,6 +87,35 @@ function setHomeCoinStorage(homeCoinData) {
         }
     });
 }
+function setPortfolioDataStorage(newCoinData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.get("portfolioCoinData", (result) => {
+                    const existingData = result.portfolioCoinData || [];
+                    const existingCoinIndex = existingData.findIndex((coin) => coin.id === newCoinData.id);
+                    let updatedData = [];
+                    if (existingCoinIndex !== -1) {
+                        updatedData = existingData.filter((coin) => coin.id !== newCoinData.id);
+                    }
+                    else {
+                        updatedData = [...existingData, newCoinData];
+                    }
+                    chrome.storage.local.set({ portfolioCoinData: updatedData }, () => {
+                        resolve();
+                    });
+                    //
+                    // chrome.storage.local.set({ portfolioCoinData: [] }, () => {
+                    // 	resolve();
+                    // });
+                });
+            });
+        }
+        catch (error) {
+            console.log("setPortfolioDataStorage error: ", error);
+        }
+    });
+}
 // GETTERS
 function getSelectedTokenStorage() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -134,6 +165,20 @@ function getHomeCoinStorage() {
             chrome.storage.local.get(['homeCoinData'], (res) => {
                 if (res === null || res === void 0 ? void 0 : res.homeCoinData) {
                     resolve(res.homeCoinData);
+                }
+                else {
+                    resolve(null);
+                }
+            });
+        });
+    });
+}
+function getPortfolioDataStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(['portfolioCoinData'], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.portfolioCoinData) {
+                    resolve(res.portfolioCoinData);
                 }
                 else {
                     resolve(null);

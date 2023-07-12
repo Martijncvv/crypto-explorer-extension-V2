@@ -37,7 +37,7 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ( {price30dHistorydata, priceMax
     }
     const chartOptionCount = availableCharts.length;
     const [chartOption, setChartOption] = useState<number>(0)
-console.log("tokenTxsChartData: ", tokenTxsChartData)
+
     const styles: { [key: string]: CSSProperties } = {
         container: {
             width: 330,

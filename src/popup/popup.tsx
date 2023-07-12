@@ -1,4 +1,4 @@
-import React, { CSSProperties, useState } from 'react';
+import React, {CSSProperties, useEffect, useState} from 'react';
 import { createRoot } from 'react-dom/client';
 import './popup.css'
 import TitleBlock from '../components/TitleBlock';
@@ -14,9 +14,8 @@ import {IDetailedNftInfo} from "../models/INftInfo";
 import TickerBlock from "../components/TickerBlock";
 import {amountFormatter, numberFormatter, percentageFormatter} from "../utils/amountFormatter";
 import OverlayMenu from "../components/OverlayMenu";
+import {setPortfolioDataStorage, getPortfolioDataStorage} from "../utils/storage";
 
-
-// import {fetchExchangesList} from "../utils/api"; used for fetching all exchange icons
 
 const bitcoinIcon = require( "../static/images/icons/bitcoin-icon.png")
 const blockchainIcon = require( "../static/images/icons/blockchain-icon.png")
@@ -26,7 +25,7 @@ const redditIcon = require( "../static/images/icons/reddit-icon.png")
 const telegramIcon = require( "../static/images/icons/telegram-icon.png")
 const twitterIcon = require( "../static/images/icons/twitter-icon.png")
 const websiteIcon = require( "../static/images/icons/website-icon.png")
-// const discordIcon = require( "../static/images/icons/discord-icon.png")
+const discordIcon = require( "../static/images/icons/discord-icon.png")
 
 const styles: { [key: string]: CSSProperties } = {
 	topContainer: {
@@ -47,6 +46,12 @@ const styles: { [key: string]: CSSProperties } = {
 	},
 	bottomMargin: {
 		marginBottom: '12px',
+	},
+	addToPortfolioIcon: {
+		width: '20px',
+		height: '20px',
+		cursor: "pointer",
+		backgroundColor: "red"
 	},
 };
 
@@ -70,6 +75,13 @@ const App: React.FC = () => {
 
 	//  zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
 	// ideas: store notes for accounts (discord/ twitter)
+
+	const addToPortfolio = () => {
+		console.log("add to portfolio: ")
+		console.log(coinInfo)
+
+		setPortfolioDataStorage({id: coinInfo.id, ticker: coinInfo.symbol, iconUrl: coinInfo.image.thumb, amount: 0, nft: false})
+	};
 
 
 	// keep highest and lowest price on max chart
@@ -167,6 +179,9 @@ const App: React.FC = () => {
 							{coinInfo?.links?.telegram_channel_identifier &&
 								<SocialBlock image={telegramIcon}  title={"Telegram channel size"} mainValue={coinInfo.community_data?.telegram_channel_user_count}   link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`} />
 							}
+
+
+<div onClick={addToPortfolio} style={styles.addToPortfolioIcon}>plus </div>
 
 							{/*/!*<SocialBlock image={discordIcon}  title={"Discord channel size"}  link={coinInfo.links.homepage[0]} />*!/ find out what to do with this*/}
 						</div>

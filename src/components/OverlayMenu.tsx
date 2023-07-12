@@ -13,16 +13,15 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
 import WallpaperIcon from '@mui/icons-material/Wallpaper';
 import {
-    getHomeCoinStorage,
+    getHomeCoinStorage, getPortfolioDataStorage,
     getSearchPrefStorage,
-    getSearchResultNftAmountStorage, setHomeCoinStorage,
+    getSearchResultNftAmountStorage,
     setSearchPrefStorage,
     setSearchResultNftAmountStorage
 } from "../utils/storage";
 import {IDetailedNftInfo} from "../models/INftInfo";
 import {IDetailedCoinInfo} from "../models/ICoinInfo";
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import {fetchCoinsPrices} from "../utils/api";
 
 interface OverlayMenuProps {
     menuIsOpen: boolean;
@@ -151,7 +150,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
         },
         portfolioItemField: {
             // backgroundColor: 'rgba(52, 65, 131, 0.8)',
-            boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
+            // boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
             paddingTop: 10,
             paddingBottom: 10,
         },
@@ -185,6 +184,10 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
             marginLeft: "16px",
             color: colors.white_medium,
         },
+        tickerText: {
+            color: colors.accent_medium,
+            fontWeight: 600,
+        },
         portfolioItemDivider: {
             backgroundImage: colors.accent_medium,
             marginTop: "6px",
@@ -204,9 +207,10 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
         chrome.tabs.create({ url: "https://twitter.com/Marty_cFly", active: false })
     }
 
-    const [searchPref, setSearchPref] = React.useState<string>('coins');
-    const [searchResultNftAmount, setSearchResultNftAmount] = React.useState<number>(3);
-    const [homeCoin, setHomeCoin] = useState<{id: string, nft: boolean}>({ id: "", nft: false });
+    const [searchPref, setSearchPref] = useState<string>('coins');
+    const [searchResultNftAmount, setSearchResultNftAmount] = useState<number>(3);
+    const [portfolioData, setPortfolioData] = useState<{id: string, ticker: string, iconUrl: string, amount: number, price: number, usd24Change: number, nft: boolean}[]>([]);
+    const [totalPortfolioValue, setTotalPortfolioValue] = useState<number>(0);
 
 
     const handleSearchPref = (newSearchPref: string) => {
@@ -223,19 +227,35 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
     }
 
     const checkStorage = async () => {
-        const [searchPrefStorage, searchResultNftAmountStorage, currentHomeCoin] = await Promise.all([
+        const [portfolioDataStorage, searchPrefStorage, searchResultNftAmountStorage] = await Promise.all([
+            getPortfolioDataStorage(),
             getSearchPrefStorage(),
             getSearchResultNftAmountStorage(),
-            getHomeCoinStorage()
         ]);
+
+        if (portfolioDataStorage.length > 0) {
+            let coinIds = []
+            portfolioDataStorage.forEach((coinInfo => {
+                coinIds.push(coinInfo.id)
+            }))
+
+            const coinsPricesData = await fetchCoinsPrices(coinIds)
+
+            portfolioDataStorage.forEach((coinData) => {
+                const coinPriceData = coinsPricesData[coinData.id]
+                if (coinPriceData) {
+                    coinData.price = coinPriceData.usd
+                    coinData.usd24Change = coinPriceData.usd_24h_change
+                }
+            })
+            console.log("portfolioDataStorage2: ", portfolioDataStorage)
+            setPortfolioData(portfolioDataStorage);
+        }
         if (searchPrefStorage) {
             setSearchPref(searchPrefStorage);
         }
         if (searchResultNftAmountStorage) {
             setSearchResultNftAmount(searchResultNftAmountStorage);
-        }
-        if (currentHomeCoin) {
-            setHomeCoin(currentHomeCoin);
         }
     }
 
@@ -243,19 +263,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
         checkStorage()
     }, []);
 
-    const handleHomePress = async () => {
-        if (homeCoin?.id === coinInfo?.id || homeCoin?.id === nftInfo?.id) {
-            setHomeCoinStorage({id: '', nft: false})
-            setHomeCoin({id: '', nft: false})
-        } else if (coinInfo) {
-            setHomeCoinStorage({id: coinInfo.id, nft: false})
-            setHomeCoin({id: coinInfo.id, nft: false})
-        }
-        else if (nftInfo) {
-            setHomeCoinStorage({id: nftInfo.id, nft: true})
-            setHomeCoin({id: nftInfo.id, nft: true})
-        }
-    }
 
     const portfolioItems = [
         {
@@ -323,7 +330,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
                     {menuIsOpen &&
                         <>
                             <div style={styles.portfolioSectionTitle}>PORTFOLIO BALANCE</div>
-                            <div style={styles.portfolioValueField}>$23.569,24</div>
+                            <div style={styles.portfolioValueField}>{`$${totalPortfolioValue}`}</div>
 
 
                                 <div style={styles.portfolioItemField} >
@@ -332,24 +339,25 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
                                 <span style={styles.portfolioHeaderValue}>Amount</span>
                                 <span style={styles.portfolioHeaderValue}>Total/ 24h</span>
                             </div>
-                            {portfolioItems.map((item, index) => (
-                                <div key={item.src}>
+                            {portfolioData.map((coinInfo, index) => (
+                                <div key={coinInfo.id}>
                                     <div style={styles.portfolioItem}>
-                                        <img  style={styles.portfolioItemImage} src={item.src} alt={item.alt}/>
+                                        <img  style={styles.portfolioItemImage} src={coinInfo.iconUrl} alt={coinInfo.ticker}/>
                                         <div style={styles.portfolioItemDataField}>
                                             <div style={styles.portfolioItemTopRow}>
-                                                <span style={styles.portfolioItemValue}>{item.price}</span>
-                                                <span style={styles.portfolioItemValue}>{item.amount}</span>
-                                                <span style={styles.portfolioItemValue}>{item.total24}</span>
+                                                <span style={styles.portfolioItemValue}>{coinInfo.price}</span>
+                                                <span style={styles.portfolioItemValue}>{coinInfo.amount}</span>
+                                                <span style={styles.portfolioItemValue}>{coinInfo.price * coinInfo.amount}</span>
                                             </div>
                                             <div style={styles.portfolioItemBottomRow}>
-                                                <span style={{...styles.portfolioItemValue, color: colors.accent_medium}}>{item.coinName}</span>
+                                                <span style={{...styles.portfolioItemValue, ...styles.tickerText }}>{coinInfo.ticker.toUpperCase()}</span>
                                                 <div style={styles.portfolioItemValue}></div>
-                                                <span style={{...styles.portfolioItemValue, color: colors.red_medium}}>{item.change}</span>
+                                                <span style={{...styles.portfolioItemValue, color: colors.red_medium}}>{`${coinInfo.usd24Change.toFixed(1)}%`}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    {index < portfolioItems.length - 1 && <div style={styles.portfolioItemDivider}/>}
+                                    <div style={styles.portfolioItemDivider}/>
+                                    {/*{index < portfolioItems.length - 1 && <div style={styles.portfolioItemDivider}/>}*/}
                                 </div>
                             ))}
                                 </div>
@@ -357,18 +365,18 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({menuIsOpen, setMenuIsOpen, coi
 
                              {/*HOMEPAGE*/}
                             <div style={styles.sectionHeader}>Homepage</div>
-                            <div style={styles.explanationSubtext}>{`${homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ? 'Unset' : 'Set'} startup coin`}</div>
-                                <ToggleButton
-                                    value="home"
-                                    style={styles.togglePrefButton}
-                                    onClick={handleHomePress}
-                                >
-                                    {homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ?
-                                        <HomeRoundedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />
-                                        :
-                                        <HomeOutlinedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />
-                                    }
-                                </ToggleButton>
+                            {/*<div style={styles.explanationSubtext}>{`${homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ? 'Unset' : 'Set'} startup coin`}</div>*/}
+                            {/*    <ToggleButton*/}
+                            {/*        value="home"*/}
+                            {/*        style={styles.togglePrefButton}*/}
+                            {/*        onClick={handleHomePress}*/}
+                            {/*    >*/}
+                            {/*        {homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ?*/}
+                            {/*            <HomeRoundedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />*/}
+                            {/*            :*/}
+                            {/*            <HomeOutlinedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />*/}
+                            {/*        }*/}
+                            {/*    </ToggleButton>*/}
 
 
                             <div style={styles.sectionHeader} >Search Priority</div>

@@ -1,6 +1,7 @@
 
 export interface LocalStorageData {
 	homeCoinData?: {id: string, nft: boolean};
+	portfolioCoinData?: {id: string, ticker: string, iconUrl: string, amount: number, nft: boolean};
 	selectedToken?: string;
 	searchPref?: string;
 	searchResultNftAmount?: number;
@@ -53,6 +54,33 @@ export async function setHomeCoinStorage( homeCoinData: LocalStorageData['homeCo
 		console.log("setHomeCoinStorage error: ", error);
 	}
 }
+export async function setPortfolioDataStorage(newCoinData: LocalStorageData['portfolioCoinData']): Promise<void> {
+	try {
+		return new Promise((resolve) => {
+			chrome.storage.local.get("portfolioCoinData", (result) => {
+				const existingData = result.portfolioCoinData || [];
+				const existingCoinIndex = existingData.findIndex((coin) => coin.id === newCoinData.id);
+
+				let updatedData =[]
+				if (existingCoinIndex !== -1) {
+					updatedData = existingData.filter((coin) => coin.id !== newCoinData.id);
+				} else {
+					updatedData = [...existingData,newCoinData];
+				}
+
+				chrome.storage.local.set({ portfolioCoinData: updatedData }, () => {
+					resolve();
+				});
+				//
+				// chrome.storage.local.set({ portfolioCoinData: [] }, () => {
+				// 	resolve();
+				// });
+			});
+		});
+	} catch (error) {
+		console.log("setPortfolioDataStorage error: ", error);
+	}
+}
 
 
 // GETTERS
@@ -95,6 +123,17 @@ export async function getHomeCoinStorage(): Promise<any> {
 		chrome.storage.local.get(['homeCoinData'], (res: LocalStorageData) => {
 			if (res?.homeCoinData) {
 				resolve(res.homeCoinData);
+			} else {
+				resolve(null);
+			}
+		});
+	});
+}
+export async function getPortfolioDataStorage(): Promise<any> {
+	return new Promise((resolve) => {
+		chrome.storage.local.get(['portfolioCoinData'], (res: LocalStorageData) => {
+			if (res?.portfolioCoinData) {
+				resolve(res.portfolioCoinData);
 			} else {
 				resolve(null);
 			}
