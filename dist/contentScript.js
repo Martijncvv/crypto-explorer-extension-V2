@@ -16,6 +16,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getSearchResultNftAmountStorage": () => (/* binding */ getSearchResultNftAmountStorage),
 /* harmony export */   "getSelectedTokenStorage": () => (/* binding */ getSelectedTokenStorage),
 /* harmony export */   "setHomeCoinStorage": () => (/* binding */ setHomeCoinStorage),
+/* harmony export */   "setPortfolioCoinAmountStorage": () => (/* binding */ setPortfolioCoinAmountStorage),
 /* harmony export */   "setPortfolioDataStorage": () => (/* binding */ setPortfolioDataStorage),
 /* harmony export */   "setSearchPrefStorage": () => (/* binding */ setSearchPrefStorage),
 /* harmony export */   "setSearchResultNftAmountStorage": () => (/* binding */ setSearchResultNftAmountStorage),
@@ -91,23 +92,28 @@ function setPortfolioDataStorage(newCoinData) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             return new Promise((resolve) => {
+                // chrome.storage.local.set({ portfolioCoinData: [] }, () => {
+                //   resolve();
+                // });
                 chrome.storage.local.get("portfolioCoinData", (result) => {
                     const existingData = result.portfolioCoinData || [];
-                    const existingCoinIndex = existingData.findIndex((coin) => coin.id === newCoinData.id);
                     let updatedData = [];
-                    if (existingCoinIndex !== -1) {
-                        updatedData = existingData.filter((coin) => coin.id !== newCoinData.id);
+                    if (existingData.length > 0) {
+                        const existingCoinIndex = existingData.findIndex((coin) => coin.id === newCoinData.id);
+                        if (existingCoinIndex === -1) {
+                            updatedData = [...existingData, newCoinData];
+                        }
+                        else {
+                            updatedData = existingData.filter((coin) => coin.id !== newCoinData.id);
+                        }
                     }
                     else {
-                        updatedData = [...existingData, newCoinData];
+                        updatedData = [newCoinData];
                     }
+                    console.log("updatedData1: ", updatedData);
                     chrome.storage.local.set({ portfolioCoinData: updatedData }, () => {
                         resolve();
                     });
-                    //
-                    // chrome.storage.local.set({ portfolioCoinData: [] }, () => {
-                    // 	resolve();
-                    // });
                 });
             });
         }
@@ -116,11 +122,34 @@ function setPortfolioDataStorage(newCoinData) {
         }
     });
 }
+function setPortfolioCoinAmountStorage(coinId, amount) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.get("portfolioCoinData", (result) => {
+                    const existingData = result.portfolioCoinData || [];
+                    const updatedData = existingData.map((coinInfo) => {
+                        if (coinInfo.id === coinId) {
+                            return Object.assign(Object.assign({}, coinInfo), { amount });
+                        }
+                        return coinInfo;
+                    });
+                    chrome.storage.local.set({ portfolioCoinData: updatedData }, () => {
+                        resolve();
+                    });
+                });
+            });
+        }
+        catch (error) {
+            console.log("setPortfolioCoinAmountStorage error: ", error);
+        }
+    });
+}
 // GETTERS
 function getSelectedTokenStorage() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
-            chrome.storage.local.get(['selectedToken'], (res) => {
+            chrome.storage.local.get(["selectedToken"], (res) => {
                 if (res === null || res === void 0 ? void 0 : res.selectedToken) {
                     resolve(res.selectedToken);
                 }
@@ -134,7 +163,7 @@ function getSelectedTokenStorage() {
 function getSearchPrefStorage() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
-            chrome.storage.local.get(['searchPref'], (res) => {
+            chrome.storage.local.get(["searchPref"], (res) => {
                 if (res === null || res === void 0 ? void 0 : res.searchPref) {
                     resolve(res.searchPref);
                 }
@@ -148,7 +177,7 @@ function getSearchPrefStorage() {
 function getSearchResultNftAmountStorage() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
-            chrome.storage.local.get(['searchResultNftAmount'], (res) => {
+            chrome.storage.local.get(["searchResultNftAmount"], (res) => {
                 if (res === null || res === void 0 ? void 0 : res.searchResultNftAmount) {
                     resolve(res.searchResultNftAmount);
                 }
@@ -162,7 +191,7 @@ function getSearchResultNftAmountStorage() {
 function getHomeCoinStorage() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
-            chrome.storage.local.get(['homeCoinData'], (res) => {
+            chrome.storage.local.get(["homeCoinData"], (res) => {
                 if (res === null || res === void 0 ? void 0 : res.homeCoinData) {
                     resolve(res.homeCoinData);
                 }
@@ -176,7 +205,7 @@ function getHomeCoinStorage() {
 function getPortfolioDataStorage() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
-            chrome.storage.local.get(['portfolioCoinData'], (res) => {
+            chrome.storage.local.get(["portfolioCoinData"], (res) => {
                 if (res === null || res === void 0 ? void 0 : res.portfolioCoinData) {
                     resolve(res.portfolioCoinData);
                 }
