@@ -50,11 +50,16 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       top: 0,
       left: 0,
       width: 0,
-      overflowY: "auto",
       height: "100%",
       zIndex: 100,
       // transition: 'width 0.5s ease',
+      overflowY: "auto",
+      // backgroundColor: "rgba(0,0,0,0.5)",
+    },
+    backgroundContainer: {
       backgroundColor: "rgba(0,0,0,0.5)",
+      // overflowY: "auto",
+      // height: "100%",
     },
     overlayMenuOpen: {
       width: "100%",
@@ -422,254 +427,260 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
           : styles.overlayMenu
       }
     >
-      <div
-        style={
-          menuIsOpen
-            ? { ...styles.menuContent, ...styles.menuContentOpen }
-            : styles.menuContent
-        }
-      >
-        <div style={styles.menuCloseButton}>
-          <CloseIcon
-            style={{ fontSize: 24, color: colors.secondary_medium }}
-            onClick={() => setMenuIsOpen(false)}
-          />
-        </div>
-        {menuIsOpen && (
-          <>
-            <div style={styles.portfolioSectionTitle}>PORTFOLIO BALANCE</div>
+      <div style={styles.backgroundContainer}>
+        <div
+          style={
+            menuIsOpen
+              ? { ...styles.menuContent, ...styles.menuContentOpen }
+              : styles.menuContent
+          }
+        >
+          <div style={styles.menuCloseButton}>
+            <CloseIcon
+              style={{ fontSize: 24, color: colors.secondary_medium }}
+              onClick={() => setMenuIsOpen(false)}
+            />
+          </div>
+          {menuIsOpen && (
+            <>
+              <div style={styles.portfolioSectionTitle}>PORTFOLIO BALANCE</div>
 
-            {calculatePortfolioValue() > 0 ? (
-              <div style={styles.portfolioValueField}>
-                ${amountFormatter(calculatePortfolioValue())}
-              </div>
-            ) : loading ? (
-              <div style={styles.emptyPortfolioValueField}>Loading..</div>
-            ) : (
-              <div style={styles.emptyPortfolioValueField}>
-                Click on coin to add amount
-              </div>
-            )}
-
-            {showInputField && (
-              <div style={styles.inputContainer}>
-                <input
-                  type="number"
-                  value={inputAmount}
-                  onChange={(e) => setInputAmount(e.target.value)}
-                  style={styles.amountInputField}
-                  placeholder={`Amount (${clickedCoinTicker})`}
-                />
-                <button
-                  style={styles.inputContainerSaveButton}
-                  onClick={handleSaveAmountInput}
-                >
-                  Save
-                </button>
-                <div
-                  style={styles.inputContainerDeleteButton}
-                  onClick={handleRemoveCoinButton}
-                >
-                  <DeleteIcon
-                    style={{ fontSize: 14, color: colors.white_medium }}
-                  />
-
-                  <span style={styles.mainValue}></span>
+              {calculatePortfolioValue() > 0 ? (
+                <div style={styles.portfolioValueField}>
+                  ${amountFormatter(calculatePortfolioValue())}
                 </div>
-              </div>
-            )}
-
-            <div style={styles.portfolioItemField}>
-              {portfolioData?.length > 0 && (
-                <div style={styles.portfolioHeader}>
-                  <div style={styles.portfolioItemImage} />
-                  <div style={styles.portfolioHeaderValue}>Price</div>
-                  <span style={styles.portfolioHeaderValue}>Amount</span>
-                  <span style={styles.portfolioHeaderValue}>Total/ 24h</span>
+              ) : loading ? (
+                <div style={styles.emptyPortfolioValueField}>Loading..</div>
+              ) : (
+                <div style={styles.emptyPortfolioValueField}>
+                  Click on coin to add amount
                 </div>
               )}
 
-              {portfolioData?.length > 0 ? (
-                portfolioData.map((coinInfo, index) => (
-                  <div key={coinInfo.id}>
-                    <div
-                      style={styles.portfolioItem}
-                      onClick={() =>
-                        handlePortfolioCoinPress(coinInfo.id, coinInfo.ticker)
-                      }
-                    >
-                      <img
-                        style={styles.portfolioItemImage}
-                        src={coinInfo.iconUrl}
-                        alt={coinInfo.ticker}
-                      />
-                      <div style={styles.portfolioItemDataField}>
-                        <div style={styles.portfolioItemTopRow}>
-                          <span style={styles.portfolioItemValue}>
-                            ${amountFormatter(coinInfo.price)}
-                          </span>
+              {showInputField && (
+                <div style={styles.inputContainer}>
+                  <input
+                    type="number"
+                    value={inputAmount}
+                    onChange={(e) => setInputAmount(e.target.value)}
+                    style={styles.amountInputField}
+                    placeholder={`Amount (${clickedCoinTicker})`}
+                  />
+                  <button
+                    style={styles.inputContainerSaveButton}
+                    onClick={handleSaveAmountInput}
+                  >
+                    Save
+                  </button>
+                  <div
+                    style={styles.inputContainerDeleteButton}
+                    onClick={handleRemoveCoinButton}
+                  >
+                    <DeleteIcon
+                      style={{ fontSize: 14, color: colors.white_medium }}
+                    />
 
-                          <div style={styles.amountText}>
-                            {coinInfo.amount > 0
-                              ? amountFormatter(coinInfo.amount)
-                              : "-"}
+                    <span style={styles.mainValue}></span>
+                  </div>
+                </div>
+              )}
+
+              <div style={styles.portfolioItemField}>
+                {portfolioData?.length > 0 && (
+                  <div style={styles.portfolioHeader}>
+                    <div style={styles.portfolioItemImage} />
+                    <div style={styles.portfolioHeaderValue}>Price</div>
+                    <span style={styles.portfolioHeaderValue}>Amount</span>
+                    <span style={styles.portfolioHeaderValue}>Total/ 24h</span>
+                  </div>
+                )}
+
+                {portfolioData?.length > 0 ? (
+                  portfolioData.map((coinInfo, index) => (
+                    <div key={coinInfo.id}>
+                      <div
+                        style={styles.portfolioItem}
+                        onClick={() =>
+                          handlePortfolioCoinPress(coinInfo.id, coinInfo.ticker)
+                        }
+                      >
+                        <img
+                          style={styles.portfolioItemImage}
+                          src={coinInfo.iconUrl}
+                          alt={coinInfo.ticker}
+                        />
+                        <div style={styles.portfolioItemDataField}>
+                          <div style={styles.portfolioItemTopRow}>
+                            <span style={styles.portfolioItemValue}>
+                              ${amountFormatter(coinInfo.price)}
+                            </span>
+
+                            <div style={styles.amountText}>
+                              {coinInfo.amount > 0
+                                ? amountFormatter(coinInfo.amount)
+                                : "-"}
+                            </div>
+                            <span style={styles.portfolioItemValue}>
+                              {coinInfo.amount > 0
+                                ? `$${amountFormatter(
+                                    coinInfo.price * coinInfo.amount,
+                                  )}`
+                                : "-"}
+                            </span>
                           </div>
-                          <span style={styles.portfolioItemValue}>
-                            {coinInfo.amount > 0
-                              ? `$${amountFormatter(
-                                  coinInfo.price * coinInfo.amount,
-                                )}`
-                              : "-"}
-                          </span>
-                        </div>
-                        <div style={styles.portfolioItemBottomRow}>
-                          <span
-                            style={{
-                              ...styles.portfolioItemValue,
-                              ...styles.tickerText,
-                            }}
-                          >
-                            {coinInfo.ticker.toUpperCase()}
-                          </span>
-                          <div style={styles.portfolioItemValue}></div>
-                          <span
-                            style={{
-                              ...styles.portfolioItemValue,
-                              color:
-                                coinInfo.usd24Change > 0
-                                  ? colors.green_medium
-                                  : colors.red_medium,
-                            }}
-                          >{`${coinInfo.usd24Change.toFixed(1)}%`}</span>
+                          <div style={styles.portfolioItemBottomRow}>
+                            <span
+                              style={{
+                                ...styles.portfolioItemValue,
+                                ...styles.tickerText,
+                              }}
+                            >
+                              {coinInfo.ticker.toUpperCase()}
+                            </span>
+                            <div style={styles.portfolioItemValue}></div>
+                            <span
+                              style={{
+                                ...styles.portfolioItemValue,
+                                color:
+                                  coinInfo.usd24Change > 0
+                                    ? colors.green_medium
+                                    : colors.red_medium,
+                              }}
+                            >{`${coinInfo.usd24Change.toFixed(1)}%`}</span>
+                          </div>
                         </div>
                       </div>
+                      <div style={styles.portfolioItemDivider} />
+                      {/*{index < portfolioItems.length - 1 && <div style={styles.portfolioItemDivider}/>}*/}
                     </div>
-                    <div style={styles.portfolioItemDivider} />
-                    {/*{index < portfolioItems.length - 1 && <div style={styles.portfolioItemDivider}/>}*/}
+                  ))
+                ) : (
+                  <div style={styles.noCoinsText}>
+                    No coins in portfolio, add coins at the bottom of a page
                   </div>
-                ))
-              ) : (
-                <div style={styles.noCoinsText}>
-                  No coins in portfolio, add coins at the bottom of a page
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
-            <div style={styles.sectionHeader}>Tweet Me!</div>
-            <div style={styles.explanationSubtext}>
-              Any feature requests or ideas
-            </div>
-            <ToggleButton
-              value="question"
-              style={styles.togglePrefButton}
-              onClick={handleSupportClick}
-            >
-              <QuestionAnswerIcon
-                style={{
-                  fontSize: 24,
-                  cursor: "pointer",
-                  color: colors.white_medium,
-                }}
-              />
-            </ToggleButton>
+              <div style={styles.sectionHeader}>Tweet Me!</div>
+              <div style={styles.explanationSubtext}>
+                Any feature requests or ideas
+              </div>
+              <ToggleButton
+                value="question"
+                style={styles.togglePrefButton}
+                onClick={handleSupportClick}
+              >
+                <QuestionAnswerIcon
+                  style={{
+                    fontSize: 24,
+                    cursor: "pointer",
+                    color: colors.white_medium,
+                  }}
+                />
+              </ToggleButton>
 
-            <div style={styles.sectionHeader}>Start Priority</div>
-            <div style={styles.explanationSubtext}>Portfolio/ Search first</div>
-            <ToggleButtonGroup
-              size="small"
-              color="primary"
-              value={startPref}
-              exclusive
-              aria-label="StartPref"
-            >
-              <ToggleButton
-                value="portfolio"
-                style={{
-                  ...styles.togglePrefButton,
-                  ...(startPref === "portfolio" && styles.activePrefButton),
-                }}
-                onClick={() => handleStartPref("portfolio")}
-              >
-                <QueryStatsIcon style={styles.togglePrefButtonIcon} />
-              </ToggleButton>
-              <ToggleButton
-                value="search"
-                style={{
-                  ...styles.togglePrefButton,
-                  ...(startPref === "search" && styles.activePrefButton),
-                }}
-                onClick={() => handleStartPref("search")}
-              >
-                <SearchIcon style={styles.togglePrefButtonIcon} />
-              </ToggleButton>
-            </ToggleButtonGroup>
-
-            <div style={styles.sectionHeader}>Search Priority</div>
-            <div style={styles.explanationSubtext}>Show Coins/ Nfts first</div>
-            <ToggleButtonGroup
-              size="small"
-              color="primary"
-              value={searchPref}
-              exclusive
-              aria-label="SearchPref"
-            >
-              <ToggleButton
-                value="coins"
-                style={{
-                  ...styles.togglePrefButton,
-                  ...(searchPref === "coins" && styles.activePrefButton),
-                }}
-                onClick={() => handleSearchPref("coins")}
-              >
-                <CurrencyBitcoinIcon style={styles.togglePrefButtonIcon} />
-              </ToggleButton>
-              <ToggleButton
-                value="nfts"
-                style={{
-                  ...styles.togglePrefButton,
-                  ...(searchPref === "nfts" && styles.activePrefButton),
-                }}
-                onClick={() => handleSearchPref("nfts")}
-              >
-                <WallpaperIcon style={styles.togglePrefButtonIcon} />
-              </ToggleButton>
-            </ToggleButtonGroup>
-
-            <div style={styles.sectionHeader}>Search Results</div>
-            <div
-              style={styles.explanationSubtext}
-            >{`Max number of Nfts from 11 results (${searchResultNftAmount})`}</div>
-            <Box sx={{ width: 180 }}>
-              <Slider
+              <div style={styles.sectionHeader}>Start Priority</div>
+              <div style={styles.explanationSubtext}>
+                Portfolio/ Search first
+              </div>
+              <ToggleButtonGroup
                 size="small"
-                aria-label="Max Nfts out of 11 search results"
-                value={searchResultNftAmount}
-                valueLabelDisplay="auto"
-                onChange={(event, newTokenNftRatio) => {
-                  if (Array.isArray(newTokenNftRatio)) {
-                    handleSearchResultNftAmount(newTokenNftRatio[0]);
-                  } else {
-                    handleSearchResultNftAmount(newTokenNftRatio);
-                  }
-                }}
-                step={1}
-                marks={[
-                  {
-                    value: 2,
-                    label: <span style={styles.sliderMark}>2 Nfts</span>,
-                  },
-                  {
-                    value: 9,
-                    label: <span style={styles.sliderMark}>9 Nfts</span>,
-                  },
-                ]}
-                min={2}
-                max={9}
-                style={{ color: colors.white_medium }}
-              />
-            </Box>
-          </>
-        )}
+                color="primary"
+                value={startPref}
+                exclusive
+                aria-label="StartPref"
+              >
+                <ToggleButton
+                  value="portfolio"
+                  style={{
+                    ...styles.togglePrefButton,
+                    ...(startPref === "portfolio" && styles.activePrefButton),
+                  }}
+                  onClick={() => handleStartPref("portfolio")}
+                >
+                  <QueryStatsIcon style={styles.togglePrefButtonIcon} />
+                </ToggleButton>
+                <ToggleButton
+                  value="search"
+                  style={{
+                    ...styles.togglePrefButton,
+                    ...(startPref === "search" && styles.activePrefButton),
+                  }}
+                  onClick={() => handleStartPref("search")}
+                >
+                  <SearchIcon style={styles.togglePrefButtonIcon} />
+                </ToggleButton>
+              </ToggleButtonGroup>
+
+              <div style={styles.sectionHeader}>Search Priority</div>
+              <div style={styles.explanationSubtext}>
+                Show Coins/ Nfts first
+              </div>
+              <ToggleButtonGroup
+                size="small"
+                color="primary"
+                value={searchPref}
+                exclusive
+                aria-label="SearchPref"
+              >
+                <ToggleButton
+                  value="coins"
+                  style={{
+                    ...styles.togglePrefButton,
+                    ...(searchPref === "coins" && styles.activePrefButton),
+                  }}
+                  onClick={() => handleSearchPref("coins")}
+                >
+                  <CurrencyBitcoinIcon style={styles.togglePrefButtonIcon} />
+                </ToggleButton>
+                <ToggleButton
+                  value="nfts"
+                  style={{
+                    ...styles.togglePrefButton,
+                    ...(searchPref === "nfts" && styles.activePrefButton),
+                  }}
+                  onClick={() => handleSearchPref("nfts")}
+                >
+                  <WallpaperIcon style={styles.togglePrefButtonIcon} />
+                </ToggleButton>
+              </ToggleButtonGroup>
+
+              <div style={styles.sectionHeader}>Search Results</div>
+              <div
+                style={styles.explanationSubtext}
+              >{`Max number of Nfts from 11 results (${searchResultNftAmount})`}</div>
+              <Box sx={{ width: 180 }}>
+                <Slider
+                  size="small"
+                  aria-label="Max Nfts out of 11 search results"
+                  value={searchResultNftAmount}
+                  valueLabelDisplay="auto"
+                  onChange={(event, newTokenNftRatio) => {
+                    if (Array.isArray(newTokenNftRatio)) {
+                      handleSearchResultNftAmount(newTokenNftRatio[0]);
+                    } else {
+                      handleSearchResultNftAmount(newTokenNftRatio);
+                    }
+                  }}
+                  step={1}
+                  marks={[
+                    {
+                      value: 2,
+                      label: <span style={styles.sliderMark}>2 Nfts</span>,
+                    },
+                    {
+                      value: 9,
+                      label: <span style={styles.sliderMark}>9 Nfts</span>,
+                    },
+                  ]}
+                  min={2}
+                  max={9}
+                  style={{ color: colors.white_medium }}
+                />
+              </Box>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
