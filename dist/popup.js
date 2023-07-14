@@ -1382,7 +1382,7 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             left: 0,
             width: 0,
             overflowY: "auto",
-            maxHeight: "100vh",
+            height: "100%",
             zIndex: 100,
             // transition: 'width 0.5s ease',
             backgroundColor: "rgba(0,0,0,0.5)",
@@ -1470,10 +1470,15 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_large,
             marginBottom: "6px",
         },
+        emptyPortfolioValueField: {
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
+            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_micro,
+            // fontWeight: constants.font_weight_large,
+            marginBottom: "6px",
+        },
         portfolioHeader: {
             display: "flex",
             alignItems: "flex-start",
-            marginBottom: "2px",
         },
         portfolioHeaderValue: {
             width: "55px",
@@ -1581,6 +1586,12 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             border: "none",
             textAlign: "center",
         },
+        noCoinsText: {
+            // width: "100%",
+            // justifyContent: "center",
+            // alignItems: "center",
+            textAlign: "center",
+        },
     };
     const [searchPref, setSearchPref] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("coins");
     const [startPref, setStartPref] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("portfolio");
@@ -1616,7 +1627,6 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getStartPrefStorage)(),
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getSearchResultNftAmountStorage)(),
         ]);
-        console.log("portfolioDataStorage1: ", portfolioDataStorage);
         if (portfolioDataStorage.length > 0) {
             let coinIds = [];
             portfolioDataStorage.forEach((coinInfo) => {
@@ -1696,7 +1706,9 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium }, onClick: () => setMenuIsOpen(false) })),
             menuIsOpen && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioSectionTitle }, "PORTFOLIO BALANCE"),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioValueField }, `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(calculatePortfolioValue())}`),
+                calculatePortfolioValue() > 0 ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioValueField },
+                    "$",
+                    (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(calculatePortfolioValue()))) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.emptyPortfolioValueField }, "Click on coin to add amount")),
                 showInputField && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainer },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "number", value: inputAmount, onChange: (e) => setInputAmount(e.target.value), style: styles.amountInputField, placeholder: `Amount (${clickedCoinTicker})` }),
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerSaveButton, onClick: handleSaveAmountInput }, "Save"),
@@ -1704,34 +1716,33 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Delete__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { fontSize: 14, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } }),
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue })))),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemField },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioHeader },
+                    portfolioData.length > 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioHeader },
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemImage }),
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioHeaderValue }),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioHeaderValue }, "Price"),
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioHeaderValue }, "Amount"),
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioHeaderValue }, "Total/ 24h")),
-                    portfolioData.length > 0 &&
-                        portfolioData.map((coinInfo, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: coinInfo.id },
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItem, onClick: () => handlePortfolioCoinPress(coinInfo.id, coinInfo.ticker) },
-                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.portfolioItemImage, src: coinInfo.iconUrl, alt: coinInfo.ticker }),
-                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDataField },
-                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemTopRow },
-                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue },
-                                            "$",
-                                            (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(coinInfo.price)),
-                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.amountText }, coinInfo.amount > 0
-                                            ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(coinInfo.amount)
-                                            : "-"),
-                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, coinInfo.amount > 0
-                                            ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(coinInfo.price * coinInfo.amount)}`
-                                            : "-")),
-                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemBottomRow },
-                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), styles.tickerText) }, coinInfo.ticker.toUpperCase()),
-                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemValue }),
-                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), { color: coinInfo.usd24Change > 0
-                                                    ? _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].green_medium
-                                                    : _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium }) }, `${coinInfo.usd24Change.toFixed(1)}%`)))),
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDivider }))))),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Tweet to Me!"),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioHeaderValue }, "Total/ 24h"))),
+                    portfolioData.length > 0 ? (portfolioData.map((coinInfo, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: coinInfo.id },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItem, onClick: () => handlePortfolioCoinPress(coinInfo.id, coinInfo.ticker) },
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.portfolioItemImage, src: coinInfo.iconUrl, alt: coinInfo.ticker }),
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDataField },
+                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemTopRow },
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue },
+                                        "$",
+                                        (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(coinInfo.price)),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.amountText }, coinInfo.amount > 0
+                                        ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(coinInfo.amount)
+                                        : "-"),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, coinInfo.amount > 0
+                                        ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(coinInfo.price * coinInfo.amount)}`
+                                        : "-")),
+                                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemBottomRow },
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), styles.tickerText) }, coinInfo.ticker.toUpperCase()),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemValue }),
+                                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), { color: coinInfo.usd24Change > 0
+                                                ? _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].green_medium
+                                                : _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium }) }, `${coinInfo.usd24Change.toFixed(1)}%`)))),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDivider }))))) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.noCoinsText }, "No coins in portfolio, add coins at the bottom of a page"))),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Tweet Me!"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Any feature requests or ideas"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_8__["default"], { value: "question", style: styles.togglePrefButton, onClick: handleSupportClick },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_9__["default"], { style: {

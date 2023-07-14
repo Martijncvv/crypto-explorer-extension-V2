@@ -51,7 +51,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       left: 0,
       width: 0,
       overflowY: "auto",
-      maxHeight: "100vh",
+      height: "100%",
       zIndex: 100,
       // transition: 'width 0.5s ease',
       backgroundColor: "rgba(0,0,0,0.5)",
@@ -147,10 +147,15 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       fontWeight: constants.font_weight_large,
       marginBottom: "6px",
     },
+    emptyPortfolioValueField: {
+      color: colors.white_medium,
+      fontSize: constants.font_micro,
+      // fontWeight: constants.font_weight_large,
+      marginBottom: "6px",
+    },
     portfolioHeader: {
       display: "flex",
       alignItems: "flex-start",
-      marginBottom: "2px",
     },
     portfolioHeaderValue: {
       width: "55px",
@@ -262,6 +267,12 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       border: "none",
       textAlign: "center",
     },
+    noCoinsText: {
+      // width: "100%",
+      // justifyContent: "center",
+      // alignItems: "center",
+      textAlign: "center",
+    },
   };
 
   const [searchPref, setSearchPref] = useState<string>("coins");
@@ -319,7 +330,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       getSearchResultNftAmountStorage(),
     ]);
 
-    console.log("portfolioDataStorage1: ", portfolioDataStorage);
     if (portfolioDataStorage.length > 0) {
       let coinIds = [];
       portfolioDataStorage.forEach((coinInfo) => {
@@ -426,9 +436,16 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
         {menuIsOpen && (
           <>
             <div style={styles.portfolioSectionTitle}>PORTFOLIO BALANCE</div>
-            <div style={styles.portfolioValueField}>{`$${amountFormatter(
-              calculatePortfolioValue(),
-            )}`}</div>
+
+            {calculatePortfolioValue() > 0 ? (
+              <div style={styles.portfolioValueField}>
+                ${amountFormatter(calculatePortfolioValue())}
+              </div>
+            ) : (
+              <div style={styles.emptyPortfolioValueField}>
+                Click on coin to add amount
+              </div>
+            )}
 
             {showInputField && (
               <div style={styles.inputContainer}>
@@ -459,14 +476,16 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
             )}
 
             <div style={styles.portfolioItemField}>
-              <div style={styles.portfolioHeader}>
-                <div style={styles.portfolioItemImage} />
-                <div style={styles.portfolioHeaderValue}></div>
-                <span style={styles.portfolioHeaderValue}>Amount</span>
-                <span style={styles.portfolioHeaderValue}>Total/ 24h</span>
-              </div>
+              {portfolioData.length > 0 && (
+                <div style={styles.portfolioHeader}>
+                  <div style={styles.portfolioItemImage} />
+                  <div style={styles.portfolioHeaderValue}>Price</div>
+                  <span style={styles.portfolioHeaderValue}>Amount</span>
+                  <span style={styles.portfolioHeaderValue}>Total/ 24h</span>
+                </div>
+              )}
 
-              {portfolioData.length > 0 &&
+              {portfolioData.length > 0 ? (
                 portfolioData.map((coinInfo, index) => (
                   <div key={coinInfo.id}>
                     <div
@@ -524,10 +543,15 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                     <div style={styles.portfolioItemDivider} />
                     {/*{index < portfolioItems.length - 1 && <div style={styles.portfolioItemDivider}/>}*/}
                   </div>
-                ))}
+                ))
+              ) : (
+                <div style={styles.noCoinsText}>
+                  No coins in portfolio, add coins at the bottom of a page
+                </div>
+              )}
             </div>
 
-            <div style={styles.sectionHeader}>Tweet to Me!</div>
+            <div style={styles.sectionHeader}>Tweet Me!</div>
             <div style={styles.explanationSubtext}>
               Any feature requests or ideas
             </div>
