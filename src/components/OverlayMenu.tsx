@@ -11,14 +11,18 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 import CurrencyBitcoinIcon from "@mui/icons-material/CurrencyBitcoin";
 import WallpaperIcon from "@mui/icons-material/Wallpaper";
+import SearchIcon from "@mui/icons-material/Search";
+import QueryStatsIcon from "@mui/icons-material/QueryStats";
+
 import {
-  getHomeCoinStorage,
   getPortfolioDataStorage,
   getSearchPrefStorage,
+  getStartPrefStorage,
   getSearchResultNftAmountStorage,
-  setPortfolioCoinAmountStorage,
-  setPortfolioDataStorage,
+  changePortfolioCoinAmountStorage,
+  removePortfolioCoinStorage,
   setSearchPrefStorage,
+  setStartPrefStorage,
   setSearchResultNftAmountStorage,
 } from "../utils/storage";
 import { IDetailedNftInfo } from "../models/INftInfo";
@@ -165,6 +169,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       width: "220px",
       display: "flex",
       alignItems: "center",
+      cursor: "pointer",
     },
     portfolioItemImage: {
       width: "22px",
@@ -193,17 +198,10 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       color: colors.accent_medium,
       fontWeight: 600,
     },
-    amountTextBox: {
+    amountText: {
       width: "55px",
       marginLeft: "14px",
-      cursor: "pointer",
-      // backgroundColor: "red",
-    },
-    amountText: {
       color: colors.white_medium,
-      borderBottom: `1px solid ${colors.accent_light}`,
-      display: "inline",
-      padding: "3px",
     },
 
     portfolioItemDivider: {
@@ -223,6 +221,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       backgroundColor: "#f8f9fa",
       padding: "5px",
       boxSizing: "border-box",
+      outline: "none",
     },
     amountInputField: {
       width: "70%",
@@ -234,13 +233,25 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       backgroundColor: "#e9ecef",
       border: "none",
     },
-    inputContainerButton: {
+    inputContainerSaveButton: {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      width: "25%",
-      padding: "5px",
+      padding: "5px 10px",
+      marginRight: "5px",
       color: colors.white_medium,
+      fontSize: "12px",
+      borderRadius: constants.border_radius,
+      cursor: "pointer",
+      backgroundColor: colors.secondary_dark,
+      border: "none",
+      textAlign: "center",
+    },
+    inputContainerDeleteButton: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "5px 10px",
       fontSize: "12px",
       borderRadius: constants.border_radius,
       cursor: "pointer",
@@ -250,8 +261,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
     },
   };
 
-  // todo remove from portfolio
-
   const handleSupportClick = () => {
     chrome.tabs.create({
       url: "https://twitter.com/Marty_cFly",
@@ -260,6 +269,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   };
 
   const [searchPref, setSearchPref] = useState<string>("coins");
+  const [startPref, setStartPref] = useState<string>("portfolio");
   const [searchResultNftAmount, setSearchResultNftAmount] = useState<number>(3);
   const [portfolioData, setPortfolioData] = useState<
     {
@@ -272,8 +282,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       nft: boolean;
     }[]
   >([]);
-  const [totalPortfolioValue, setTotalPortfolioValue] = useState<number>(0);
-
   const [showInputField, setShowInputField] = useState<boolean>(false);
   const [inputAmount, setInputAmount] = useState<string>("");
   const [clickedCoinId, setClickedCoinId] = useState<string>("");
@@ -284,6 +292,13 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       setSearchPrefStorage(newSearchPref);
     }
   };
+  const handleStartPref = (newStartPref: string) => {
+    if (newStartPref !== null) {
+      setStartPref(newStartPref);
+      setStartPrefStorage(newStartPref);
+    }
+  };
+
   const handleSearchResultNftAmount = (
     newSearchResultNftAmount: number | number[],
   ) => {
@@ -297,10 +312,12 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
     const [
       portfolioDataStorage,
       searchPrefStorage,
+      startPrefStorage,
       searchResultNftAmountStorage,
     ] = await Promise.all([
       getPortfolioDataStorage(),
       getSearchPrefStorage(),
+      getStartPrefStorage(),
       getSearchResultNftAmountStorage(),
     ]);
 
@@ -326,6 +343,9 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
     if (searchPrefStorage) {
       setSearchPref(searchPrefStorage);
     }
+    if (startPrefStorage) {
+      setStartPref(startPrefStorage);
+    }
     if (searchResultNftAmountStorage) {
       setSearchResultNftAmount(searchResultNftAmountStorage);
     }
@@ -342,11 +362,34 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       }
       return coinInfo;
     });
-    console.log("updatedPortfolioData1: ", updatedPortfolioData);
+
     setPortfolioData(updatedPortfolioData);
-    setPortfolioCoinAmountStorage(clickedCoinId, parseFloat(inputAmount));
+    changePortfolioCoinAmountStorage(clickedCoinId, parseFloat(inputAmount));
     setInputAmount("");
     setShowInputField(false);
+  };
+
+  const handleRemoveCoinButton = () => {
+    const updatedPortfolioData = portfolioData.filter((coinInfo) => {
+      coinInfo.id !== clickedCoinId;
+    });
+
+    removePortfolioCoinStorage(clickedCoinId);
+    setPortfolioData(updatedPortfolioData);
+    setShowInputField(false);
+  };
+
+  const handlePortfolioCoinPress = (coinInfoId: string) => {
+    setClickedCoinId(coinInfoId);
+    setShowInputField(!showInputField);
+  };
+
+  const calculatePortfolioValue = () => {
+    let totalValue = 0;
+    portfolioData.map((coinInfo) => {
+      totalValue += coinInfo.amount * coinInfo.price;
+    });
+    return totalValue;
   };
 
   return (
@@ -373,9 +416,9 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
         {menuIsOpen && (
           <>
             <div style={styles.portfolioSectionTitle}>PORTFOLIO BALANCE</div>
-            <div
-              style={styles.portfolioValueField}
-            >{`$${totalPortfolioValue}`}</div>
+            <div style={styles.portfolioValueField}>{`$${amountFormatter(
+              calculatePortfolioValue(),
+            )}`}</div>
 
             {showInputField && (
               <div style={styles.inputContainer}>
@@ -387,11 +430,20 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                   placeholder="Amount"
                 />
                 <button
-                  style={styles.inputContainerButton}
+                  style={styles.inputContainerSaveButton}
                   onClick={handleSaveAmountInput}
                 >
                   Save
                 </button>
+                <div
+                  style={styles.inputContainerDeleteButton}
+                  onClick={handleRemoveCoinButton}
+                >
+                  <CloseIcon
+                    style={{ fontSize: 14, color: colors.white_medium }}
+                  />
+                  <span style={styles.mainValue}></span>
+                </div>
               </div>
             )}
             <div style={styles.portfolioItemField}>
@@ -405,7 +457,10 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
               {portfolioData.length > 0 &&
                 portfolioData.map((coinInfo, index) => (
                   <div key={coinInfo.id}>
-                    <div style={styles.portfolioItem}>
+                    <div
+                      style={styles.portfolioItem}
+                      onClick={() => handlePortfolioCoinPress(coinInfo.id)}
+                    >
                       <img
                         style={styles.portfolioItemImage}
                         src={coinInfo.iconUrl}
@@ -416,19 +471,18 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                           <span style={styles.portfolioItemValue}>
                             ${amountFormatter(coinInfo.price)}
                           </span>
-                          <div
-                            style={styles.amountTextBox}
-                            onClick={() => {
-                              setClickedCoinId(coinInfo.id);
-                              setShowInputField(true);
-                            }}
-                          >
-                            <div style={styles.amountText}>
-                              {numberFormatter(coinInfo.amount)}
-                            </div>
+
+                          <div style={styles.amountText}>
+                            {coinInfo.amount > 0
+                              ? amountFormatter(coinInfo.amount)
+                              : "-"}
                           </div>
                           <span style={styles.portfolioItemValue}>
-                            ${amountFormatter(coinInfo.price * coinInfo.amount)}
+                            {coinInfo.amount > 0
+                              ? `$${amountFormatter(
+                                  coinInfo.price * coinInfo.amount,
+                                )}`
+                              : "-"}
                           </span>
                         </div>
                         <div style={styles.portfolioItemBottomRow}>
@@ -444,7 +498,10 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                           <span
                             style={{
                               ...styles.portfolioItemValue,
-                              color: colors.red_medium,
+                              color:
+                                coinInfo.usd24Change > 0
+                                  ? colors.green_medium
+                                  : colors.red_medium,
                             }}
                           >{`${coinInfo.usd24Change.toFixed(1)}%`}</span>
                         </div>
@@ -456,20 +513,54 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                 ))}
             </div>
 
-            {/*HOMEPAGE*/}
-            {/*<div style={styles.sectionHeader}>Homepage</div>*/}
-            {/*<div style={styles.explanationSubtext}>{`${homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ? 'Unset' : 'Set'} startup coin`}</div>*/}
-            {/*    <ToggleButton*/}
-            {/*        value="home"*/}
-            {/*        style={styles.togglePrefButton}*/}
-            {/*        onClick={handleHomePress}*/}
-            {/*    >*/}
-            {/*        {homeCoin?.id === nftInfo?.id || homeCoin?.id === coinInfo?.id ?*/}
-            {/*            <HomeRoundedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />*/}
-            {/*            :*/}
-            {/*            <HomeOutlinedIcon style={{ fontSize: 24, cursor: 'pointer', color: colors.white_medium }} />*/}
-            {/*        }*/}
-            {/*    </ToggleButton>*/}
+            <div style={styles.sectionHeader}>Tweet to Me!</div>
+            <div style={styles.explanationSubtext}>
+              Any feature requests or ideas
+            </div>
+            <ToggleButton
+              value="question"
+              style={styles.togglePrefButton}
+              onClick={handleSupportClick}
+            >
+              <QuestionAnswerIcon
+                style={{
+                  fontSize: 24,
+                  cursor: "pointer",
+                  color: colors.white_medium,
+                }}
+              />
+            </ToggleButton>
+
+            <div style={styles.sectionHeader}>Start Priority</div>
+            <div style={styles.explanationSubtext}>Portfolio/ Search first</div>
+            <ToggleButtonGroup
+              size="small"
+              color="primary"
+              value={startPref}
+              exclusive
+              aria-label="StartPref"
+            >
+              <ToggleButton
+                value="portfolio"
+                style={{
+                  ...styles.togglePrefButton,
+                  ...(startPref === "portfolio" && styles.activePrefButton),
+                }}
+                onClick={() => handleStartPref("portfolio")}
+              >
+                <QueryStatsIcon style={styles.togglePrefButtonIcon} />
+              </ToggleButton>
+              <ToggleButton
+                value="search"
+                style={{
+                  ...styles.togglePrefButton,
+                  ...(startPref === "search" && styles.activePrefButton),
+                }}
+                onClick={() => handleStartPref("search")}
+              >
+                <SearchIcon style={styles.togglePrefButtonIcon} />
+              </ToggleButton>
+            </ToggleButtonGroup>
 
             <div style={styles.sectionHeader}>Search Priority</div>
             <div style={styles.explanationSubtext}>Show Coins/ Nfts first</div>
@@ -535,24 +626,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                 style={{ color: colors.white_medium }}
               />
             </Box>
-
-            <div style={styles.sectionHeader}>Contact Me!</div>
-            <div style={styles.explanationSubtext}>
-              Any feature requests or ideas
-            </div>
-            <ToggleButton
-              value="question"
-              style={styles.togglePrefButton}
-              onClick={handleSupportClick}
-            >
-              <QuestionAnswerIcon
-                style={{
-                  fontSize: 24,
-                  cursor: "pointer",
-                  color: colors.white_medium,
-                }}
-              />
-            </ToggleButton>
           </>
         )}
       </div>

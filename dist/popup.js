@@ -643,7 +643,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData, setMenuIsOpen }) => {
+const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData, setMenuIsOpen, }) => {
     const searchResultsRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
     const inputRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
     const [loadingError, setLoadingError] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
@@ -652,21 +652,24 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     });
     const [focusedOptionIndex, setFocusedOptionIndex] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(-1);
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-    const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({ tokens: [], total: 0 });
-    const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)('');
+    const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+        tokens: [],
+        total: 0,
+    });
+    const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
     const styles = {
         headerBlock: {
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
         },
         menuIconBlock: {
             width: 40,
             height: 40,
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
             backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             cursor: "pointer",
         },
         searchbar: {
@@ -675,47 +678,47 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             height: 40,
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
             backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
-            display: 'flex',
-            alignItems: 'center',
-            position: 'relative',
+            display: "flex",
+            alignItems: "center",
+            position: "relative",
         },
         searchbarImage: {
             width: 20,
             height: 20,
             marginLeft: 12,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
         },
         searchInput: {
             marginLeft: 12,
-            border: 'none',
-            background: 'transparent',
-            color: 'white',
-            outline: 'none',
-            width: '100%',
+            border: "none",
+            background: "transparent",
+            color: "white",
+            outline: "none",
+            width: "100%",
         },
         searchResults: {
-            position: 'absolute',
+            position: "absolute",
             width: 202,
             marginLeft: 52,
             zIndex: 99,
-            display: 'flex',
-            flexDirection: 'column',
-            color: '#3381e8',
-            background: 'linear-gradient(to bottom, #2F396D 0%, #3E6CB6 80%)',
+            display: "flex",
+            flexDirection: "column",
+            color: "#3381e8",
+            background: "linear-gradient(to bottom, #2F396D 0%, #3E6CB6 80%)",
             borderBottomLeftRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
             borderBottomRightRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
         },
         coinSearchInfo: {
-            display: 'flex',
+            display: "flex",
             padding: 9,
-            alignItems: 'center',
+            alignItems: "center",
             cursor: "pointer",
         },
         coinSearchInfoFocus: {
             boxShadow: `inset 0 0 4px 3px rgba(255, 255, 255, 0.5)`,
-            outline: 'none',
+            outline: "none",
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius_small,
         },
         coinImage: {
@@ -729,9 +732,9 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_medium,
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
         },
         marketCapRank: {
             paddingLeft: 6,
@@ -750,13 +753,17 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             marginLeft: 12,
             width: 40,
             height: 40,
-            display: 'flex',
+            display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 1
+            zIndex: 1,
         },
     };
     const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
+        const startPref = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.getStartPrefStorage)();
+        if (startPref === "portfolio") {
+            setMenuIsOpen(true);
+        }
         const selectedTokenStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.getSelectedTokenStorage)();
         if (selectedTokenStorage) {
             setSearchInput(selectedTokenStorage);
@@ -772,7 +779,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 fetchDetailedTokenInfo(homeCoinStorage.id);
             }
             else {
-                fetchDetailedTokenInfo('bitcoin');
+                fetchDetailedTokenInfo("bitcoin");
             }
         }
     });
@@ -787,7 +794,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     // handle arrow up key press, collapse
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         const handleKeyDownSearch = (event) => {
-            if (event.key === 'ArrowUp' && isExpanded) {
+            if (event.key === "ArrowUp" && isExpanded) {
                 if (focusedOptionIndex > 0) {
                     setFocusedOptionIndex((focusedOptionIndex) => focusedOptionIndex - 1);
                 }
@@ -795,7 +802,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     setIsExpanded(false);
                 }
             }
-            else if (event.key === 'ArrowDown') {
+            else if (event.key === "ArrowDown") {
                 if (isExpanded) {
                     setFocusedOptionIndex((focusedOptionIndex) => focusedOptionIndex + 1);
                 }
@@ -804,21 +811,22 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 }
             }
         };
-        document.addEventListener('keydown', handleKeyDownSearch);
+        document.addEventListener("keydown", handleKeyDownSearch);
         return () => {
-            document.removeEventListener('keydown', handleKeyDownSearch);
+            document.removeEventListener("keydown", handleKeyDownSearch);
         };
     }, [focusedOptionIndex]);
     // functionality for clicking outside of the search results block
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
     // Close the expansion if the click is outside of the search results block
     const handleClickOutside = (event) => {
-        if (searchResultsRef.current && !searchResultsRef.current.contains(event.target)) {
+        if (searchResultsRef.current &&
+            !searchResultsRef.current.contains(event.target)) {
             setIsExpanded(false);
         }
     };
@@ -826,9 +834,11 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         try {
             const trendingCoins = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchTrendingCoins)();
             let searchFormat = { tokens: [], total: 0 };
-            let trendingTickers = 'Top Searched Coins of the Day\n';
+            let trendingTickers = "Top Searched Coins of the Day\n";
             trendingCoins.coins.forEach((coin) => {
-                trendingTickers = trendingTickers + `- ${coin.item.name}, $${coin.item.symbol.toUpperCase()} #${coin.item.market_cap_rank}\n`;
+                trendingTickers =
+                    trendingTickers +
+                        `- ${coin.item.name}, $${coin.item.symbol.toUpperCase()} #${coin.item.market_cap_rank}\n`;
                 searchFormat.tokens.push({
                     id: coin.item.id,
                     name: coin.item.name,
@@ -837,14 +847,16 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                     nft: false,
                 });
             });
-            trendingTickers = trendingTickers + '\nCrypto Explorer Extension\n' +
-                'https://chrome.google.com/webstore/detail/crypto-tracker-blockchain/pkaheoacmbdgnemgmcdbekniooabcnmc?hl=en&authuser=0';
-            trendingTickers = trendingTickers + '\n#BTC $ETH';
+            trendingTickers =
+                trendingTickers +
+                    "\nCrypto Explorer Extension\n" +
+                    "https://chrome.google.com/webstore/detail/crypto-tracker-blockchain/pkaheoacmbdgnemgmcdbekniooabcnmc?hl=en&authuser=0";
+            trendingTickers = trendingTickers + "\n#BTC $ETH";
             searchFormat.tokens.push({
-                id: '',
+                id: "",
                 name: `Top Trending`,
-                image: '',
-                marketCapRank: '',
+                image: "",
+                marketCapRank: "",
                 nft: true,
             });
             console.log(trendingTickers);
@@ -860,20 +872,25 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             const searchResults = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNameSearch)(searchInputProp || searchInput);
             if (searchResults.coins.length === 0 && searchResults.nfts.length === 0) {
                 console.log("No results");
-                setDisplayResults({ tokens: [{
+                setDisplayResults({
+                    tokens: [
+                        {
                             id: "noResult",
                             name: "No results",
                             image: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256",
-                            marketCapRank: '',
-                            nft: false
-                        }], total: 0 });
-                setSearchInput('');
+                            marketCapRank: "",
+                            nft: false,
+                        },
+                    ],
+                    total: 0,
+                });
+                setSearchInput("");
                 return;
             }
             const nrOfNfts = (yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.getSearchResultNftAmountStorage)()) || 3;
             let displayNrOfNfts = Math.min(searchResults.nfts.length, nrOfNfts);
             let displayNrOfCoins = 11 - displayNrOfNfts;
-            const searchpreference = (yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.getSearchPrefStorage)()) || 'coins';
+            const searchpreference = (yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_4__.getSearchPrefStorage)()) || "coins";
             if (searchpreference === "coins") {
                 let searchFormat = { tokens: [], total: 0 };
                 // SET COINS
@@ -892,17 +909,18 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                         id: nft.id,
                         name: nft.name,
                         image: nft.thumb,
-                        marketCapRank: 'NFT',
+                        marketCapRank: "NFT",
                         nft: true,
                     });
                 });
-                searchFormat.total = searchResults.coins.length + searchResults.nfts.length;
+                searchFormat.total =
+                    searchResults.coins.length + searchResults.nfts.length;
                 if (searchFormat.total > 11) {
                     searchFormat.tokens.push({
-                        id: '',
+                        id: "",
                         name: `${searchFormat.total - 11} others`,
-                        image: '',
-                        marketCapRank: '',
+                        image: "",
+                        marketCapRank: "",
                         nft: true,
                     });
                 }
@@ -916,7 +934,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                         id: nft.id,
                         name: nft.name,
                         image: nft.thumb,
-                        marketCapRank: 'NFT',
+                        marketCapRank: "NFT",
                         nft: true,
                     });
                 });
@@ -930,13 +948,14 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                         nft: false,
                     });
                 });
-                searchFormat.total = searchResults.coins.length + searchResults.nfts.length;
+                searchFormat.total =
+                    searchResults.coins.length + searchResults.nfts.length;
                 if (searchFormat.total > 11) {
                     searchFormat.tokens.push({
-                        id: '',
+                        id: "",
                         name: `${searchFormat.total - 11} others`,
-                        image: '',
-                        marketCapRank: '',
+                        image: "",
+                        marketCapRank: "",
                         nft: true,
                     });
                 }
@@ -945,14 +964,19 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         }
         catch (error) {
             console.error("handleSearch: Error searching for coins:", error);
-            setDisplayResults({ tokens: [{
+            setDisplayResults({
+                tokens: [
+                    {
                         id: "noResult",
                         name: "No results",
                         image: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256",
-                        marketCapRank: '',
-                        nft: false
-                    }], total: 0 });
-            setSearchInput('');
+                        marketCapRank: "",
+                        nft: false,
+                    },
+                ],
+                total: 0,
+            });
+            setSearchInput("");
         }
     });
     function handleSearch(event) {
@@ -981,7 +1005,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             setTokenTxsChartData([]);
             const [coinInfo, priceMaxHistoryDataRes] = yield Promise.all([
                 (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchCoinInfo)(coinId),
-                (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchPriceHistoryData)(coinId, 'usd', 'max'),
+                (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchPriceHistoryData)(coinId, "usd", "max"),
             ]);
             if (!coinInfo) {
                 console.log(`No results for coinInfo ${coinId}`);
@@ -996,7 +1020,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             // get past 30 days
             coinInfo.price30dHistoryData = FormatChartData({
                 prices: priceMaxHistoryDataRes.prices.slice(-31),
-                total_volumes: priceMaxHistoryDataRes.total_volumes.slice(-31)
+                total_volumes: priceMaxHistoryDataRes.total_volumes.slice(-31),
             });
             coinInfo.priceMaxHistoryData = FormatChartData(priceMaxHistoryDataRes);
             setCoinInfo(coinInfo);
@@ -1024,9 +1048,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             setLoadingError({ isLoading: true, isError: false });
             setTxVolumeChartData([]);
             setTokenTxsChartData([]);
-            const [nftInfo] = yield Promise.all([
-                (0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNftInfo)(coinId),
-            ]);
+            const [nftInfo] = yield Promise.all([(0,_utils_api__WEBPACK_IMPORTED_MODULE_3__.fetchNftInfo)(coinId)]);
             if (!nftInfo) {
                 setLoadingError({ isLoading: false, isError: true });
                 console.log(`No results for nftInfo ${coinId}`);
@@ -1084,14 +1106,14 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             totalVolume: unixVolumeArray[1],
         });
         // Calculate the min and maximum price and volume value
-        let minPrice = Math.min(...formattedChartData.map(dateData => dateData.price));
-        let maxPrice = Math.max(...formattedChartData.map(dateData => dateData.price));
-        let maxVolume = Math.max(...formattedChartData.map(dateData => dateData.totalVolume));
+        let minPrice = Math.min(...formattedChartData.map((dateData) => dateData.price));
+        let maxPrice = Math.max(...formattedChartData.map((dateData) => dateData.price));
+        let maxVolume = Math.max(...formattedChartData.map((dateData) => dateData.totalVolume));
         // let maxFormattedPrice = (maxPrice - minPrice) / (maxPrice - minPrice) * 0.5
         let maxFormattedPrice = 0.5;
         const barHeightMultiplier = maxVolume / maxFormattedPrice;
         // Add extraKey to each object for chart format
-        formattedChartData = formattedChartData.map(dateData => (Object.assign(Object.assign({}, dateData), { chartFormatPrice: (dateData.price - minPrice) / (maxPrice - minPrice) * 0.8 + 0.3, chartFormatVolume: dateData.totalVolume / barHeightMultiplier })));
+        formattedChartData = formattedChartData.map((dateData) => (Object.assign(Object.assign({}, dateData), { chartFormatPrice: ((dateData.price - minPrice) / (maxPrice - minPrice)) * 0.8 + 0.3, chartFormatVolume: dateData.totalVolume / barHeightMultiplier })));
         return formattedChartData;
     };
     function downsampling(originalArray, maxDataPoints) {
@@ -1102,8 +1124,9 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             const averagedObject = {};
             for (let key in chunk[0]) {
                 if (chunk[0].hasOwnProperty(key)) {
-                    const values = chunk.map(obj => obj[key]);
-                    averagedObject[key] = values.reduce((sum, value) => sum + value, 0) / values.length;
+                    const values = chunk.map((obj) => obj[key]);
+                    averagedObject[key] =
+                        values.reduce((sum, value) => sum + value, 0) / values.length;
                 }
             }
             newArray.push(averagedObject);
@@ -1123,32 +1146,32 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         return __awaiter(this, void 0, void 0, function* () {
             let domain;
             switch (platformId) {
-                case 'arbitrum-one':
-                    domain = 'api.arbiscan.io';
+                case "arbitrum-one":
+                    domain = "api.arbiscan.io";
                     break;
-                case 'avalanche':
-                    domain = 'api.snowtrace.io';
+                case "avalanche":
+                    domain = "api.snowtrace.io";
                     break;
-                case 'binance-smart-chain':
-                    domain = 'api.bscscan.com';
+                case "binance-smart-chain":
+                    domain = "api.bscscan.com";
                     break;
-                case 'celo':
-                    domain = 'api.celoscan.io';
+                case "celo":
+                    domain = "api.celoscan.io";
                     break;
-                case 'cronos':
-                    domain = 'api.cronoscan.com';
+                case "cronos":
+                    domain = "api.cronoscan.com";
                     break;
-                case 'ethereum':
-                    domain = 'api.etherscan.io';
+                case "ethereum":
+                    domain = "api.etherscan.io";
                     break;
-                case 'fantom':
-                    domain = 'api.ftmscan.com';
+                case "fantom":
+                    domain = "api.ftmscan.com";
                     break;
-                case 'polygon-pos':
-                    domain = 'api.polygonscan.com';
+                case "polygon-pos":
+                    domain = "api.polygonscan.com";
                     break;
-                case 'optimistic-ethereum':
-                    domain = 'api-optimistic.etherscan.io';
+                case "optimistic-ethereum":
+                    domain = "api-optimistic.etherscan.io";
                     break;
                 default:
                     console.log(`getNftTxChartData error: Invalid platformId: ${platformId}`);
@@ -1163,7 +1186,11 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             if (nftTxsData.status !== "0" && nftTxsData.result) {
                 const nftTxsChartFormat = Object.entries(nftTxsData.result.reduce((result, txInfo) => {
                     const date = new Date(Number(txInfo.timeStamp) * 1000);
-                    const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                    const dateString = date.toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "2-digit",
+                    });
                     if (result[dateString]) {
                         result[dateString].volume += 1;
                     }
@@ -1183,41 +1210,41 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             let domain;
             let explorerUrl;
             switch (platformId) {
-                case 'arbitrum-one':
-                    domain = 'api.arbiscan.io';
-                    explorerUrl = 'arbiscan.io';
+                case "arbitrum-one":
+                    domain = "api.arbiscan.io";
+                    explorerUrl = "arbiscan.io";
                     break;
-                case 'avalanche':
-                    domain = 'api.snowtrace.io';
-                    explorerUrl = 'snowtrace.io';
+                case "avalanche":
+                    domain = "api.snowtrace.io";
+                    explorerUrl = "snowtrace.io";
                     break;
-                case 'binance-smart-chain':
-                    domain = 'api.bscscan.com';
-                    explorerUrl = 'bscscan.com';
+                case "binance-smart-chain":
+                    domain = "api.bscscan.com";
+                    explorerUrl = "bscscan.com";
                     break;
-                case 'celo':
-                    domain = 'api.celoscan.io';
-                    explorerUrl = 'celoscan.io';
+                case "celo":
+                    domain = "api.celoscan.io";
+                    explorerUrl = "celoscan.io";
                     break;
-                case 'cronos':
-                    domain = 'api.cronoscan.com';
-                    explorerUrl = 'cronoscan.com';
+                case "cronos":
+                    domain = "api.cronoscan.com";
+                    explorerUrl = "cronoscan.com";
                     break;
-                case 'ethereum':
-                    domain = 'api.etherscan.io';
-                    explorerUrl = 'etherscan.io';
+                case "ethereum":
+                    domain = "api.etherscan.io";
+                    explorerUrl = "etherscan.io";
                     break;
-                case 'fantom':
-                    domain = 'api.ftmscan.com';
-                    explorerUrl = 'ftmscan.com';
+                case "fantom":
+                    domain = "api.ftmscan.com";
+                    explorerUrl = "ftmscan.com";
                     break;
-                case 'polygon-pos':
-                    domain = 'api.polygonscan.com';
-                    explorerUrl = 'polygonscan.com';
+                case "polygon-pos":
+                    domain = "api.polygonscan.com";
+                    explorerUrl = "polygonscan.com";
                     break;
-                case 'optimistic-ethereum':
-                    domain = 'api-optimistic.etherscan.io';
-                    explorerUrl = 'optimistic.etherscan.io';
+                case "optimistic-ethereum":
+                    domain = "api-optimistic.etherscan.io";
+                    explorerUrl = "optimistic.etherscan.io";
                     break;
                 default:
                     console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
@@ -1238,11 +1265,12 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 originalOrderArray.forEach((txInfo) => {
                     tokenTxsChartData.push({
                         date: new Date(Number(txInfo.timeStamp) * 1000),
-                        amount: (parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal))),
+                        amount: parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal)),
                         txHash: txInfo.hash,
-                        explorerUrl: 'https://' + explorerUrl + '/tx/' + txInfo.hash,
-                        usdValue: (parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal))) * tokenValue,
-                        native: platformId
+                        explorerUrl: "https://" + explorerUrl + "/tx/" + txInfo.hash,
+                        usdValue: (parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal))) *
+                            tokenValue,
+                        native: platformId,
                     });
                 });
                 return tokenTxsChartData;
@@ -1251,7 +1279,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         });
     }
     function delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
@@ -1261,30 +1289,31 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchbarImage },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } })),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { ref: inputRef, type: "text", style: styles.searchInput, onChange: (e) => setSearchInput(e.target.value), onKeyDown: handleSearch, onClick: () => setSearchInput(""), onFocus: handleFocus, value: searchInput })),
-            (!loadingError.isError) &&
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo || "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256", alt: "Main Logo" }),
-            (loadingError.isLoading && !loadingError.isError) &&
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_7__["default"], { size: 41, thickness: 1, style: { position: 'absolute', right: 12, zIndex: 1, color: "white" } }),
-            loadingError.isError &&
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.indicationIcon, title: "Refresh limit: 5/sec" },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { fontSize: 30, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } }))),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults, ref: searchResultsRef }, isExpanded && (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.length) > 0 &&
-            (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.slice(0, 12).map((tokenInfo, index) => react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: tokenInfo.id + index, style: index === focusedOptionIndex
+            !loadingError.isError && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.mainLogo, src: mainLogo ||
+                    "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256", alt: "Main Logo" })),
+            loadingError.isLoading && !loadingError.isError && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_7__["default"], { size: 41, thickness: 1, style: {
+                    position: "absolute",
+                    right: 12,
+                    zIndex: 1,
+                    color: "white",
+                } })),
+            loadingError.isError && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.indicationIcon, title: "Refresh limit: 5/sec" },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { fontSize: 30, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } })))),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults, ref: searchResultsRef }, isExpanded &&
+            (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.length) > 0 &&
+            (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.slice(0, 12).map((tokenInfo, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: tokenInfo.id + index, style: index === focusedOptionIndex
                     ? Object.assign(Object.assign({}, styles.coinSearchInfo), styles.coinSearchInfoFocus) : styles.coinSearchInfo, tabIndex: index, onClick: () => tokenInfo.id.length && handleCoinOptionClick(tokenInfo), onKeyDown: (event) => {
-                    if (tokenInfo.id.length && event.key === 'Enter') {
+                    if (tokenInfo.id.length && event.key === "Enter") {
                         handleCoinOptionClick(tokenInfo);
                     }
                 }, onFocus: () => tokenInfo.id.length && setFocusedOptionIndex(index), onBlur: () => tokenInfo.id.length && setFocusedOptionIndex(-1), onMouseEnter: () => tokenInfo.id.length && setFocusedOptionIndex(index), onMouseLeave: () => tokenInfo.id.length && setFocusedOptionIndex(-1) },
-                tokenInfo.image ?
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: tokenInfo.image || "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256", alt: tokenInfo.name, style: styles.coinImage }) :
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.coinImage }),
+                tokenInfo.image ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: tokenInfo.image ||
+                        "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256", alt: tokenInfo.name, style: styles.coinImage })) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.coinImage })),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.exchangeName }, tokenInfo.name),
                 tokenInfo.marketCapRank &&
-                    (tokenInfo.marketCapRank === 'NFT' ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.marketCapRank }, tokenInfo.marketCapRank))
-                        :
-                            (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.marketCapRank },
-                                "#",
-                                tokenInfo.marketCapRank)))))))));
+                    (tokenInfo.marketCapRank === "NFT" ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.marketCapRank }, tokenInfo.marketCapRank)) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.marketCapRank },
+                        "#",
+                        tokenInfo.marketCapRank))))))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HeaderBlock);
 
@@ -1305,14 +1334,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
-/* harmony import */ var _mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @mui/icons-material/QuestionAnswer */ "./node_modules/@mui/icons-material/QuestionAnswer.js");
+/* harmony import */ var _mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mui/icons-material/QuestionAnswer */ "./node_modules/@mui/icons-material/QuestionAnswer.js");
 /* harmony import */ var _mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mui/icons-material/Close */ "./node_modules/@mui/icons-material/Close.js");
-/* harmony import */ var _mui_material_Box__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @mui/material/Box */ "./node_modules/@mui/material/Box/Box.js");
-/* harmony import */ var _mui_material_Slider__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @mui/material/Slider */ "./node_modules/@mui/material/Slider/Slider.js");
-/* harmony import */ var _mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mui/material/ToggleButton */ "./node_modules/@mui/material/ToggleButton/ToggleButton.js");
-/* harmony import */ var _mui_material_ToggleButtonGroup__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mui/material/ToggleButtonGroup */ "./node_modules/@mui/material/ToggleButtonGroup/ToggleButtonGroup.js");
-/* harmony import */ var _mui_icons_material_CurrencyBitcoin__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @mui/icons-material/CurrencyBitcoin */ "./node_modules/@mui/icons-material/CurrencyBitcoin.js");
-/* harmony import */ var _mui_icons_material_Wallpaper__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @mui/icons-material/Wallpaper */ "./node_modules/@mui/icons-material/Wallpaper.js");
+/* harmony import */ var _mui_material_Box__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @mui/material/Box */ "./node_modules/@mui/material/Box/Box.js");
+/* harmony import */ var _mui_material_Slider__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @mui/material/Slider */ "./node_modules/@mui/material/Slider/Slider.js");
+/* harmony import */ var _mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mui/material/ToggleButton */ "./node_modules/@mui/material/ToggleButton/ToggleButton.js");
+/* harmony import */ var _mui_material_ToggleButtonGroup__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @mui/material/ToggleButtonGroup */ "./node_modules/@mui/material/ToggleButtonGroup/ToggleButtonGroup.js");
+/* harmony import */ var _mui_icons_material_CurrencyBitcoin__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @mui/icons-material/CurrencyBitcoin */ "./node_modules/@mui/icons-material/CurrencyBitcoin.js");
+/* harmony import */ var _mui_icons_material_Wallpaper__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @mui/icons-material/Wallpaper */ "./node_modules/@mui/icons-material/Wallpaper.js");
+/* harmony import */ var _mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @mui/icons-material/Search */ "./node_modules/@mui/icons-material/Search.js");
+/* harmony import */ var _mui_icons_material_QueryStats__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @mui/icons-material/QueryStats */ "./node_modules/@mui/icons-material/QueryStats.js");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/api */ "./src/utils/api.ts");
 /* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
@@ -1325,6 +1356,8 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
+
 
 
 
@@ -1457,6 +1490,7 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             width: "220px",
             display: "flex",
             alignItems: "center",
+            cursor: "pointer",
         },
         portfolioItemImage: {
             width: "22px",
@@ -1485,17 +1519,10 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium,
             fontWeight: 600,
         },
-        amountTextBox: {
+        amountText: {
             width: "55px",
             marginLeft: "14px",
-            cursor: "pointer",
-            // backgroundColor: "red",
-        },
-        amountText: {
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-            borderBottom: `1px solid ${_static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_light}`,
-            display: "inline",
-            padding: "3px",
         },
         portfolioItemDivider: {
             marginTop: "6px",
@@ -1513,6 +1540,7 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             backgroundColor: "#f8f9fa",
             padding: "5px",
             boxSizing: "border-box",
+            outline: "none",
         },
         amountInputField: {
             width: "70%",
@@ -1524,12 +1552,12 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             backgroundColor: "#e9ecef",
             border: "none",
         },
-        inputContainerButton: {
+        inputContainerSaveButton: {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            width: "25%",
-            padding: "5px",
+            padding: "5px 10px",
+            marginRight: "5px",
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
             fontSize: "12px",
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
@@ -1538,8 +1566,19 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             border: "none",
             textAlign: "center",
         },
+        inputContainerDeleteButton: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "5px 10px",
+            fontSize: "12px",
+            borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+            cursor: "pointer",
+            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_dark,
+            border: "none",
+            textAlign: "center",
+        },
     };
-    // todo remove from portfolio
     const handleSupportClick = () => {
         chrome.tabs.create({
             url: "https://twitter.com/Marty_cFly",
@@ -1547,9 +1586,9 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
         });
     };
     const [searchPref, setSearchPref] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("coins");
+    const [startPref, setStartPref] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("portfolio");
     const [searchResultNftAmount, setSearchResultNftAmount] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(3);
     const [portfolioData, setPortfolioData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    const [totalPortfolioValue, setTotalPortfolioValue] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
     const [showInputField, setShowInputField] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const [inputAmount, setInputAmount] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
     const [clickedCoinId, setClickedCoinId] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
@@ -1559,6 +1598,12 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setSearchPrefStorage)(newSearchPref);
         }
     };
+    const handleStartPref = (newStartPref) => {
+        if (newStartPref !== null) {
+            setStartPref(newStartPref);
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setStartPrefStorage)(newStartPref);
+        }
+    };
     const handleSearchResultNftAmount = (newSearchResultNftAmount) => {
         if (newSearchResultNftAmount !== null) {
             setSearchResultNftAmount(newSearchResultNftAmount);
@@ -1566,9 +1611,10 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
         }
     };
     const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
-        const [portfolioDataStorage, searchPrefStorage, searchResultNftAmountStorage,] = yield Promise.all([
+        const [portfolioDataStorage, searchPrefStorage, startPrefStorage, searchResultNftAmountStorage,] = yield Promise.all([
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getPortfolioDataStorage)(),
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getSearchPrefStorage)(),
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getStartPrefStorage)(),
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getSearchResultNftAmountStorage)(),
         ]);
         console.log("portfolioDataStorage1: ", portfolioDataStorage);
@@ -1590,6 +1636,9 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
         if (searchPrefStorage) {
             setSearchPref(searchPrefStorage);
         }
+        if (startPrefStorage) {
+            setStartPref(startPrefStorage);
+        }
         if (searchResultNftAmountStorage) {
             setSearchResultNftAmount(searchResultNftAmountStorage);
         }
@@ -1604,11 +1653,29 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             }
             return coinInfo;
         });
-        console.log("updatedPortfolioData1: ", updatedPortfolioData);
         setPortfolioData(updatedPortfolioData);
-        (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setPortfolioCoinAmountStorage)(clickedCoinId, parseFloat(inputAmount));
+        (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.changePortfolioCoinAmountStorage)(clickedCoinId, parseFloat(inputAmount));
         setInputAmount("");
         setShowInputField(false);
+    };
+    const handleRemoveCoinButton = () => {
+        const updatedPortfolioData = portfolioData.filter((coinInfo) => {
+            coinInfo.id !== clickedCoinId;
+        });
+        (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.removePortfolioCoinStorage)(clickedCoinId);
+        setPortfolioData(updatedPortfolioData);
+        setShowInputField(false);
+    };
+    const handlePortfolioCoinPress = (coinInfoId) => {
+        setClickedCoinId(coinInfoId);
+        setShowInputField(!showInputField);
+    };
+    const calculatePortfolioValue = () => {
+        let totalValue = 0;
+        portfolioData.map((coinInfo) => {
+            totalValue += coinInfo.amount * coinInfo.price;
+        });
+        return totalValue;
     };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: menuIsOpen
             ? Object.assign(Object.assign({}, styles.overlayMenu), styles.overlayMenuOpen) : styles.overlayMenu },
@@ -1618,10 +1685,13 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium }, onClick: () => setMenuIsOpen(false) })),
             menuIsOpen && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioSectionTitle }, "PORTFOLIO BALANCE"),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioValueField }, `$${totalPortfolioValue}`),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioValueField }, `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(calculatePortfolioValue())}`),
                 showInputField && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainer },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "number", value: inputAmount, onChange: (e) => setInputAmount(e.target.value), style: styles.amountInputField, placeholder: "Amount" }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerButton, onClick: handleSaveAmountInput }, "Save"))),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerSaveButton, onClick: handleSaveAmountInput }, "Save"),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainerDeleteButton, onClick: handleRemoveCoinButton },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { fontSize: 14, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } }),
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue })))),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemField },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioHeader },
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemImage }),
@@ -1630,37 +1700,52 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioHeaderValue }, "Total/ 24h")),
                     portfolioData.length > 0 &&
                         portfolioData.map((coinInfo, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: coinInfo.id },
-                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItem },
+                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItem, onClick: () => handlePortfolioCoinPress(coinInfo.id) },
                                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { style: styles.portfolioItemImage, src: coinInfo.iconUrl, alt: coinInfo.ticker }),
                                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDataField },
                                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemTopRow },
                                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue },
                                             "$",
                                             (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(coinInfo.price)),
-                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.amountTextBox, onClick: () => {
-                                                setClickedCoinId(coinInfo.id);
-                                                setShowInputField(true);
-                                            } },
-                                            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.amountText }, (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.numberFormatter)(coinInfo.amount))),
-                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue },
-                                            "$",
-                                            (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(coinInfo.price * coinInfo.amount))),
+                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.amountText }, coinInfo.amount > 0
+                                            ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(coinInfo.amount)
+                                            : "-"),
+                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.portfolioItemValue }, coinInfo.amount > 0
+                                            ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(coinInfo.price * coinInfo.amount)}`
+                                            : "-")),
                                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemBottomRow },
                                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), styles.tickerText) }, coinInfo.ticker.toUpperCase()),
                                         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemValue }),
-                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium }) }, `${coinInfo.usd24Change.toFixed(1)}%`)))),
+                                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: Object.assign(Object.assign({}, styles.portfolioItemValue), { color: coinInfo.usd24Change > 0
+                                                    ? _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].green_medium
+                                                    : _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium }) }, `${coinInfo.usd24Change.toFixed(1)}%`)))),
                             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.portfolioItemDivider }))))),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Tweet to Me!"),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Any feature requests or ideas"),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_7__["default"], { value: "question", style: styles.togglePrefButton, onClick: handleSupportClick },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_8__["default"], { style: {
+                            fontSize: 24,
+                            cursor: "pointer",
+                            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
+                        } })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Start Priority"),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Portfolio/ Search first"),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButtonGroup__WEBPACK_IMPORTED_MODULE_9__["default"], { size: "small", color: "primary", value: startPref, exclusive: true, "aria-label": "StartPref" },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_7__["default"], { value: "portfolio", style: Object.assign(Object.assign({}, styles.togglePrefButton), (startPref === "portfolio" && styles.activePrefButton)), onClick: () => handleStartPref("portfolio") },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_QueryStats__WEBPACK_IMPORTED_MODULE_10__["default"], { style: styles.togglePrefButtonIcon })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_7__["default"], { value: "search", style: Object.assign(Object.assign({}, styles.togglePrefButton), (startPref === "search" && styles.activePrefButton)), onClick: () => handleStartPref("search") },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_11__["default"], { style: styles.togglePrefButtonIcon }))),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Search Priority"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Show Coins/ Nfts first"),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButtonGroup__WEBPACK_IMPORTED_MODULE_7__["default"], { size: "small", color: "primary", value: searchPref, exclusive: true, "aria-label": "SearchPref" },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_8__["default"], { value: "coins", style: Object.assign(Object.assign({}, styles.togglePrefButton), (searchPref === "coins" && styles.activePrefButton)), onClick: () => handleSearchPref("coins") },
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_CurrencyBitcoin__WEBPACK_IMPORTED_MODULE_9__["default"], { style: styles.togglePrefButtonIcon })),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_8__["default"], { value: "nfts", style: Object.assign(Object.assign({}, styles.togglePrefButton), (searchPref === "nfts" && styles.activePrefButton)), onClick: () => handleSearchPref("nfts") },
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Wallpaper__WEBPACK_IMPORTED_MODULE_10__["default"], { style: styles.togglePrefButtonIcon }))),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButtonGroup__WEBPACK_IMPORTED_MODULE_9__["default"], { size: "small", color: "primary", value: searchPref, exclusive: true, "aria-label": "SearchPref" },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_7__["default"], { value: "coins", style: Object.assign(Object.assign({}, styles.togglePrefButton), (searchPref === "coins" && styles.activePrefButton)), onClick: () => handleSearchPref("coins") },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_CurrencyBitcoin__WEBPACK_IMPORTED_MODULE_12__["default"], { style: styles.togglePrefButtonIcon })),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_7__["default"], { value: "nfts", style: Object.assign(Object.assign({}, styles.togglePrefButton), (searchPref === "nfts" && styles.activePrefButton)), onClick: () => handleSearchPref("nfts") },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Wallpaper__WEBPACK_IMPORTED_MODULE_13__["default"], { style: styles.togglePrefButtonIcon }))),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Search Results"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, `Max number of Nfts from 11 results (${searchResultNftAmount})`),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_Box__WEBPACK_IMPORTED_MODULE_11__["default"], { sx: { width: 180 } },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_Slider__WEBPACK_IMPORTED_MODULE_12__["default"], { size: "small", "aria-label": "Max Nfts out of 11 search results", value: searchResultNftAmount, valueLabelDisplay: "auto", onChange: (event, newTokenNftRatio) => {
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_Box__WEBPACK_IMPORTED_MODULE_14__["default"], { sx: { width: 180 } },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_Slider__WEBPACK_IMPORTED_MODULE_15__["default"], { size: "small", "aria-label": "Max Nfts out of 11 search results", value: searchResultNftAmount, valueLabelDisplay: "auto", onChange: (event, newTokenNftRatio) => {
                             if (Array.isArray(newTokenNftRatio)) {
                                 handleSearchResultNftAmount(newTokenNftRatio[0]);
                             }
@@ -1676,15 +1761,7 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
                                 value: 9,
                                 label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.sliderMark }, "9 Nfts"),
                             },
-                        ], min: 2, max: 9, style: { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Contact Me!"),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Any feature requests or ideas"),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_8__["default"], { value: "question", style: styles.togglePrefButton, onClick: handleSupportClick },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_13__["default"], { style: {
-                            fontSize: 24,
-                            cursor: "pointer",
-                            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-                        } })))))));
+                        ], min: 2, max: 9, style: { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } })))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (OverlayMenu);
 
@@ -2014,6 +2091,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
 /* harmony import */ var _components_OverlayMenu__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../components/OverlayMenu */ "./src/components/OverlayMenu.tsx");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
+/* harmony import */ var _mui_icons_material_Add__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @mui/icons-material/Add */ "./node_modules/@mui/icons-material/Add.js");
+/* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
 
 
 
@@ -2038,6 +2117,8 @@ const telegramIcon = __webpack_require__(/*! ../static/images/icons/telegram-ico
 const twitterIcon = __webpack_require__(/*! ../static/images/icons/twitter-icon.png */ "./src/static/images/icons/twitter-icon.png");
 const websiteIcon = __webpack_require__(/*! ../static/images/icons/website-icon.png */ "./src/static/images/icons/website-icon.png");
 const discordIcon = __webpack_require__(/*! ../static/images/icons/discord-icon.png */ "./src/static/images/icons/discord-icon.png");
+
+
 const styles = {
     topContainer: {
         padding: "12px",
@@ -2059,10 +2140,22 @@ const styles = {
         marginBottom: "12px",
     },
     addToPortfolioIcon: {
-        width: "20px",
-        height: "20px",
         cursor: "pointer",
-        backgroundColor: "red",
+        width: 38,
+        height: 42,
+        padding: "9px 0px 0px",
+        borderTopLeftRadius: 34,
+        borderTopRightRadius: 34,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_15__["default"].primary_dark,
+    },
+    iconStyling: {
+        fontSize: 22,
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_15__["default"].white_medium,
+        // color: colors.secondary_dark,
     },
 };
 const App = () => {
@@ -2071,7 +2164,7 @@ const App = () => {
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    const [menuIsOpen, setMenuIsOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true);
+    const [menuIsOpen, setMenuIsOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     // console.log("\n\n")
     // console.log("MAIN")
     // console.log("coinInfo1", coinInfo)
@@ -2092,6 +2185,9 @@ const App = () => {
             amount: 0,
             nft: false,
         });
+        setTimeout(() => {
+            setMenuIsOpen(true);
+        }, 1000);
     };
     // keep highest and lowest price on max chart
     // drag and zoom chart functionality
@@ -2155,9 +2251,8 @@ const App = () => {
                     ((_v = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _v === void 0 ? void 0 : _v.twitter_screen_name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, title: "Twitter followers", mainValue: (_w = coinInfo.community_data) === null || _w === void 0 ? void 0 : _w.twitter_followers, link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` })),
                     ((_x = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _x === void 0 ? void 0 : _x.subreddit_url) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: redditIcon, title: "Reddit subs", mainValue: (_y = coinInfo.community_data) === null || _y === void 0 ? void 0 : _y.reddit_subscribers, link: (_z = coinInfo.links) === null || _z === void 0 ? void 0 : _z.subreddit_url })),
                     ((_0 = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _0 === void 0 ? void 0 : _0.telegram_channel_identifier) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, title: "Telegram channel size", mainValue: (_1 = coinInfo.community_data) === null || _1 === void 0 ? void 0 : _1.telegram_channel_user_count, link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` })),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { onClick: addToPortfolio, style: styles.addToPortfolioIcon },
-                        "plus",
-                        " ")))),
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.addToPortfolioIcon },
+                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Add__WEBPACK_IMPORTED_MODULE_16__["default"], { style: styles.iconStyling, onClick: addToPortfolio }))))),
             (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
                     react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Floor", tooltipTitle: "24h change %", mainValue: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)((_2 = nftInfo.floor_price) === null || _2 === void 0 ? void 0 : _2.usd) || "-"}`, secondaryValue: `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.percentageFormatter)(nftInfo.floor_price_in_usd_24h_percentage_change)}%` }),
@@ -3157,17 +3252,20 @@ function fetchTokenTxs(domainName, contractAddress, txAmount) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "changePortfolioCoinAmountStorage": () => (/* binding */ changePortfolioCoinAmountStorage),
 /* harmony export */   "getHomeCoinStorage": () => (/* binding */ getHomeCoinStorage),
 /* harmony export */   "getPortfolioDataStorage": () => (/* binding */ getPortfolioDataStorage),
 /* harmony export */   "getSearchPrefStorage": () => (/* binding */ getSearchPrefStorage),
 /* harmony export */   "getSearchResultNftAmountStorage": () => (/* binding */ getSearchResultNftAmountStorage),
 /* harmony export */   "getSelectedTokenStorage": () => (/* binding */ getSelectedTokenStorage),
+/* harmony export */   "getStartPrefStorage": () => (/* binding */ getStartPrefStorage),
+/* harmony export */   "removePortfolioCoinStorage": () => (/* binding */ removePortfolioCoinStorage),
 /* harmony export */   "setHomeCoinStorage": () => (/* binding */ setHomeCoinStorage),
-/* harmony export */   "setPortfolioCoinAmountStorage": () => (/* binding */ setPortfolioCoinAmountStorage),
 /* harmony export */   "setPortfolioDataStorage": () => (/* binding */ setPortfolioDataStorage),
 /* harmony export */   "setSearchPrefStorage": () => (/* binding */ setSearchPrefStorage),
 /* harmony export */   "setSearchResultNftAmountStorage": () => (/* binding */ setSearchResultNftAmountStorage),
-/* harmony export */   "setSelectedTokenStorage": () => (/* binding */ setSelectedTokenStorage)
+/* harmony export */   "setSelectedTokenStorage": () => (/* binding */ setSelectedTokenStorage),
+/* harmony export */   "setStartPrefStorage": () => (/* binding */ setStartPrefStorage)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -3204,6 +3302,20 @@ function setSearchPrefStorage(searchPref) {
         }
         catch (error) {
             console.log("setSearchPrefStorage error: ", error);
+        }
+    });
+}
+function setStartPrefStorage(startPref) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.set({ startPref: startPref }, () => {
+                    resolve();
+                });
+            });
+        }
+        catch (error) {
+            console.log("setStartPrefStorage error: ", error);
         }
     });
 }
@@ -3269,7 +3381,7 @@ function setPortfolioDataStorage(newCoinData) {
         }
     });
 }
-function setPortfolioCoinAmountStorage(coinId, amount) {
+function changePortfolioCoinAmountStorage(coinId, amount) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             return new Promise((resolve) => {
@@ -3288,7 +3400,27 @@ function setPortfolioCoinAmountStorage(coinId, amount) {
             });
         }
         catch (error) {
-            console.log("setPortfolioCoinAmountStorage error: ", error);
+            console.log("changePortfolioCoinAmountStorage error: ", error);
+        }
+    });
+}
+function removePortfolioCoinStorage(coinId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.get("portfolioCoinData", (result) => {
+                    const existingData = result.portfolioCoinData || [];
+                    const updatedData = existingData.filter((coinInfo) => {
+                        coinInfo.id !== coinId;
+                    });
+                    chrome.storage.local.set({ portfolioCoinData: updatedData }, () => {
+                        resolve();
+                    });
+                });
+            });
+        }
+        catch (error) {
+            console.log("setPortfolioCoinStorage error: ", error);
         }
     });
 }
@@ -3313,6 +3445,20 @@ function getSearchPrefStorage() {
             chrome.storage.local.get(["searchPref"], (res) => {
                 if (res === null || res === void 0 ? void 0 : res.searchPref) {
                     resolve(res.searchPref);
+                }
+                else {
+                    resolve(null);
+                }
+            });
+        });
+    });
+}
+function getStartPrefStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(["startPref"], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.startPref) {
+                    resolve(res.startPref);
                 }
                 else {
                     resolve(null);
@@ -3689,7 +3835,7 @@ module.exports = __webpack_require__.p + "275488b8325f50682b7c.png";
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_mui_icons-material_Close_js-node_modules_mui_icons-material_CurrencyBitc-a98774"], () => (__webpack_require__("./src/popup/popup.tsx")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_mui_icons-material_Add_js-node_modules_mui_icons-material_Close_js-node_-74882d"], () => (__webpack_require__("./src/popup/popup.tsx")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

@@ -10,17 +10,20 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "changePortfolioCoinAmountStorage": () => (/* binding */ changePortfolioCoinAmountStorage),
 /* harmony export */   "getHomeCoinStorage": () => (/* binding */ getHomeCoinStorage),
 /* harmony export */   "getPortfolioDataStorage": () => (/* binding */ getPortfolioDataStorage),
 /* harmony export */   "getSearchPrefStorage": () => (/* binding */ getSearchPrefStorage),
 /* harmony export */   "getSearchResultNftAmountStorage": () => (/* binding */ getSearchResultNftAmountStorage),
 /* harmony export */   "getSelectedTokenStorage": () => (/* binding */ getSelectedTokenStorage),
+/* harmony export */   "getStartPrefStorage": () => (/* binding */ getStartPrefStorage),
+/* harmony export */   "removePortfolioCoinStorage": () => (/* binding */ removePortfolioCoinStorage),
 /* harmony export */   "setHomeCoinStorage": () => (/* binding */ setHomeCoinStorage),
-/* harmony export */   "setPortfolioCoinAmountStorage": () => (/* binding */ setPortfolioCoinAmountStorage),
 /* harmony export */   "setPortfolioDataStorage": () => (/* binding */ setPortfolioDataStorage),
 /* harmony export */   "setSearchPrefStorage": () => (/* binding */ setSearchPrefStorage),
 /* harmony export */   "setSearchResultNftAmountStorage": () => (/* binding */ setSearchResultNftAmountStorage),
-/* harmony export */   "setSelectedTokenStorage": () => (/* binding */ setSelectedTokenStorage)
+/* harmony export */   "setSelectedTokenStorage": () => (/* binding */ setSelectedTokenStorage),
+/* harmony export */   "setStartPrefStorage": () => (/* binding */ setStartPrefStorage)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -57,6 +60,20 @@ function setSearchPrefStorage(searchPref) {
         }
         catch (error) {
             console.log("setSearchPrefStorage error: ", error);
+        }
+    });
+}
+function setStartPrefStorage(startPref) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.set({ startPref: startPref }, () => {
+                    resolve();
+                });
+            });
+        }
+        catch (error) {
+            console.log("setStartPrefStorage error: ", error);
         }
     });
 }
@@ -122,7 +139,7 @@ function setPortfolioDataStorage(newCoinData) {
         }
     });
 }
-function setPortfolioCoinAmountStorage(coinId, amount) {
+function changePortfolioCoinAmountStorage(coinId, amount) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             return new Promise((resolve) => {
@@ -141,7 +158,27 @@ function setPortfolioCoinAmountStorage(coinId, amount) {
             });
         }
         catch (error) {
-            console.log("setPortfolioCoinAmountStorage error: ", error);
+            console.log("changePortfolioCoinAmountStorage error: ", error);
+        }
+    });
+}
+function removePortfolioCoinStorage(coinId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.get("portfolioCoinData", (result) => {
+                    const existingData = result.portfolioCoinData || [];
+                    const updatedData = existingData.filter((coinInfo) => {
+                        coinInfo.id !== coinId;
+                    });
+                    chrome.storage.local.set({ portfolioCoinData: updatedData }, () => {
+                        resolve();
+                    });
+                });
+            });
+        }
+        catch (error) {
+            console.log("setPortfolioCoinStorage error: ", error);
         }
     });
 }
@@ -166,6 +203,20 @@ function getSearchPrefStorage() {
             chrome.storage.local.get(["searchPref"], (res) => {
                 if (res === null || res === void 0 ? void 0 : res.searchPref) {
                     resolve(res.searchPref);
+                }
+                else {
+                    resolve(null);
+                }
+            });
+        });
+    });
+}
+function getStartPrefStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(["startPref"], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.startPref) {
+                    resolve(res.startPref);
                 }
                 else {
                     resolve(null);

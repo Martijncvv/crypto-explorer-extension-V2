@@ -33,6 +33,11 @@ const twitterIcon = require("../static/images/icons/twitter-icon.png");
 const websiteIcon = require("../static/images/icons/website-icon.png");
 const discordIcon = require("../static/images/icons/discord-icon.png");
 
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddIcon from "@mui/icons-material/Add";
+import colors from "../static/colors";
+import constants from "../static/constants";
+
 const styles: { [key: string]: CSSProperties } = {
   topContainer: {
     padding: "12px",
@@ -54,10 +59,22 @@ const styles: { [key: string]: CSSProperties } = {
     marginBottom: "12px",
   },
   addToPortfolioIcon: {
-    width: "20px",
-    height: "20px",
     cursor: "pointer",
-    backgroundColor: "red",
+    width: 38,
+    height: 42,
+    padding: "9px 0px 0px",
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    backgroundColor: colors.primary_dark,
+  },
+  iconStyling: {
+    fontSize: 22,
+    color: colors.white_medium,
+    // color: colors.secondary_dark,
   },
 };
 
@@ -66,7 +83,7 @@ const App: React.FC = () => {
   const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>();
   const [txVolumeChartData, setTxVolumeChartData] = useState<any>([]);
   const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([]);
-  const [menuIsOpen, setMenuIsOpen] = useState<boolean>(true);
+  const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
   // console.log("\n\n")
   // console.log("MAIN")
@@ -92,6 +109,9 @@ const App: React.FC = () => {
       amount: 0,
       nft: false,
     });
+    setTimeout(() => {
+      setMenuIsOpen(true);
+    }, 1000);
   };
 
   // keep highest and lowest price on max chart
@@ -271,9 +291,9 @@ const App: React.FC = () => {
                   link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`}
                 />
               )}
-
-              <div onClick={addToPortfolio} style={styles.addToPortfolioIcon}>
-                plus{" "}
+              <div style={styles.addToPortfolioIcon}>
+                {/*<AddCircleOutlineIcon*/}
+                <AddIcon style={styles.iconStyling} onClick={addToPortfolio} />
               </div>
 
               {/*/!*<SocialBlock image={discordIcon}  title={"Discord channel size"}  link={coinInfo.links.homepage[0]} />*!/ find out what to do with this*/}
