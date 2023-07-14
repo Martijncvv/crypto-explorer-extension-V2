@@ -21,6 +21,9 @@ import OverlayMenu from "../components/OverlayMenu";
 import {
   setPortfolioDataStorage,
   getPortfolioDataStorage,
+  getSearchPrefStorage,
+  getStartPrefStorage,
+  getSearchResultNftAmountStorage,
 } from "../utils/storage";
 
 const bitcoinIcon = require("../static/images/icons/bitcoin-icon.png");
@@ -36,7 +39,11 @@ const discordIcon = require("../static/images/icons/discord-icon.png");
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import AddIcon from "@mui/icons-material/Add";
 import colors from "../static/colors";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import RemoveIcon from "@mui/icons-material/Remove";
 import constants from "../static/constants";
+import { fetchCoinsPrices } from "../utils/api";
 
 const styles: { [key: string]: CSSProperties } = {
   topContainer: {
@@ -72,7 +79,7 @@ const styles: { [key: string]: CSSProperties } = {
     backgroundColor: colors.primary_dark,
   },
   iconStyling: {
-    fontSize: 22,
+    fontSize: 20,
     color: colors.white_medium,
     // color: colors.secondary_dark,
   },
@@ -84,14 +91,8 @@ const App: React.FC = () => {
   const [txVolumeChartData, setTxVolumeChartData] = useState<any>([]);
   const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([]);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+  const [portfolioCoins, setPortfolioCoins] = useState<any>([]);
 
-  // console.log("\n\n")
-  // console.log("MAIN")
-  // console.log("coinInfo1", coinInfo)
-  // console.log("nftInfo1", nftInfo)
-
-  // todo: large community metrics amount data wrap: BNB
-  // todo portfolio page
   // todo splash screen/ new icon
   // todo, make ref links of all exchange buttons
 
@@ -99,9 +100,6 @@ const App: React.FC = () => {
   // ideas: store notes for accounts (discord/ twitter)
 
   const addToPortfolio = () => {
-    console.log("add to portfolio: ");
-    console.log(coinInfo);
-
     setPortfolioDataStorage({
       id: coinInfo.id,
       ticker: coinInfo.symbol,
@@ -113,6 +111,22 @@ const App: React.FC = () => {
       setMenuIsOpen(true);
     }, 1000);
   };
+
+  const checkStorage = async () => {
+    const portfolioDataStorage = await getPortfolioDataStorage();
+
+    if (portfolioDataStorage.length > 0) {
+      const coinIds = [];
+      portfolioDataStorage.forEach((coinInfo) => {
+        coinIds.push(coinInfo.id);
+      });
+      setPortfolioCoins(coinIds);
+    }
+  };
+
+  useEffect(() => {
+    checkStorage();
+  }, [menuIsOpen]);
 
   // keep highest and lowest price on max chart
   // drag and zoom chart functionality
@@ -291,10 +305,17 @@ const App: React.FC = () => {
                   link={`https://t.me/${coinInfo.links.telegram_channel_identifier}`}
                 />
               )}
-              <div style={styles.addToPortfolioIcon}>
-                {/*<AddCircleOutlineIcon*/}
-                <AddIcon style={styles.iconStyling} onClick={addToPortfolio} />
-              </div>
+              {!portfolioCoins.includes(coinInfo.id) && (
+                <div
+                  style={styles.addToPortfolioIcon}
+                  title={"Add to Portfolio"}
+                >
+                  <PlaylistAddIcon
+                    style={styles.iconStyling}
+                    onClick={addToPortfolio}
+                  />
+                </div>
+              )}
 
               {/*/!*<SocialBlock image={discordIcon}  title={"Discord channel size"}  link={coinInfo.links.homepage[0]} />*!/ find out what to do with this*/}
             </div>

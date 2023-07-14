@@ -13,6 +13,7 @@ import CurrencyBitcoinIcon from "@mui/icons-material/CurrencyBitcoin";
 import WallpaperIcon from "@mui/icons-material/Wallpaper";
 import SearchIcon from "@mui/icons-material/Search";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
   getPortfolioDataStorage,
@@ -28,7 +29,7 @@ import {
 import { IDetailedNftInfo } from "../models/INftInfo";
 import { IDetailedCoinInfo } from "../models/ICoinInfo";
 import { fetchCoinsPrices } from "../utils/api";
-import { amountFormatter, numberFormatter } from "../utils/amountFormatter";
+import { amountFormatter } from "../utils/amountFormatter";
 
 interface OverlayMenuProps {
   menuIsOpen: boolean;
@@ -57,6 +58,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
     },
     overlayMenuOpen: {
       width: "100%",
+      paddingBottom: "20px",
     },
     menuContent: {
       transition: "transform 0.5s ease",
@@ -131,6 +133,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
     },
 
     // PORTFOLIO
+
     portfolioSectionTitle: {
       marginTop: constants.default_padding,
       marginBottom: "2px",
@@ -221,23 +224,23 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       backgroundColor: "#f8f9fa",
       padding: "5px",
       boxSizing: "border-box",
-      outline: "none",
     },
     amountInputField: {
       width: "70%",
-      padding: "5px",
+      padding: "5px 0 5px 10px",
       marginRight: "5px",
       borderRadius: constants.border_radius,
       fontSize: "12px",
       color: colors.primary_medium,
       backgroundColor: "#e9ecef",
       border: "none",
+      outline: "none",
     },
     inputContainerSaveButton: {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      padding: "5px 10px",
+      padding: "5px 8px",
       marginRight: "5px",
       color: colors.white_medium,
       fontSize: "12px",
@@ -251,7 +254,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      padding: "5px 10px",
+      padding: "5px 8px",
       fontSize: "12px",
       borderRadius: constants.border_radius,
       cursor: "pointer",
@@ -259,13 +262,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       border: "none",
       textAlign: "center",
     },
-  };
-
-  const handleSupportClick = () => {
-    chrome.tabs.create({
-      url: "https://twitter.com/Marty_cFly",
-      active: false,
-    });
   };
 
   const [searchPref, setSearchPref] = useState<string>("coins");
@@ -285,6 +281,8 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   const [showInputField, setShowInputField] = useState<boolean>(false);
   const [inputAmount, setInputAmount] = useState<string>("");
   const [clickedCoinId, setClickedCoinId] = useState<string>("");
+  const [clickedCoinTicker, setClickedCoinTicker] = useState<string>("");
+  const [removeCoinPress, setRemoveCoinPress] = useState<boolean>(false);
 
   const handleSearchPref = (newSearchPref: string) => {
     if (newSearchPref !== null) {
@@ -370,18 +368,30 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   };
 
   const handleRemoveCoinButton = () => {
-    const updatedPortfolioData = portfolioData.filter((coinInfo) => {
-      coinInfo.id !== clickedCoinId;
-    });
+    if (removeCoinPress) {
+      const updatedPortfolioData = portfolioData.filter((coinInfo) => {
+        return coinInfo.id !== clickedCoinId;
+      });
 
-    removePortfolioCoinStorage(clickedCoinId);
-    setPortfolioData(updatedPortfolioData);
-    setShowInputField(false);
+      removePortfolioCoinStorage(clickedCoinId);
+      setPortfolioData(updatedPortfolioData);
+      setShowInputField(false);
+    } else {
+      setRemoveCoinPress(true);
+    }
   };
 
-  const handlePortfolioCoinPress = (coinInfoId: string) => {
+  const handlePortfolioCoinPress = (coinInfoId: string, coinTicker: string) => {
     setClickedCoinId(coinInfoId);
+    setClickedCoinTicker(coinTicker);
     setShowInputField(!showInputField);
+  };
+
+  const handleSupportClick = () => {
+    chrome.tabs.create({
+      url: "https://twitter.com/Marty_cFly",
+      active: false,
+    });
   };
 
   const calculatePortfolioValue = () => {
@@ -427,7 +437,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                   value={inputAmount}
                   onChange={(e) => setInputAmount(e.target.value)}
                   style={styles.amountInputField}
-                  placeholder="Amount"
+                  placeholder={`Amount (${clickedCoinTicker})`}
                 />
                 <button
                   style={styles.inputContainerSaveButton}
@@ -439,13 +449,15 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                   style={styles.inputContainerDeleteButton}
                   onClick={handleRemoveCoinButton}
                 >
-                  <CloseIcon
+                  <DeleteIcon
                     style={{ fontSize: 14, color: colors.white_medium }}
                   />
+
                   <span style={styles.mainValue}></span>
                 </div>
               </div>
             )}
+
             <div style={styles.portfolioItemField}>
               <div style={styles.portfolioHeader}>
                 <div style={styles.portfolioItemImage} />
@@ -459,7 +471,9 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                   <div key={coinInfo.id}>
                     <div
                       style={styles.portfolioItem}
-                      onClick={() => handlePortfolioCoinPress(coinInfo.id)}
+                      onClick={() =>
+                        handlePortfolioCoinPress(coinInfo.id, coinInfo.ticker)
+                      }
                     >
                       <img
                         style={styles.portfolioItemImage}

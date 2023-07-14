@@ -43,16 +43,40 @@ export function amountFormatter(
   }
   // 1 till 1000
   if (amount > 1) {
-    return `${amount.toFixed(2)}`;
+    return `${Number(amount.toFixed(2))}`;
   }
-  // Numbers close to zero
-  if (amount > 1e-4) {
-    return `${amount.toFixed(5).replace(/\.?0+$/, "")}`;
+
+  // Tiny numbers less than 1
+  // Milli (m) - 10^-3
+  if (amount >= 1e-3) {
+    return `${Number(amount.toFixed(4))}`;
   }
-  // Other small numbers
-  if (amount < 1) {
+
+  // Micro (µ) - 10^-6
+  if (amount >= 1e-6) {
+    return `${(amount / 1e-6).toPrecision(precision)} µ`;
+  }
+
+  // Nano (n) - 10^-9
+  if (amount >= 1e-9) {
+    return `${(amount / 1e-9).toPrecision(precision)} n`;
+  }
+
+  // Pico (p) - 10^-12
+  if (amount >= 1e-12) {
+    return `${(amount / 1e-12).toPrecision(precision)} p`;
+  }
+
+  // Femto (f) - 10^-15
+  if (amount >= 1e-15) {
+    return `${(amount / 1e-15).toPrecision(precision)} f`;
+  }
+
+  // Other smaller numbers
+  if (amount < 1e-15) {
     return `${amount.toExponential(3)}`;
   }
+
   // Default case
   return `${amount.toPrecision(precision)}`;
 }
@@ -67,14 +91,11 @@ export function numberFormatter(amount: number | null | undefined): string {
   if (amount >= 1e9) {
     return `${(amount / 1e9).toFixed(1)} B`;
   }
+
   // Million (M) - 10^6
   if (amount >= 1e6) {
-    return `${(amount / 1e6).toFixed(1)} M`;
+    return `${(amount / 1e6).toFixed(0)} M`;
   }
-  // // Hundred Thousand (0.1M) - 10^5
-  // if (amount >= 1e5) {
-  // 	return `${(amount / 1e6).toFixed(1)} M`;
-  // }
   // Thousand (K) - 10^3
   if (amount >= 1e3) {
     return `${(amount / 1e3).toFixed(0)} K`;

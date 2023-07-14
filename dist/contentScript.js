@@ -169,7 +169,7 @@ function removePortfolioCoinStorage(coinId) {
                 chrome.storage.local.get("portfolioCoinData", (result) => {
                     const existingData = result.portfolioCoinData || [];
                     const updatedData = existingData.filter((coinInfo) => {
-                        coinInfo.id !== coinId;
+                        return coinInfo.id !== coinId;
                     });
                     chrome.storage.local.set({ portfolioCoinData: updatedData }, () => {
                         resolve();

@@ -143,7 +143,7 @@ export async function removePortfolioCoinStorage(
         const existingData = result.portfolioCoinData || [];
 
         const updatedData = existingData.filter((coinInfo) => {
-          coinInfo.id !== coinId;
+          return coinInfo.id !== coinId;
         });
 
         chrome.storage.local.set({ portfolioCoinData: updatedData }, () => {
