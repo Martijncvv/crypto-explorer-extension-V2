@@ -45,6 +45,9 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import constants from "../static/constants";
 import { fetchCoinsPrices } from "../utils/api";
 
+// @ts-ignore
+// @ts-ignore
+// @ts-ignore
 const styles: { [key: string]: CSSProperties } = {
   topContainer: {
     padding: "12px",
@@ -133,18 +136,6 @@ const App: React.FC = () => {
   // fix all anys
   // join a group via name/ code?
   // check watchlist etc.
-
-  // Avoid Complex Calculations in the Render Method: Move the calculation of minPrice, maxPrice, maxVolume, maxFormattedPrice, barHeightMultiplier and the map operation to format the chart data outside the Format30dChartData and FormatMaxChartData functions. Store these values in state variables and update them only when price30dHistorydata and priceMaxHistorydata change.
-  //
-  // Limit the Number of Re-Renders: Instead of using the useState hook for chartOption and listening for changes with useEffect, consider using the useMemo hook. This way, you only calculate the formatted chart data when chartOption, price30dHistorydata, and priceMaxHistorydata change.
-  //
-  // Memoize Components: React creates a new function instance for every render when you define CustomTooltip and CustomBar within the ChartsBlock component. To prevent unnecessary re-renders and optimize performance, memoize these components with React.memo.
-  //
-  // Efficient Event Listening: Instead of attaching and removing event listeners on every render, use the useEffect hook to attach the event listener when the component mounts and remove it when the component unmounts.
-  //
-  // Use React.PureComponent or React.memo for Child Components: If you have child components inside the ChartsBlock that receive props, and you want to prevent unnecessary renders, consider converting these child components to PureComponent or wrapping them with React.memo.
-  //
-  // Debounce or Throttle Event Handlers: If you're dealing with events that fire rapidly (like scrolling or keyboard events), you might want to limit how often your component re-renders in response to those events.
 
   return (
     <>

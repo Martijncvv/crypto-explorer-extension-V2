@@ -99,7 +99,6 @@ export async function setPortfolioDataStorage(
         } else {
           updatedData = [newCoinData];
         }
-        console.log("updatedData1: ", updatedData);
         chrome.storage.local.set({ portfolioCoinData: updatedData }, () => {
           resolve();
         });

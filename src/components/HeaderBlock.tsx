@@ -178,7 +178,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
 
   const checkStorage = async () => {
     const startPref = await getStartPrefStorage();
-    if (startPref === "portfolio") {
+    console.log("startPref23", startPref);
+    if (startPref === "search") {
+      setMenuIsOpen(false);
+    } else {
       setMenuIsOpen(true);
     }
     const selectedTokenStorage = await getSelectedTokenStorage();
@@ -295,7 +298,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
         searchInputProp || searchInput,
       );
       if (searchResults.coins.length === 0 && searchResults.nfts.length === 0) {
-        console.log("No results");
         setDisplayResults({
           tokens: [
             {

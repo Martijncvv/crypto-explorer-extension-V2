@@ -294,6 +294,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   const [clickedCoinId, setClickedCoinId] = useState<string>("");
   const [clickedCoinTicker, setClickedCoinTicker] = useState<string>("");
   const [removeCoinPress, setRemoveCoinPress] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSearchPref = (newSearchPref: string) => {
     if (newSearchPref !== null) {
@@ -318,6 +319,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   };
 
   const checkStorage = async () => {
+    setLoading(true);
     const [
       portfolioDataStorage,
       searchPrefStorage,
@@ -329,8 +331,8 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       getStartPrefStorage(),
       getSearchResultNftAmountStorage(),
     ]);
-
-    if (portfolioDataStorage.length > 0) {
+    setLoading(false);
+    if (portfolioDataStorage?.length > 0) {
       let coinIds = [];
       portfolioDataStorage.forEach((coinInfo) => {
         coinIds.push(coinInfo.id);
@@ -441,6 +443,8 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
               <div style={styles.portfolioValueField}>
                 ${amountFormatter(calculatePortfolioValue())}
               </div>
+            ) : loading ? (
+              <div style={styles.emptyPortfolioValueField}>Loading..</div>
             ) : (
               <div style={styles.emptyPortfolioValueField}>
                 Click on coin to add amount
@@ -476,7 +480,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
             )}
 
             <div style={styles.portfolioItemField}>
-              {portfolioData.length > 0 && (
+              {portfolioData?.length > 0 && (
                 <div style={styles.portfolioHeader}>
                   <div style={styles.portfolioItemImage} />
                   <div style={styles.portfolioHeaderValue}>Price</div>
@@ -485,7 +489,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                 </div>
               )}
 
-              {portfolioData.length > 0 ? (
+              {portfolioData?.length > 0 ? (
                 portfolioData.map((coinInfo, index) => (
                   <div key={coinInfo.id}>
                     <div
