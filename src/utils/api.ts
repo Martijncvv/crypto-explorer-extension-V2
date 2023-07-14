@@ -57,6 +57,24 @@ export async function fetchCoinInfo(coinId: string): Promise<IDetailedCoinInfo> 
 	}
 }
 
+export async function fetchCoinsPrices(coinIds: string[]): Promise<any> {
+	try {
+		const coinSearchUrl = coinIds.join('%2C');
+		const res = await fetch(
+			`https://api.coingecko.com/api/v3/simple/price?ids=${coinSearchUrl}&vs_currencies=usd&include_24hr_change=true`
+		);
+
+		if (!res.ok) {
+			throw new Error(`Fetch error, coin info data (${coinIds}): ${res.status} ${res.statusText}`);
+		}
+
+		return await res.json();
+	} catch (error) {
+		console.error(`Error fetching coin info data (${coinIds}):`, error);
+		throw error;
+	}
+}
+
 export async function fetchNftInfo(coinId: string): Promise<IDetailedNftInfo> {
 	try {
 		const res = await fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}`);
@@ -131,7 +149,6 @@ export async function fetchTokenTxs(
 		if (!res.ok) {
 			throw new Error(`Fetch error, ${domainName} token txs info: ${res.status} ${res.statusText}`);
 		}
-
 		return await res.json();
 	} catch (error) {
 		console.error('Error fetching token txs info:', error);

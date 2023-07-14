@@ -7,6 +7,7 @@ interface Colors {
     secondary_dark: string;
 
     accent_medium: string;
+    accent_light: string;
 
     red_medium: string;
     green_medium: string;
@@ -22,6 +23,7 @@ const colors: Colors = {
     secondary_dark: '#5b61c2',
 
     accent_medium: '#FFFFFF80',
+    accent_light: 'rgba(255,255,255,0.1)',
     red_medium: '#FD8E8E',
     green_medium: '#88EE58',
     white_medium: '#F5F5F5',
