@@ -59,7 +59,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
     backgroundContainer: {
       backgroundColor: "rgba(0,0,0,0.5)",
       // overflowY: "auto",
-      // height: "100%",
+      height: "100%",
     },
     overlayMenuOpen: {
       width: "100%",
@@ -561,7 +561,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                 )}
               </div>
 
-              <div style={styles.sectionHeader}>Tweet Me!</div>
+              <div style={styles.sectionHeader}>Tweet to Me!</div>
               <div style={styles.explanationSubtext}>
                 Any feature requests or ideas
               </div>
