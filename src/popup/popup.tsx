@@ -118,7 +118,7 @@ const App: React.FC = () => {
   const checkStorage = async () => {
     const portfolioDataStorage = await getPortfolioDataStorage();
 
-    if (portfolioDataStorage.length > 0) {
+    if (portfolioDataStorage?.length > 0) {
       const coinIds = [];
       portfolioDataStorage.forEach((coinInfo) => {
         coinIds.push(coinInfo.id);
