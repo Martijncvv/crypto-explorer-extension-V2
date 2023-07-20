@@ -2,7 +2,7 @@
 Discover a world of in-depth, real-time (on-chain) information about your favorite cryptocurrencies and NFTs with the Crypto Tracker. This easy-to-use tool simplifies cryptocurrency data, giving you key insights at the tip of your fingers, all from your browser at any page.
 
 ### Features
-- Hotkeys Integration: Simply select a ticker (BTC, ETH, DOGE) and press Ctrl+Shift+DownKey (or Command+Shift+DownKey for Mac) to display the related information instantly. You can also access the extension via the menu icon or hotkeys.
+- Hotkeys Integration: Simply press Ctrl+Shift+DownKey (or Command+Shift+DownKey for Mac) to display coin information instantly. You can also access the extension via the menu icon.
 - Portfolio: Enhance your portfolio by adding coins to track their price performance, or include specific amounts to monitor the growth of your portfolio value.
 - Trending Coins: Keep up-to-date with the market by checking the top trending searched coins.
 - Coins and Tokens: Gain access to real-time price and coin-specific data. Leverage our On-chain Whale Finder to track the top 50 transactions out of the last 10,000 for any given coin.
@@ -15,7 +15,7 @@ Discover a world of in-depth, real-time (on-chain) information about your favori
 
 - To begin your journey into the crypto world, install the extension and explore crypto like never before!
 ### General
-- a. Select a ticker and press Ctrl+Shift+DownKey/ Command+Shift+DownKey to display ticker information.
+- a. Press Ctrl+Shift+DownKey/ Command+Shift+DownKey to display ticker information.
 - b. Open the extension via the menu icon or hotkeys and search for a coin or NFT.
 - Use Arrow and Tab keys to easily switch between options and charts. 
 - Check the top trending searched coins.

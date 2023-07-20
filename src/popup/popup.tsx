@@ -98,7 +98,7 @@ const App: React.FC = () => {
 
   // todo splash screen/ new icon
   // todo, make ref links of all exchange buttons
-
+  // todo usdt socials
   //  zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
   // ideas: store notes for accounts (discord/ twitter)
 

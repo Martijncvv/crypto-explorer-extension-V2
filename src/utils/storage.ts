@@ -7,24 +7,24 @@ export interface LocalStorageData {
     amount: number;
     nft: boolean;
   };
-  selectedToken?: string;
+  // selectedToken?: string;
   searchPref?: string;
   startPref?: string;
   searchResultNftAmount?: number;
 }
 
 // SETTERS
-export async function setSelectedTokenStorage(token: string): Promise<void> {
-  try {
-    return new Promise((resolve) => {
-      chrome.storage.local.set({ selectedToken: token }, () => {
-        resolve();
-      });
-    });
-  } catch (error) {
-    console.log("setSelectedToken error: ", error);
-  }
-}
+// export async function setSelectedTokenStorage(token: string): Promise<void> {
+//   try {
+//     return new Promise((resolve) => {
+//       chrome.storage.local.set({ selectedToken: token }, () => {
+//         resolve();
+//       });
+//     });
+//   } catch (error) {
+//     console.log("setSelectedToken error: ", error);
+//   }
+// }
 export async function setSearchPrefStorage(searchPref: string): Promise<void> {
   try {
     return new Promise((resolve) => {
@@ -156,17 +156,17 @@ export async function removePortfolioCoinStorage(
 }
 
 // GETTERS
-export async function getSelectedTokenStorage(): Promise<string> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(["selectedToken"], (res: LocalStorageData) => {
-      if (res?.selectedToken) {
-        resolve(res.selectedToken);
-      } else {
-        resolve(null);
-      }
-    });
-  });
-}
+// export async function getSelectedTokenStorage(): Promise<string> {
+//   return new Promise((resolve) => {
+//     chrome.storage.local.get(["selectedToken"], (res: LocalStorageData) => {
+//       if (res?.selectedToken) {
+//         resolve(res.selectedToken);
+//       } else {
+//         resolve(null);
+//       }
+//     });
+//   });
+// }
 export async function getSearchPrefStorage(): Promise<string> {
   return new Promise((resolve) => {
     chrome.storage.local.get(["searchPref"], (res: LocalStorageData) => {
