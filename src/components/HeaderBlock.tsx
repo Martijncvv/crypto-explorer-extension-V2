@@ -21,9 +21,7 @@ import {
   getHomeCoinStorage,
   getSearchPrefStorage,
   getSearchResultNftAmountStorage,
-  getSelectedTokenStorage,
   getStartPrefStorage,
-  setSelectedTokenStorage,
 } from "../utils/storage";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -184,22 +182,24 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
     } else {
       setMenuIsOpen(true);
     }
-    const selectedTokenStorage = await getSelectedTokenStorage();
-    if (selectedTokenStorage) {
-      setSearchInput(selectedTokenStorage);
-      searchCoinNames(selectedTokenStorage);
-      setSelectedTokenStorage("");
+    // const selectedTokenStorage = await getSelectedTokenStorage();
+
+    // if (selectedTokenStorage) {
+    //   setSearchInput(selectedTokenStorage);
+    //   searchCoinNames(selectedTokenStorage);
+    //   setSelectedTokenStorage("");
+    // } else {
+
+    const homeCoinStorage = await getHomeCoinStorage();
+    if (homeCoinStorage?.id && homeCoinStorage?.nft) {
+      fetchDetailedNftInfo(homeCoinStorage.id);
+    } else if (homeCoinStorage?.id) {
+      fetchDetailedTokenInfo(homeCoinStorage.id);
     } else {
-      const homeCoinStorage = await getHomeCoinStorage();
-      if (homeCoinStorage?.id && homeCoinStorage?.nft) {
-        fetchDetailedNftInfo(homeCoinStorage.id);
-      } else if (homeCoinStorage?.id) {
-        fetchDetailedTokenInfo(homeCoinStorage.id);
-      } else {
-        fetchDetailedTokenInfo("bitcoin");
-      }
+      fetchDetailedTokenInfo("bitcoin");
     }
   };
+  // };
 
   // get detailed coin info and trending info on startup
   useEffect(() => {
