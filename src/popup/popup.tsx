@@ -21,9 +21,6 @@ import OverlayMenu from "../components/OverlayMenu";
 import {
   setPortfolioDataStorage,
   getPortfolioDataStorage,
-  getSearchPrefStorage,
-  getStartPrefStorage,
-  getSearchResultNftAmountStorage,
 } from "../utils/storage";
 
 const bitcoinIcon = require("../static/images/icons/bitcoin-icon.png");
@@ -36,14 +33,8 @@ const twitterIcon = require("../static/images/icons/twitter-icon.png");
 const websiteIcon = require("../static/images/icons/website-icon.png");
 const discordIcon = require("../static/images/icons/discord-icon.png");
 
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import AddIcon from "@mui/icons-material/Add";
 import colors from "../static/colors";
-import DeleteIcon from "@mui/icons-material/Delete";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
-import RemoveIcon from "@mui/icons-material/Remove";
-import constants from "../static/constants";
-import { fetchCoinsPrices } from "../utils/api";
 
 // @ts-ignore
 // @ts-ignore
@@ -99,6 +90,7 @@ const App: React.FC = () => {
   // todo splash screen/ new icon
   // todo, make ref links of all exchange buttons
   // todo usdt socials
+
   //  zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
   // ideas: store notes for accounts (discord/ twitter)
 
