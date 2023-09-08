@@ -1,159 +1,212 @@
 import {
-	ITrendingCoinList,
-	IPriceHistoryData,
-	ISearchCoinList, IDetailedCoinInfo
-} from '../models/ICoinInfo'
-import { IDetailedNftInfo } from '../models/INftInfo'
-import { ITokenTxs } from '../models/ITokenTxs'
+  ITrendingCoinList,
+  IPriceHistoryData,
+  ISearchCoinList,
+  IDetailedCoinInfo,
+} from "../models/ICoinInfo";
+import { IDetailedNftInfo } from "../models/INftInfo";
+import { ITokenTxs } from "../models/ITokenTxs";
 
 // const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250'
 
+export async function fetchNameSearch(
+  searchQuery: string,
+): Promise<ISearchCoinList> {
+  try {
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/search?query=${searchQuery}`,
+    );
 
-export async function fetchNameSearch(searchQuery: string): Promise<ISearchCoinList> {
-	try {
-		const res = await fetch(`https://api.coingecko.com/api/v3/search?query=${searchQuery}`);
+    if (!res.ok) {
+      throw new Error(
+        `Fetch error, Coingecko searchQuery ${searchQuery}: ${res.status} ${res.statusText}`,
+      );
+    }
 
-		if (!res.ok) {
-			throw new Error(`Fetch error, Coingecko searchQuery ${searchQuery}: ${res.status} ${res.statusText}`);
-		}
-
-		return await res.json();
-	} catch (error) {
-		console.error('Error fetching  Coingecko searchQuery ${searchQuery}', error);
-		throw error;
-	}
+    return await res.json();
+  } catch (error) {
+    console.error(
+      "Error fetching  Coingecko searchQuery ${searchQuery}",
+      error,
+    );
+    throw error;
+  }
 }
 
 export async function fetchTrendingCoins(): Promise<ITrendingCoinList> {
-	try {
-		const res = await fetch('https://api.coingecko.com/api/v3/search/trending');
+  try {
+    const res = await fetch("https://api.coingecko.com/api/v3/search/trending");
 
-		if (!res.ok) {
-			throw new Error(`Fetch error, Hot Coins: ${res.status} ${res.statusText}`);
-		}
+    if (!res.ok) {
+      throw new Error(
+        `Fetch error, Hot Coins: ${res.status} ${res.statusText}`,
+      );
+    }
 
-		return await res.json();
-	} catch (error) {
-		console.error('Error fetching Hot Coins:', error);
-		throw error;
-	}
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching Hot Coins:", error);
+    throw error;
+  }
 }
 
-export async function fetchCoinInfo(coinId: string): Promise<IDetailedCoinInfo> {
-	coinId = coinId || 'bitcoin';
-	try {
-		const res = await fetch(
-			`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false`
-		);
+export async function fetchCoinInfo(
+  coinId: string,
+): Promise<IDetailedCoinInfo> {
+  coinId = coinId || "bitcoin";
+  try {
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false`,
+    );
 
-		if (!res.ok) {
-			throw new Error(`Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`);
-		}
+    if (!res.ok) {
+      throw new Error(
+        `Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`,
+      );
+    }
 
-		return await res.json();
-	} catch (error) {
-		console.error(`Error fetching coin info data (${coinId}):`, error);
-		throw error;
-	}
+    return await res.json();
+  } catch (error) {
+    console.error(`Error fetching coin info data (${coinId}):`, error);
+    throw error;
+  }
 }
 
 export async function fetchCoinsPrices(coinIds: string[]): Promise<any> {
-	try {
-		const coinSearchUrl = coinIds.join('%2C');
-		const res = await fetch(
-			`https://api.coingecko.com/api/v3/simple/price?ids=${coinSearchUrl}&vs_currencies=usd&include_24hr_change=true`
-		);
+  try {
+    const coinSearchUrl = coinIds.join("%2C");
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${coinSearchUrl}&vs_currencies=usd&include_24hr_change=true`,
+    );
 
-		if (!res.ok) {
-			throw new Error(`Fetch error, coin info data (${coinIds}): ${res.status} ${res.statusText}`);
-		}
+    if (!res.ok) {
+      throw new Error(
+        `Fetch error, coin info data (${coinIds}): ${res.status} ${res.statusText}`,
+      );
+    }
 
-		return await res.json();
-	} catch (error) {
-		console.error(`Error fetching coin info data (${coinIds}):`, error);
-		throw error;
-	}
+    return await res.json();
+  } catch (error) {
+    console.error(`Error fetching coin info data (${coinIds}):`, error);
+    throw error;
+  }
 }
 
 export async function fetchNftInfo(coinId: string): Promise<IDetailedNftInfo> {
-	try {
-		const res = await fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}`);
+  try {
+    const res = await fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}`);
 
-		if (!res.ok) {
-			throw new Error(`Fetch error, NFT info data (${coinId}): ${res.status} ${res.statusText}`);
-		}
+    if (!res.ok) {
+      throw new Error(
+        `Fetch error, NFT info data (${coinId}): ${res.status} ${res.statusText}`,
+      );
+    }
 
-		return await res.json();
-	} catch (error) {
-		console.error(`Error fetching NFT info data (${coinId}):`, error);
-		throw error;
-	}
+    return await res.json();
+  } catch (error) {
+    console.error(`Error fetching NFT info data (${coinId}):`, error);
+    throw error;
+  }
 }
 
 export async function fetchPriceHistoryData(
-	coinId: string,
-	quote: string,
-	chartRange: string
+  coinId: string,
+  quote: string,
+  chartRange: string,
 ): Promise<IPriceHistoryData> {
-	coinId = coinId || 'bitcoin';
-	quote = quote || 'usd';
-	chartRange = chartRange || '30';
+  coinId = coinId || "bitcoin";
+  quote = quote || "usd";
+  chartRange = chartRange || "30";
 
-	try {
-		const res = await fetch(
-			`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`
-		);
+  try {
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`,
+    );
 
-		if (!res.ok) {
-			throw new Error(`Fetch error, price history data (${coinId}): ${res.status} ${res.statusText}`);
-		}
+    if (!res.ok) {
+      throw new Error(
+        `Fetch error, price history data (${coinId}): ${res.status} ${res.statusText}`,
+      );
+    }
 
-		return await res.json();
-	} catch (error) {
-		console.error(`Error fetching price history data (${coinId}):`, error);
-		throw error;
-	}
+    return await res.json();
+  } catch (error) {
+    console.error(`Error fetching price history data (${coinId}):`, error);
+    throw error;
+  }
 }
 
 export async function fetchNftTxs(
-	domainName: string,
-	contractAddress: string,
-	txAmount: number
+  domainName: string,
+  contractAddress: string,
+  txAmount: number,
 ): Promise<ITokenTxs> {
-	try {
-		const res = await fetch(
-			`https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc`
-		);
+  try {
+    const res = await fetch(
+      `https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc`,
+    );
 
-		if (!res.ok) {
-			throw new Error(`Fetch error, ${domainName} nft txs info: ${res.status} ${res.statusText}`);
-		}
+    if (!res.ok) {
+      throw new Error(
+        `Fetch error, ${domainName} nft txs info: ${res.status} ${res.statusText}`,
+      );
+    }
 
-		return await res.json();
-	} catch (error) {
-		console.error('Error fetching nft token txs info:', error);
-		throw error;
-	}
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching nft token txs info:", error);
+    throw error;
+  }
 }
 
 export async function fetchTokenTxs(
-	domainName: string,
-	contractAddress: string,
-	txAmount: number
+  domainName: string,
+  contractAddress: string,
+  txAmount: number,
 ): Promise<ITokenTxs> {
-	try {
-		const res = await fetch(
-			`https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`
-		)
+  try {
+    const res = await fetch(
+      `https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`,
+    );
 
-		if (!res.ok) {
-			throw new Error(`Fetch error, ${domainName} token txs info: ${res.status} ${res.statusText}`);
-		}
-		return await res.json();
-	} catch (error) {
-		console.error('Error fetching token txs info:', error);
-		throw error;
-	}
+    if (!res.ok) {
+      throw new Error(
+        `Fetch error, ${domainName} token txs info: ${res.status} ${res.statusText}`,
+      );
+    }
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching token txs info:", error);
+    throw error;
+  }
+}
+
+export async function fetchLatestAddressTxs(
+  address: string,
+): Promise<ITokenTxs> {
+  try {
+    const res = await fetch(
+      `https://api.etherscan.io/api
+   ?module=account
+   &action=
+   &contractaddress=${address}
+   &page=1
+   &offset=100
+   &startblock=0
+   &endblock=99999999
+   &sort=desc`,
+    );
+
+    if (!res.ok) {
+      throw new Error(
+        `Fetch error, ${address} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`,
+      );
+    }
+    return await res.json();
+  } catch (error) {
+    console.error("Error fetching feken txstchLatestAddressTxs:", error);
+    throw error;
+  }
 }
 
 // used to fetch exchanges

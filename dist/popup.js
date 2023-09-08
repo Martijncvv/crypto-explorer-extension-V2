@@ -1508,6 +1508,7 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
     const [searchPref, setSearchPref] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("coins");
     const [startPref, setStartPref] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("portfolio");
     const [searchResultNftAmount, setSearchResultNftAmount] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(3);
+    const [storedTrackAddress, setStoredTrackAddress] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
     const [portfolioData, setPortfolioData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const handleSearchPref = (newSearchPref) => {
@@ -1530,11 +1531,12 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
     };
     const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
         setLoading(true);
-        const [portfolioDataStorage, searchPrefStorage, startPrefStorage, searchResultNftAmountStorage,] = yield Promise.all([
+        const [portfolioDataStorage, searchPrefStorage, startPrefStorage, searchResultNftAmountStorage, trackAddressStorage,] = yield Promise.all([
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getPortfolioDataStorage)(),
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getSearchPrefStorage)(),
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getStartPrefStorage)(),
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getSearchResultNftAmountStorage)(),
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackAddressStorage)(),
         ]);
         setLoading(false);
         if ((portfolioDataStorage === null || portfolioDataStorage === void 0 ? void 0 : portfolioDataStorage.length) > 0) {
@@ -1561,6 +1563,10 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
         if (searchResultNftAmountStorage) {
             setSearchResultNftAmount(searchResultNftAmountStorage);
         }
+        console.log("trackAddressStorage1: ", trackAddressStorage);
+        if (trackAddressStorage) {
+            setStoredTrackAddress(trackAddressStorage);
+        }
     });
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         checkStorage();
@@ -1579,7 +1585,7 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium }, onClick: () => setMenuIsOpen(false) })),
             menuIsOpen && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.scrollContainer },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_overlayComponents_PortfolioBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { loading: loading, portfolioData: portfolioData, setPortfolioData: setPortfolioData }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_overlayComponents_WalletTrackerBlock__WEBPACK_IMPORTED_MODULE_5__["default"], null),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_overlayComponents_WalletTrackerBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { storedTrackAddress: storedTrackAddress }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Tweet to Me!"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Any feature requests or ideas"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_8__["default"], { value: "question", style: styles.togglePrefButton, onClick: handleSupportClick },
@@ -2187,7 +2193,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const WalletTrackerBlock = () => {
+const WalletTrackerBlock = ({ storedTrackAddress = "", }) => {
     const styles = {
         container: {
             height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
@@ -2258,14 +2264,17 @@ const WalletTrackerBlock = () => {
             textAlign: "center",
         },
     };
-    const [trackAddress, setTrackAddress] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
-    const handleSaveAddressTracker = (trackAddress) => {
-        console.log("trackAddress2: ", trackAddress);
+    const [trackAddress, setTrackAddress] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(storedTrackAddress);
+    const handleSaveAddressTracker = () => {
         (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackAddressStorage)(trackAddress);
+        chrome.runtime.sendMessage({ type: "trackAddress", payload: trackAddress });
     };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader, title: "Set an address to get daily updates" }, "Track address"),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Get notification if account makes a tx"),
+        (trackAddress === null || trackAddress === void 0 ? void 0 : trackAddress.length) > 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext },
+            "Stored address: ",
+            trackAddress)),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainer },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: trackAddress, onChange: (e) => setTrackAddress(e.target.value), style: styles.amountInputField, placeholder: `Address to track` }),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerSaveButton, onClick: handleSaveAddressTracker }, "Save"))));
@@ -2335,9 +2344,6 @@ const websiteIcon = __webpack_require__(/*! ../static/images/icons/website-icon.
 const discordIcon = __webpack_require__(/*! ../static/images/icons/discord-icon.png */ "./src/static/images/icons/discord-icon.png");
 
 
-// @ts-ignore
-// @ts-ignore
-// @ts-ignore
 const styles = {
     topContainer: {
         padding: "12px",
@@ -3290,6 +3296,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "fetchCoinInfo": () => (/* binding */ fetchCoinInfo),
 /* harmony export */   "fetchCoinsPrices": () => (/* binding */ fetchCoinsPrices),
+/* harmony export */   "fetchLatestAddressTxs": () => (/* binding */ fetchLatestAddressTxs),
 /* harmony export */   "fetchNameSearch": () => (/* binding */ fetchNameSearch),
 /* harmony export */   "fetchNftInfo": () => (/* binding */ fetchNftInfo),
 /* harmony export */   "fetchNftTxs": () => (/* binding */ fetchNftTxs),
@@ -3317,7 +3324,7 @@ function fetchNameSearch(searchQuery) {
             return yield res.json();
         }
         catch (error) {
-            console.error('Error fetching  Coingecko searchQuery ${searchQuery}', error);
+            console.error("Error fetching  Coingecko searchQuery ${searchQuery}", error);
             throw error;
         }
     });
@@ -3325,21 +3332,21 @@ function fetchNameSearch(searchQuery) {
 function fetchTrendingCoins() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const res = yield fetch('https://api.coingecko.com/api/v3/search/trending');
+            const res = yield fetch("https://api.coingecko.com/api/v3/search/trending");
             if (!res.ok) {
                 throw new Error(`Fetch error, Hot Coins: ${res.status} ${res.statusText}`);
             }
             return yield res.json();
         }
         catch (error) {
-            console.error('Error fetching Hot Coins:', error);
+            console.error("Error fetching Hot Coins:", error);
             throw error;
         }
     });
 }
 function fetchCoinInfo(coinId) {
     return __awaiter(this, void 0, void 0, function* () {
-        coinId = coinId || 'bitcoin';
+        coinId = coinId || "bitcoin";
         try {
             const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false`);
             if (!res.ok) {
@@ -3356,7 +3363,7 @@ function fetchCoinInfo(coinId) {
 function fetchCoinsPrices(coinIds) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const coinSearchUrl = coinIds.join('%2C');
+            const coinSearchUrl = coinIds.join("%2C");
             const res = yield fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinSearchUrl}&vs_currencies=usd&include_24hr_change=true`);
             if (!res.ok) {
                 throw new Error(`Fetch error, coin info data (${coinIds}): ${res.status} ${res.statusText}`);
@@ -3386,9 +3393,9 @@ function fetchNftInfo(coinId) {
 }
 function fetchPriceHistoryData(coinId, quote, chartRange) {
     return __awaiter(this, void 0, void 0, function* () {
-        coinId = coinId || 'bitcoin';
-        quote = quote || 'usd';
-        chartRange = chartRange || '30';
+        coinId = coinId || "bitcoin";
+        quote = quote || "usd";
+        chartRange = chartRange || "30";
         try {
             const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`);
             if (!res.ok) {
@@ -3412,7 +3419,7 @@ function fetchNftTxs(domainName, contractAddress, txAmount) {
             return yield res.json();
         }
         catch (error) {
-            console.error('Error fetching nft token txs info:', error);
+            console.error("Error fetching nft token txs info:", error);
             throw error;
         }
     });
@@ -3427,7 +3434,30 @@ function fetchTokenTxs(domainName, contractAddress, txAmount) {
             return yield res.json();
         }
         catch (error) {
-            console.error('Error fetching token txs info:', error);
+            console.error("Error fetching token txs info:", error);
+            throw error;
+        }
+    });
+}
+function fetchLatestAddressTxs(address) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch(`https://api.etherscan.io/api
+   ?module=account
+   &action=
+   &contractaddress=${address}
+   &page=1
+   &offset=100
+   &startblock=0
+   &endblock=99999999
+   &sort=desc`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, ${address} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error("Error fetching feken txstchLatestAddressTxs:", error);
             throw error;
         }
     });
@@ -3486,6 +3516,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getSearchPrefStorage": () => (/* binding */ getSearchPrefStorage),
 /* harmony export */   "getSearchResultNftAmountStorage": () => (/* binding */ getSearchResultNftAmountStorage),
 /* harmony export */   "getStartPrefStorage": () => (/* binding */ getStartPrefStorage),
+/* harmony export */   "getTrackAddressNonceStorage": () => (/* binding */ getTrackAddressNonceStorage),
 /* harmony export */   "getTrackAddressStorage": () => (/* binding */ getTrackAddressStorage),
 /* harmony export */   "removePortfolioCoinStorage": () => (/* binding */ removePortfolioCoinStorage),
 /* harmony export */   "setHomeCoinStorage": () => (/* binding */ setHomeCoinStorage),
@@ -3493,6 +3524,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "setSearchPrefStorage": () => (/* binding */ setSearchPrefStorage),
 /* harmony export */   "setSearchResultNftAmountStorage": () => (/* binding */ setSearchResultNftAmountStorage),
 /* harmony export */   "setStartPrefStorage": () => (/* binding */ setStartPrefStorage),
+/* harmony export */   "setTrackAddressNonceStorage": () => (/* binding */ setTrackAddressNonceStorage),
 /* harmony export */   "setTrackAddressStorage": () => (/* binding */ setTrackAddressStorage)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -3516,6 +3548,20 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 //     console.log("setSelectedToken error: ", error);
 //   }
 // }
+function setTrackAddressNonceStorage(addressNonce) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            return new Promise((resolve) => {
+                chrome.storage.local.set({ addressNonce: addressNonce }, () => {
+                    resolve();
+                });
+            });
+        }
+        catch (error) {
+            console.log("setTrackAddressNonceStorage error: ", error);
+        }
+    });
+}
 function setTrackAddressStorage(trackAddress) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -3674,6 +3720,20 @@ function removePortfolioCoinStorage(coinId) {
 //     });
 //   });
 // }
+function getTrackAddressNonceStorage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(["addressNonce"], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.addressNonce) {
+                    resolve(res.addressNonce);
+                }
+                else {
+                    resolve(null);
+                }
+            });
+        });
+    });
+}
 function getTrackAddressStorage() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {

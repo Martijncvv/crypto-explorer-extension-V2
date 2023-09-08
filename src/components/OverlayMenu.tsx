@@ -22,6 +22,7 @@ import {
   setSearchPrefStorage,
   setStartPrefStorage,
   setSearchResultNftAmountStorage,
+  getTrackAddressStorage,
 } from "../utils/storage";
 import { IDetailedNftInfo } from "../models/INftInfo";
 import { IDetailedCoinInfo } from "../models/ICoinInfo";
@@ -137,6 +138,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   const [searchPref, setSearchPref] = useState<string>("coins");
   const [startPref, setStartPref] = useState<string>("portfolio");
   const [searchResultNftAmount, setSearchResultNftAmount] = useState<number>(3);
+  const [storedTrackAddress, setStoredTrackAddress] = useState<string>("");
   const [portfolioData, setPortfolioData] = useState<
     {
       id: string;
@@ -180,11 +182,13 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       searchPrefStorage,
       startPrefStorage,
       searchResultNftAmountStorage,
+      trackAddressStorage,
     ] = await Promise.all([
       getPortfolioDataStorage(),
       getSearchPrefStorage(),
       getStartPrefStorage(),
       getSearchResultNftAmountStorage(),
+      getTrackAddressStorage(),
     ]);
     setLoading(false);
 
@@ -214,6 +218,10 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
     }
     if (searchResultNftAmountStorage) {
       setSearchResultNftAmount(searchResultNftAmountStorage);
+    }
+    console.log("trackAddressStorage1: ", trackAddressStorage);
+    if (trackAddressStorage) {
+      setStoredTrackAddress(trackAddressStorage);
     }
   };
 
@@ -256,7 +264,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
               portfolioData={portfolioData}
               setPortfolioData={setPortfolioData}
             />
-            <WalletTrackerBlock />
+            <WalletTrackerBlock storedTrackAddress={storedTrackAddress} />
 
             <div style={styles.sectionHeader}>Tweet to Me!</div>
             <div style={styles.explanationSubtext}>

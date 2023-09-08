@@ -12,6 +12,7 @@ export interface LocalStorageData {
   startPref?: string;
   searchResultNftAmount?: number;
   trackAddress?: string;
+  addressNonce?: number;
 }
 
 // SETTERS
@@ -26,6 +27,19 @@ export interface LocalStorageData {
 //     console.log("setSelectedToken error: ", error);
 //   }
 // }
+export async function setTrackAddressNonceStorage(
+  addressNonce: number,
+): Promise<void> {
+  try {
+    return new Promise((resolve) => {
+      chrome.storage.local.set({ addressNonce: addressNonce }, () => {
+        resolve();
+      });
+    });
+  } catch (error) {
+    console.log("setTrackAddressNonceStorage error: ", error);
+  }
+}
 export async function setTrackAddressStorage(
   trackAddress: string,
 ): Promise<void> {
@@ -181,6 +195,18 @@ export async function removePortfolioCoinStorage(
 //     });
 //   });
 // }
+export async function getTrackAddressNonceStorage(): Promise<number> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["addressNonce"], (res: LocalStorageData) => {
+      if (res?.addressNonce) {
+        resolve(res.addressNonce);
+      } else {
+        resolve(null);
+      }
+    });
+  });
+}
+
 export async function getTrackAddressStorage(): Promise<string> {
   return new Promise((resolve) => {
     chrome.storage.local.get(["trackAddress"], (res: LocalStorageData) => {
@@ -192,6 +218,7 @@ export async function getTrackAddressStorage(): Promise<string> {
     });
   });
 }
+
 export async function getSearchPrefStorage(): Promise<string> {
   return new Promise((resolve) => {
     chrome.storage.local.get(["searchPref"], (res: LocalStorageData) => {

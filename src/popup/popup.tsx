@@ -36,9 +36,6 @@ const discordIcon = require("../static/images/icons/discord-icon.png");
 import colors from "../static/colors";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 
-// @ts-ignore
-// @ts-ignore
-// @ts-ignore
 const styles: { [key: string]: CSSProperties } = {
   topContainer: {
     padding: "12px",

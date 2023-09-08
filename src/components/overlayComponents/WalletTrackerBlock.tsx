@@ -4,10 +4,12 @@ import constants from "../../static/constants";
 import { setTrackAddressStorage } from "../../utils/storage";
 
 interface WalletTrackerBlockProps {
-  title?: string;
+  storedTrackAddress?: string;
 }
 
-const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = () => {
+const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({
+  storedTrackAddress = "",
+}) => {
   const styles: { [key: string]: CSSProperties } = {
     container: {
       height: constants.font_large,
@@ -78,11 +80,11 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = () => {
       textAlign: "center",
     },
   };
-  const [trackAddress, setTrackAddress] = useState<string>("");
+  const [trackAddress, setTrackAddress] = useState<string>(storedTrackAddress);
 
-  const handleSaveAddressTracker = (trackAddress) => {
-    console.log("trackAddress2: ", trackAddress);
+  const handleSaveAddressTracker = () => {
     setTrackAddressStorage(trackAddress);
+    chrome.runtime.sendMessage({ type: "trackAddress", payload: trackAddress });
   };
 
   return (
@@ -96,6 +98,13 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = () => {
       <div style={styles.explanationSubtext}>
         Get notification if account makes a tx
       </div>
+
+      {trackAddress?.length > 0 && (
+        <div style={styles.explanationSubtext}>
+          Stored address: {trackAddress}
+        </div>
+      )}
+
       <div style={styles.inputContainer}>
         <input
           type="text"
