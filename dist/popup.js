@@ -2189,6 +2189,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../static/constants */ "./src/static/constants.tsx");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 
 
 
@@ -2269,6 +2278,10 @@ const WalletTrackerBlock = ({ storedTrackAddress = "", }) => {
         (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackAddressStorage)(trackAddress);
         chrome.runtime.sendMessage({ type: "trackAddress", payload: trackAddress });
     };
+    const handleTest = () => __awaiter(void 0, void 0, void 0, function* () {
+        const testvlaue = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackAddressStorage)();
+        console.log("testvlaue1", testvlaue);
+    });
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader, title: "Set an address to get daily updates" }, "Track address"),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Get notification if account makes a tx"),
@@ -2277,7 +2290,8 @@ const WalletTrackerBlock = ({ storedTrackAddress = "", }) => {
             trackAddress)),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainer },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: trackAddress, onChange: (e) => setTrackAddress(e.target.value), style: styles.amountInputField, placeholder: `Address to track` }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerSaveButton, onClick: handleSaveAddressTracker }, "Save"))));
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerSaveButton, onClick: handleSaveAddressTracker }, "Save"),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerSaveButton, onClick: handleTest }, "test"))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WalletTrackerBlock);
 

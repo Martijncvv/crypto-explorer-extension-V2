@@ -1,7 +1,10 @@
 import React, { CSSProperties, useState } from "react";
 import colors from "../../static/colors";
 import constants from "../../static/constants";
-import { setTrackAddressStorage } from "../../utils/storage";
+import {
+  getTrackAddressStorage,
+  setTrackAddressStorage,
+} from "../../utils/storage";
 
 interface WalletTrackerBlockProps {
   storedTrackAddress?: string;
@@ -86,6 +89,10 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({
     setTrackAddressStorage(trackAddress);
     chrome.runtime.sendMessage({ type: "trackAddress", payload: trackAddress });
   };
+  const handleTest = async () => {
+    const testvlaue = await getTrackAddressStorage();
+    console.log("testvlaue1", testvlaue);
+  };
 
   return (
     <>
@@ -118,6 +125,9 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({
           onClick={handleSaveAddressTracker}
         >
           Save
+        </button>
+        <button style={styles.inputContainerSaveButton} onClick={handleTest}>
+          test
         </button>
       </div>
     </>
