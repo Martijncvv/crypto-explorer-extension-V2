@@ -186,15 +186,7 @@ export async function fetchLatestAddressTxs(
 ): Promise<ITokenTxs> {
   try {
     const res = await fetch(
-      `https://api.etherscan.io/api
-   ?module=account
-   &action=
-   &contractaddress=${address}
-   &page=1
-   &offset=100
-   &startblock=0
-   &endblock=99999999
-   &sort=desc`,
+      `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc`,
     );
 
     if (!res.ok) {

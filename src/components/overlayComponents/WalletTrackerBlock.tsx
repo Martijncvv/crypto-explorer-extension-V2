@@ -3,8 +3,10 @@ import colors from "../../static/colors";
 import constants from "../../static/constants";
 import {
   getTrackAddressStorage,
+  setTrackAddressNonceStorage,
   setTrackAddressStorage,
 } from "../../utils/storage";
+import { fetchLatestAddressTxs } from "../../utils/api";
 
 interface WalletTrackerBlockProps {
   storedTrackAddress?: string;
@@ -85,10 +87,17 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({
   };
   const [trackAddress, setTrackAddress] = useState<string>(storedTrackAddress);
 
-  const handleSaveAddressTracker = () => {
-    setTrackAddressStorage(trackAddress);
-    chrome.runtime.sendMessage({ type: "trackAddress", payload: trackAddress });
+  const handleSaveAddressTracker = async () => {
+    const latestTxs = await fetchLatestAddressTxs(trackAddress);
+    if (latestTxs.result.length > 0) {
+      console.log("latestTxs", latestTxs);
+      const latestNonce = latestTxs.result[0].nonce;
+
+      setTrackAddressNonceStorage(latestNonce);
+      setTrackAddressStorage(trackAddress);
+    }
   };
+
   const handleTest = async () => {
     const testvlaue = await getTrackAddressStorage();
     console.log("testvlaue1", testvlaue);

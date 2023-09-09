@@ -2189,6 +2189,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../static/constants */ "./src/static/constants.tsx");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
+/* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/api */ "./src/utils/api.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -2198,6 +2199,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -2274,10 +2276,15 @@ const WalletTrackerBlock = ({ storedTrackAddress = "", }) => {
         },
     };
     const [trackAddress, setTrackAddress] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(storedTrackAddress);
-    const handleSaveAddressTracker = () => {
-        (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackAddressStorage)(trackAddress);
-        chrome.runtime.sendMessage({ type: "trackAddress", payload: trackAddress });
-    };
+    const handleSaveAddressTracker = () => __awaiter(void 0, void 0, void 0, function* () {
+        const latestTxs = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_4__.fetchLatestAddressTxs)(trackAddress);
+        if (latestTxs.result.length > 0) {
+            console.log("latestTxs", latestTxs);
+            const latestNonce = latestTxs.result[0].nonce;
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackAddressNonceStorage)(latestNonce);
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackAddressStorage)(trackAddress);
+        }
+    });
     const handleTest = () => __awaiter(void 0, void 0, void 0, function* () {
         const testvlaue = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackAddressStorage)();
         console.log("testvlaue1", testvlaue);
@@ -3456,15 +3463,7 @@ function fetchTokenTxs(domainName, contractAddress, txAmount) {
 function fetchLatestAddressTxs(address) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const res = yield fetch(`https://api.etherscan.io/api
-   ?module=account
-   &action=
-   &contractaddress=${address}
-   &page=1
-   &offset=100
-   &startblock=0
-   &endblock=99999999
-   &sort=desc`);
+            const res = yield fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc`);
             if (!res.ok) {
                 throw new Error(`Fetch error, ${address} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`);
             }

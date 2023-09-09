@@ -1,5 +1,4 @@
 (async () => {
-  // 0x8DD8cC8D942C40679D84A6C0476279DB0d12016a
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "trackAddress") {
       console.log("trackAddress", message.payload);
@@ -10,7 +9,7 @@
   function createAlarm() {
     chrome.alarms.create("trackAddressAlarm", {
       delayInMinutes: 0.1,
-      periodInMinutes: 0.5,
+      periodInMinutes: 60,
     });
   }
 
@@ -21,39 +20,49 @@
 
   chrome.alarms.onAlarm.addListener(async (alarm) => {
     if (alarm.name === "trackAddressAlarm") {
-      const res = await chrome.storage.local.get("trackAddress");
-      const trackAddress = res.trackAddress;
+      const trackAddress = (await chrome.storage.local.get("trackAddress"))
+        ?.trackAddress;
 
       if (trackAddress && isEthereumAddress(trackAddress)) {
         try {
-          const res2 = await fetch(
-            `https://api.etherscan.io/api
-   ?module=account
-   &action=txlist
-   &address=${trackAddress}
-   &startblock=0
-   &endblock=99999999
-   &page=1
-   &offset=10
-   &sort=asc`,
+          const res = await fetch(
+            `https://api.etherscan.io/api?module=account&action=txlist&address=${trackAddress}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc`,
           );
-          // const res2 = await fetch(
-          //   `https://api.etherscan.io/api
-          //    ?module=account
-          //    &action=
-          //    &contractaddress=${trackAddress}
-          //    &page=1
-          //    &offset=100
-          //    &startblock=0
-          //    &endblock=99999999
-          //    &sort=desc`,
-          // );
-
-          console.log("res2: ", res2);
           if (!res.ok) {
             console.log(
               `Fetch error, ${trackAddress} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`,
             );
+          }
+          const response = await res.json();
+
+          if (response.result.length > 0) {
+            const latestNonce = response.result[0].nonce;
+
+            const storedAddressNonce = (
+              await chrome.storage.local.get("addressNonce")
+            )?.addressNonce;
+
+            if (storedAddressNonce && storedAddressNonce !== latestNonce) {
+              // await chrome.storage.local.set({ addressNonce: latestNonce });
+
+              chrome.notifications.create({
+                type: "basic",
+                iconUrl: "/images/CryptoExplorer_logo_128.png",
+                title: "New transaction by tracked address!",
+                message: `LatestNonce ${latestNonce}\n StoredNonce ${storedAddressNonce}\n DIFFERENCE: ${
+                  parseInt(latestNonce) - parseInt(storedAddressNonce)
+                }`,
+              });
+            } else {
+              chrome.notifications.create({
+                type: "basic",
+                iconUrl: "/images/CryptoExplorer_logo_128.png",
+                title: "Don't forget!",
+                message: `SAME ${latestNonce}\n Stored ${storedAddressNonce}!`,
+              });
+            }
+
+            console.log("latestNonce1: ", latestNonce);
           }
         } catch (error) {
           console.error("Error fetching address tx info:", error);

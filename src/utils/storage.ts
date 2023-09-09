@@ -12,7 +12,7 @@ export interface LocalStorageData {
   startPref?: string;
   searchResultNftAmount?: number;
   trackAddress?: string;
-  addressNonce?: number;
+  addressNonce?: string;
 }
 
 // SETTERS
@@ -28,7 +28,7 @@ export interface LocalStorageData {
 //   }
 // }
 export async function setTrackAddressNonceStorage(
-  addressNonce: number,
+  addressNonce: string,
 ): Promise<void> {
   try {
     return new Promise((resolve) => {
@@ -40,6 +40,7 @@ export async function setTrackAddressNonceStorage(
     console.log("setTrackAddressNonceStorage error: ", error);
   }
 }
+
 export async function setTrackAddressStorage(
   trackAddress: string,
 ): Promise<void> {
@@ -53,6 +54,7 @@ export async function setTrackAddressStorage(
     console.log("setTrackAddressStorage error: ", error);
   }
 }
+
 export async function setSearchPrefStorage(searchPref: string): Promise<void> {
   try {
     return new Promise((resolve) => {
@@ -64,6 +66,7 @@ export async function setSearchPrefStorage(searchPref: string): Promise<void> {
     console.log("setSearchPrefStorage error: ", error);
   }
 }
+
 export async function setStartPrefStorage(startPref: string): Promise<void> {
   try {
     return new Promise((resolve) => {
@@ -75,6 +78,7 @@ export async function setStartPrefStorage(startPref: string): Promise<void> {
     console.log("setStartPrefStorage error: ", error);
   }
 }
+
 export async function setSearchResultNftAmountStorage(
   searchResultNftAmount: number,
 ): Promise<void> {
@@ -88,6 +92,7 @@ export async function setSearchResultNftAmountStorage(
     console.log("setSearchResultNftAmountStorage error: ", error);
   }
 }
+
 export async function setHomeCoinStorage(
   homeCoinData: LocalStorageData["homeCoinData"],
 ): Promise<void> {
@@ -101,6 +106,7 @@ export async function setHomeCoinStorage(
     console.log("setHomeCoinStorage error: ", error);
   }
 }
+
 export async function setPortfolioDataStorage(
   newCoinData: LocalStorageData["portfolioCoinData"],
 ): Promise<void> {
@@ -136,6 +142,7 @@ export async function setPortfolioDataStorage(
     console.log("setPortfolioDataStorage error: ", error);
   }
 }
+
 export async function changePortfolioCoinAmountStorage(
   coinId: string,
   amount: number,
@@ -161,6 +168,7 @@ export async function changePortfolioCoinAmountStorage(
     console.log("changePortfolioCoinAmountStorage error: ", error);
   }
 }
+
 export async function removePortfolioCoinStorage(
   coinId: string,
 ): Promise<void> {
@@ -195,7 +203,7 @@ export async function removePortfolioCoinStorage(
 //     });
 //   });
 // }
-export async function getTrackAddressNonceStorage(): Promise<number> {
+export async function getTrackAddressNonceStorage(): Promise<string> {
   return new Promise((resolve) => {
     chrome.storage.local.get(["addressNonce"], (res: LocalStorageData) => {
       if (res?.addressNonce) {
@@ -230,6 +238,7 @@ export async function getSearchPrefStorage(): Promise<string> {
     });
   });
 }
+
 export async function getStartPrefStorage(): Promise<string> {
   return new Promise((resolve) => {
     chrome.storage.local.get(["startPref"], (res: LocalStorageData) => {
@@ -241,6 +250,7 @@ export async function getStartPrefStorage(): Promise<string> {
     });
   });
 }
+
 export async function getSearchResultNftAmountStorage(): Promise<number> {
   return new Promise((resolve) => {
     chrome.storage.local.get(
@@ -267,6 +277,7 @@ export async function getHomeCoinStorage(): Promise<any> {
     });
   });
 }
+
 export async function getPortfolioDataStorage(): Promise<any> {
   return new Promise((resolve) => {
     chrome.storage.local.get(["portfolioCoinData"], (res: LocalStorageData) => {
