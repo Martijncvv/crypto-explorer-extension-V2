@@ -1,5 +1,4 @@
 (async () => {
-  // 0x8DD8cC8D942C40679D84A6C0476279DB0d12016a
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "trackAddress") {
       console.log("trackAddress", message.payload);
