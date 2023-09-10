@@ -1,3 +1,10 @@
+export type TrackedAccountType = {
+  name: string;
+  address: string;
+  nonce: string;
+  lastUpdated: Date;
+};
+
 export interface LocalStorageData {
   homeCoinData?: { id: string; nft: boolean };
   portfolioCoinData?: {
@@ -11,47 +18,22 @@ export interface LocalStorageData {
   searchPref?: string;
   startPref?: string;
   searchResultNftAmount?: number;
-  trackAddress?: string;
-  addressNonce?: string;
+  trackedAccounts?: TrackedAccountType[];
 }
 
 // SETTERS
-// export async function setSelectedTokenStorage(token: string): Promise<void> {
-//   try {
-//     return new Promise((resolve) => {
-//       chrome.storage.local.set({ selectedToken: token }, () => {
-//         resolve();
-//       });
-//     });
-//   } catch (error) {
-//     console.log("setSelectedToken error: ", error);
-//   }
-// }
-export async function setTrackAddressNonceStorage(
-  addressNonce: string,
-): Promise<void> {
-  try {
-    return new Promise((resolve) => {
-      chrome.storage.local.set({ addressNonce: addressNonce }, () => {
-        resolve();
-      });
-    });
-  } catch (error) {
-    console.log("setTrackAddressNonceStorage error: ", error);
-  }
-}
 
-export async function setTrackAddressStorage(
-  trackAddress: string,
+export async function setTrackedAccountsStorage(
+  trackedAccounts: TrackedAccountType[],
 ): Promise<void> {
   try {
     return new Promise((resolve) => {
-      chrome.storage.local.set({ trackAddress: trackAddress }, () => {
+      chrome.storage.local.set({ trackedAccounts: trackedAccounts }, () => {
         resolve();
       });
     });
   } catch (error) {
-    console.log("setTrackAddressStorage error: ", error);
+    console.log("setTrackedAccountsStorage error: ", error);
   }
 }
 
@@ -203,23 +185,14 @@ export async function removePortfolioCoinStorage(
 //     });
 //   });
 // }
-export async function getTrackAddressNonceStorage(): Promise<string> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(["addressNonce"], (res: LocalStorageData) => {
-      if (res?.addressNonce) {
-        resolve(res.addressNonce);
-      } else {
-        resolve(null);
-      }
-    });
-  });
-}
 
-export async function getTrackAddressStorage(): Promise<string> {
+export async function getTrackedAccountsStorage(): Promise<
+  TrackedAccountType[]
+> {
   return new Promise((resolve) => {
-    chrome.storage.local.get(["trackAddress"], (res: LocalStorageData) => {
-      if (res?.trackAddress) {
-        resolve(res.trackAddress);
+    chrome.storage.local.get(["trackedAccounts"], (res: LocalStorageData) => {
+      if (res?.trackedAccounts) {
+        resolve(res.trackedAccounts);
       } else {
         resolve(null);
       }

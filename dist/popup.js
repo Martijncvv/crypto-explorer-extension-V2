@@ -1508,7 +1508,6 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
     const [searchPref, setSearchPref] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("coins");
     const [startPref, setStartPref] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("portfolio");
     const [searchResultNftAmount, setSearchResultNftAmount] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(3);
-    const [storedTrackAddress, setStoredTrackAddress] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
     const [portfolioData, setPortfolioData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const handleSearchPref = (newSearchPref) => {
@@ -1531,12 +1530,11 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
     };
     const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
         setLoading(true);
-        const [portfolioDataStorage, searchPrefStorage, startPrefStorage, searchResultNftAmountStorage, trackAddressStorage,] = yield Promise.all([
+        const [portfolioDataStorage, searchPrefStorage, startPrefStorage, searchResultNftAmountStorage,] = yield Promise.all([
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getPortfolioDataStorage)(),
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getSearchPrefStorage)(),
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getStartPrefStorage)(),
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getSearchResultNftAmountStorage)(),
-            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackAddressStorage)(),
         ]);
         setLoading(false);
         if ((portfolioDataStorage === null || portfolioDataStorage === void 0 ? void 0 : portfolioDataStorage.length) > 0) {
@@ -1563,10 +1561,6 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
         if (searchResultNftAmountStorage) {
             setSearchResultNftAmount(searchResultNftAmountStorage);
         }
-        console.log("trackAddressStorage1: ", trackAddressStorage);
-        if (trackAddressStorage) {
-            setStoredTrackAddress(trackAddressStorage);
-        }
     });
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         checkStorage();
@@ -1585,7 +1579,7 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium }, onClick: () => setMenuIsOpen(false) })),
             menuIsOpen && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.scrollContainer },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_overlayComponents_PortfolioBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { loading: loading, portfolioData: portfolioData, setPortfolioData: setPortfolioData }),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_overlayComponents_WalletTrackerBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { storedTrackAddress: storedTrackAddress }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_overlayComponents_WalletTrackerBlock__WEBPACK_IMPORTED_MODULE_5__["default"], null),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Tweet to Me!"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Any feature requests or ideas"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_8__["default"], { value: "question", style: styles.togglePrefButton, onClick: handleSupportClick },
@@ -2190,6 +2184,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../static/constants */ "./src/static/constants.tsx");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/api */ "./src/utils/api.ts");
+/* harmony import */ var _utils_isEthereumAddress__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../utils/isEthereumAddress */ "./src/utils/isEthereumAddress.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -2204,7 +2199,8 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-const WalletTrackerBlock = ({ storedTrackAddress = "", }) => {
+
+const WalletTrackerBlock = ({}) => {
     const styles = {
         container: {
             height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
@@ -2275,30 +2271,78 @@ const WalletTrackerBlock = ({ storedTrackAddress = "", }) => {
             textAlign: "center",
         },
     };
-    const [trackAddress, setTrackAddress] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(storedTrackAddress);
-    const handleSaveAddressTracker = () => __awaiter(void 0, void 0, void 0, function* () {
-        const latestTxs = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_4__.fetchLatestAddressTxs)(trackAddress);
-        if (latestTxs.result.length > 0) {
-            console.log("latestTxs", latestTxs);
-            const latestNonce = latestTxs.result[0].nonce;
-            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackAddressNonceStorage)(latestNonce);
-            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackAddressStorage)(trackAddress);
+    const [trackedAccounts, setTrackedAccounts] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
+    const [trackAccountNameInput, setTrackAccountNameInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+    const [trackAddressInput, setTrackAddressInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+    // 0x46340b20830761efd32832A74d7169B29FEB9758 cryptocom
+    const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
+        const trackedAccountsStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackedAccountsStorage)();
+        if (trackedAccountsStorage) {
+            setTrackedAccounts(trackedAccountsStorage);
         }
     });
-    const handleTest = () => __awaiter(void 0, void 0, void 0, function* () {
-        const testvlaue = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackAddressStorage)();
-        console.log("testvlaue1", testvlaue);
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+        checkStorage();
+    }, []);
+    const handleSaveNewTrackAddress = () => __awaiter(void 0, void 0, void 0, function* () {
+        var _a, _b;
+        if (!trackAccountNameInput ||
+            !trackAddressInput ||
+            !(0,_utils_isEthereumAddress__WEBPACK_IMPORTED_MODULE_5__.isEthereumAddress)(trackAddressInput)) {
+            console.log(`invalid account track values: ${trackAddressInput}`);
+            return;
+        }
+        const trackedAccounts = (yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackedAccountsStorage)()) || [];
+        console.log("trackedAccounts123: ", trackedAccounts);
+        const latestTxsNewAddress = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_4__.fetchLatestAddressTxs)(trackAddressInput);
+        console.log("latestTxsNewAddress11: ", latestTxsNewAddress);
+        if (((_a = latestTxsNewAddress === null || latestTxsNewAddress === void 0 ? void 0 : latestTxsNewAddress.result) === null || _a === void 0 ? void 0 : _a.length) > 0) {
+            const latestNonce = (_b = latestTxsNewAddress.result[0]) === null || _b === void 0 ? void 0 : _b.nonce;
+            const newAccountToTrack = {
+                name: trackAccountNameInput,
+                address: trackAddressInput,
+                nonce: latestNonce || "",
+                lastUpdated: new Date(),
+            };
+            const response = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackedAccountsStorage)([
+                ...trackedAccounts,
+                newAccountToTrack,
+            ]);
+            console.log("res,setTrackedAccountsStorage : ", response);
+        }
     });
+    const handleDeleteTrackedAccount = (accountNameToDelete) => __awaiter(void 0, void 0, void 0, function* () {
+        const updatedAccounts = trackedAccounts.filter((account) => account.name !== accountNameToDelete);
+        yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackedAccountsStorage)(updatedAccounts);
+        setTrackedAccounts(updatedAccounts);
+    });
+    const handleTest = () => __awaiter(void 0, void 0, void 0, function* () {
+        const trackedAccounts = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackedAccountsStorage)();
+        console.log("trackedAccounts123: ", trackedAccounts);
+    });
+    function formatValue(value) {
+        if (value.length <= 8) {
+            return value;
+        }
+        const start = value.slice(0, 4);
+        const end = value.slice(-4);
+        return `${start}...${end}`;
+    }
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader, title: "Set an address to get daily updates" }, "Track address"),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Get notification if account makes a tx"),
-        (trackAddress === null || trackAddress === void 0 ? void 0 : trackAddress.length) > 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext },
-            "Stored address: ",
-            trackAddress)),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: { marginTop: "20px" } },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Tracked Addresses:"),
+            (trackedAccounts === null || trackedAccounts === void 0 ? void 0 : trackedAccounts.length) > 0 ? (trackedAccounts.map((account, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: `${account.name}-${account.address}`, style: styles.inputContainer },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: { flex: 1 } }, account.name),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: { flex: 2 } }, formatValue(account.address)),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerDeleteButton, onClick: () => handleDeleteTrackedAccount(account.name) }, "Delete"))))) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, "Add account to track"))),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainer },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: trackAddress, onChange: (e) => setTrackAddress(e.target.value), style: styles.amountInputField, placeholder: `Address to track` }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerSaveButton, onClick: handleSaveAddressTracker }, "Save"),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerSaveButton, onClick: handleTest }, "test"))));
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: trackAccountNameInput, onChange: (e) => setTrackAccountNameInput(e.target.value), style: styles.amountInputField, placeholder: `Name` })),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainer },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: formatValue(trackAddressInput), onChange: (e) => setTrackAddressInput(e.target.value), style: styles.amountInputField, placeholder: `Address to track` })),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerDeleteButton, onClick: handleTest }, "TEST"),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerSaveButton, onClick: handleSaveNewTrackAddress }, "Save")));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WalletTrackerBlock);
 
@@ -3515,6 +3559,24 @@ function fetchLatestAddressTxs(address) {
 
 /***/ }),
 
+/***/ "./src/utils/isEthereumAddress.ts":
+/*!****************************************!*\
+  !*** ./src/utils/isEthereumAddress.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "isEthereumAddress": () => (/* binding */ isEthereumAddress)
+/* harmony export */ });
+function isEthereumAddress(address) {
+    const re = /^0x[a-fA-F0-9]{40}$/;
+    return re.test(address);
+}
+
+
+/***/ }),
+
 /***/ "./src/utils/storage.ts":
 /*!******************************!*\
   !*** ./src/utils/storage.ts ***!
@@ -3529,16 +3591,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getSearchPrefStorage": () => (/* binding */ getSearchPrefStorage),
 /* harmony export */   "getSearchResultNftAmountStorage": () => (/* binding */ getSearchResultNftAmountStorage),
 /* harmony export */   "getStartPrefStorage": () => (/* binding */ getStartPrefStorage),
-/* harmony export */   "getTrackAddressNonceStorage": () => (/* binding */ getTrackAddressNonceStorage),
-/* harmony export */   "getTrackAddressStorage": () => (/* binding */ getTrackAddressStorage),
+/* harmony export */   "getTrackedAccountsStorage": () => (/* binding */ getTrackedAccountsStorage),
 /* harmony export */   "removePortfolioCoinStorage": () => (/* binding */ removePortfolioCoinStorage),
 /* harmony export */   "setHomeCoinStorage": () => (/* binding */ setHomeCoinStorage),
 /* harmony export */   "setPortfolioDataStorage": () => (/* binding */ setPortfolioDataStorage),
 /* harmony export */   "setSearchPrefStorage": () => (/* binding */ setSearchPrefStorage),
 /* harmony export */   "setSearchResultNftAmountStorage": () => (/* binding */ setSearchResultNftAmountStorage),
 /* harmony export */   "setStartPrefStorage": () => (/* binding */ setStartPrefStorage),
-/* harmony export */   "setTrackAddressNonceStorage": () => (/* binding */ setTrackAddressNonceStorage),
-/* harmony export */   "setTrackAddressStorage": () => (/* binding */ setTrackAddressStorage)
+/* harmony export */   "setTrackedAccountsStorage": () => (/* binding */ setTrackedAccountsStorage)
 /* harmony export */ });
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -3550,42 +3610,17 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 // SETTERS
-// export async function setSelectedTokenStorage(token: string): Promise<void> {
-//   try {
-//     return new Promise((resolve) => {
-//       chrome.storage.local.set({ selectedToken: token }, () => {
-//         resolve();
-//       });
-//     });
-//   } catch (error) {
-//     console.log("setSelectedToken error: ", error);
-//   }
-// }
-function setTrackAddressNonceStorage(addressNonce) {
+function setTrackedAccountsStorage(trackedAccounts) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             return new Promise((resolve) => {
-                chrome.storage.local.set({ addressNonce: addressNonce }, () => {
+                chrome.storage.local.set({ trackedAccounts: trackedAccounts }, () => {
                     resolve();
                 });
             });
         }
         catch (error) {
-            console.log("setTrackAddressNonceStorage error: ", error);
-        }
-    });
-}
-function setTrackAddressStorage(trackAddress) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            return new Promise((resolve) => {
-                chrome.storage.local.set({ trackAddress: trackAddress }, () => {
-                    resolve();
-                });
-            });
-        }
-        catch (error) {
-            console.log("setTrackAddressStorage error: ", error);
+            console.log("setTrackedAccountsStorage error: ", error);
         }
     });
 }
@@ -3733,26 +3768,12 @@ function removePortfolioCoinStorage(coinId) {
 //     });
 //   });
 // }
-function getTrackAddressNonceStorage() {
+function getTrackedAccountsStorage() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
-            chrome.storage.local.get(["addressNonce"], (res) => {
-                if (res === null || res === void 0 ? void 0 : res.addressNonce) {
-                    resolve(res.addressNonce);
-                }
-                else {
-                    resolve(null);
-                }
-            });
-        });
-    });
-}
-function getTrackAddressStorage() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => {
-            chrome.storage.local.get(["trackAddress"], (res) => {
-                if (res === null || res === void 0 ? void 0 : res.trackAddress) {
-                    resolve(res.trackAddress);
+            chrome.storage.local.get(["trackedAccounts"], (res) => {
+                if (res === null || res === void 0 ? void 0 : res.trackedAccounts) {
+                    resolve(res.trackedAccounts);
                 }
                 else {
                     resolve(null);

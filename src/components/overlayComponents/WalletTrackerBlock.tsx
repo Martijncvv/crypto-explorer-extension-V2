@@ -1,21 +1,20 @@
-import React, { CSSProperties, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import colors from "../../static/colors";
 import constants from "../../static/constants";
 import {
-  getTrackAddressStorage,
-  setTrackAddressNonceStorage,
-  setTrackAddressStorage,
+  getTrackedAccountsStorage,
+  setTrackedAccountsStorage,
+  TrackedAccountType,
 } from "../../utils/storage";
 import { fetchLatestAddressTxs } from "../../utils/api";
+import { isEthereumAddress } from "../../utils/isEthereumAddress";
 
-interface WalletTrackerBlockProps {
-  storedTrackAddress?: string;
-}
+interface WalletTrackerBlockProps {}
 
-const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({
-  storedTrackAddress = "",
-}) => {
-  const styles: { [key: string]: CSSProperties } = {
+const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({}) => {
+  const styles: {
+    [key: string]: CSSProperties;
+  } = {
     container: {
       height: constants.font_large,
       paddingBottom: constants.default_padding,
@@ -85,23 +84,80 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({
       textAlign: "center",
     },
   };
-  const [trackAddress, setTrackAddress] = useState<string>(storedTrackAddress);
+  const [trackedAccounts, setTrackedAccounts] = useState<TrackedAccountType[]>(
+    [],
+  );
+  const [trackAccountNameInput, setTrackAccountNameInput] =
+    useState<string>("");
+  const [trackAddressInput, setTrackAddressInput] = useState<string>("");
 
-  const handleSaveAddressTracker = async () => {
-    const latestTxs = await fetchLatestAddressTxs(trackAddress);
-    if (latestTxs.result.length > 0) {
-      console.log("latestTxs", latestTxs);
-      const latestNonce = latestTxs.result[0].nonce;
+  // 0x46340b20830761efd32832A74d7169B29FEB9758 cryptocom
 
-      setTrackAddressNonceStorage(latestNonce);
-      setTrackAddressStorage(trackAddress);
+  const checkStorage = async () => {
+    const trackedAccountsStorage = await getTrackedAccountsStorage();
+    if (trackedAccountsStorage) {
+      setTrackedAccounts(trackedAccountsStorage);
     }
   };
 
-  const handleTest = async () => {
-    const testvlaue = await getTrackAddressStorage();
-    console.log("testvlaue1", testvlaue);
+  useEffect(() => {
+    checkStorage();
+  }, []);
+
+  const handleSaveNewTrackAddress = async () => {
+    if (
+      !trackAccountNameInput ||
+      !trackAddressInput ||
+      !isEthereumAddress(trackAddressInput)
+    ) {
+      console.log(`invalid account track values: ${trackAddressInput}`);
+      return;
+    }
+    const trackedAccounts = (await getTrackedAccountsStorage()) || [];
+    console.log("trackedAccounts123: ", trackedAccounts);
+
+    const latestTxsNewAddress = await fetchLatestAddressTxs(trackAddressInput);
+    console.log("latestTxsNewAddress11: ", latestTxsNewAddress);
+
+    if (latestTxsNewAddress?.result?.length > 0) {
+      const latestNonce = latestTxsNewAddress.result[0]?.nonce;
+
+      const newAccountToTrack = {
+        name: trackAccountNameInput,
+        address: trackAddressInput,
+        nonce: latestNonce || "",
+        lastUpdated: new Date(),
+      };
+      const response = await setTrackedAccountsStorage([
+        ...trackedAccounts,
+        newAccountToTrack,
+      ]);
+      console.log("res,setTrackedAccountsStorage : ", response);
+    }
   };
+
+  const handleDeleteTrackedAccount = async (accountNameToDelete: string) => {
+    const updatedAccounts = trackedAccounts.filter(
+      (account) => account.name !== accountNameToDelete,
+    );
+
+    await setTrackedAccountsStorage(updatedAccounts);
+    setTrackedAccounts(updatedAccounts);
+  };
+
+  const handleTest = async () => {
+    const trackedAccounts = await getTrackedAccountsStorage();
+    console.log("trackedAccounts123: ", trackedAccounts);
+  };
+
+  function formatValue(value: string) {
+    if (value.length <= 8) {
+      return value;
+    }
+    const start = value.slice(0, 4);
+    const end = value.slice(-4);
+    return `${start}...${end}`;
+  }
 
   return (
     <>
@@ -115,30 +171,56 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({
         Get notification if account makes a tx
       </div>
 
-      {trackAddress?.length > 0 && (
-        <div style={styles.explanationSubtext}>
-          Stored address: {trackAddress}
-        </div>
-      )}
+      <div style={{ marginTop: "20px" }}>
+        <div style={styles.sectionHeader}>Tracked Addresses:</div>
+        {trackedAccounts?.length > 0 ? (
+          trackedAccounts.map((account, index) => (
+            <div
+              key={`${account.name}-${account.address}`}
+              style={styles.inputContainer}
+            >
+              <span style={{ flex: 1 }}>{account.name}</span>
+              <span style={{ flex: 2 }}>{formatValue(account.address)}</span>
+              <button
+                style={styles.inputContainerDeleteButton}
+                onClick={() => handleDeleteTrackedAccount(account.name)}
+              >
+                Delete
+              </button>
+            </div>
+          ))
+        ) : (
+          <div>Add account to track</div>
+        )}
+      </div>
 
       <div style={styles.inputContainer}>
         <input
           type="text"
-          value={trackAddress}
-          onChange={(e) => setTrackAddress(e.target.value)}
+          value={trackAccountNameInput}
+          onChange={(e) => setTrackAccountNameInput(e.target.value)}
+          style={styles.amountInputField}
+          placeholder={`Name`}
+        />
+      </div>
+      <div style={styles.inputContainer}>
+        <input
+          type="text"
+          value={formatValue(trackAddressInput)}
+          onChange={(e) => setTrackAddressInput(e.target.value)}
           style={styles.amountInputField}
           placeholder={`Address to track`}
         />
-        <button
-          style={styles.inputContainerSaveButton}
-          onClick={handleSaveAddressTracker}
-        >
-          Save
-        </button>
-        <button style={styles.inputContainerSaveButton} onClick={handleTest}>
-          test
-        </button>
       </div>
+      <button style={styles.inputContainerDeleteButton} onClick={handleTest}>
+        TEST
+      </button>
+      <button
+        style={styles.inputContainerSaveButton}
+        onClick={handleSaveNewTrackAddress}
+      >
+        Save
+      </button>
     </>
   );
 };
