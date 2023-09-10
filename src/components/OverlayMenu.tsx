@@ -259,7 +259,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
               setPortfolioData={setPortfolioData}
             />
             <WalletTrackerBlock />
-
+            <br />
             <div style={styles.sectionHeader}>Tweet to Me!</div>
             <div style={styles.explanationSubtext}>
               Any feature requests or ideas
@@ -277,7 +277,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                 }}
               />
             </ToggleButton>
-
             <div style={styles.sectionHeader}>Start Priority</div>
             <div style={styles.explanationSubtext}>Portfolio/ Search first</div>
             <ToggleButtonGroup
@@ -375,6 +374,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
             </Box>
           </div>
         )}
+        <br />
       </div>
     </div>
   );

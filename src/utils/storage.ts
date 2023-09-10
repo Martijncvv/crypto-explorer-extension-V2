@@ -25,15 +25,16 @@ export interface LocalStorageData {
 
 export async function setTrackedAccountsStorage(
   trackedAccounts: TrackedAccountType[],
-): Promise<void> {
+): Promise<boolean> {
   try {
     return new Promise((resolve) => {
       chrome.storage.local.set({ trackedAccounts: trackedAccounts }, () => {
-        resolve();
+        resolve(true);
       });
     });
   } catch (error) {
     console.log("setTrackedAccountsStorage error: ", error);
+    return false;
   }
 }
 

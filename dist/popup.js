@@ -1580,6 +1580,7 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
             menuIsOpen && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.scrollContainer },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_overlayComponents_PortfolioBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { loading: loading, portfolioData: portfolioData, setPortfolioData: setPortfolioData }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_overlayComponents_WalletTrackerBlock__WEBPACK_IMPORTED_MODULE_5__["default"], null),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("br", null),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Tweet to Me!"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Any feature requests or ideas"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_8__["default"], { value: "question", style: styles.togglePrefButton, onClick: handleSupportClick },
@@ -1621,7 +1622,8 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, coinInfo, nftInfo, }) => {
                                 value: 9,
                                 label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.sliderMark }, "9 Nfts"),
                             },
-                        ], min: 2, max: 9, style: { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } })))))));
+                        ], min: 2, max: 9, style: { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } })))),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("br", null))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (OverlayMenu);
 
@@ -2185,6 +2187,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
 /* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/api */ "./src/utils/api.ts");
 /* harmony import */ var _utils_isEthereumAddress__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../utils/isEthereumAddress */ "./src/utils/isEthereumAddress.ts");
+/* harmony import */ var _utils_formatAddressShort__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../utils/formatAddressShort */ "./src/utils/formatAddressShort.ts");
+/* harmony import */ var _mui_icons_material_Delete__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mui/icons-material/Delete */ "./node_modules/@mui/icons-material/Delete.js");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -2200,80 +2204,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
+
+
 const WalletTrackerBlock = ({}) => {
-    const styles = {
-        container: {
-            height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
-            paddingBottom: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
-            textAlign: "center",
-            fontFamily: "Open Sans, sans-serif",
-            fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
-            fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_large,
-            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-        },
-        sectionHeader: {
-            fontWeight: "bold",
-            margin: "18px 0 3px 0 ",
-            fontSize: "16px",
-            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-        },
-        explanationSubtext: {
-            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium,
-            fontSize: "12px",
-            marginBottom: "12px",
-            textAlign: "center",
-        },
-        inputContainer: {
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "90%",
-            borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
-            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-            padding: "5px",
-        },
-        amountInputField: {
-            width: "70%",
-            padding: "5px 0 5px 10px",
-            marginRight: "5px",
-            borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
-            fontSize: "12px",
-            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_medium,
-            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-            border: "none",
-            outline: "none",
-        },
-        inputContainerSaveButton: {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "5px 8px",
-            marginRight: "5px",
-            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-            fontSize: "12px",
-            borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
-            cursor: "pointer",
-            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_dark,
-            border: "none",
-            textAlign: "center",
-        },
-        inputContainerDeleteButton: {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "5px 8px",
-            fontSize: "12px",
-            borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
-            cursor: "pointer",
-            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_dark,
-            border: "none",
-            textAlign: "center",
-        },
-    };
     const [trackedAccounts, setTrackedAccounts] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [trackAccountNameInput, setTrackAccountNameInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
     const [trackAddressInput, setTrackAddressInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+    const [feedbackMsg, setFeedbackMsg] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
+    const [removeCoinPress, setRemoveCoinPress] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     // 0x46340b20830761efd32832A74d7169B29FEB9758 cryptocom
     const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
         const trackedAccountsStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackedAccountsStorage)();
@@ -2289,13 +2227,16 @@ const WalletTrackerBlock = ({}) => {
         if (!trackAccountNameInput ||
             !trackAddressInput ||
             !(0,_utils_isEthereumAddress__WEBPACK_IMPORTED_MODULE_5__.isEthereumAddress)(trackAddressInput)) {
-            console.log(`invalid account track values: ${trackAddressInput}`);
+            setFeedbackMsg(`Invalid address: ${trackAddressInput}`);
             return;
         }
-        const trackedAccounts = (yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackedAccountsStorage)()) || [];
         console.log("trackedAccounts123: ", trackedAccounts);
+        const trackedAccountsStorage = (yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackedAccountsStorage)()) || [];
+        if (trackedAccounts.length >= 3) {
+            setFeedbackMsg("Max 3 accounts allowed");
+            return;
+        }
         const latestTxsNewAddress = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_4__.fetchLatestAddressTxs)(trackAddressInput);
-        console.log("latestTxsNewAddress11: ", latestTxsNewAddress);
         if (((_a = latestTxsNewAddress === null || latestTxsNewAddress === void 0 ? void 0 : latestTxsNewAddress.result) === null || _a === void 0 ? void 0 : _a.length) > 0) {
             const latestNonce = (_b = latestTxsNewAddress.result[0]) === null || _b === void 0 ? void 0 : _b.nonce;
             const newAccountToTrack = {
@@ -2305,44 +2246,154 @@ const WalletTrackerBlock = ({}) => {
                 lastUpdated: new Date(),
             };
             const response = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackedAccountsStorage)([
-                ...trackedAccounts,
+                ...trackedAccountsStorage,
                 newAccountToTrack,
             ]);
-            console.log("res,setTrackedAccountsStorage : ", response);
+            if (!response) {
+                setFeedbackMsg("Something went wrong. Please try again.");
+            }
+            else {
+                setTrackedAccounts([...trackedAccounts, newAccountToTrack]);
+                setFeedbackMsg("");
+                setTrackAccountNameInput("");
+                setTrackAddressInput("");
+            }
         }
     });
     const handleDeleteTrackedAccount = (accountNameToDelete) => __awaiter(void 0, void 0, void 0, function* () {
+        setRemoveCoinPress(true);
+        if (!removeCoinPress) {
+            return;
+        }
         const updatedAccounts = trackedAccounts.filter((account) => account.name !== accountNameToDelete);
         yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setTrackedAccountsStorage)(updatedAccounts);
         setTrackedAccounts(updatedAccounts);
     });
-    const handleTest = () => __awaiter(void 0, void 0, void 0, function* () {
-        const trackedAccounts = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getTrackedAccountsStorage)();
-        console.log("trackedAccounts123: ", trackedAccounts);
-    });
-    function formatValue(value) {
-        if (value.length <= 8) {
-            return value;
-        }
-        const start = value.slice(0, 4);
-        const end = value.slice(-4);
-        return `${start}...${end}`;
-    }
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader, title: "Set an address to get daily updates" }, "Track address"),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Get notification if account makes a tx"),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: { marginTop: "20px" } },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Tracked Addresses:"),
-            (trackedAccounts === null || trackedAccounts === void 0 ? void 0 : trackedAccounts.length) > 0 ? (trackedAccounts.map((account, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: `${account.name}-${account.address}`, style: styles.inputContainer },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: { flex: 1 } }, account.name),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: { flex: 2 } }, formatValue(account.address)),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerDeleteButton, onClick: () => handleDeleteTrackedAccount(account.name) }, "Delete"))))) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, "Add account to track"))),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainer },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: trackAccountNameInput, onChange: (e) => setTrackAccountNameInput(e.target.value), style: styles.amountInputField, placeholder: `Name` })),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainer },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: formatValue(trackAddressInput), onChange: (e) => setTrackAddressInput(e.target.value), style: styles.amountInputField, placeholder: `Address to track` })),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerDeleteButton, onClick: handleTest }, "TEST"),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", { style: styles.inputContainerSaveButton, onClick: handleSaveNewTrackAddress }, "Save")));
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Track \u039E Account"),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Get notified if account creates tx"),
+        (trackedAccounts === null || trackedAccounts === void 0 ? void 0 : trackedAccounts.length) > 0 ? (trackedAccounts.map((account, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: `${account.name}-${account.address}`, style: styles.accountItemContainer },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.valueItems },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.accountItemName }, account.name),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.accountItemAddress }, (0,_utils_formatAddressShort__WEBPACK_IMPORTED_MODULE_6__.formatAddressShort)(account.address))),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainerDeleteButton, onClick: () => handleDeleteTrackedAccount(account.name) },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Delete__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { fontSize: 14, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } })))))) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.placeholderText }, "Add account to track")),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.newAccountTrackInputField },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.trackAccountInputContainer },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: trackAccountNameInput, onChange: (e) => setTrackAccountNameInput(e.target.value), style: styles.trackNameInputField, placeholder: `Name` })),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.trackAccountInputContainer },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: (0,_utils_formatAddressShort__WEBPACK_IMPORTED_MODULE_6__.formatAddressShort)(trackAddressInput), onChange: (e) => setTrackAddressInput(e.target.value), style: styles.trackAddressInputField, placeholder: `Address` })),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.trackAccountInputContainer },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.inputContainerSaveButton, onClick: handleSaveNewTrackAddress }, "Save"))),
+        feedbackMsg && react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.feedbackMessage }, feedbackMsg)));
+};
+const styles = {
+    newAccountTrackInputField: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: "4px",
+    },
+    trackAccountInputContainer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "5px",
+        borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+    },
+    trackNameInputField: {
+        width: "90%",
+        padding: "5px 5px 5px 10px",
+        borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+        fontSize: "12px",
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_medium,
+        border: "none",
+        outline: "none",
+    },
+    trackAddressInputField: {
+        width: "70px",
+        padding: "5px 5px 5px 10px",
+        borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+        fontSize: "12px",
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_medium,
+        border: "none",
+        outline: "none",
+    },
+    inputContainerSaveButton: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "5px 8px",
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
+        fontSize: "12px",
+        borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
+        cursor: "pointer",
+        backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_dark,
+        border: "none",
+        textAlign: "center",
+    },
+    accountItemContainer: {
+        height: "50px",
+        width: "100%",
+        marginTop: "6px",
+        marginBottom: "6px",
+        display: "flex",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        cursor: "pointer",
+        borderBottom: `2px solid ${_static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_light}`,
+    },
+    valueItems: {
+        flex: 1,
+        display: "flex",
+        flexDirection: "row",
+    },
+    accountItemName: {
+        width: "80px",
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
+    },
+    accountItemAddress: {
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
+    },
+    inputContainerDeleteButton: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "5px 8px",
+        fontSize: "12px",
+        cursor: "pointer",
+        border: "none",
+        textAlign: "center",
+    },
+    container: {
+        height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
+        paddingBottom: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
+        textAlign: "center",
+        fontFamily: "Open Sans, sans-serif",
+        fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
+        fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_large,
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
+    },
+    sectionHeader: {
+        fontWeight: "bold",
+        margin: "18px 0 3px 0 ",
+        fontSize: "16px",
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
+    },
+    explanationSubtext: {
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium,
+        fontSize: "12px",
+        marginBottom: "8px",
+        textAlign: "center",
+    },
+    feedbackMessage: {
+        marginTop: "12px",
+        padding: "8px 12px",
+        borderRadius: "8px",
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium,
+        textAlign: "center",
+    },
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WalletTrackerBlock);
 
@@ -3559,6 +3610,28 @@ function fetchLatestAddressTxs(address) {
 
 /***/ }),
 
+/***/ "./src/utils/formatAddressShort.ts":
+/*!*****************************************!*\
+  !*** ./src/utils/formatAddressShort.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "formatAddressShort": () => (/* binding */ formatAddressShort)
+/* harmony export */ });
+function formatAddressShort(value) {
+    if (value.length <= 8) {
+        return value;
+    }
+    const start = value.slice(0, 4);
+    const end = value.slice(-4);
+    return `${start}...${end}`;
+}
+
+
+/***/ }),
+
 /***/ "./src/utils/isEthereumAddress.ts":
 /*!****************************************!*\
   !*** ./src/utils/isEthereumAddress.ts ***!
@@ -3615,12 +3688,13 @@ function setTrackedAccountsStorage(trackedAccounts) {
         try {
             return new Promise((resolve) => {
                 chrome.storage.local.set({ trackedAccounts: trackedAccounts }, () => {
-                    resolve();
+                    resolve(true);
                 });
             });
         }
         catch (error) {
             console.log("setTrackedAccountsStorage error: ", error);
+            return false;
         }
     });
 }
