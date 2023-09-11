@@ -14,7 +14,8 @@
     "default_icon": "images/CryptoExplorer_logo_128.png"
   },
   "host_permissions": [
-    "https://api.etherscan.io/"
+    "https://api.etherscan.io/",
+    "https://etherscan.io/"
   ],
   "permissions": [
     "storage",

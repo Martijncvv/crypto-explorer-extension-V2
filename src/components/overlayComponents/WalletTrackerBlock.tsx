@@ -10,6 +10,7 @@ import { fetchLatestAddressTxs } from "../../utils/api";
 import { isEthereumAddress } from "../../utils/isEthereumAddress";
 import { formatAddressShort } from "../../utils/formatAddressShort";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 
 interface WalletTrackerBlockProps {}
 
@@ -37,6 +38,14 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({}) => {
   }, []);
 
   const handleSaveNewTrackAddress = async () => {
+    if (trackAddressInput === "") {
+      setFeedbackMsg("Please enter an address");
+      return;
+    }
+    if (trackAccountNameInput === "") {
+      setFeedbackMsg("Please enter a name");
+      return;
+    }
     if (
       !trackAccountNameInput ||
       !trackAddressInput ||
@@ -45,7 +54,7 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({}) => {
       setFeedbackMsg(`Invalid address: ${trackAddressInput}`);
       return;
     }
-    console.log("trackedAccounts123: ", trackedAccounts);
+
     const trackedAccountsStorage = (await getTrackedAccountsStorage()) || [];
     if (trackedAccounts.length >= 3) {
       setFeedbackMsg("Max 3 accounts allowed");
@@ -60,7 +69,7 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({}) => {
       const newAccountToTrack = {
         name: trackAccountNameInput,
         address: trackAddressInput,
-        nonce: latestNonce || "",
+        nonce: latestNonce || "0",
         lastUpdated: new Date(),
       };
 
@@ -93,11 +102,15 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({}) => {
     setTrackedAccounts(updatedAccounts);
   };
 
+  function handleOpenTab(url: string) {
+    chrome.tabs.create({ url: url, active: false });
+  }
+
   return (
     <>
       <div style={styles.sectionHeader}>Track Ξ Account</div>
       <div style={styles.explanationSubtext}>
-        Get notified if account creates tx
+        Get notified when account creates tx
       </div>
       {trackedAccounts?.length > 0 ? (
         trackedAccounts.map((account, index) => (
@@ -106,8 +119,24 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({}) => {
             style={styles.accountItemContainer}
           >
             <div style={styles.valueItems}>
-              <div style={styles.accountItemName}>{account.name}</div>
-              <div style={styles.accountItemAddress}>
+              <div
+                style={styles.accountItemName}
+                onClick={() =>
+                  handleOpenTab(
+                    `https://etherscan.io/address/${account.address}`,
+                  )
+                }
+              >
+                {account.name}
+              </div>
+              <div
+                style={styles.accountItemAddress}
+                onClick={() =>
+                  handleOpenTab(
+                    `https://etherscan.io/address/${account.address}`,
+                  )
+                }
+              >
                 {formatAddressShort(account.address)}
               </div>
             </div>
@@ -148,7 +177,9 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({}) => {
             style={styles.inputContainerSaveButton}
             onClick={handleSaveNewTrackAddress}
           >
-            Save
+            <PlaylistAddIcon
+              style={{ fontSize: 14, color: colors.white_medium }}
+            />
           </div>
         </div>
       </div>
@@ -263,6 +294,10 @@ const styles: {
     fontSize: "12px",
     marginBottom: "8px",
     textAlign: "center",
+  },
+
+  placeholderText: {
+    marginBottom: "4px",
   },
 
   feedbackMessage: {

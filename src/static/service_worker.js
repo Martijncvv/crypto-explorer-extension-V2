@@ -1,9 +1,6 @@
 (async () => {
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === "trackAccountsAlarm") {
-      console.log("trackAccountsAlarm", message.payload);
-      createAlarm();
-    }
+  chrome.runtime.onInstalled.addListener((message, sender, sendResponse) => {
+    createAlarm();
   });
 
   function createAlarm() {
@@ -31,7 +28,7 @@
               console.log(
                 `Fetch error, ${accountinfo.address} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`,
               );
-              continue; // Skip to the next account
+              continue;
             }
             const response = await res.json();
 
@@ -39,15 +36,23 @@
               const latestNonce = response.result[0].nonce;
 
               if (accountinfo.nonce !== latestNonce) {
+                const txDifference =
+                  parseInt(latestNonce) - parseInt(accountinfo.nonce) || 1;
+                const txText =
+                  txDifference === 1
+                    ? `${accountinfo.name} has ${txDifference} new transaction`
+                    : `${accountinfo.name} has ${txDifference} new transactions`;
+
+                const weiValue = response.result[0].value || "0";
+                const ethValue = BigInt(weiValue) / BigInt(10 ** 18);
+                const ethText =
+                  ethValue > 0 ? `Just sent ${ethValue} ETH` : "No ETH sent";
                 chrome.notifications.create({
                   type: "basic",
                   iconUrl: "/images/CryptoExplorer_logo_128.png",
-                  title: "New transaction by tracked address!",
-                  message: `LatestNonce ${latestNonce}\n StoredNonce ${
-                    accountinfo.nonce
-                  }\n DIFFERENCE: ${
-                    parseInt(latestNonce) - parseInt(accountinfo.nonce)
-                  }`,
+                  title: `Crypto Tracker`,
+                  message: `${txText}
+                  ${ethText}`,
                 });
 
                 chrome.storage.local.set({
@@ -62,29 +67,19 @@
                     return account;
                   }),
                 });
-              } else {
-                chrome.notifications.create({
-                  type: "basic",
-                  iconUrl: "/images/CryptoExplorer_logo_128.png",
-                  title: "Account Tracker",
-                  message: `SAME ${latestNonce}\n Stored ${accountinfo.nonce}!`,
-                });
               }
-
-              console.log("latestNonce1: ", latestNonce);
+              // else {
+              // console.log("No new txs for tracked accounts");
+              // }
             }
           } catch (error) {
             console.error("Error fetching address tx info:", error);
           }
         }
-      } else {
-        chrome.notifications.create({
-          type: "basic",
-          iconUrl: "/images/CryptoExplorer_logo_128.png",
-          title: "Account Tracker",
-          message: `No tracked accounts!`,
-        });
       }
+      // else {
+      // console.log("No tracked accounts");
+      // }
     }
   });
 })();

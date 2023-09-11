@@ -7,6 +7,7 @@ import {
   changePortfolioCoinAmountStorage,
   removePortfolioCoinStorage,
 } from "../../utils/storage";
+import SaveIcon from "@mui/icons-material/Save";
 
 interface PortfolioBlockProps {
   portfolioData?: any;
@@ -226,12 +227,12 @@ const PortfolioBlock: React.FC<PortfolioBlockProps> = ({
             style={styles.amountInputField}
             placeholder={`Amount (${clickedCoinTicker})`}
           />
-          <button
+          <div
             style={styles.inputContainerSaveButton}
             onClick={handleSaveAmountInput}
           >
-            Save
-          </button>
+            <SaveIcon style={{ fontSize: 14, color: colors.white_medium }} />
+          </div>
           <div
             style={styles.inputContainerDeleteButton}
             onClick={handleRemoveCoinButton}
