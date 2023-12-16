@@ -179,7 +179,6 @@ export async function fetchPriceHistoryData(
         }
         console.log(`FETCHED - COIN price history $${coinId}`);
 
-        console.log(":res5555: ", res);
         const priceHistory = await res.json();
         setStoredCoinPriceHistoryDataStorage(priceHistory, coinId, chartRange);
         return priceHistory;
