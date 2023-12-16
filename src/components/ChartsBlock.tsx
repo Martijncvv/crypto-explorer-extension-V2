@@ -54,17 +54,19 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ({
     },
     menuOption: {
       width: 40,
-      height: 2,
+      height: 3,
       marginRight: "9px",
       cursor: "pointer",
       backgroundColor: colors.primary_medium,
+      borderRadius: "2px",
     },
     activeOption: {
       width: 40,
-      height: 2,
+      height: 3,
       marginRight: "9px",
       cursor: "pointer",
       backgroundColor: colors.secondary_medium,
+      borderRadius: "2px",
     },
     emptyChartMessage: {
       display: "flex",

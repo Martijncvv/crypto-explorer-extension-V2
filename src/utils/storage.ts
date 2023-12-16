@@ -1,3 +1,10 @@
+import {
+  IDetailedCoinInfo,
+  IPriceHistoryData,
+  ITrendingCoinList,
+} from "../models/ICoinInfo";
+import { fetchPriceHistoryData } from "./api";
+
 export type TrackedAccountType = {
   name: string;
   address: string;
@@ -7,6 +14,23 @@ export type TrackedAccountType = {
 
 export interface LocalStorageData {
   homeCoinData?: { id: string; nft: boolean };
+  storedCoinData: {
+    lastUpdated: number;
+    storedCoin: IDetailedCoinInfo;
+    coinId: string;
+  };
+  storedCoinPriceHistoryData: {
+    lastUpdated: number;
+    priceHistory: IPriceHistoryData;
+    coinId: string;
+    chartRange: string;
+  };
+  coinPricesData: {
+    lastUpdated: number;
+    coinPrices: any;
+    coinIds: string[];
+  };
+  trendingCoinsData?: { lastUpdated: number; trendingCoins: ITrendingCoinList };
   portfolioCoinData?: {
     id: string;
     ticker: string;
@@ -23,6 +47,96 @@ export interface LocalStorageData {
 
 // SETTERS
 
+export async function setTrendingCoinsStorage(
+  trendingCoins: ITrendingCoinList,
+): Promise<boolean> {
+  // get time of now
+  const currentTime = new Date().getTime();
+
+  try {
+    return new Promise((resolve) => {
+      chrome.storage.local.set(
+        {
+          trendingCoinsData: {
+            lastUpdated: currentTime,
+            trendingCoins: trendingCoins,
+          },
+        },
+        () => {
+          resolve(true);
+        },
+      );
+    });
+  } catch (error) {
+    console.log("setTrendingCoinsStorage error: ", error);
+    return false;
+  }
+}
+
+export async function setCoinPricesDataStorage(
+  coinPrices: IPriceHistoryData,
+  coinIds: string[],
+): Promise<boolean> {
+  // get time of now
+  const currentTime = new Date().getTime();
+
+  try {
+    return new Promise((resolve) => {
+      chrome.storage.local.set(
+        {
+          coinPricesData: {
+            coinIds: coinIds,
+            lastUpdated: currentTime,
+            coinPrices: coinPrices,
+          },
+        },
+        () => {
+          resolve(true);
+        },
+      );
+    });
+  } catch (error) {
+    console.log("setCoinPricesDataStorage error: ", error);
+    return false;
+  }
+}
+
+// storedCoinPriceHistoryData: {
+//   lastUpdated: number;
+//   priceHistory: IPriceHistoryData;
+//   coinId: string;
+//   chartRange: string
+// };
+
+export async function setStoredCoinPriceHistoryDataStorage(
+  coinPrices: IPriceHistoryData,
+  coinId: string,
+  chartRange: string,
+): Promise<boolean> {
+  const currentTime = new Date().getTime();
+
+  try {
+    return new Promise((resolve) => {
+      chrome.storage.local.set(
+        {
+          storedCoinPriceHistoryData: {
+            priceHistory: coinPrices,
+            chartRange: chartRange,
+            coinId: coinId,
+            lastUpdated: currentTime,
+          },
+        },
+        () => {
+          resolve(true);
+        },
+      );
+    });
+  } catch (error) {
+    console.log("setStoredCoinPriceHistoryDataStorage error: ", error);
+    return false;
+  }
+}
+
 export async function setTrackedAccountsStorage(
   trackedAccounts: TrackedAccountType[],
 ): Promise<boolean> {
@@ -35,6 +149,32 @@ export async function setTrackedAccountsStorage(
   } catch (error) {
     console.log("setTrackedAccountsStorage error: ", error);
     return false;
+  }
+}
+
+export async function setStoredCoinDataStorage(
+  storedCoin: IDetailedCoinInfo,
+  coinId: string,
+): Promise<void> {
+  try {
+    const currentTime = new Date().getTime();
+
+    return new Promise((resolve) => {
+      chrome.storage.local.set(
+        {
+          storedCoinData: {
+            lastUpdated: currentTime,
+            storedCoin: storedCoin,
+            coinId: coinId,
+          },
+        },
+        () => {
+          resolve();
+        },
+      );
+    });
+  } catch (error) {
+    console.log("setStoredCoinDataStorage error: ", error);
   }
 }
 
@@ -186,6 +326,73 @@ export async function removePortfolioCoinStorage(
 //     });
 //   });
 // }
+
+export async function getTrendingCoinsStorage(): Promise<{
+  lastUpdated: number;
+  trendingCoins: ITrendingCoinList;
+}> {
+  return await new Promise((resolve) => {
+    chrome.storage.local.get(["trendingCoinsData"], (res: LocalStorageData) => {
+      if (res?.trendingCoinsData) {
+        resolve(res.trendingCoinsData);
+      } else {
+        resolve(null);
+      }
+    });
+  });
+}
+
+export async function getStoredCoinPriceHistoryData(): Promise<{
+  lastUpdated: number;
+  priceHistory: IPriceHistoryData;
+  coinId: string;
+  chartRange: string;
+}> {
+  return await new Promise((resolve) => {
+    chrome.storage.local.get(
+      ["storedCoinPriceHistoryData"],
+      (res: LocalStorageData) => {
+        if (res?.storedCoinPriceHistoryData) {
+          resolve(res.storedCoinPriceHistoryData);
+        } else {
+          resolve(null);
+        }
+      },
+    );
+  });
+}
+
+export async function getCoinPricesDataStorage(): Promise<{
+  lastUpdated: number;
+  coinPrices: any;
+  coinIds: string[];
+}> {
+  return await new Promise((resolve) => {
+    chrome.storage.local.get(["coinPricesData"], (res: LocalStorageData) => {
+      if (res?.coinPricesData) {
+        resolve(res.coinPricesData);
+      } else {
+        resolve(null);
+      }
+    });
+  });
+}
+
+export async function getStoredCoinDataStorage(): Promise<{
+  lastUpdated: number;
+  storedCoin: IDetailedCoinInfo;
+  coinId: string;
+}> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["storedCoinData"], (res: LocalStorageData) => {
+      if (res?.storedCoinData) {
+        resolve(res.storedCoinData);
+      } else {
+        resolve(null);
+      }
+    });
+  });
+}
 
 export async function getTrackedAccountsStorage(): Promise<
   TrackedAccountType[]

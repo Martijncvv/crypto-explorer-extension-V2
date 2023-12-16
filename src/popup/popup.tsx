@@ -91,17 +91,15 @@ const App: React.FC = () => {
   //  zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
   // ideas: store notes for accounts (discord/ twitter)
 
-  const addToPortfolio = () => {
-    setPortfolioDataStorage({
+  const addToPortfolio = async () => {
+    await setPortfolioDataStorage({
       id: coinInfo.id,
       ticker: coinInfo.symbol,
       iconUrl: coinInfo.image.thumb,
       amount: 0,
       nft: false,
     });
-    setTimeout(() => {
-      setMenuIsOpen(true);
-    }, 1000);
+    checkStorage();
   };
 
   const checkStorage = async () => {

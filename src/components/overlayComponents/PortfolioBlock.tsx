@@ -305,12 +305,17 @@ const PortfolioBlock: React.FC<PortfolioBlockProps> = ({
                             ? colors.green_medium
                             : colors.red_medium,
                       }}
-                    >{`${coinInfo.usd24Change.toFixed(1)}%`}</span>
+                    >
+                      {`${
+                        coinInfo.usd24Change
+                          ? coinInfo.usd24Change?.toFixed(1)
+                          : "-"
+                      }%`}
+                    </span>
                   </div>
                 </div>
               </div>
               <div style={styles.portfolioItemDivider} />
-              {/*{index < portfolioItems.length - 1 && <div style={styles.portfolioItemDivider}/>}*/}
             </div>
           ))
         ) : (

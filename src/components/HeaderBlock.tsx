@@ -22,6 +22,9 @@ import {
   getSearchPrefStorage,
   getSearchResultNftAmountStorage,
   getStartPrefStorage,
+  getTrendingCoinsStorage,
+  setHomeCoinStorage,
+  setTrendingCoinsStorage,
 } from "../utils/storage";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -176,7 +179,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
 
   const checkStorage = async () => {
     const startPref = await getStartPrefStorage();
-    console.log("startPref23", startPref);
+
     if (startPref === "search") {
       setMenuIsOpen(false);
     } else {
@@ -254,7 +257,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
 
   const getTrendingCoins = async () => {
     try {
-      const trendingCoins: ITrendingCoinList = await fetchTrendingCoins();
+      const trendingCoins = await fetchTrendingCoins();
+
       let searchFormat: ISearchOptions = { tokens: [], total: 0 };
       let trendingTickers = "Top Searched Coins of the Day\n";
       trendingCoins.coins.forEach((coin) => {
@@ -424,6 +428,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
       }
     }
   }
+
   async function handleFocus() {
     setIsExpanded(true);
   }
@@ -431,6 +436,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
   const fetchDetailedTokenInfo = async (coinId: string) => {
     try {
       setLoadingError({ isLoading: true, isError: false });
+
       setTxVolumeChartData([]);
       setTokenTxsChartData([]);
       const [coinInfo, priceMaxHistoryDataRes] = await Promise.all([
@@ -610,8 +616,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
   const handleCoinOptionClick = async (tokenInfo) => {
     if (!tokenInfo.nft) {
       fetchDetailedTokenInfo(tokenInfo.id);
+      await setHomeCoinStorage({ id: tokenInfo.id, nft: false });
     } else {
       fetchDetailedNftInfo(tokenInfo.id);
+      await setHomeCoinStorage({ id: tokenInfo.id, nft: true });
     }
     setIsExpanded(false);
   };
@@ -693,6 +701,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
     console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
     return null;
   }
+
   async function getTokenTxChartData(
     platformId,
     contractAddress,

@@ -6,6 +6,17 @@ import {
 } from "../models/ICoinInfo";
 import { IDetailedNftInfo } from "../models/INftInfo";
 import { ITokenTxs } from "../models/ITokenTxs";
+import {
+  getCoinPricesDataStorage,
+  getStoredCoinDataStorage,
+  getStoredCoinPriceHistoryData,
+  getTrendingCoinsStorage,
+  setCoinPricesDataStorage,
+  setStoredCoinDataStorage,
+  setStoredCoinPriceHistoryDataStorage,
+  setTrendingCoinsStorage,
+} from "./storage";
+import { CACHE_TIME_LONG, CACHE_TIME_SHORT } from "../static/constants";
 
 // const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250'
 
@@ -35,19 +46,155 @@ export async function fetchNameSearch(
 
 export async function fetchTrendingCoins(): Promise<ITrendingCoinList> {
   try {
-    const res = await fetch("https://api.coingecko.com/api/v3/search/trending");
+    // if got trending coins in the last 3 hours, return from storage
+    const trendingCoinsStorage = await getTrendingCoinsStorage();
+    const currentTime = new Date().getTime();
 
-    if (!res.ok) {
-      throw new Error(
-        `Fetch error, Hot Coins: ${res.status} ${res.statusText}`,
-      );
+    const lastUpdated = trendingCoinsStorage?.lastUpdated;
+
+    if (
+      trendingCoinsStorage?.trendingCoins?.coins?.length > 0 &&
+      lastUpdated > currentTime - CACHE_TIME_LONG
+    ) {
+      console.log("STORAGE - GOT TRENDING COINS");
+      return trendingCoinsStorage.trendingCoins;
+    } else {
+      try {
+        console.log("FETCHING TRENDING COINS");
+        const res = await fetch(
+          "https://api.coingecko.com/api/v3/search/trending",
+        );
+
+        if (!res.ok) {
+          throw new Error(
+            `Fetch error, Hot Coins: ${res.status} ${res.statusText}`,
+          );
+        }
+
+        const trendingCoins = await res.json();
+        await setTrendingCoinsStorage(trendingCoins);
+        return trendingCoins;
+      } catch (error) {
+        console.error(
+          "Error-fetchTrendingCoins: fetching trending Coins:",
+          error,
+        );
+        throw error;
+      }
     }
-
-    return await res.json();
   } catch (error) {
-    console.error("Error fetching Hot Coins:", error);
+    console.error("Error-fetchTrendingCoins: getting trending Coins:", error);
     throw error;
   }
+}
+
+export async function fetchCoinsPrices(coinIds: string[]): Promise<any> {
+  try {
+    // if got coin in the last 20 minutes, return from storage
+    const storedCoinPricesData = await getCoinPricesDataStorage();
+
+    const currentTime = new Date().getTime();
+    const lastUpdated = storedCoinPricesData?.lastUpdated;
+
+    function arraysEqual(a, b) {
+      if (a.length !== b.length) return false;
+
+      for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) return false;
+      }
+
+      return true;
+    }
+
+    if (
+      lastUpdated > currentTime - CACHE_TIME_SHORT &&
+      arraysEqual(storedCoinPricesData?.coinIds, coinIds)
+    ) {
+      console.log(`STORAGE - GOT COINPRICES $${coinIds}`);
+      return storedCoinPricesData.coinPrices;
+    } else {
+      try {
+        const coinSearchUrl = coinIds.join("%2C");
+        const res = await fetch(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${coinSearchUrl}&vs_currencies=usd&include_24hr_change=true`,
+        );
+
+        if (!res.ok) {
+          throw new Error(
+            `Error-fetchCoinsPrices: coin info data (${coinIds}): ${res.status} ${res.statusText}`,
+          );
+        }
+        console.log(`FETCHED COIN PRICES ${coinIds}`);
+        const coinPrices = await res.json();
+        setCoinPricesDataStorage(coinPrices, coinIds);
+        return coinPrices;
+      } catch (error) {
+        console.error(
+          `fetchCoinsPrices-fetching coin info data (${coinIds}):`,
+          error,
+        );
+        throw error;
+      }
+    }
+  } catch (error) {
+    console.error(
+      `Error-fetchCoinsPrices: getting coin info data (${coinIds}):`,
+      error,
+    );
+  }
+}
+
+export async function fetchPriceHistoryData(
+  coinId: string,
+  quote: string,
+  chartRange: string,
+): Promise<IPriceHistoryData> {
+  coinId = coinId || "bitcoin";
+  quote = quote || "usd";
+  chartRange = chartRange || "30";
+
+  try {
+    // if got coin in the last 20 minutes, return from storage
+    const storedCoinPriceHistoryData = await getStoredCoinPriceHistoryData();
+    const currentTime = new Date().getTime();
+    const lastUpdated = storedCoinPriceHistoryData?.lastUpdated;
+
+    if (
+      lastUpdated > currentTime - CACHE_TIME_SHORT &&
+      storedCoinPriceHistoryData?.coinId === coinId &&
+      storedCoinPriceHistoryData?.chartRange === chartRange
+    ) {
+      console.log(`STORAGE - GOT COIN PRICEHISTORY $${coinId} ${chartRange}`);
+      return storedCoinPriceHistoryData.priceHistory;
+    } else {
+      try {
+        const res = await fetch(
+          `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`,
+        );
+
+        if (!res.ok) {
+          throw new Error(
+            `Fetch error, price history data (${coinId}): ${res.status} ${res.statusText}`,
+          );
+        }
+        console.log(`FETCHED - COIN price history $${coinId}`);
+
+        const priceHistory = await res.json();
+        setStoredCoinPriceHistoryDataStorage(priceHistory, coinId, chartRange);
+        return priceHistory;
+      } catch (error) {
+        console.error(`Error fetching price history data (${coinId}):`, error);
+        throw error;
+      }
+    }
+  } catch (error) {
+    console.error(
+      `Error-fetchPriceHistoryData: getting coin info data (${coinId}):`,
+      error,
+    );
+  }
+  ////
+  ///
 }
 
 export async function fetchCoinInfo(
@@ -55,40 +202,45 @@ export async function fetchCoinInfo(
 ): Promise<IDetailedCoinInfo> {
   coinId = coinId || "bitcoin";
   try {
-    const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false`,
-    );
+    // if got coin in the last 20 minutes, return from storage
+    const storedCoinStorage = await getStoredCoinDataStorage();
+    const currentTime = new Date().getTime();
 
-    if (!res.ok) {
-      throw new Error(
-        `Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`,
-      );
+    const lastUpdated = storedCoinStorage?.lastUpdated;
+    if (
+      storedCoinStorage?.coinId === coinId &&
+      lastUpdated > currentTime - 300000
+    ) {
+      console.log(`STORAGE - GOT COIN INFO $${coinId}`);
+      return storedCoinStorage.storedCoin;
+    } else {
+      try {
+        const res = await fetch(
+          `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false`,
+        );
+
+        if (!res.ok) {
+          throw new Error(
+            `Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`,
+          );
+        }
+        console.log(`FETCHED COIN INFO $${coinId}`);
+        const coinInfo = await res.json();
+        setStoredCoinDataStorage(coinInfo, coinId);
+        return coinInfo;
+      } catch (error) {
+        console.error(
+          `Error-fetchCoinInfo: fetching coin info data (${coinId}):`,
+          error,
+        );
+        throw error;
+      }
     }
-
-    return await res.json();
   } catch (error) {
-    console.error(`Error fetching coin info data (${coinId}):`, error);
-    throw error;
-  }
-}
-
-export async function fetchCoinsPrices(coinIds: string[]): Promise<any> {
-  try {
-    const coinSearchUrl = coinIds.join("%2C");
-    const res = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${coinSearchUrl}&vs_currencies=usd&include_24hr_change=true`,
+    console.error(
+      `Error-fetchCoinInfo: getting coin info data (${coinId}):`,
+      error,
     );
-
-    if (!res.ok) {
-      throw new Error(
-        `Fetch error, coin info data (${coinIds}): ${res.status} ${res.statusText}`,
-      );
-    }
-
-    return await res.json();
-  } catch (error) {
-    console.error(`Error fetching coin info data (${coinIds}):`, error);
-    throw error;
   }
 }
 
@@ -105,33 +257,6 @@ export async function fetchNftInfo(coinId: string): Promise<IDetailedNftInfo> {
     return await res.json();
   } catch (error) {
     console.error(`Error fetching NFT info data (${coinId}):`, error);
-    throw error;
-  }
-}
-
-export async function fetchPriceHistoryData(
-  coinId: string,
-  quote: string,
-  chartRange: string,
-): Promise<IPriceHistoryData> {
-  coinId = coinId || "bitcoin";
-  quote = quote || "usd";
-  chartRange = chartRange || "30";
-
-  try {
-    const res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`,
-    );
-
-    if (!res.ok) {
-      throw new Error(
-        `Fetch error, price history data (${coinId}): ${res.status} ${res.statusText}`,
-      );
-    }
-
-    return await res.json();
-  } catch (error) {
-    console.error(`Error fetching price history data (${coinId}):`, error);
     throw error;
   }
 }

@@ -220,7 +220,9 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   };
 
   useEffect(() => {
-    checkStorage();
+    if (menuIsOpen) {
+      checkStorage();
+    }
   }, [menuIsOpen]);
 
   const handleSupportClick = () => {

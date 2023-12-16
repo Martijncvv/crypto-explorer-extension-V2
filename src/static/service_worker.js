@@ -17,16 +17,16 @@
       );
 
       if (accounts?.length > 0) {
-        for (const accountinfo of accounts) {
+        for (const accountInfo of accounts) {
           try {
-            await sleep(5000); // to prevent hitting API limit
+            await sleep(5200); // to prevent hitting API limit
 
             const res = await fetch(
-              `https://api.etherscan.io/api?module=account&action=txlist&address=${accountinfo.address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc`,
+              `https://api.etherscan.io/api?module=account&action=txlist&address=${accountInfo.address}&startblock=0&endblock=99999999&page=1&offset=3&sort=desc`,
             );
             if (!res.ok) {
               console.log(
-                `Fetch error, ${accountinfo.address} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`,
+                `Fetch error, ${accountInfo.address} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`,
               );
               continue;
             }
@@ -35,18 +35,17 @@
             if (response.result.length > 0) {
               const latestNonce = response.result[0].nonce;
 
-              if (accountinfo.nonce !== latestNonce) {
+              if (accountInfo.nonce !== latestNonce) {
                 const txDifference =
-                  parseInt(latestNonce) - parseInt(accountinfo.nonce) || 1;
+                  parseInt(latestNonce) - parseInt(accountInfo.nonce);
                 const txText =
                   txDifference === 1
-                    ? `${accountinfo.name} has ${txDifference} new transaction`
-                    : `${accountinfo.name} has ${txDifference} new transactions`;
+                    ? `${accountInfo.name} has ${txDifference} new transaction`
+                    : `${accountInfo.name} has ${txDifference} new transactions`;
 
                 const weiValue = response.result[0].value || "0";
                 const ethValue = BigInt(weiValue) / BigInt(10 ** 18);
-                const ethText =
-                  ethValue > 0 ? `Just sent ${ethValue} ETH` : "No ETH sent";
+                const ethText = ethValue > 0 ? `Just sent ${ethValue} ETH` : "";
                 chrome.notifications.create({
                   type: "basic",
                   iconUrl: "/images/CryptoExplorer_logo_128.png",
@@ -57,7 +56,7 @@
 
                 chrome.storage.local.set({
                   trackedAccounts: accounts.map((account) => {
-                    if (account.address === accountinfo.address) {
+                    if (account.address === accountInfo.address) {
                       return {
                         ...account,
                         nonce: latestNonce,
