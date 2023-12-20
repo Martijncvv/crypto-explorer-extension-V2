@@ -1,6 +1,6 @@
 import React, { CSSProperties, useState, useEffect, useRef } from "react";
 import colors from "../static/colors";
-import constants from "../static/constants";
+import constants, { SHARED_API_KEY } from "../static/constants";
 import {
   fetchCoinInfo,
   fetchPriceHistoryData,
@@ -18,6 +18,7 @@ import {
 } from "../models/ICoinInfo";
 import { IDetailedNftInfo } from "../models/INftInfo";
 import {
+  getCoingeckoApiKeyStorage,
   getHomeCoinStorage,
   getSearchPrefStorage,
   getSearchResultNftAmountStorage,
@@ -31,6 +32,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import SyncProblemIcon from "@mui/icons-material/SyncProblem";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
+import { delay } from "../utils/delay";
 
 interface HeaderBlockProps {
   mainLogo: string;
@@ -39,6 +41,7 @@ interface HeaderBlockProps {
   setTxVolumeChartData: (txVolumeChartData: any) => void;
   setTokenTxsChartData: (tokenTxsChartData: any) => void;
   setMenuIsOpen: (menuIsOpen: any) => void;
+  portfolioCoinClick: any;
 }
 
 const HeaderBlock: React.FC<HeaderBlockProps> = ({
@@ -48,6 +51,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
   setTxVolumeChartData,
   setTokenTxsChartData,
   setMenuIsOpen,
+  portfolioCoinClick,
 }) => {
   const searchResultsRef = useRef(null);
   const inputRef = useRef(null);
@@ -66,6 +70,8 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
   });
 
   const [searchInput, setSearchInput] = useState<string>("");
+  const [coingeckoKeyFeedback, setCoingeckoKeyFeedback] =
+    useState<boolean>(false);
 
   const styles: { [key: string]: CSSProperties } = {
     headerBlock: {
@@ -180,6 +186,14 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
   const checkStorage = async () => {
     const startPref = await getStartPrefStorage();
 
+    const API_KEY = await getCoingeckoApiKeyStorage();
+
+    if (API_KEY === SHARED_API_KEY) {
+      setCoingeckoKeyFeedback(true);
+    } else {
+      setCoingeckoKeyFeedback(false);
+    }
+
     if (startPref === "search") {
       setMenuIsOpen(false);
     } else {
@@ -281,7 +295,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
         "https://chrome.google.com/webstore/detail/crypto-tracker-blockchain/pkaheoacmbdgnemgmcdbekniooabcnmc?hl=en&authuser=0";
       trendingTickers = trendingTickers + "\n#BTC $ETH";
 
-      searchFormat.tokens.push({
+      searchFormat.tokens.unshift({
         id: "",
         name: `Top Trending`,
         image: "",
@@ -325,7 +339,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
         searchResults.nfts.length,
         nrOfNfts,
       );
-      let displayNrOfCoins: number = 11 - displayNrOfNfts;
+      let displayNrOfCoins: number = 13 - displayNrOfNfts;
 
       const searchpreference = (await getSearchPrefStorage()) || "coins";
       if (searchpreference === "coins") {
@@ -352,10 +366,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
         });
         searchFormat.total =
           searchResults.coins.length + searchResults.nfts.length;
-        if (searchFormat.total > 11) {
+        if (searchFormat.total > 13) {
           searchFormat.tokens.push({
             id: "",
-            name: `${searchFormat.total - 11} others`,
+            name: `${searchFormat.total - 13} others`,
             image: "",
             marketCapRank: "",
             nft: true,
@@ -387,10 +401,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
 
         searchFormat.total =
           searchResults.coins.length + searchResults.nfts.length;
-        if (searchFormat.total > 11) {
+        if (searchFormat.total > 13) {
           searchFormat.tokens.push({
             id: "",
-            name: `${searchFormat.total - 11} others`,
+            name: `${searchFormat.total - 13} others`,
             image: "",
             marketCapRank: "",
             nft: true,
@@ -433,6 +447,12 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
     setIsExpanded(true);
   }
 
+  useEffect(() => {
+    if (portfolioCoinClick?.id) {
+      fetchDetailedTokenInfo(portfolioCoinClick.id);
+    }
+  }, [portfolioCoinClick]);
+
   const fetchDetailedTokenInfo = async (coinId: string) => {
     try {
       setLoadingError({ isLoading: true, isError: false });
@@ -443,7 +463,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
         fetchCoinInfo(coinId),
         fetchPriceHistoryData(coinId, "usd", "max"),
       ]);
-
       if (!coinInfo) {
         console.log(`No results for coinInfo ${coinId}`);
         setLoadingError({ isLoading: false, isError: true });
@@ -790,10 +809,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
     return null;
   }
 
-  function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   return (
     <>
       <div style={styles.headerBlock}>
@@ -826,6 +841,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
             onClick={() => setSearchInput("")}
             onFocus={handleFocus}
             value={searchInput}
+            placeholder={coingeckoKeyFeedback ? "Delayed -> Open menu" : null}
           />
         </div>
         {!loadingError.isError && (
@@ -861,7 +877,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
       <div style={styles.searchResults} ref={searchResultsRef}>
         {isExpanded &&
           displayResults?.tokens.length > 0 &&
-          displayResults?.tokens.slice(0, 12).map((tokenInfo, index) => (
+          displayResults?.tokens.slice(0, 13).map((tokenInfo, index) => (
             <div
               key={tokenInfo.id + index}
               style={

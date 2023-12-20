@@ -83,6 +83,7 @@ const App: React.FC = () => {
   const [tokenTxsChartData, setTokenTxsChartData] = useState<any>([]);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
   const [portfolioCoins, setPortfolioCoins] = useState<any>([]);
+  const [portfolioCoinClick, setPortfolioCoinClick] = useState<any>();
 
   // todo splash screen/ new icon
   // todo, make ref links of all exchange buttons
@@ -131,6 +132,7 @@ const App: React.FC = () => {
         setMenuIsOpen={setMenuIsOpen}
         coinInfo={coinInfo}
         nftInfo={nftInfo}
+        setPortfolioCoinClick={setPortfolioCoinClick}
       />
       <div style={styles.topContainer}>
         <HeaderBlock
@@ -146,6 +148,7 @@ const App: React.FC = () => {
           setTxVolumeChartData={setTxVolumeChartData}
           setTokenTxsChartData={setTokenTxsChartData}
           setMenuIsOpen={setMenuIsOpen}
+          portfolioCoinClick={portfolioCoinClick}
         />
       </div>
       {coinInfo?.name && (

@@ -25,7 +25,7 @@
               `https://api.etherscan.io/api?module=account&action=txlist&address=${accountInfo.address}&startblock=0&endblock=99999999&page=1&offset=3&sort=desc`,
             );
             if (!res.ok) {
-              console.log(
+              console.error(
                 `Fetch error, ${accountInfo.address} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`,
               );
               continue;
