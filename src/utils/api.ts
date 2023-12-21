@@ -67,7 +67,7 @@ export async function fetchTrendingCoins(): Promise<ITrendingCoinList> {
         console.log("FETCHING TRENDING COINS");
         const API_KEY = await getCoingeckoApiKeyStorage();
         const res = await fetch(
-          `https://api.coingecko.com/api/v3/search/trending&x_cg_demo_api_key=${API_KEY}`,
+          `https://api.coingecko.com/api/v3/search/trending?&x_cg_demo_api_key=${API_KEY}`,
         );
 
         if (!res.ok) {
