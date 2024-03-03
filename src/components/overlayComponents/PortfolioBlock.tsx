@@ -207,6 +207,7 @@ const PortfolioBlock: React.FC<PortfolioBlockProps> = ({
     return totalValue;
   };
 
+  console.log("portfolioData: ", portfolioData);
   return (
     <>
       <div style={styles.portfolioSectionTitle}>PORTFOLIO BALANCE</div>
@@ -260,69 +261,71 @@ const PortfolioBlock: React.FC<PortfolioBlockProps> = ({
         )}
 
         {portfolioData?.length > 0 ? (
-          portfolioData.map((coinInfo) => (
-            <div key={coinInfo.id}>
-              <div
-                style={styles.portfolioItem}
-                onClick={() =>
-                  handlePortfolioCoinPress(coinInfo.id, coinInfo.ticker)
-                }
-              >
-                <img
-                  style={styles.portfolioItemImage}
-                  src={coinInfo.iconUrl}
-                  alt={coinInfo.ticker}
-                />
-                <div style={styles.portfolioItemDataField}>
-                  <div style={styles.portfolioItemTopRow}>
-                    <span style={styles.portfolioItemValue}>
-                      ${amountFormatter(coinInfo.price)}
-                    </span>
+          portfolioData
+            .sort((a, b) => b.amount * b.price - a.amount * a.price)
+            .map((coinInfo) => (
+              <div key={coinInfo.id}>
+                <div
+                  style={styles.portfolioItem}
+                  onClick={() =>
+                    handlePortfolioCoinPress(coinInfo.id, coinInfo.ticker)
+                  }
+                >
+                  <img
+                    style={styles.portfolioItemImage}
+                    src={coinInfo.iconUrl}
+                    alt={coinInfo.ticker}
+                  />
+                  <div style={styles.portfolioItemDataField}>
+                    <div style={styles.portfolioItemTopRow}>
+                      <span style={styles.portfolioItemValue}>
+                        ${amountFormatter(coinInfo.price)}
+                      </span>
 
-                    <div style={styles.amountText}>
-                      {coinInfo.amount > 0
-                        ? amountFormatter(coinInfo.amount)
-                        : "-"}
+                      <div style={styles.amountText}>
+                        {coinInfo.amount > 0
+                          ? amountFormatter(coinInfo.amount)
+                          : "-"}
+                      </div>
+                      <span style={styles.portfolioItemValue}>
+                        {coinInfo.amount > 0
+                          ? `$${amountFormatter(
+                              coinInfo.price * coinInfo.amount,
+                            )}`
+                          : "-"}
+                      </span>
                     </div>
-                    <span style={styles.portfolioItemValue}>
-                      {coinInfo.amount > 0
-                        ? `$${amountFormatter(
-                            coinInfo.price * coinInfo.amount,
-                          )}`
-                        : "-"}
-                    </span>
-                  </div>
-                  <div style={styles.portfolioItemBottomRow}>
-                    <span
-                      style={{
-                        ...styles.portfolioItemValue,
-                        ...styles.tickerText,
-                      }}
-                    >
-                      {coinInfo.ticker.toUpperCase()}
-                    </span>
-                    <div style={styles.portfolioItemValue}></div>
-                    <span
-                      style={{
-                        ...styles.portfolioItemValue,
-                        color:
-                          coinInfo.usd24Change > 0
-                            ? colors.green_medium
-                            : colors.red_medium,
-                      }}
-                    >
-                      {`${
-                        coinInfo.usd24Change
-                          ? coinInfo.usd24Change?.toFixed(1)
-                          : "-"
-                      }%`}
-                    </span>
+                    <div style={styles.portfolioItemBottomRow}>
+                      <span
+                        style={{
+                          ...styles.portfolioItemValue,
+                          ...styles.tickerText,
+                        }}
+                      >
+                        {coinInfo.ticker.toUpperCase()}
+                      </span>
+                      <div style={styles.portfolioItemValue}></div>
+                      <span
+                        style={{
+                          ...styles.portfolioItemValue,
+                          color:
+                            coinInfo.usd24Change > 0
+                              ? colors.green_medium
+                              : colors.red_medium,
+                        }}
+                      >
+                        {`${
+                          coinInfo.usd24Change
+                            ? coinInfo.usd24Change?.toFixed(1)
+                            : "-"
+                        }%`}
+                      </span>
+                    </div>
                   </div>
                 </div>
+                <div style={styles.portfolioItemDivider} />
               </div>
-              <div style={styles.portfolioItemDivider} />
-            </div>
-          ))
+            ))
         ) : (
           <div style={styles.noCoinsText}>
             No coins in portfolio, add coins at the bottom of a page

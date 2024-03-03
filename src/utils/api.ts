@@ -26,7 +26,6 @@ export async function fetchNameSearch(
 ): Promise<ISearchCoinList> {
   try {
     const API_KEY = await getCoingeckoApiKeyStorage();
-    console.log("api key", API_KEY);
 
     const res = await fetch(
       `https://api.coingecko.com/api/v3/search?query=${searchQuery}&x_cg_demo_api_key=${API_KEY}`,

@@ -310,7 +310,24 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
               setPortfolioCoinClick={setPortfolioCoinClick}
             />
             <WalletTrackerBlock />
-            <br />
+
+            <div style={styles.sectionHeader}>Tweet to Me!</div>
+            <div style={styles.explanationSubtext}>
+              Using the extension? Let me know! I'm always looking for feedback
+            </div>
+            <ToggleButton
+              value="question"
+              style={styles.togglePrefButton}
+              onClick={handleSupportClick}
+            >
+              <QuestionAnswerIcon
+                style={{
+                  fontSize: 24,
+                  cursor: "pointer",
+                  color: colors.white_medium,
+                }}
+              />
+            </ToggleButton>
 
             <div style={styles.sectionHeader}>Start Priority</div>
             <div style={styles.explanationSubtext}>Portfolio/ Search first</div>
@@ -451,23 +468,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
               *CoinGecko's open API is now restricted. This approach helps us
               maintain a free extension.
             </div>
-            <div style={styles.sectionHeader}>Tweet to Me!</div>
-            <div style={styles.explanationSubtext}>
-              Any feature requests or ideas
-            </div>
-            <ToggleButton
-              value="question"
-              style={styles.togglePrefButton}
-              onClick={handleSupportClick}
-            >
-              <QuestionAnswerIcon
-                style={{
-                  fontSize: 24,
-                  cursor: "pointer",
-                  color: colors.white_medium,
-                }}
-              />
-            </ToggleButton>
           </div>
         )}
         <br />
