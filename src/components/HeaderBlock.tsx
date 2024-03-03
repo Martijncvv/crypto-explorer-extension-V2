@@ -738,6 +738,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
         domain = "api.snowtrace.io";
         explorerUrl = "snowtrace.io";
         break;
+      case "base":
+        domain = "api.basescan.org";
+        explorerUrl = "basescan.org";
+        break;
       case "binance-smart-chain":
         domain = "api.bscscan.com";
         explorerUrl = "bscscan.com";
