@@ -24,18 +24,22 @@ import {
   setSearchResultNftAmountStorage,
   getTrackedAccountsStorage,
   TrackedAccountType,
+  getCoingeckoApiKeyStorage,
+  setCoingeckoApiKeyStorage,
 } from "../utils/storage";
 import { IDetailedNftInfo } from "../models/INftInfo";
 import { IDetailedCoinInfo } from "../models/ICoinInfo";
 import { fetchCoinsPrices } from "../utils/api";
 import WalletTrackerBlock from "./overlayComponents/WalletTrackerBlock";
 import PortfolioBlock from "./overlayComponents/PortfolioBlock";
+import SaveIcon from "@mui/icons-material/Save";
 
 interface OverlayMenuProps {
   menuIsOpen: boolean;
   setMenuIsOpen: (menuIsOpen: any) => void;
   coinInfo?: IDetailedCoinInfo;
   nftInfo?: IDetailedNftInfo;
+  setPortfolioCoinClick?: (coinInfo: IDetailedCoinInfo) => void;
 }
 
 const OverlayMenu: React.FC<OverlayMenuProps> = ({
@@ -43,6 +47,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   setMenuIsOpen,
   coinInfo,
   nftInfo,
+  setPortfolioCoinClick,
 }) => {
   const styles: { [key: string]: CSSProperties } = {
     overlayMenu: {
@@ -120,6 +125,35 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       fontWeight: "bold",
       color: colors.white_medium,
     },
+    coingeckoApiInputField: {
+      width: "100%",
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: "4px",
+    },
+    coingeckoApiInput: {
+      width: "70%",
+      padding: "5px 5px 5px 10px",
+      borderRadius: constants.border_radius,
+      fontSize: "12px",
+      color: colors.primary_medium,
+      border: "none",
+      outline: "none",
+    },
+    inputContainerSaveButton: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "5px 8px",
+      color: colors.white_medium,
+      fontSize: "12px",
+      borderRadius: constants.border_radius,
+      cursor: "pointer",
+      backgroundColor: colors.secondary_dark,
+      border: "none",
+      textAlign: "center",
+    },
 
     togglePrefButton: {
       fontSize: "14px",
@@ -137,6 +171,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   };
 
   const [searchPref, setSearchPref] = useState<string>("coins");
+  const [coingeckoApiKey, setCoingeckoApiKey] = useState<string>("");
   const [startPref, setStartPref] = useState<string>("portfolio");
   const [searchResultNftAmount, setSearchResultNftAmount] = useState<number>(3);
   const [portfolioData, setPortfolioData] = useState<
@@ -152,6 +187,13 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   >([]);
 
   const [loading, setLoading] = useState<boolean>(false);
+
+  const handleCoingeckoApiKey = async () => {
+    if (coingeckoApiKey?.length > 22) {
+      await setCoingeckoApiKeyStorage(coingeckoApiKey);
+      setMenuIsOpen(false);
+    }
+  };
 
   const handleSearchPref = (newSearchPref: string) => {
     if (newSearchPref !== null) {
@@ -182,11 +224,13 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       searchPrefStorage,
       startPrefStorage,
       searchResultNftAmountStorage,
+      coingeckoApiKeyStorage,
     ] = await Promise.all([
       getPortfolioDataStorage(),
       getSearchPrefStorage(),
       getStartPrefStorage(),
       getSearchResultNftAmountStorage(),
+      getCoingeckoApiKeyStorage(),
     ]);
     setLoading(false);
 
@@ -216,6 +260,10 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
     }
     if (searchResultNftAmountStorage) {
       setSearchResultNftAmount(searchResultNftAmountStorage);
+    }
+
+    if (coingeckoApiKeyStorage) {
+      setCoingeckoApiKey(coingeckoApiKeyStorage);
     }
   };
 
@@ -259,26 +307,11 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
               loading={loading}
               portfolioData={portfolioData}
               setPortfolioData={setPortfolioData}
+              setPortfolioCoinClick={setPortfolioCoinClick}
             />
             <WalletTrackerBlock />
             <br />
-            <div style={styles.sectionHeader}>Tweet to Me!</div>
-            <div style={styles.explanationSubtext}>
-              Any feature requests or ideas
-            </div>
-            <ToggleButton
-              value="question"
-              style={styles.togglePrefButton}
-              onClick={handleSupportClick}
-            >
-              <QuestionAnswerIcon
-                style={{
-                  fontSize: 24,
-                  cursor: "pointer",
-                  color: colors.white_medium,
-                }}
-              />
-            </ToggleButton>
+
             <div style={styles.sectionHeader}>Start Priority</div>
             <div style={styles.explanationSubtext}>Portfolio/ Search first</div>
             <ToggleButtonGroup
@@ -365,15 +398,76 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                     label: <span style={styles.sliderMark}>2 Nfts</span>,
                   },
                   {
-                    value: 9,
-                    label: <span style={styles.sliderMark}>9 Nfts</span>,
+                    value: 11,
+                    label: <span style={styles.sliderMark}>11 Nfts</span>,
                   },
                 ]}
                 min={2}
-                max={9}
+                max={11}
                 style={{ color: colors.white_medium }}
               />
             </Box>
+
+            <div style={styles.sectionHeader}>Free CoinGecko API Key</div>
+            <div style={styles.explanationSubtext}>
+              {
+                "It is required to use your CoinGecko API key. You can get one for free "
+              }
+              <a
+                href="https://www.coingecko.com/en/api/pricing"
+                target="_blank"
+                style={{ color: "white" }}
+              >
+                here
+              </a>
+              {
+                "; \nCreate a Demo Account -> Developer Dashboard -> Copy key below."
+              }
+            </div>
+
+            <div style={styles.coingeckoApiInputField}>
+              <input
+                type="password"
+                value={coingeckoApiKey}
+                onChange={(e) => setCoingeckoApiKey(e.target.value)}
+                style={styles.coingeckoApiInput}
+                placeholder={`CoinGecko API Key`}
+              />
+
+              <div
+                style={styles.inputContainerSaveButton}
+                onClick={handleCoingeckoApiKey}
+              >
+                <SaveIcon
+                  style={{ fontSize: 14, color: colors.white_medium }}
+                />
+              </div>
+            </div>
+            <div style={styles.explanationSubtext}>
+              If you do not add an API key, you share one with other users,
+              which results in delays and limited usage.
+            </div>
+            <div style={styles.explanationSubtext}>
+              *CoinGecko's open API is now restricted. This approach helps us
+              maintain a free extension.
+            </div>
+            <div style={styles.sectionHeader}>Tweet to Me!</div>
+            <div style={styles.explanationSubtext}>
+              Any feature requests or ideas
+            </div>
+            <ToggleButton
+              value="question"
+              style={styles.togglePrefButton}
+              onClick={handleSupportClick}
+            >
+              <QuestionAnswerIcon
+                style={{
+                  fontSize: 24,
+                  cursor: "pointer",
+                  color: colors.white_medium,
+                }}
+              />
+            </ToggleButton>
           </div>
         )}
         <br />

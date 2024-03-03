@@ -29,7 +29,10 @@ const constants: Constants = {
   font_weight_medium: 500,
 };
 
-export const CACHE_TIME_SHORT = 600000; // 5 minutes
+export const CACHE_TIME_SHORT = 600000; // 10 minutes
 export const CACHE_TIME_LONG = 10800000; // 3 hours
 
+export const SHARED_API_DELAY = 2000; // 2 secs
+
+export const SHARED_API_KEY = "CG-TAvyqB8W2DTmod8w3KeMDw8h";
 export default constants;

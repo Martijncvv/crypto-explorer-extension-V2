@@ -4,6 +4,8 @@ import {
   ITrendingCoinList,
 } from "../models/ICoinInfo";
 import { fetchPriceHistoryData } from "./api";
+import { SHARED_API_DELAY, SHARED_API_KEY } from "../static/constants";
+import { delay } from "./delay";
 
 export type TrackedAccountType = {
   name: string;
@@ -40,6 +42,7 @@ export interface LocalStorageData {
   };
   // selectedToken?: string;
   searchPref?: string;
+  coingeckoApiKey?: string;
   startPref?: string;
   searchResultNftAmount?: number;
   trackedAccounts?: TrackedAccountType[];
@@ -100,13 +103,6 @@ export async function setCoinPricesDataStorage(
     return false;
   }
 }
-
-// storedCoinPriceHistoryData: {
-//   lastUpdated: number;
-//   priceHistory: IPriceHistoryData;
-//   coinId: string;
-//   chartRange: string
-// };
 
 export async function setStoredCoinPriceHistoryDataStorage(
   coinPrices: IPriceHistoryData,
@@ -187,6 +183,20 @@ export async function setSearchPrefStorage(searchPref: string): Promise<void> {
     });
   } catch (error) {
     console.log("setSearchPrefStorage error: ", error);
+  }
+}
+
+export async function setCoingeckoApiKeyStorage(
+  coingeckoApiKey: string,
+): Promise<void> {
+  try {
+    return new Promise((resolve) => {
+      chrome.storage.local.set({ coingeckoApiKey: coingeckoApiKey }, () => {
+        resolve();
+      });
+    });
+  } catch (error) {
+    console.log("setCoingeckoApiKeyStorage error: ", error);
   }
 }
 
@@ -417,6 +427,22 @@ export async function getSearchPrefStorage(): Promise<string> {
         resolve(null);
       }
     });
+  });
+}
+
+export async function getCoingeckoApiKeyStorage(): Promise<string> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(
+      ["coingeckoApiKey"],
+      async (res: LocalStorageData) => {
+        if (res?.coingeckoApiKey) {
+          resolve(res.coingeckoApiKey);
+        } else {
+          await delay(SHARED_API_DELAY);
+          resolve(SHARED_API_KEY);
+        }
+      },
+    );
   });
 }
 

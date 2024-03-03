@@ -7,6 +7,7 @@ import {
 import { IDetailedNftInfo } from "../models/INftInfo";
 import { ITokenTxs } from "../models/ITokenTxs";
 import {
+  getCoingeckoApiKeyStorage,
   getCoinPricesDataStorage,
   getStoredCoinDataStorage,
   getStoredCoinPriceHistoryData,
@@ -24,8 +25,11 @@ export async function fetchNameSearch(
   searchQuery: string,
 ): Promise<ISearchCoinList> {
   try {
+    const API_KEY = await getCoingeckoApiKeyStorage();
+    console.log("api key", API_KEY);
+
     const res = await fetch(
-      `https://api.coingecko.com/api/v3/search?query=${searchQuery}`,
+      `https://api.coingecko.com/api/v3/search?query=${searchQuery}&x_cg_demo_api_key=${API_KEY}`,
     );
 
     if (!res.ok) {
@@ -61,8 +65,9 @@ export async function fetchTrendingCoins(): Promise<ITrendingCoinList> {
     } else {
       try {
         console.log("FETCHING TRENDING COINS");
+        const API_KEY = await getCoingeckoApiKeyStorage();
         const res = await fetch(
-          "https://api.coingecko.com/api/v3/search/trending",
+          `https://api.coingecko.com/api/v3/search/trending?&x_cg_demo_api_key=${API_KEY}`,
         );
 
         if (!res.ok) {
@@ -114,9 +119,10 @@ export async function fetchCoinsPrices(coinIds: string[]): Promise<any> {
       return storedCoinPricesData.coinPrices;
     } else {
       try {
+        const API_KEY = await getCoingeckoApiKeyStorage();
         const coinSearchUrl = coinIds.join("%2C");
         const res = await fetch(
-          `https://api.coingecko.com/api/v3/simple/price?ids=${coinSearchUrl}&vs_currencies=usd&include_24hr_change=true`,
+          `https://api.coingecko.com/api/v3/simple/price?ids=${coinSearchUrl}&vs_currencies=usd&include_24hr_change=true&x_cg_demo_api_key=${API_KEY}`,
         );
 
         if (!res.ok) {
@@ -168,8 +174,9 @@ export async function fetchPriceHistoryData(
       return storedCoinPriceHistoryData.priceHistory;
     } else {
       try {
+        const API_KEY = await getCoingeckoApiKeyStorage();
         const res = await fetch(
-          `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily`,
+          `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily&x_cg_demo_api_key=${API_KEY}`,
         );
 
         if (!res.ok) {
@@ -193,8 +200,6 @@ export async function fetchPriceHistoryData(
       error,
     );
   }
-  ////
-  ///
 }
 
 export async function fetchCoinInfo(
@@ -215,8 +220,9 @@ export async function fetchCoinInfo(
       return storedCoinStorage.storedCoin;
     } else {
       try {
+        const API_KEY = await getCoingeckoApiKeyStorage();
         const res = await fetch(
-          `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false`,
+          `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false&x_cg_demo_api_key=${API_KEY}`,
         );
 
         if (!res.ok) {
@@ -246,7 +252,10 @@ export async function fetchCoinInfo(
 
 export async function fetchNftInfo(coinId: string): Promise<IDetailedNftInfo> {
   try {
-    const res = await fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}`);
+    const API_KEY = await getCoingeckoApiKeyStorage();
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/nfts/${coinId}?&x_cg_demo_api_key=${API_KEY}`,
+    );
 
     if (!res.ok) {
       throw new Error(
@@ -267,8 +276,9 @@ export async function fetchNftTxs(
   txAmount: number,
 ): Promise<ITokenTxs> {
   try {
+    const API_KEY = await getCoingeckoApiKeyStorage();
     const res = await fetch(
-      `https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc`,
+      `https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&x_cg_demo_api_key=${API_KEY}`,
     );
 
     if (!res.ok) {
@@ -321,7 +331,7 @@ export async function fetchLatestAddressTxs(
     }
     return await res.json();
   } catch (error) {
-    console.error("Error fetching feken txstchLatestAddressTxs:", error);
+    console.error("Error fetching txstchLatestAddressTxs:", error);
     throw error;
   }
 }

@@ -13,12 +13,14 @@ interface PortfolioBlockProps {
   portfolioData?: any;
   setPortfolioData: any;
   loading: boolean;
+  setPortfolioCoinClick: any;
 }
 
 const PortfolioBlock: React.FC<PortfolioBlockProps> = ({
   portfolioData,
   setPortfolioData,
   loading,
+  setPortfolioCoinClick,
 }) => {
   const styles: { [key: string]: CSSProperties } = {
     portfolioSectionTitle: {
@@ -178,6 +180,7 @@ const PortfolioBlock: React.FC<PortfolioBlockProps> = ({
     setClickedCoinId(coinInfoId);
     setClickedCoinTicker(coinTicker);
     setShowInputField(!showInputField);
+    setPortfolioCoinClick({ id: coinInfoId, ticker: coinTicker });
   };
 
   const handleSaveAmountInput = () => {
@@ -197,7 +200,9 @@ const PortfolioBlock: React.FC<PortfolioBlockProps> = ({
   const calculatePortfolioValue = () => {
     let totalValue = 0;
     portfolioData.map((coinInfo) => {
-      totalValue += coinInfo.amount * coinInfo.price;
+      if (coinInfo.amount && coinInfo.price) {
+        totalValue += coinInfo.amount * coinInfo.price;
+      }
     });
     return totalValue;
   };
