@@ -3,7 +3,6 @@ import {
   IPriceHistoryData,
   ITrendingCoinList,
 } from "../models/ICoinInfo";
-import { fetchPriceHistoryData } from "./api";
 import { SHARED_API_DELAY, SHARED_API_KEY } from "../static/constants";
 import { delay } from "./delay";
 
