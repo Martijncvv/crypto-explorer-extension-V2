@@ -40,15 +40,12 @@ export interface LocalStorageData {
     nft: boolean;
   };
   // selectedToken?: string;
-  searchPref?: string;
   coingeckoApiKey?: string;
-  startPref?: string;
   searchResultNftAmount?: number;
   trackedAccounts?: TrackedAccountType[];
 }
 
 // SETTERS
-
 export async function setTrendingCoinsStorage(
   trendingCoins: ITrendingCoinList,
 ): Promise<boolean> {
@@ -173,18 +170,6 @@ export async function setStoredCoinDataStorage(
   }
 }
 
-export async function setSearchPrefStorage(searchPref: string): Promise<void> {
-  try {
-    return new Promise((resolve) => {
-      chrome.storage.local.set({ searchPref: searchPref }, () => {
-        resolve();
-      });
-    });
-  } catch (error) {
-    console.log("setSearchPrefStorage error: ", error);
-  }
-}
-
 export async function setCoingeckoApiKeyStorage(
   coingeckoApiKey: string,
 ): Promise<void> {
@@ -196,18 +181,6 @@ export async function setCoingeckoApiKeyStorage(
     });
   } catch (error) {
     console.log("setCoingeckoApiKeyStorage error: ", error);
-  }
-}
-
-export async function setStartPrefStorage(startPref: string): Promise<void> {
-  try {
-    return new Promise((resolve) => {
-      chrome.storage.local.set({ startPref: startPref }, () => {
-        resolve();
-      });
-    });
-  } catch (error) {
-    console.log("setStartPrefStorage error: ", error);
   }
 }
 
@@ -324,17 +297,6 @@ export async function removePortfolioCoinStorage(
 }
 
 // GETTERS
-// export async function getSelectedTokenStorage(): Promise<string> {
-//   return new Promise((resolve) => {
-//     chrome.storage.local.get(["selectedToken"], (res: LocalStorageData) => {
-//       if (res?.selectedToken) {
-//         resolve(res.selectedToken);
-//       } else {
-//         resolve(null);
-//       }
-//     });
-//   });
-// }
 
 export async function getTrendingCoinsStorage(): Promise<{
   lastUpdated: number;
@@ -417,18 +379,6 @@ export async function getTrackedAccountsStorage(): Promise<
   });
 }
 
-export async function getSearchPrefStorage(): Promise<string> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(["searchPref"], (res: LocalStorageData) => {
-      if (res?.searchPref) {
-        resolve(res.searchPref);
-      } else {
-        resolve(null);
-      }
-    });
-  });
-}
-
 export async function getCoingeckoApiKeyStorage(): Promise<string> {
   return new Promise((resolve) => {
     chrome.storage.local.get(
@@ -442,18 +392,6 @@ export async function getCoingeckoApiKeyStorage(): Promise<string> {
         }
       },
     );
-  });
-}
-
-export async function getStartPrefStorage(): Promise<string> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(["startPref"], (res: LocalStorageData) => {
-      if (res?.startPref) {
-        resolve(res.startPref);
-      } else {
-        resolve(null);
-      }
-    });
   });
 }
 

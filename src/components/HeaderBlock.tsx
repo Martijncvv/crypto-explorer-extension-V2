@@ -14,18 +14,13 @@ import {
   IDetailedCoinInfo,
   ISearchCoinList,
   ISearchOptions,
-  ITrendingCoinList,
 } from "../models/ICoinInfo";
 import { IDetailedNftInfo } from "../models/INftInfo";
 import {
   getCoingeckoApiKeyStorage,
   getHomeCoinStorage,
-  getSearchPrefStorage,
   getSearchResultNftAmountStorage,
-  getStartPrefStorage,
-  getTrendingCoinsStorage,
   setHomeCoinStorage,
-  setTrendingCoinsStorage,
 } from "../utils/storage";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -73,119 +68,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
   const [coingeckoKeyFeedback, setCoingeckoKeyFeedback] =
     useState<boolean>(false);
 
-  const styles: { [key: string]: CSSProperties } = {
-    headerBlock: {
-      display: "flex",
-      alignItems: "center",
-    },
-    menuIconBlock: {
-      width: 40,
-      height: 40,
-      borderRadius: constants.border_radius,
-      backgroundColor: colors.primary_dark,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      cursor: "pointer",
-    },
-
-    searchbar: {
-      marginLeft: 12,
-      width: 202,
-      height: 40,
-      borderRadius: constants.border_radius,
-      backgroundColor: colors.primary_dark,
-
-      display: "flex",
-      alignItems: "center",
-      position: "relative",
-    },
-    searchbarImage: {
-      width: 20,
-      height: 20,
-      marginLeft: 12,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    searchInput: {
-      marginLeft: 12,
-      border: "none",
-      background: "transparent",
-      color: "white",
-      outline: "none",
-      width: "100%",
-    },
-
-    searchResults: {
-      position: "absolute",
-      width: 202,
-      marginLeft: 52,
-      zIndex: 99,
-      display: "flex",
-      flexDirection: "column",
-      color: "#3381e8",
-
-      background: "linear-gradient(to bottom, #2F396D 0%, #3E6CB6 80%)",
-      borderBottomLeftRadius: constants.border_radius,
-      borderBottomRightRadius: constants.border_radius,
-    },
-    coinSearchInfo: {
-      display: "flex",
-      padding: 9,
-      alignItems: "center",
-      cursor: "pointer",
-    } as any,
-
-    coinSearchInfoFocus: {
-      boxShadow: `inset 0 0 4px 3px rgba(255, 255, 255, 0.5)`,
-      outline: "none",
-      borderRadius: constants.border_radius_small,
-    } as any,
-
-    coinImage: {
-      width: 22,
-      height: 22,
-      borderRadius: constants.border_radius_small,
-    },
-
-    exchangeName: {
-      paddingLeft: 12,
-      width: 100,
-      color: colors.white_medium,
-      fontSize: constants.font_medium,
-      fontWeight: constants.font_weight_medium,
-      whiteSpace: "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-    },
-    marketCapRank: {
-      paddingLeft: 6,
-      width: 40,
-      color: colors.accent_medium,
-      fontSize: constants.font_small,
-      fontWeight: constants.font_weight_medium,
-    },
-    mainLogo: {
-      marginLeft: 12,
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-    },
-    indicationIcon: {
-      marginLeft: 12,
-      width: 40,
-      height: 40,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 1,
-    },
-  };
-
   const checkStorage = async () => {
-    const startPref = await getStartPrefStorage();
-
     const API_KEY = await getCoingeckoApiKeyStorage();
 
     if (API_KEY === SHARED_API_KEY) {
@@ -193,19 +76,6 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
     } else {
       setCoingeckoKeyFeedback(false);
     }
-
-    if (startPref === "search") {
-      setMenuIsOpen(false);
-    } else {
-      setMenuIsOpen(true);
-    }
-    // const selectedTokenStorage = await getSelectedTokenStorage();
-
-    // if (selectedTokenStorage) {
-    //   setSearchInput(selectedTokenStorage);
-    //   searchCoinNames(selectedTokenStorage);
-    //   setSelectedTokenStorage("");
-    // } else {
 
     const homeCoinStorage = await getHomeCoinStorage();
     if (homeCoinStorage?.id && homeCoinStorage?.nft) {
@@ -341,77 +211,39 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
       );
       let displayNrOfCoins: number = 13 - displayNrOfNfts;
 
-      const searchpreference = (await getSearchPrefStorage()) || "coins";
-      if (searchpreference === "coins") {
-        let searchFormat: ISearchOptions = { tokens: [], total: 0 };
-        // SET COINS
-        searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
-          searchFormat.tokens.push({
-            id: coin.id,
-            name: coin.name,
-            image: coin.large,
-            marketCapRank: coin.market_cap_rank,
-            nft: false,
-          });
+      let searchFormat: ISearchOptions = { tokens: [], total: 0 };
+      // SET COINS
+      searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
+        searchFormat.tokens.push({
+          id: coin.id,
+          name: coin.name,
+          image: coin.large,
+          marketCapRank: coin.market_cap_rank,
+          nft: false,
         });
-        // SET NFTs
-        searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
-          searchFormat.tokens.push({
-            id: nft.id,
-            name: nft.name,
-            image: nft.thumb,
-            marketCapRank: "NFT",
-            nft: true,
-          });
+      });
+      // SET NFTs
+      searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
+        searchFormat.tokens.push({
+          id: nft.id,
+          name: nft.name,
+          image: nft.thumb,
+          marketCapRank: "NFT",
+          nft: true,
         });
-        searchFormat.total =
-          searchResults.coins.length + searchResults.nfts.length;
-        if (searchFormat.total > 13) {
-          searchFormat.tokens.push({
-            id: "",
-            name: `${searchFormat.total - 13} others`,
-            image: "",
-            marketCapRank: "",
-            nft: true,
-          });
-        }
-        setDisplayResults(searchFormat);
-      } else {
-        let searchFormat: ISearchOptions = { tokens: [], total: 0 };
-        // SET NFTs
-        searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
-          searchFormat.tokens.push({
-            id: nft.id,
-            name: nft.name,
-            image: nft.thumb,
-            marketCapRank: "NFT",
-            nft: true,
-          });
+      });
+      searchFormat.total =
+        searchResults.coins.length + searchResults.nfts.length;
+      if (searchFormat.total > 13) {
+        searchFormat.tokens.push({
+          id: "",
+          name: `${searchFormat.total - 13} others`,
+          image: "",
+          marketCapRank: "",
+          nft: true,
         });
-        // SET COINS
-        searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
-          searchFormat.tokens.push({
-            id: coin.id,
-            name: coin.name,
-            image: coin.large,
-            marketCapRank: coin.market_cap_rank,
-            nft: false,
-          });
-        });
-
-        searchFormat.total =
-          searchResults.coins.length + searchResults.nfts.length;
-        if (searchFormat.total > 13) {
-          searchFormat.tokens.push({
-            id: "",
-            name: `${searchFormat.total - 13} others`,
-            image: "",
-            marketCapRank: "",
-            nft: true,
-          });
-        }
-        setDisplayResults(searchFormat);
       }
+      setDisplayResults(searchFormat);
     } catch (error) {
       console.error("handleSearch: Error searching for coins:", error);
       setDisplayResults({
@@ -941,6 +773,116 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
       </div>
     </>
   );
+};
+
+const styles: { [key: string]: CSSProperties } = {
+  headerBlock: {
+    display: "flex",
+    alignItems: "center",
+  },
+  menuIconBlock: {
+    width: 40,
+    height: 40,
+    borderRadius: constants.border_radius,
+    backgroundColor: colors.primary_dark,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    cursor: "pointer",
+  },
+
+  searchbar: {
+    marginLeft: 12,
+    width: 202,
+    height: 40,
+    borderRadius: constants.border_radius,
+    backgroundColor: colors.primary_dark,
+
+    display: "flex",
+    alignItems: "center",
+    position: "relative",
+  },
+  searchbarImage: {
+    width: 20,
+    height: 20,
+    marginLeft: 12,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  searchInput: {
+    marginLeft: 12,
+    border: "none",
+    background: "transparent",
+    color: "white",
+    outline: "none",
+    width: "100%",
+  },
+
+  searchResults: {
+    position: "absolute",
+    width: 202,
+    marginLeft: 52,
+    zIndex: 99,
+    display: "flex",
+    flexDirection: "column",
+    color: "#3381e8",
+
+    background: "linear-gradient(to bottom, #2F396D 0%, #3E6CB6 80%)",
+    borderBottomLeftRadius: constants.border_radius,
+    borderBottomRightRadius: constants.border_radius,
+  },
+  coinSearchInfo: {
+    display: "flex",
+    padding: 9,
+    alignItems: "center",
+    cursor: "pointer",
+  } as any,
+
+  coinSearchInfoFocus: {
+    boxShadow: `inset 0 0 4px 3px rgba(255, 255, 255, 0.5)`,
+    outline: "none",
+    borderRadius: constants.border_radius_small,
+  } as any,
+
+  coinImage: {
+    width: 22,
+    height: 22,
+    borderRadius: constants.border_radius_small,
+  },
+
+  exchangeName: {
+    paddingLeft: 12,
+    width: 100,
+    color: colors.white_medium,
+    fontSize: constants.font_medium,
+    fontWeight: constants.font_weight_medium,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
+  marketCapRank: {
+    paddingLeft: 6,
+    width: 40,
+    color: colors.accent_medium,
+    fontSize: constants.font_small,
+    fontWeight: constants.font_weight_medium,
+  },
+  mainLogo: {
+    marginLeft: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  indicationIcon: {
+    marginLeft: 12,
+    width: 40,
+    height: 40,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1,
+  },
 };
 
 export default HeaderBlock;

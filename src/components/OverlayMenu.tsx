@@ -7,20 +7,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-
-import CurrencyBitcoinIcon from "@mui/icons-material/CurrencyBitcoin";
-import WallpaperIcon from "@mui/icons-material/Wallpaper";
-import SearchIcon from "@mui/icons-material/Search";
-import QueryStatsIcon from "@mui/icons-material/QueryStats";
 
 import {
   getPortfolioDataStorage,
-  getSearchPrefStorage,
-  getStartPrefStorage,
   getSearchResultNftAmountStorage,
-  setSearchPrefStorage,
-  setStartPrefStorage,
   setSearchResultNftAmountStorage,
   getTrackedAccountsStorage,
   TrackedAccountType,
@@ -49,130 +39,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
   nftInfo,
   setPortfolioCoinClick,
 }) => {
-  const styles: { [key: string]: CSSProperties } = {
-    overlayMenu: {
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: 0,
-      zIndex: 100,
-      height: "100%",
-    },
-    scrollContainer: {
-      height: "calc(100% - 20px)",
-      overflowY: "auto",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-    },
-    overlayMenuOpen: {
-      width: "100%",
-      paddingBottom: "20px",
-    },
-    menuContent: {
-      transition: "transform 0.5s ease",
-      transform: "translateX(-100%)",
-
-      position: "relative",
-      height: "100%",
-      width: "70%",
-      maxWidth: "400px",
-      padding: "12px",
-
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-start",
-      alignItems: "center",
-
-      background: "radial-gradient(#5565b0, #344183)",
-      boxShadow: "0px 0px 10px rgba(0,0,0,0.5)",
-      borderTopRightRadius: constants.border_radius,
-      borderBottomRightRadius: constants.border_radius,
-
-      fontFamily: "'Helvetica Neue', Arial, sans-serif",
-      color: colors.secondary_medium,
-      fontSize: "14px",
-    },
-    sectionHeader: {
-      fontWeight: "bold",
-      margin: "18px 0 3px 0 ",
-      fontSize: "16px",
-      color: colors.white_medium,
-    },
-    explanationSubtext: {
-      color: colors.accent_medium,
-      fontSize: "12px",
-      marginBottom: "12px",
-      textAlign: "center",
-    },
-
-    menuContentOpen: {
-      transform: "translateX(0)",
-    },
-    menuCloseButton: {
-      position: "absolute",
-      right: "12px",
-      top: "12px",
-      border: "none",
-      background: "none",
-      cursor: "pointer",
-    },
-    supportOpenButton: {
-      cursor: "pointer",
-    },
-    sliderMark: {
-      fontSize: "12px",
-      fontWeight: "bold",
-      color: colors.white_medium,
-    },
-    coingeckoApiInputField: {
-      width: "100%",
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      marginBottom: "4px",
-    },
-    coingeckoApiInput: {
-      width: "70%",
-      padding: "5px 5px 5px 10px",
-      borderRadius: constants.border_radius,
-      fontSize: "12px",
-      color: colors.primary_medium,
-      border: "none",
-      outline: "none",
-    },
-    inputContainerSaveButton: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      padding: "5px 8px",
-      color: colors.white_medium,
-      fontSize: "12px",
-      borderRadius: constants.border_radius,
-      cursor: "pointer",
-      backgroundColor: colors.secondary_dark,
-      border: "none",
-      textAlign: "center",
-    },
-
-    togglePrefButton: {
-      fontSize: "14px",
-      color: colors.white_medium,
-    },
-    activePrefButton: {
-      backgroundImage: "radial-gradient(#5565b0, #344183)",
-      boxShadow: "0 0 8px rgba(85, 101, 176, 0.8)",
-    },
-    togglePrefButtonIcon: {
-      marginRight: "4px",
-      fontSize: 24,
-      color: colors.white_medium,
-    },
-  };
-
-  const [searchPref, setSearchPref] = useState<string>("coins");
   const [coingeckoApiKey, setCoingeckoApiKey] = useState<string>("");
-  const [startPref, setStartPref] = useState<string>("portfolio");
   const [searchResultNftAmount, setSearchResultNftAmount] = useState<number>(3);
   const [portfolioData, setPortfolioData] = useState<
     {
@@ -195,19 +62,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
     }
   };
 
-  const handleSearchPref = (newSearchPref: string) => {
-    if (newSearchPref !== null) {
-      setSearchPref(newSearchPref);
-      setSearchPrefStorage(newSearchPref);
-    }
-  };
-  const handleStartPref = (newStartPref: string) => {
-    if (newStartPref !== null) {
-      setStartPref(newStartPref);
-      setStartPrefStorage(newStartPref);
-    }
-  };
-
   const handleSearchResultNftAmount = (
     newSearchResultNftAmount: number | number[],
   ) => {
@@ -221,14 +75,10 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
     setLoading(true);
     const [
       portfolioDataStorage,
-      searchPrefStorage,
-      startPrefStorage,
       searchResultNftAmountStorage,
       coingeckoApiKeyStorage,
     ] = await Promise.all([
       getPortfolioDataStorage(),
-      getSearchPrefStorage(),
-      getStartPrefStorage(),
       getSearchResultNftAmountStorage(),
       getCoingeckoApiKeyStorage(),
     ]);
@@ -251,12 +101,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       });
 
       setPortfolioData(portfolioDataStorage);
-    }
-    if (searchPrefStorage) {
-      setSearchPref(searchPrefStorage);
-    }
-    if (startPrefStorage) {
-      setStartPref(startPrefStorage);
     }
     if (searchResultNftAmountStorage) {
       setSearchResultNftAmount(searchResultNftAmountStorage);
@@ -328,68 +172,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
                 }}
               />
             </ToggleButton>
-
-            <div style={styles.sectionHeader}>Start Priority</div>
-            <div style={styles.explanationSubtext}>Portfolio/ Search first</div>
-            <ToggleButtonGroup
-              size="small"
-              color="primary"
-              value={startPref}
-              exclusive
-              aria-label="StartPref"
-            >
-              <ToggleButton
-                value="portfolio"
-                style={{
-                  ...styles.togglePrefButton,
-                  ...(startPref === "portfolio" && styles.activePrefButton),
-                }}
-                onClick={() => handleStartPref("portfolio")}
-              >
-                <QueryStatsIcon style={styles.togglePrefButtonIcon} />
-              </ToggleButton>
-              <ToggleButton
-                value="search"
-                style={{
-                  ...styles.togglePrefButton,
-                  ...(startPref === "search" && styles.activePrefButton),
-                }}
-                onClick={() => handleStartPref("search")}
-              >
-                <SearchIcon style={styles.togglePrefButtonIcon} />
-              </ToggleButton>
-            </ToggleButtonGroup>
-
-            <div style={styles.sectionHeader}>Search Priority</div>
-            <div style={styles.explanationSubtext}>Show Coins/ Nfts first</div>
-            <ToggleButtonGroup
-              size="small"
-              color="primary"
-              value={searchPref}
-              exclusive
-              aria-label="SearchPref"
-            >
-              <ToggleButton
-                value="coins"
-                style={{
-                  ...styles.togglePrefButton,
-                  ...(searchPref === "coins" && styles.activePrefButton),
-                }}
-                onClick={() => handleSearchPref("coins")}
-              >
-                <CurrencyBitcoinIcon style={styles.togglePrefButtonIcon} />
-              </ToggleButton>
-              <ToggleButton
-                value="nfts"
-                style={{
-                  ...styles.togglePrefButton,
-                  ...(searchPref === "nfts" && styles.activePrefButton),
-                }}
-                onClick={() => handleSearchPref("nfts")}
-              >
-                <WallpaperIcon style={styles.togglePrefButtonIcon} />
-              </ToggleButton>
-            </ToggleButtonGroup>
 
             <div style={styles.sectionHeader}>Search Results</div>
             <div
@@ -474,6 +256,127 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       </div>
     </div>
   );
+};
+
+const styles: { [key: string]: CSSProperties } = {
+  overlayMenu: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: 0,
+    zIndex: 100,
+    height: "100%",
+  },
+  scrollContainer: {
+    height: "calc(100% - 20px)",
+    overflowY: "auto",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  overlayMenuOpen: {
+    width: "100%",
+    paddingBottom: "20px",
+  },
+  menuContent: {
+    transition: "transform 0.5s ease",
+    transform: "translateX(-100%)",
+
+    position: "relative",
+    height: "100%",
+    width: "70%",
+    maxWidth: "400px",
+    padding: "12px",
+
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
+
+    background: "radial-gradient(#5565b0, #344183)",
+    boxShadow: "0px 0px 10px rgba(0,0,0,0.5)",
+    borderTopRightRadius: constants.border_radius,
+    borderBottomRightRadius: constants.border_radius,
+
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    color: colors.secondary_medium,
+    fontSize: "14px",
+  },
+  sectionHeader: {
+    fontWeight: "bold",
+    margin: "18px 0 3px 0 ",
+    fontSize: "16px",
+    color: colors.white_medium,
+  },
+  explanationSubtext: {
+    color: colors.accent_medium,
+    fontSize: "12px",
+    marginBottom: "12px",
+    textAlign: "center",
+  },
+
+  menuContentOpen: {
+    transform: "translateX(0)",
+  },
+  menuCloseButton: {
+    position: "absolute",
+    right: "12px",
+    top: "12px",
+    border: "none",
+    background: "none",
+    cursor: "pointer",
+  },
+  supportOpenButton: {
+    cursor: "pointer",
+  },
+  sliderMark: {
+    fontSize: "12px",
+    fontWeight: "bold",
+    color: colors.white_medium,
+  },
+  coingeckoApiInputField: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: "4px",
+  },
+  coingeckoApiInput: {
+    width: "70%",
+    padding: "5px 5px 5px 10px",
+    borderRadius: constants.border_radius,
+    fontSize: "12px",
+    color: colors.primary_medium,
+    border: "none",
+    outline: "none",
+  },
+  inputContainerSaveButton: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "5px 8px",
+    color: colors.white_medium,
+    fontSize: "12px",
+    borderRadius: constants.border_radius,
+    cursor: "pointer",
+    backgroundColor: colors.secondary_dark,
+    border: "none",
+    textAlign: "center",
+  },
+
+  togglePrefButton: {
+    fontSize: "14px",
+    color: colors.white_medium,
+  },
+  activePrefButton: {
+    backgroundImage: "radial-gradient(#5565b0, #344183)",
+    boxShadow: "0 0 8px rgba(85, 101, 176, 0.8)",
+  },
+  togglePrefButtonIcon: {
+    marginRight: "4px",
+    fontSize: 24,
+    color: colors.white_medium,
+  },
 };
 
 export default OverlayMenu;
