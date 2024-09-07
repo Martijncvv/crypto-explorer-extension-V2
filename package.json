@@ -1,6 +1,6 @@
 {
   "name": "Crypto Tracker: Blockchain & Crypto Explorer",
-  "version": "2.0.10",
+  "version": "2.0.14",
   "description": "Your Comprehensive Real-Time (on-chain) Cryptocurrency and NFT Explorer.",
   "scripts": {
     "start": "webpack --watch --progress --config webpack.dev.js",

@@ -461,7 +461,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
       setTokenTxsChartData([]);
       const [coinInfo, priceMaxHistoryDataRes] = await Promise.all([
         fetchCoinInfo(coinId),
-        fetchPriceHistoryData(coinId, "usd", "max"),
+        fetchPriceHistoryData(coinId, "usd", "365"),
       ]);
       if (!coinInfo) {
         console.log(`No results for coinInfo ${coinId}`);
@@ -653,6 +653,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
       case "avalanche":
         domain = "api.snowtrace.io";
         break;
+      case "base":
+        domain = "api.basescan.org";
+        break;
       case "binance-smart-chain":
         domain = "api.bscscan.com";
         break;
@@ -738,6 +741,10 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
         domain = "api.snowtrace.io";
         explorerUrl = "snowtrace.io";
         break;
+      case "base":
+        domain = "api.basescan.org";
+        explorerUrl = "basescan.org";
+        break;
       case "binance-smart-chain":
         domain = "api.bscscan.com";
         explorerUrl = "bscscan.com";
@@ -780,6 +787,7 @@ const HeaderBlock: React.FC<HeaderBlockProps> = ({
       await delay(5500);
       tokenTxsData = await fetchTokenTxs(domain, contractAddress, 10000);
     }
+    console.log("tokenTxsData123", tokenTxsData);
     if (tokenTxsData.status !== "0" && tokenTxsData.result) {
       const arrayWithIndices: any = tokenTxsData.result.map((item, index) => ({
         ...item,
