@@ -18,7 +18,7 @@ const bitcoinIcon = require("../static/images/icons/bitcoin-icon.png");
 import { NftInfoField } from "../components/NftInfoField";
 import { CoinInfoField } from "../components/CoinInfoField";
 
-export interface ILoadingError {
+export interface IIsLoadingError {
   isLoading: boolean;
   isError: boolean;
 }
@@ -34,7 +34,7 @@ const App: React.FC = () => {
     tokens: [],
     total: 0,
   });
-  const [loadingError, setLoadingError] = useState<ILoadingError>({
+  const [isLoadingError, setIsLoadingError] = useState<IIsLoadingError>({
     isLoading: true,
     isError: false,
   });
@@ -67,7 +67,7 @@ const App: React.FC = () => {
       const fetchInfo = isNft ? fetchDetailedNftInfo : fetchDetailedTokenInfo;
       const result = await fetchInfo(coinId);
 
-      setLoadingError(result.loadingError);
+      setIsLoadingError(result.isLoadingError);
       setNftInfo(result.nftInfo);
       setCoinInfo(result.coinInfo);
       setTxVolumeChartData(result.txVolumeChartData);
@@ -75,7 +75,7 @@ const App: React.FC = () => {
       setHomeCoinStorage({ id: coinId, nft: isNft });
     } catch (error) {
       console.error("Error fetching info:", error);
-      setLoadingError({ isLoading: false, isError: true });
+      setIsLoadingError({ isLoading: false, isError: true });
     }
   };
 
@@ -101,7 +101,7 @@ const App: React.FC = () => {
           searchResults={searchResults}
           setMenuIsOpen={setIsOverlayOpen}
           handleFetchTokenInfo={handleFetchTokenInfo}
-          loadingError={loadingError}
+          isLoadingError={isLoadingError}
         />
 
         {!nftInfo?.name && !coinInfo?.name && (

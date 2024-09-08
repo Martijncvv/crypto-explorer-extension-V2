@@ -5,14 +5,14 @@ import { ISearchOptions } from "../../models/ICoinInfo";
 import { HeaderMenuItem } from "./HeaderMenuItem";
 import { OpenOverlayButton } from "./OpenOverlayButton";
 import { SearchBarField } from "./SearchBarField";
-import { ILoadingError } from "../../popup/popup";
+import { IIsLoadingError } from "../../popup/popup";
 
 interface HeaderBlockProps {
   mainLogo: string;
   setMenuIsOpen: (menuIsOpen: any) => void;
   setSearchResults: (searchResults: ISearchOptions) => void;
   searchResults: ISearchOptions;
-  loadingError: ILoadingError;
+  isLoadingError: IIsLoadingError;
   handleFetchTokenInfo: (coinId: string, isNft: boolean) => void;
 }
 
@@ -21,7 +21,7 @@ const HeaderField: React.FC<HeaderBlockProps> = ({
   setMenuIsOpen,
   setSearchResults,
   searchResults,
-  loadingError,
+  isLoadingError,
   handleFetchTokenInfo,
 }) => {
   const searchResultsRef = useRef(null);
@@ -95,7 +95,7 @@ const HeaderField: React.FC<HeaderBlockProps> = ({
           setDisplayResults={setSearchResults}
           setSearchInput={setSearchInput}
           searchInput={searchInput}
-          loadingError={loadingError}
+          isLoadingError={isLoadingError}
         />
       </div>
 

@@ -7,20 +7,20 @@ export const fetchDetailedNftInfo = async (coinId: string) => {
   let coinInfo = null;
   let txVolumeChartData = [];
   let tokenTxsChartData = [];
-  let loadingError;
+  let isLoadingError;
 
   try {
     // Fetch NFT info
     nftInfo = await fetchNftInfo(coinId);
     if (!nftInfo) {
-      loadingError = { isLoading: false, isError: true };
+      isLoadingError = { isLoading: false, isError: true };
       console.log(`No results for nftInfo ${coinId}`);
       return {
         nftInfo,
         coinInfo,
         txVolumeChartData,
         tokenTxsChartData,
-        loadingError,
+        isLoadingError,
       };
     }
 
@@ -33,14 +33,14 @@ export const fetchDetailedNftInfo = async (coinId: string) => {
       );
 
       if (!txVolumeData) {
-        loadingError = { isLoading: false, isError: true };
+        isLoadingError = { isLoading: false, isError: true };
         console.log(`No results for getNftTxChartData ${coinId}`);
         return {
           nftInfo,
           coinInfo,
           txVolumeChartData,
           tokenTxsChartData,
-          loadingError,
+          isLoadingError,
         };
       }
       if (txVolumeData.length > 0) {
@@ -48,9 +48,9 @@ export const fetchDetailedNftInfo = async (coinId: string) => {
       }
     }
 
-    loadingError = { isLoading: false, isError: false };
+    isLoadingError = { isLoading: false, isError: false };
   } catch (error) {
-    loadingError = { isLoading: false, isError: true };
+    isLoadingError = { isLoading: false, isError: true };
     nftInfo = null;
     txVolumeChartData = [];
     coinInfo = null;
@@ -61,5 +61,5 @@ export const fetchDetailedNftInfo = async (coinId: string) => {
   }
 
   // Return all necessary data instead of setting it directly
-  return { nftInfo, coinInfo, txVolumeChartData, loadingError };
+  return { nftInfo, coinInfo, txVolumeChartData, isLoadingError };
 };

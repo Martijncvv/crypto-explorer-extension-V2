@@ -8,7 +8,7 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
   let nftInfo = null;
   let txVolumeChartData = [];
   let tokenTxsChartData = [];
-  let loadingError;
+  let isLoadingError;
 
   try {
     // Fetch coin info and price history data concurrently
@@ -19,25 +19,25 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
 
     if (!fetchedCoinInfo) {
       console.log(`No results for coinInfo ${coinId}`);
-      loadingError = { isLoading: false, isError: true };
+      isLoadingError = { isLoading: false, isError: true };
       return {
         coinInfo,
         nftInfo,
         txVolumeChartData,
         tokenTxsChartData,
-        loadingError,
+        isLoadingError,
       };
     }
 
     if (!priceMaxHistoryDataRes) {
       console.log(`No results for priceMaxHistoryData ${coinId}`);
-      loadingError = { isLoading: false, isError: true };
+      isLoadingError = { isLoading: false, isError: true };
       return {
         coinInfo,
         nftInfo,
         txVolumeChartData,
         tokenTxsChartData,
-        loadingError,
+        isLoadingError,
       };
     }
 
@@ -60,22 +60,22 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
 
       if (!fetchedTokenTxChartData) {
         console.log(`No results for getTokenTxChartData ${coinId}`);
-        loadingError = { isLoading: false, isError: true };
+        isLoadingError = { isLoading: false, isError: true };
         return {
           coinInfo,
           nftInfo,
           txVolumeChartData,
           tokenTxsChartData,
-          loadingError,
+          isLoadingError: isLoadingError,
         };
       }
 
       tokenTxsChartData = fetchedTokenTxChartData;
     }
 
-    loadingError = { isLoading: false, isError: false };
+    isLoadingError = { isLoading: false, isError: false };
   } catch (error) {
-    loadingError = { isLoading: false, isError: true };
+    isLoadingError = { isLoading: false, isError: true };
     console.error(
       `fetchDetailedTokenInfo: Error searching for coin: ${coinId}`,
       error,
@@ -88,6 +88,6 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
     nftInfo,
     txVolumeChartData,
     tokenTxsChartData,
-    loadingError,
+    isLoadingError,
   };
 };

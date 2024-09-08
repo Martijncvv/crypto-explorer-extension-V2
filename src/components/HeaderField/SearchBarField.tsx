@@ -16,7 +16,7 @@ export const SearchBarField = ({
   setDisplayResults,
   setSearchInput,
   searchInput,
-  loadingError,
+  isLoadingError,
 }) => {
   const [coingeckoKeyFeedback, setCoingeckoKeyFeedback] =
     useState<boolean>(false);
@@ -81,7 +81,7 @@ export const SearchBarField = ({
           placeholder={coingeckoKeyFeedback ? "Delayed -> Open menu" : null}
         />
       </div>
-      {!loadingError.isError && (
+      {!isLoadingError.isError && (
         <img
           style={styles.mainLogo}
           src={
@@ -91,7 +91,7 @@ export const SearchBarField = ({
           alt="Main Logo"
         />
       )}
-      {loadingError.isLoading && !loadingError.isError && (
+      {isLoadingError.isLoading && !isLoadingError.isError && (
         <CircularProgress
           size={41}
           thickness={1}
@@ -103,7 +103,7 @@ export const SearchBarField = ({
           }}
         />
       )}
-      {loadingError.isError && (
+      {isLoadingError.isError && (
         <div style={styles.indicationIcon} title={"Refresh limit: 5/sec"}>
           <SyncProblemIcon
             style={{ fontSize: 30, color: colors.secondary_medium }}
