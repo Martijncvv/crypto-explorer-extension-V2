@@ -64,7 +64,6 @@ export const getTokenTxChartData = async (
     await delay(5500);
     tokenTxsData = await fetchTokenTxs(domain, contractAddress, 10000);
   }
-  console.log("tokenTxsData123", tokenTxsData);
   if (tokenTxsData.status !== "0" && tokenTxsData.result) {
     const arrayWithIndices: any = tokenTxsData.result.map((item, index) => ({
       ...item,

@@ -1,6 +1,5 @@
 import { fetchCoinInfo, fetchPriceHistoryData } from "./api";
 import { formatChartData } from "../utils/formatChartData";
-import { delay } from "./delay";
 import { getTokenTxChartData } from "./getTokenTxChartData";
 
 export const fetchDetailedTokenInfo = async (coinId: string) => {
@@ -51,7 +50,6 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
 
     // Fetch transaction data if asset platform and contract address are available
     if (coinInfo.asset_platform_id && coinInfo.contract_address) {
-      await delay(1000);
       const fetchedTokenTxChartData = await getTokenTxChartData(
         coinInfo.asset_platform_id,
         coinInfo.contract_address,

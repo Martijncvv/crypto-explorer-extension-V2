@@ -61,5 +61,11 @@ export const fetchDetailedNftInfo = async (coinId: string) => {
   }
 
   // Return all necessary data instead of setting it directly
-  return { nftInfo, coinInfo, txVolumeChartData, isLoadingError };
+  return {
+    nftInfo,
+    coinInfo,
+    txVolumeChartData,
+    tokenTxsChartData,
+    isLoadingError,
+  };
 };

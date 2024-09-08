@@ -23,6 +23,18 @@ export interface IIsLoadingError {
   isError: boolean;
 }
 
+// keep highest and lowest price on max chart
+// drag and zoom chart functionality
+// fix all anys
+// join a group via name/ code?
+// check watchlist etc.
+
+// splash screen/ new icon
+// make ref links of all exchange buttons
+// usdt socials
+// zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
+// ideas: store notes for accounts (discord/ twitter)
+
 const App: React.FC = () => {
   const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>();
   const [nftInfo, setNftInfo] = useState<IDetailedNftInfo>();
@@ -38,12 +50,6 @@ const App: React.FC = () => {
     isLoading: true,
     isError: false,
   });
-
-  // todo splash screen/ new icon
-  // todo, make ref links of all exchange buttons
-  // todo usdt socials
-  //  zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
-  // todo ideas: store notes for accounts (discord/ twitter)
 
   useEffect(() => {
     handleStartupInfo();
@@ -64,6 +70,7 @@ const App: React.FC = () => {
 
   const handleFetchTokenInfo = async (coinId: string, isNft: boolean) => {
     try {
+      setIsLoadingError({ isLoading: true, isError: false });
       const fetchInfo = isNft ? fetchDetailedNftInfo : fetchDetailedTokenInfo;
       const result = await fetchInfo(coinId);
 
@@ -74,16 +81,11 @@ const App: React.FC = () => {
       setTokenTxsChartData(result.tokenTxsChartData);
       setHomeCoinStorage({ id: coinId, nft: isNft });
     } catch (error) {
+      console.error(`Error fetching info for ${coinId}-${isNft}`);
       console.error("Error fetching info:", error);
       setIsLoadingError({ isLoading: false, isError: true });
     }
   };
-
-  // keep highest and lowest price on max chart
-  // drag and zoom chart functionality
-  // fix all anys
-  // join a group via name/ code?
-  // check watchlist etc.
 
   return (
     <>
@@ -135,7 +137,7 @@ const App: React.FC = () => {
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
-    padding: "12px",
+    padding: "12px 12px 0px",
   },
 };
 

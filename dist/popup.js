@@ -479,7 +479,13 @@ const fetchDetailedNftInfo = (coinId) => __awaiter(void 0, void 0, void 0, funct
         console.error(`fetchDetailedNftInfo: Error searching for coin: ${coinId}`, error);
     }
     // Return all necessary data instead of setting it directly
-    return { nftInfo, coinInfo, txVolumeChartData, isLoadingError };
+    return {
+        nftInfo,
+        coinInfo,
+        txVolumeChartData,
+        tokenTxsChartData,
+        isLoadingError,
+    };
 });
 
 
@@ -497,8 +503,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
 /* harmony import */ var _utils_formatChartData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/formatChartData */ "./src/utils/formatChartData.ts");
-/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./delay */ "./src/api/delay.ts");
-/* harmony import */ var _getTokenTxChartData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getTokenTxChartData */ "./src/api/getTokenTxChartData.ts");
+/* harmony import */ var _getTokenTxChartData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getTokenTxChartData */ "./src/api/getTokenTxChartData.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -508,7 +513,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
 
 
 
@@ -555,8 +559,7 @@ const fetchDetailedTokenInfo = (coinId) => __awaiter(void 0, void 0, void 0, fun
         coinInfo.priceMaxHistoryData = (0,_utils_formatChartData__WEBPACK_IMPORTED_MODULE_1__.formatChartData)(priceMaxHistoryDataRes);
         // Fetch transaction data if asset platform and contract address are available
         if (coinInfo.asset_platform_id && coinInfo.contract_address) {
-            yield (0,_delay__WEBPACK_IMPORTED_MODULE_2__.delay)(1000);
-            const fetchedTokenTxChartData = yield (0,_getTokenTxChartData__WEBPACK_IMPORTED_MODULE_3__.getTokenTxChartData)(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
+            const fetchedTokenTxChartData = yield (0,_getTokenTxChartData__WEBPACK_IMPORTED_MODULE_2__.getTokenTxChartData)(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
             if (!fetchedTokenTxChartData) {
                 console.log(`No results for getTokenTxChartData ${coinId}`);
                 isLoadingError = { isLoading: false, isError: true };
@@ -757,7 +760,6 @@ const getTokenTxChartData = (platformId, contractAddress, tokenValue) => __await
         yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(5500);
         tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(domain, contractAddress, 10000);
     }
-    console.log("tokenTxsData123", tokenTxsData);
     if (tokenTxsData.status !== "0" && tokenTxsData.result) {
         const arrayWithIndices = tokenTxsData.result.map((item, index) => (Object.assign(Object.assign({}, item), { index })));
         const sortedArray = arrayWithIndices.sort((a, b) => b.value - a.value);
@@ -3066,7 +3068,7 @@ const twitterIcon = __webpack_require__(/*! ../static/images/icons/twitter-icon.
 const websiteIcon = __webpack_require__(/*! ../static/images/icons/website-icon.png */ "./src/static/images/icons/website-icon.png");
 const discordIcon = __webpack_require__(/*! ../static/images/icons/discord-icon.png */ "./src/static/images/icons/discord-icon.png");
 const SocialsFooter = ({ coinInfo }) => {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
     const [portfolioCoins, setPortfolioCoins] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
     const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
         const portfolioDataStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getPortfolioDataStorage)();
@@ -3089,15 +3091,14 @@ const SocialsFooter = ({ coinInfo }) => {
         });
         checkStorage();
     });
-    console.log("coinInfo: ", coinInfo);
-    return (react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: Object.assign(Object.assign({}, styles.socialBlocks), styles.bottomMargin) },
-        ((_a = coinInfo.links) === null || _a === void 0 ? void 0 : _a.homepage[0]) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: websiteIcon, link: (_b = coinInfo.links) === null || _b === void 0 ? void 0 : _b.homepage[0] })),
-        ((_c = coinInfo.links) === null || _c === void 0 ? void 0 : _c.blockchain_site[0]) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: blockchainIcon, link: (_d = coinInfo.links) === null || _d === void 0 ? void 0 : _d.blockchain_site[0] })),
+    return (react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: styles.socialBlocks },
+        ((_b = (_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _a === void 0 ? void 0 : _a.homepage) === null || _b === void 0 ? void 0 : _b[0]) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: websiteIcon, link: (_c = coinInfo.links) === null || _c === void 0 ? void 0 : _c.homepage[0] })),
+        ((_e = (_d = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _d === void 0 ? void 0 : _d.blockchain_site) === null || _e === void 0 ? void 0 : _e[0]) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: blockchainIcon, link: (_f = coinInfo.links) === null || _f === void 0 ? void 0 : _f.blockchain_site[0] })),
         (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.id) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: coingeckoIcon, title: "Coingecko watchlist portfolios", mainValue: coinInfo.watchlist_portfolio_users, link: `https://www.coingecko.com/en/coins/${coinInfo.id}` })),
-        ((_e = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _e === void 0 ? void 0 : _e.twitter_screen_name) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: twitterIcon, title: "Twitter followers", mainValue: (_f = coinInfo.community_data) === null || _f === void 0 ? void 0 : _f.twitter_followers, link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` })),
-        ((_g = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _g === void 0 ? void 0 : _g.subreddit_url) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: redditIcon, title: "Reddit subs", mainValue: (_h = coinInfo.community_data) === null || _h === void 0 ? void 0 : _h.reddit_subscribers, link: (_j = coinInfo.links) === null || _j === void 0 ? void 0 : _j.subreddit_url })),
-        ((_k = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _k === void 0 ? void 0 : _k.telegram_channel_identifier) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: telegramIcon, title: "Telegram channel size", mainValue: (_l = coinInfo.community_data) === null || _l === void 0 ? void 0 : _l.telegram_channel_user_count, link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` })),
-        ((_m = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _m === void 0 ? void 0 : _m.discord) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: discordIcon, title: "Discord channel size", link: (_o = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _o === void 0 ? void 0 : _o.discord })),
+        ((_g = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _g === void 0 ? void 0 : _g.twitter_screen_name) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: twitterIcon, title: "Twitter followers", mainValue: (_h = coinInfo.community_data) === null || _h === void 0 ? void 0 : _h.twitter_followers, link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` })),
+        ((_j = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _j === void 0 ? void 0 : _j.subreddit_url) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: redditIcon, title: "Reddit subs", mainValue: (_k = coinInfo.community_data) === null || _k === void 0 ? void 0 : _k.reddit_subscribers, link: (_l = coinInfo.links) === null || _l === void 0 ? void 0 : _l.subreddit_url })),
+        ((_m = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _m === void 0 ? void 0 : _m.telegram_channel_identifier) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: telegramIcon, title: "Telegram channel size", mainValue: (_o = coinInfo.community_data) === null || _o === void 0 ? void 0 : _o.telegram_channel_user_count, link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` })),
+        ((_p = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _p === void 0 ? void 0 : _p.discord) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: discordIcon, title: "Discord channel size", link: (_q = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _q === void 0 ? void 0 : _q.discord })),
         !portfolioCoins.includes(coinInfo.id) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: styles.addToPortfolioIcon, title: "Add to Portfolio" },
             react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_mui_icons_material_PlaylistAdd__WEBPACK_IMPORTED_MODULE_4__["default"], { style: styles.iconStyling, onClick: addToPortfolio })))));
 };
@@ -3106,9 +3107,6 @@ const styles = {
         display: "flex",
         justifyContent: "center",
         gap: "9px",
-    },
-    bottomMargin: {
-        marginBottom: "12px",
     },
     addToPortfolioIcon: {
         cursor: "pointer",
@@ -3388,6 +3386,16 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 const bitcoinIcon = __webpack_require__(/*! ../static/images/icons/bitcoin-icon.png */ "./src/static/images/icons/bitcoin-icon.png");
 
 
+// keep highest and lowest price on max chart
+// drag and zoom chart functionality
+// fix all anys
+// join a group via name/ code?
+// check watchlist etc.
+// splash screen/ new icon
+// make ref links of all exchange buttons
+// usdt socials
+// zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
+// ideas: store notes for accounts (discord/ twitter)
 const App = () => {
     var _a, _b;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
@@ -3403,11 +3411,6 @@ const App = () => {
         isLoading: true,
         isError: false,
     });
-    // todo splash screen/ new icon
-    // todo, make ref links of all exchange buttons
-    // todo usdt socials
-    //  zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
-    // todo ideas: store notes for accounts (discord/ twitter)
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         handleStartupInfo();
     }, []);
@@ -3426,6 +3429,7 @@ const App = () => {
     });
     const handleFetchTokenInfo = (coinId, isNft) => __awaiter(void 0, void 0, void 0, function* () {
         try {
+            setIsLoadingError({ isLoading: true, isError: false });
             const fetchInfo = isNft ? _api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_9__.fetchDetailedNftInfo : _api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_10__.fetchDetailedTokenInfo;
             const result = yield fetchInfo(coinId);
             setIsLoadingError(result.isLoadingError);
@@ -3436,15 +3440,11 @@ const App = () => {
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_11__.setHomeCoinStorage)({ id: coinId, nft: isNft });
         }
         catch (error) {
+            console.error(`Error fetching info for ${coinId}-${isNft}`);
             console.error("Error fetching info:", error);
             setIsLoadingError({ isLoading: false, isError: true });
         }
     });
-    // keep highest and lowest price on max chart
-    // drag and zoom chart functionality
-    // fix all anys
-    // join a group via name/ code?
-    // check watchlist etc.
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_OverlayMenu_OverlayMenu__WEBPACK_IMPORTED_MODULE_4__["default"], { menuIsOpen: isOverlayOpen, setMenuIsOpen: setIsOverlayOpen, handleFetchTokenInfo: handleFetchTokenInfo }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
@@ -3458,7 +3458,7 @@ const App = () => {
 };
 const styles = {
     container: {
-        padding: "12px",
+        padding: "12px 12px 0px",
     },
 };
 const root = document.createElement("div");

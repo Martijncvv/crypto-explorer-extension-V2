@@ -43,16 +43,15 @@ export const SocialsFooter = ({ coinInfo }) => {
     checkStorage();
   };
 
-  console.log("coinInfo: ", coinInfo);
   return (
-    <div style={{ ...styles.socialBlocks, ...styles.bottomMargin }}>
-      {coinInfo.links?.homepage[0] && (
+    <div style={styles.socialBlocks}>
+      {coinInfo?.links?.homepage?.[0] && (
         <SocialsNumberField
           image={websiteIcon}
           link={coinInfo.links?.homepage[0]}
         />
       )}
-      {coinInfo.links?.blockchain_site[0] && (
+      {coinInfo?.links?.blockchain_site?.[0] && (
         <SocialsNumberField
           image={blockchainIcon}
           link={coinInfo.links?.blockchain_site[0]}
@@ -115,9 +114,6 @@ const styles: { [key: string]: CSSProperties } = {
     display: "flex",
     justifyContent: "center",
     gap: "9px",
-  },
-  bottomMargin: {
-    marginBottom: "12px",
   },
   addToPortfolioIcon: {
     cursor: "pointer",
