@@ -201,7 +201,7 @@ export async function setSearchResultNftAmountStorage(
   }
 }
 
-export async function setHomeCoinStorage(
+export function setHomeCoinStorage(
   homeCoinData: LocalStorageData["homeCoinData"],
 ): Promise<void> {
   try {

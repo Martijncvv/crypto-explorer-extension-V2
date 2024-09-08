@@ -4,33 +4,26 @@ import constants from "../../static/constants";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 
 import CloseIcon from "@mui/icons-material/Close";
-import Box from "@mui/material/Box";
-import Slider from "@mui/material/Slider";
 import ToggleButton from "@mui/material/ToggleButton";
 
-import {
-  getPortfolioDataStorage,
-  getSearchResultNftAmountStorage,
-  setSearchResultNftAmountStorage,
-} from "../../utils/storage";
-import { IDetailedCoinInfo } from "../../models/ICoinInfo";
+import { getPortfolioDataStorage } from "../../utils/storage";
 import { fetchCoinsPrices } from "../../api/api";
 import WalletTrackerBlock from "./WalletTrackerBlock";
 import PortfolioBlock from "./PortfolioBlock";
 import { CoingeckoApiField } from "./CoingeckoApiField";
+import { SearchResultNftAmountSettingsField } from "./SearchResultNftAmountSettingsField";
 
 interface OverlayMenuProps {
   menuIsOpen: boolean;
   setMenuIsOpen: (menuIsOpen: any) => void;
-  setPortfolioCoinClick?: (coinInfo: IDetailedCoinInfo) => void;
+  handleFetchTokenInfo?: (coinId: string, isNft: boolean) => void;
 }
 
 const OverlayMenu: React.FC<OverlayMenuProps> = ({
   menuIsOpen,
   setMenuIsOpen,
-  setPortfolioCoinClick,
+  handleFetchTokenInfo,
 }) => {
-  const [searchResultNftAmount, setSearchResultNftAmount] = useState<number>(3);
   const [portfolioData, setPortfolioData] = useState<
     {
       id: string;
@@ -45,22 +38,9 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSearchResultNftAmount = (
-    newSearchResultNftAmount: number | number[],
-  ) => {
-    if (newSearchResultNftAmount !== null) {
-      setSearchResultNftAmount(newSearchResultNftAmount as number);
-      setSearchResultNftAmountStorage(newSearchResultNftAmount as number);
-    }
-  };
-
   const checkStorage = async () => {
     setLoading(true);
-    const [portfolioDataStorage, searchResultNftAmountStorage] =
-      await Promise.all([
-        getPortfolioDataStorage(),
-        getSearchResultNftAmountStorage(),
-      ]);
+    const portfolioDataStorage = await getPortfolioDataStorage();
     setLoading(false);
 
     if (portfolioDataStorage?.length > 0) {
@@ -80,9 +60,6 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
       });
 
       setPortfolioData(portfolioDataStorage);
-    }
-    if (searchResultNftAmountStorage) {
-      setSearchResultNftAmount(searchResultNftAmountStorage);
     }
   };
 
@@ -126,7 +103,7 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
               loading={loading}
               portfolioData={portfolioData}
               setPortfolioData={setPortfolioData}
-              setPortfolioCoinClick={setPortfolioCoinClick}
+              handleFetchTokenInfo={handleFetchTokenInfo}
             />
             <WalletTrackerBlock />
 
@@ -148,39 +125,8 @@ const OverlayMenu: React.FC<OverlayMenuProps> = ({
               />
             </ToggleButton>
 
-            <div style={styles.sectionHeader}>Search Results</div>
-            <div
-              style={styles.explanationSubtext}
-            >{`Max number of Nfts from 11 results (${searchResultNftAmount})`}</div>
-            <Box sx={{ width: 180 }}>
-              <Slider
-                size="small"
-                aria-label="Max Nfts out of 11 search results"
-                value={searchResultNftAmount}
-                valueLabelDisplay="auto"
-                onChange={(event, newTokenNftRatio) => {
-                  if (Array.isArray(newTokenNftRatio)) {
-                    handleSearchResultNftAmount(newTokenNftRatio[0]);
-                  } else {
-                    handleSearchResultNftAmount(newTokenNftRatio);
-                  }
-                }}
-                step={1}
-                marks={[
-                  {
-                    value: 2,
-                    label: <span style={styles.sliderMark}>2 Nfts</span>,
-                  },
-                  {
-                    value: 11,
-                    label: <span style={styles.sliderMark}>11 Nfts</span>,
-                  },
-                ]}
-                min={2}
-                max={11}
-                style={{ color: colors.white_medium }}
-              />
-            </Box>
+            <SearchResultNftAmountSettingsField />
+
             <CoingeckoApiField />
           </div>
         )}
@@ -257,12 +203,6 @@ const styles: { [key: string]: CSSProperties } = {
     border: "none",
     background: "none",
     cursor: "pointer",
-  },
-
-  sliderMark: {
-    fontSize: "12px",
-    fontWeight: "bold",
-    color: colors.white_medium,
   },
 
   togglePrefButton: {

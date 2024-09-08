@@ -8,7 +8,7 @@ import { searchCoinName } from "../../api/searchCoinName";
 import { getTrendingCoins } from "../../api/getTrendingCoins";
 import { getCoingeckoApiKeyStorage } from "../../utils/storage";
 
-export const SearchBar = ({
+export const SearchBarField = ({
   mainLogo,
   inputRef,
   isExpanded,

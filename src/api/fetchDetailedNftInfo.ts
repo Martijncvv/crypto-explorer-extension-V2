@@ -2,27 +2,29 @@ import { fetchNftInfo } from "./api";
 import { delay } from "./delay";
 import { getNftTxChartData } from "./getNftTxChartData";
 
-export const fetchDetailedNftInfo = async (
-  coinId: string,
-  setLoadingError,
-  setCoinInfo,
-  setNftInfo,
-  setTxVolumeChartData,
-  setTokenTxsChartData,
-) => {
-  try {
-    setLoadingError({ isLoading: true, isError: false });
-    setTxVolumeChartData([]);
-    setTokenTxsChartData([]);
-    const [nftInfo] = await Promise.all([fetchNftInfo(coinId)]);
-    if (!nftInfo) {
-      setLoadingError({ isLoading: false, isError: true });
-      console.log(`No results for nftInfo ${coinId}`);
-      return;
-    }
-    setNftInfo(nftInfo);
-    setCoinInfo(null);
+export const fetchDetailedNftInfo = async (coinId: string) => {
+  let nftInfo = null;
+  let coinInfo = null;
+  let txVolumeChartData = [];
+  let tokenTxsChartData = [];
+  let loadingError;
 
+  try {
+    // Fetch NFT info
+    nftInfo = await fetchNftInfo(coinId);
+    if (!nftInfo) {
+      loadingError = { isLoading: false, isError: true };
+      console.log(`No results for nftInfo ${coinId}`);
+      return {
+        nftInfo,
+        coinInfo,
+        txVolumeChartData,
+        tokenTxsChartData,
+        loadingError,
+      };
+    }
+
+    // Fetch transaction volume data if NFT info is available
     if (nftInfo.asset_platform_id && nftInfo.contract_address) {
       await delay(1000);
       const txVolumeData = await getNftTxChartData(
@@ -31,23 +33,33 @@ export const fetchDetailedNftInfo = async (
       );
 
       if (!txVolumeData) {
-        setLoadingError({ isLoading: false, isError: true });
+        loadingError = { isLoading: false, isError: true };
         console.log(`No results for getNftTxChartData ${coinId}`);
-        return;
+        return {
+          nftInfo,
+          coinInfo,
+          txVolumeChartData,
+          tokenTxsChartData,
+          loadingError,
+        };
       }
       if (txVolumeData.length > 0) {
-        setTxVolumeChartData(txVolumeData);
+        txVolumeChartData = txVolumeData;
       }
     }
-    setLoadingError({ isLoading: false, isError: false });
+
+    loadingError = { isLoading: false, isError: false };
   } catch (error) {
-    setLoadingError({ isLoading: false, isError: true });
-    setNftInfo(null);
-    setTxVolumeChartData([]);
-    setCoinInfo(null);
+    loadingError = { isLoading: false, isError: true };
+    nftInfo = null;
+    txVolumeChartData = [];
+    coinInfo = null;
     console.error(
       `fetchDetailedNftInfo: Error searching for coin: ${coinId}`,
       error,
     );
   }
+
+  // Return all necessary data instead of setting it directly
+  return { nftInfo, coinInfo, txVolumeChartData, loadingError };
 };

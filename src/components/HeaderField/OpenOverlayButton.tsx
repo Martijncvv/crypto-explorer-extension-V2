@@ -3,7 +3,7 @@ import React, { CSSProperties } from "react";
 import constants from "../../static/constants";
 import MenuIcon from "@mui/icons-material/Menu";
 
-export const OverlayButton = ({ setMenuIsOpen }) => {
+export const OpenOverlayButton = ({ setMenuIsOpen }) => {
   return (
     <div
       style={styles.menuIconBlock}

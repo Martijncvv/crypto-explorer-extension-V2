@@ -15,14 +15,14 @@ interface PortfolioBlockProps {
   portfolioData?: any;
   setPortfolioData: any;
   loading: boolean;
-  setPortfolioCoinClick: any;
+  handleFetchTokenInfo?: (coinId: string, isNft: boolean) => void;
 }
 
 const PortfolioBlock: React.FC<PortfolioBlockProps> = ({
   portfolioData,
   setPortfolioData,
   loading,
-  setPortfolioCoinClick,
+  handleFetchTokenInfo,
 }) => {
   const [showInputField, setShowInputField] = useState<boolean>(false);
   const [inputAmount, setInputAmount] = useState<string>("");
@@ -48,7 +48,7 @@ const PortfolioBlock: React.FC<PortfolioBlockProps> = ({
     setClickedCoinId(coinInfoId);
     setClickedCoinTicker(coinTicker);
     setShowInputField(!showInputField);
-    setPortfolioCoinClick({ id: coinInfoId, ticker: coinTicker });
+    handleFetchTokenInfo(coinInfoId, false);
   };
 
   const handleSaveAmountInput = () => {

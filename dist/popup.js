@@ -430,40 +430,56 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-const fetchDetailedNftInfo = (coinId, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData) => __awaiter(void 0, void 0, void 0, function* () {
+const fetchDetailedNftInfo = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
+    let nftInfo = null;
+    let coinInfo = null;
+    let txVolumeChartData = [];
+    let tokenTxsChartData = [];
+    let loadingError;
     try {
-        setLoadingError({ isLoading: true, isError: false });
-        setTxVolumeChartData([]);
-        setTokenTxsChartData([]);
-        const [nftInfo] = yield Promise.all([(0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftInfo)(coinId)]);
+        // Fetch NFT info
+        nftInfo = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftInfo)(coinId);
         if (!nftInfo) {
-            setLoadingError({ isLoading: false, isError: true });
+            loadingError = { isLoading: false, isError: true };
             console.log(`No results for nftInfo ${coinId}`);
-            return;
+            return {
+                nftInfo,
+                coinInfo,
+                txVolumeChartData,
+                tokenTxsChartData,
+                loadingError,
+            };
         }
-        setNftInfo(nftInfo);
-        setCoinInfo(null);
+        // Fetch transaction volume data if NFT info is available
         if (nftInfo.asset_platform_id && nftInfo.contract_address) {
             yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(1000);
             const txVolumeData = yield (0,_getNftTxChartData__WEBPACK_IMPORTED_MODULE_2__.getNftTxChartData)(nftInfo.asset_platform_id, nftInfo.contract_address);
             if (!txVolumeData) {
-                setLoadingError({ isLoading: false, isError: true });
+                loadingError = { isLoading: false, isError: true };
                 console.log(`No results for getNftTxChartData ${coinId}`);
-                return;
+                return {
+                    nftInfo,
+                    coinInfo,
+                    txVolumeChartData,
+                    tokenTxsChartData,
+                    loadingError,
+                };
             }
             if (txVolumeData.length > 0) {
-                setTxVolumeChartData(txVolumeData);
+                txVolumeChartData = txVolumeData;
             }
         }
-        setLoadingError({ isLoading: false, isError: false });
+        loadingError = { isLoading: false, isError: false };
     }
     catch (error) {
-        setLoadingError({ isLoading: false, isError: true });
-        setNftInfo(null);
-        setTxVolumeChartData([]);
-        setCoinInfo(null);
+        loadingError = { isLoading: false, isError: true };
+        nftInfo = null;
+        txVolumeChartData = [];
+        coinInfo = null;
         console.error(`fetchDetailedNftInfo: Error searching for coin: ${coinId}`, error);
     }
+    // Return all necessary data instead of setting it directly
+    return { nftInfo, coinInfo, txVolumeChartData, loadingError };
 });
 
 
@@ -496,50 +512,78 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-const fetchDetailedTokenInfo = (coinId, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData) => __awaiter(void 0, void 0, void 0, function* () {
+const fetchDetailedTokenInfo = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
+    let coinInfo = null;
+    let nftInfo = null;
+    let txVolumeChartData = [];
+    let tokenTxsChartData = [];
+    let loadingError;
     try {
-        setLoadingError({ isLoading: true, isError: false });
-        setTxVolumeChartData([]);
-        setTokenTxsChartData([]);
-        const [coinInfo, priceMaxHistoryDataRes] = yield Promise.all([
+        // Fetch coin info and price history data concurrently
+        const [fetchedCoinInfo, priceMaxHistoryDataRes] = yield Promise.all([
             (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchCoinInfo)(coinId),
             (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchPriceHistoryData)(coinId, "usd", "365"),
         ]);
-        if (!coinInfo) {
+        if (!fetchedCoinInfo) {
             console.log(`No results for coinInfo ${coinId}`);
-            setLoadingError({ isLoading: false, isError: true });
-            return;
+            loadingError = { isLoading: false, isError: true };
+            return {
+                coinInfo,
+                nftInfo,
+                txVolumeChartData,
+                tokenTxsChartData,
+                loadingError,
+            };
         }
         if (!priceMaxHistoryDataRes) {
             console.log(`No results for priceMaxHistoryData ${coinId}`);
-            setLoadingError({ isLoading: false, isError: true });
-            return;
+            loadingError = { isLoading: false, isError: true };
+            return {
+                coinInfo,
+                nftInfo,
+                txVolumeChartData,
+                tokenTxsChartData,
+                loadingError,
+            };
         }
-        // get past 30 days
+        // Format price history data
+        coinInfo = Object.assign({}, fetchedCoinInfo);
         coinInfo.price30dHistoryData = (0,_utils_formatChartData__WEBPACK_IMPORTED_MODULE_1__.formatChartData)({
             prices: priceMaxHistoryDataRes.prices.slice(-31),
             total_volumes: priceMaxHistoryDataRes.total_volumes.slice(-31),
         });
         coinInfo.priceMaxHistoryData = (0,_utils_formatChartData__WEBPACK_IMPORTED_MODULE_1__.formatChartData)(priceMaxHistoryDataRes);
-        setCoinInfo(coinInfo);
-        setNftInfo(null);
+        // Fetch transaction data if asset platform and contract address are available
         if (coinInfo.asset_platform_id && coinInfo.contract_address) {
             yield (0,_delay__WEBPACK_IMPORTED_MODULE_2__.delay)(1000);
-            const tokenTxChartData = yield (0,_getTokenTxChartData__WEBPACK_IMPORTED_MODULE_3__.getTokenTxChartData)(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
-            if (!tokenTxChartData) {
-                setLoadingError({ isLoading: false, isError: true });
+            const fetchedTokenTxChartData = yield (0,_getTokenTxChartData__WEBPACK_IMPORTED_MODULE_3__.getTokenTxChartData)(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
+            if (!fetchedTokenTxChartData) {
                 console.log(`No results for getTokenTxChartData ${coinId}`);
-                return;
+                loadingError = { isLoading: false, isError: true };
+                return {
+                    coinInfo,
+                    nftInfo,
+                    txVolumeChartData,
+                    tokenTxsChartData,
+                    loadingError,
+                };
             }
-            setTokenTxsChartData(tokenTxChartData);
+            tokenTxsChartData = fetchedTokenTxChartData;
         }
-        setLoadingError({ isLoading: false, isError: false });
-        return;
+        loadingError = { isLoading: false, isError: false };
     }
     catch (error) {
-        setLoadingError({ isLoading: false, isError: true });
+        loadingError = { isLoading: false, isError: true };
         console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
     }
+    // Return the gathered data instead of setting state directly
+    return {
+        coinInfo,
+        nftInfo,
+        txVolumeChartData,
+        tokenTxsChartData,
+        loadingError,
+    };
 });
 
 
@@ -889,9 +933,9 @@ const searchCoinName = (searchInput) => __awaiter(void 0, void 0, void 0, functi
 
 /***/ }),
 
-/***/ "./src/components/ChartsBlock.tsx":
+/***/ "./src/components/ChartsField.tsx":
 /*!****************************************!*\
-  !*** ./src/components/ChartsBlock.tsx ***!
+  !*** ./src/components/ChartsField.tsx ***!
   \****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -917,7 +961,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData, }) => {
+const ChartsField = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, tokenTxsChartData, }) => {
     let availableCharts = [];
     if ((price30dHistorydata === null || price30dHistorydata === void 0 ? void 0 : price30dHistorydata.length) > 0) {
         availableCharts.push("price30dHistorydata");
@@ -1215,15 +1259,84 @@ const ChartsBlock = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
                             textTransform: "capitalize",
                         }, fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium })))))));
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChartsBlock);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChartsField);
 
 
 /***/ }),
 
-/***/ "./src/components/ExchangeBlock.tsx":
+/***/ "./src/components/CoinInfoField.tsx":
 /*!******************************************!*\
-  !*** ./src/components/ExchangeBlock.tsx ***!
+  !*** ./src/components/CoinInfoField.tsx ***!
   \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "CoinInfoField": () => (/* binding */ CoinInfoField)
+/* harmony export */ });
+/* harmony import */ var _TitleField__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TitleField */ "./src/components/TitleField.tsx");
+/* harmony import */ var _TickerField__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TickerField */ "./src/components/TickerField.tsx");
+/* harmony import */ var _ChartsField__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ChartsField */ "./src/components/ChartsField.tsx");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _ValueField__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ValueField */ "./src/components/ValueField.tsx");
+/* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
+/* harmony import */ var _ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ExpandableTextField */ "./src/components/ExpandableTextField.tsx");
+/* harmony import */ var _SocialsFooter__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./SocialsFooter */ "./src/components/SocialsFooter.tsx");
+/* harmony import */ var _PriceBarField__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./PriceBarField */ "./src/components/PriceBarField.tsx");
+/* harmony import */ var _ExchangesField__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./ExchangesField */ "./src/components/ExchangesField.tsx");
+
+
+
+
+
+
+
+
+
+
+// Use props type in component
+const CoinInfoField = ({ coinInfo, tokenTxsChartData, }) => {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+    return (react__WEBPACK_IMPORTED_MODULE_3___default().createElement((react__WEBPACK_IMPORTED_MODULE_3___default().Fragment), null,
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TitleField__WEBPACK_IMPORTED_MODULE_0__["default"], { tokenTitle: coinInfo.name, title: "Use arrow keys to navigate" }),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TickerField__WEBPACK_IMPORTED_MODULE_1__["default"], { ticker: coinInfo.symbol }),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ChartsField__WEBPACK_IMPORTED_MODULE_2__["default"], { price30dHistorydata: coinInfo.price30dHistoryData && coinInfo.price30dHistoryData, priceMaxHistorydata: coinInfo.priceMaxHistoryData && coinInfo.priceMaxHistoryData, tokenTxsChartData: tokenTxsChartData }),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.bottomContainer },
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.bottomMargin, title: "ATL / Price / ATH" },
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_PriceBarField__WEBPACK_IMPORTED_MODULE_8__["default"], { allTimeLow: (_b = (_a = coinInfo.market_data) === null || _a === void 0 ? void 0 : _a.atl) === null || _b === void 0 ? void 0 : _b.usd, allTimeHigh: (_d = (_c = coinInfo.market_data) === null || _c === void 0 ? void 0 : _c.ath) === null || _d === void 0 ? void 0 : _d.usd, price: (_f = (_e = coinInfo.market_data) === null || _e === void 0 ? void 0 : _e.current_price) === null || _f === void 0 ? void 0 : _f.usd })),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Circ. Supply", tooltipTitle: "/ Total supply", mainValue: ((_g = coinInfo.market_data) === null || _g === void 0 ? void 0 : _g.circulating_supply)
+                        ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_h = coinInfo.market_data) === null || _h === void 0 ? void 0 : _h.circulating_supply)
+                        : "-", secondaryValue: ((_j = coinInfo.market_data) === null || _j === void 0 ? void 0 : _j.total_supply)
+                        ? `/ ${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_k = coinInfo.market_data) === null || _k === void 0 ? void 0 : _k.total_supply)}`
+                        : "/ -" }),
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Market Cap", tooltipTitle: "# Rank", mainValue: ((_l = coinInfo.market_data) === null || _l === void 0 ? void 0 : _l.market_cap.usd)
+                        ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_m = coinInfo.market_data) === null || _m === void 0 ? void 0 : _m.market_cap.usd)}`
+                        : "-", secondaryValue: coinInfo.market_cap_rank ? `#${coinInfo.market_cap_rank}` : "/ -" })),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.bottomMargin },
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ExchangesField__WEBPACK_IMPORTED_MODULE_9__["default"], { tickers: coinInfo.tickers })),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.bottomMargin },
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__["default"], { text: (_o = coinInfo.description) === null || _o === void 0 ? void 0 : _o.en })),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_SocialsFooter__WEBPACK_IMPORTED_MODULE_7__.SocialsFooter, { coinInfo: coinInfo }))));
+};
+const styles = {
+    dataBlocks: {
+        display: "flex",
+        justifyContent: "space-between",
+    },
+    bottomMargin: {
+        marginBottom: "12px",
+    },
+};
+
+
+/***/ }),
+
+/***/ "./src/components/ExchangesField.tsx":
+/*!*******************************************!*\
+  !*** ./src/components/ExchangesField.tsx ***!
+  \*******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -1243,7 +1356,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const ExpandMoreIcon = __webpack_require__(/*! ../static/images/icons/expand-more-icon.png */ "./src/static/images/icons/expand-more-icon.png");
 const ExpandLessIcon = __webpack_require__(/*! ../static/images/icons/expand-less-icon.png */ "./src/static/images/icons/expand-less-icon.png");
-const ExchangeBlock = ({ tickers }) => {
+const ExchangesField = ({ tickers }) => {
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const [focusedOptionIndex, setFocusedOptionIndex] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(-1);
     const toggleExpanded = () => {
@@ -1376,14 +1489,14 @@ const ExchangeBlock = ({ tickers }) => {
             formatExchangeInfo(tickers).length > 1 &&
             (isExpanded ? (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: ExpandLessIcon, alt: "expand-less-icon", style: styles.arrowIcon, onClick: toggleExpanded })) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: ExpandMoreIcon, alt: "expand-more-icon", style: styles.arrowIcon, onClick: toggleExpanded }))))))));
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExchangeBlock);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExchangesField);
 
 
 /***/ }),
 
-/***/ "./src/components/ExpandableTextBlock.tsx":
+/***/ "./src/components/ExpandableTextField.tsx":
 /*!************************************************!*\
-  !*** ./src/components/ExpandableTextBlock.tsx ***!
+  !*** ./src/components/ExpandableTextField.tsx ***!
   \************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -1398,7 +1511,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const ExpandableTextBlock = ({ text }) => {
+const ExpandableTextField = ({ text }) => {
     const [expanded, setExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const handleClick = () => {
         setExpanded(!expanded);
@@ -1406,9 +1519,9 @@ const ExpandableTextBlock = ({ text }) => {
     const styles = {
         expandableField: {
             boxSizing: "border-box",
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
             width: 306,
             minHeight: 37,
             padding: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
@@ -1416,50 +1529,51 @@ const ExpandableTextBlock = ({ text }) => {
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
         },
         textFieldContainer: {
-            overflowY: expanded ? 'scroll' : 'hidden',
+            overflowY: expanded ? "scroll" : "hidden",
             maxHeight: expanded ? 220 : 38,
-            scrollbarWidth: 'none'
+            scrollbarWidth: "none",
         },
         textField: {
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
             width: 282,
-            color: 'white',
-            display: '-webkit-box',
+            color: "white",
+            display: "-webkit-box",
             WebkitLineClamp: expanded ? 1000 : 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            lineHeight: '1.4'
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            lineHeight: "1.4",
         },
         expandBtn: {
             marginTop: 2,
             paddingLeft: 0,
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light,
-            backgroundColor: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            outline: 'none',
+            backgroundColor: "transparent",
+            border: "none",
+            cursor: "pointer",
+            outline: "none",
         },
     };
     const formattedDescription = (text) => {
         const linkRegex = /<a\b[^>]*>(.*?)<\/a>/g;
-        return text.replace(linkRegex, '$1');
+        return text.replace(linkRegex, "$1");
     };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.expandableField },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.textFieldContainer },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.textField }, (text === null || text === void 0 ? void 0 : text.length) > 10 ? formattedDescription(text) : 'No description available')),
-        (text === null || text === void 0 ? void 0 : text.length) > 10 &&
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.expandBtn, onClick: handleClick }, expanded ? 'Collapse' : 'Expand')));
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.textField }, (text === null || text === void 0 ? void 0 : text.length) > 10
+                ? formattedDescription(text)
+                : "No description available")),
+        (text === null || text === void 0 ? void 0 : text.length) > 10 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.expandBtn, onClick: handleClick }, expanded ? "Collapse" : "Expand"))));
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpandableTextBlock);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ExpandableTextField);
 
 
 /***/ }),
 
-/***/ "./src/components/HeaderBlock/HeaderBlock.tsx":
+/***/ "./src/components/HeaderField/HeaderField.tsx":
 /*!****************************************************!*\
-  !*** ./src/components/HeaderBlock/HeaderBlock.tsx ***!
+  !*** ./src/components/HeaderField/HeaderField.tsx ***!
   \****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -1470,13 +1584,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../static/constants */ "./src/static/constants.tsx");
-/* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
-/* harmony import */ var _api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../api/fetchDetailedTokenInfo */ "./src/api/fetchDetailedTokenInfo.ts");
-/* harmony import */ var _api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../api/fetchDetailedNftInfo */ "./src/api/fetchDetailedNftInfo.ts");
-/* harmony import */ var _api_getTrendingCoins__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../api/getTrendingCoins */ "./src/api/getTrendingCoins.ts");
-/* harmony import */ var _HeaderMenuItem__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./HeaderMenuItem */ "./src/components/HeaderBlock/HeaderMenuItem.tsx");
-/* harmony import */ var _OverlayButton__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./OverlayButton */ "./src/components/HeaderBlock/OverlayButton.tsx");
-/* harmony import */ var _SearchBar__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./SearchBar */ "./src/components/HeaderBlock/SearchBar.tsx");
+/* harmony import */ var _HeaderMenuItem__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./HeaderMenuItem */ "./src/components/HeaderField/HeaderMenuItem.tsx");
+/* harmony import */ var _OpenOverlayButton__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./OpenOverlayButton */ "./src/components/HeaderField/OpenOverlayButton.tsx");
+/* harmony import */ var _SearchBarField__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./SearchBarField */ "./src/components/HeaderField/SearchBarField.tsx");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1491,49 +1601,17 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
-
-
-
-const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData, setMenuIsOpen, portfolioCoinClick, }) => {
+const HeaderField = ({ mainLogo, setMenuIsOpen, setSearchResults, searchResults, loadingError, handleFetchTokenInfo, }) => {
     const searchResultsRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
     const inputRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
-    const [loadingError, setLoadingError] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
-        isLoading: false,
-        isError: false,
-    });
     const [focusedOptionIndex, setFocusedOptionIndex] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(-1);
     const [isExpanded, setIsExpanded] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-    const [displayResults, setDisplayResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
-        tokens: [],
-        total: 0,
-    });
     const [searchInput, setSearchInput] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
-    const checkStartupCoinInfo = () => __awaiter(void 0, void 0, void 0, function* () {
-        // check which token info to display on startup
-        const homeCoinStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_2__.getHomeCoinStorage)();
-        if ((homeCoinStorage === null || homeCoinStorage === void 0 ? void 0 : homeCoinStorage.id) && (homeCoinStorage === null || homeCoinStorage === void 0 ? void 0 : homeCoinStorage.nft)) {
-            (0,_api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_4__.fetchDetailedNftInfo)(homeCoinStorage.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
-        }
-        else if (homeCoinStorage === null || homeCoinStorage === void 0 ? void 0 : homeCoinStorage.id) {
-            (0,_api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)(homeCoinStorage.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
-        }
-        else {
-            (0,_api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)("bitcoin", setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
-        }
-    });
-    // get detailed coin info and trending info on startup
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-        handleStartupInfo();
-    }, []);
-    const handleStartupInfo = () => __awaiter(void 0, void 0, void 0, function* () {
-        checkStartupCoinInfo();
-        const trendingCoins = yield (0,_api_getTrendingCoins__WEBPACK_IMPORTED_MODULE_5__.getTrendingCoins)();
-        setDisplayResults(trendingCoins);
         if (inputRef.current) {
             inputRef.current.focus();
         }
-    });
+    }, []);
     // handle arrow up key press, collapse
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         const handleKeyDownSearch = (event) => {
@@ -1573,29 +1651,17 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
             setIsExpanded(false);
         }
     };
-    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-        if (portfolioCoinClick === null || portfolioCoinClick === void 0 ? void 0 : portfolioCoinClick.id) {
-            (0,_api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)(portfolioCoinClick.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
-        }
-    }, [portfolioCoinClick]);
     const handleCoinOptionClick = (tokenInfo) => __awaiter(void 0, void 0, void 0, function* () {
-        if (!tokenInfo.nft) {
-            (0,_api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)(tokenInfo.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
-            yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_2__.setHomeCoinStorage)({ id: tokenInfo.id, nft: false });
-        }
-        else {
-            (0,_api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_4__.fetchDetailedNftInfo)(tokenInfo.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
-            yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_2__.setHomeCoinStorage)({ id: tokenInfo.id, nft: true });
-        }
+        handleFetchTokenInfo(tokenInfo.id, tokenInfo.nft);
         setIsExpanded(false);
     });
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerBlock },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_OverlayButton__WEBPACK_IMPORTED_MODULE_7__.OverlayButton, { setMenuIsOpen: setMenuIsOpen }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_SearchBar__WEBPACK_IMPORTED_MODULE_8__.SearchBar, { mainLogo: mainLogo, inputRef: inputRef, isExpanded: isExpanded, setIsExpanded: setIsExpanded, setDisplayResults: setDisplayResults, setSearchInput: setSearchInput, searchInput: searchInput, loadingError: loadingError })),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_OpenOverlayButton__WEBPACK_IMPORTED_MODULE_3__.OpenOverlayButton, { setMenuIsOpen: setMenuIsOpen }),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_SearchBarField__WEBPACK_IMPORTED_MODULE_4__.SearchBarField, { mainLogo: mainLogo, inputRef: inputRef, isExpanded: isExpanded, setIsExpanded: setIsExpanded, setDisplayResults: setSearchResults, setSearchInput: setSearchInput, searchInput: searchInput, loadingError: loadingError })),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.searchResults, ref: searchResultsRef }, isExpanded &&
-            (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.length) > 0 &&
-            (displayResults === null || displayResults === void 0 ? void 0 : displayResults.tokens.slice(0, 13).map((tokenInfo, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_HeaderMenuItem__WEBPACK_IMPORTED_MODULE_6__.HeaderMenuItem, { key: tokenInfo.id + index, tokenInfo: tokenInfo, index: index, focusedOptionIndex: focusedOptionIndex, setFocusedOptionIndex: setFocusedOptionIndex, handleCoinOptionClick: handleCoinOptionClick })))))));
+            (searchResults === null || searchResults === void 0 ? void 0 : searchResults.tokens.length) > 0 &&
+            (searchResults === null || searchResults === void 0 ? void 0 : searchResults.tokens.slice(0, 13).map((tokenInfo, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_HeaderMenuItem__WEBPACK_IMPORTED_MODULE_2__.HeaderMenuItem, { key: tokenInfo.id + index, tokenInfo: tokenInfo, index: index, focusedOptionIndex: focusedOptionIndex, setFocusedOptionIndex: setFocusedOptionIndex, handleCoinOptionClick: handleCoinOptionClick })))))));
 };
 const styles = {
     headerBlock: {
@@ -1615,14 +1681,14 @@ const styles = {
         borderBottomRightRadius: _static_constants__WEBPACK_IMPORTED_MODULE_1__["default"].border_radius,
     },
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HeaderBlock);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HeaderField);
 
 
 /***/ }),
 
-/***/ "./src/components/HeaderBlock/HeaderMenuItem.tsx":
+/***/ "./src/components/HeaderField/HeaderMenuItem.tsx":
 /*!*******************************************************!*\
-  !*** ./src/components/HeaderBlock/HeaderMenuItem.tsx ***!
+  !*** ./src/components/HeaderField/HeaderMenuItem.tsx ***!
   \*******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -1691,15 +1757,15 @@ const styles = {
 
 /***/ }),
 
-/***/ "./src/components/HeaderBlock/OverlayButton.tsx":
-/*!******************************************************!*\
-  !*** ./src/components/HeaderBlock/OverlayButton.tsx ***!
-  \******************************************************/
+/***/ "./src/components/HeaderField/OpenOverlayButton.tsx":
+/*!**********************************************************!*\
+  !*** ./src/components/HeaderField/OpenOverlayButton.tsx ***!
+  \**********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "OverlayButton": () => (/* binding */ OverlayButton)
+/* harmony export */   "OpenOverlayButton": () => (/* binding */ OpenOverlayButton)
 /* harmony export */ });
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
@@ -1710,7 +1776,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const OverlayButton = ({ setMenuIsOpen }) => {
+const OpenOverlayButton = ({ setMenuIsOpen }) => {
     return (react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: styles.menuIconBlock, title: "Menu", onClick: () => setMenuIsOpen(true) },
         react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_mui_icons_material_Menu__WEBPACK_IMPORTED_MODULE_3__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_0__["default"].secondary_medium } })));
 };
@@ -1730,15 +1796,15 @@ const styles = {
 
 /***/ }),
 
-/***/ "./src/components/HeaderBlock/SearchBar.tsx":
-/*!**************************************************!*\
-  !*** ./src/components/HeaderBlock/SearchBar.tsx ***!
-  \**************************************************/
+/***/ "./src/components/HeaderField/SearchBarField.tsx":
+/*!*******************************************************!*\
+  !*** ./src/components/HeaderField/SearchBarField.tsx ***!
+  \*******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "SearchBar": () => (/* binding */ SearchBar)
+/* harmony export */   "SearchBarField": () => (/* binding */ SearchBarField)
 /* harmony export */ });
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../static/constants */ "./src/static/constants.tsx");
 /* harmony import */ var _mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mui/icons-material/Search */ "./node_modules/@mui/icons-material/Search.js");
@@ -1768,7 +1834,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-const SearchBar = ({ mainLogo, inputRef, isExpanded, setIsExpanded, setDisplayResults, setSearchInput, searchInput, loadingError, }) => {
+const SearchBarField = ({ mainLogo, inputRef, isExpanded, setIsExpanded, setDisplayResults, setSearchInput, searchInput, loadingError, }) => {
     const [coingeckoKeyFeedback, setCoingeckoKeyFeedback] = (0,react__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
     const handleDisplayApiFeedback = () => __awaiter(void 0, void 0, void 0, function* () {
         const API_KEY = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_5__.getCoingeckoApiKeyStorage)();
@@ -1861,6 +1927,79 @@ const styles = {
         alignItems: "center",
         justifyContent: "center",
         zIndex: 1,
+    },
+};
+
+
+/***/ }),
+
+/***/ "./src/components/NftInfoField.tsx":
+/*!*****************************************!*\
+  !*** ./src/components/NftInfoField.tsx ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "NftInfoField": () => (/* binding */ NftInfoField)
+/* harmony export */ });
+/* harmony import */ var _TitleField__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TitleField */ "./src/components/TitleField.tsx");
+/* harmony import */ var _TickerField__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TickerField */ "./src/components/TickerField.tsx");
+/* harmony import */ var _ChartsField__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ChartsField */ "./src/components/ChartsField.tsx");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _ValueField__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ValueField */ "./src/components/ValueField.tsx");
+/* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
+/* harmony import */ var _ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ExpandableTextField */ "./src/components/ExpandableTextField.tsx");
+/* harmony import */ var _SocialsFooter__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./SocialsFooter */ "./src/components/SocialsFooter.tsx");
+
+
+
+
+
+
+
+
+// Use props type in component
+const NftInfoField = ({ nftInfo, txVolumeChartData, }) => {
+    var _a, _b, _c, _d;
+    return (react__WEBPACK_IMPORTED_MODULE_3___default().createElement((react__WEBPACK_IMPORTED_MODULE_3___default().Fragment), null,
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TitleField__WEBPACK_IMPORTED_MODULE_0__["default"], { tokenTitle: nftInfo.name, title: "Use arrow keys to navigate" }),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TickerField__WEBPACK_IMPORTED_MODULE_1__["default"], { ticker: nftInfo.symbol }),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ChartsField__WEBPACK_IMPORTED_MODULE_2__["default"], { txVolumeData: txVolumeChartData }),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Floor", tooltipTitle: "24h change %", mainValue: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_a = nftInfo.floor_price) === null || _a === void 0 ? void 0 : _a.usd) || "-"}`, secondaryValue: `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.percentageFormatter)(nftInfo.floor_price_in_usd_24h_percentage_change)}%` }),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Native", tooltipTitle: "Native floor/ platform", mainValue: `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_b = nftInfo.floor_price) === null || _b === void 0 ? void 0 : _b.native_currency) || "-"}`, secondaryValue: nftInfo.native_currency
+                    ? (nftInfo.native_currency.charAt(0).toUpperCase() +
+                        nftInfo.native_currency.slice(1)).substring(0, 8)
+                    : "-" })),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Total supply", mainValue: nftInfo.total_supply ? `${nftInfo.total_supply}` : "-" }),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Unique owners", tooltipTitle: "24h change %", mainValue: nftInfo.number_of_unique_addresses
+                    ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.numberFormatter)(nftInfo.number_of_unique_addresses)
+                    : "-", secondaryValue: nftInfo.number_of_unique_addresses_24h_percentage_change
+                    ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.percentageFormatter)(nftInfo.number_of_unique_addresses_24h_percentage_change)}%`
+                    : "" })),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Market Cap", mainValue: ((_c = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _c === void 0 ? void 0 : _c.usd)
+                    ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_d = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _d === void 0 ? void 0 : _d.usd)}`
+                    : "-" }),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Volume", tooltipTitle: "24h change %", mainValue: nftInfo.volume_24h.usd
+                    ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(nftInfo.volume_24h.usd)}`
+                    : "-", secondaryValue: nftInfo.volume_in_usd_24h_percentage_change
+                    ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.percentageFormatter)(nftInfo.volume_in_usd_24h_percentage_change)}%`
+                    : "" })),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.bottomMargin },
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__["default"], { text: nftInfo.description })),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_SocialsFooter__WEBPACK_IMPORTED_MODULE_7__.SocialsFooter, { coinInfo: nftInfo })));
+};
+const styles = {
+    dataBlocks: {
+        display: "flex",
+        justifyContent: "space-between",
+    },
+    bottomMargin: {
+        marginBottom: "12px",
     },
 };
 
@@ -1987,16 +2126,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../static/constants */ "./src/static/constants.tsx");
-/* harmony import */ var _mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @mui/icons-material/QuestionAnswer */ "./node_modules/@mui/icons-material/QuestionAnswer.js");
-/* harmony import */ var _mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mui/icons-material/Close */ "./node_modules/@mui/icons-material/Close.js");
-/* harmony import */ var _mui_material_Box__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @mui/material/Box */ "./node_modules/@mui/material/Box/Box.js");
-/* harmony import */ var _mui_material_Slider__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @mui/material/Slider */ "./node_modules/@mui/material/Slider/Slider.js");
-/* harmony import */ var _mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @mui/material/ToggleButton */ "./node_modules/@mui/material/ToggleButton/ToggleButton.js");
+/* harmony import */ var _mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @mui/icons-material/QuestionAnswer */ "./node_modules/@mui/icons-material/QuestionAnswer.js");
+/* harmony import */ var _mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @mui/icons-material/Close */ "./node_modules/@mui/icons-material/Close.js");
+/* harmony import */ var _mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @mui/material/ToggleButton */ "./node_modules/@mui/material/ToggleButton/ToggleButton.js");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
 /* harmony import */ var _api_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../api/api */ "./src/api/api.ts");
 /* harmony import */ var _WalletTrackerBlock__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WalletTrackerBlock */ "./src/components/OverlayMenu/WalletTrackerBlock.tsx");
 /* harmony import */ var _PortfolioBlock__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./PortfolioBlock */ "./src/components/OverlayMenu/PortfolioBlock.tsx");
 /* harmony import */ var _CoingeckoApiField__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./CoingeckoApiField */ "./src/components/OverlayMenu/CoingeckoApiField.tsx");
+/* harmony import */ var _SearchResultNftAmountSettingsField__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./SearchResultNftAmountSettingsField */ "./src/components/OverlayMenu/SearchResultNftAmountSettingsField.tsx");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -2018,23 +2156,12 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
-const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, setPortfolioCoinClick, }) => {
-    const [searchResultNftAmount, setSearchResultNftAmount] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(3);
+const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, handleFetchTokenInfo, }) => {
     const [portfolioData, setPortfolioData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [loading, setLoading] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-    const handleSearchResultNftAmount = (newSearchResultNftAmount) => {
-        if (newSearchResultNftAmount !== null) {
-            setSearchResultNftAmount(newSearchResultNftAmount);
-            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setSearchResultNftAmountStorage)(newSearchResultNftAmount);
-        }
-    };
     const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
         setLoading(true);
-        const [portfolioDataStorage, searchResultNftAmountStorage] = yield Promise.all([
-            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getPortfolioDataStorage)(),
-            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getSearchResultNftAmountStorage)(),
-        ]);
+        const portfolioDataStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getPortfolioDataStorage)();
         setLoading(false);
         if ((portfolioDataStorage === null || portfolioDataStorage === void 0 ? void 0 : portfolioDataStorage.length) > 0) {
             let coinIds = [];
@@ -2050,9 +2177,6 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, setPortfolioCoinClick, }) => {
                 }
             });
             setPortfolioData(portfolioDataStorage);
-        }
-        if (searchResultNftAmountStorage) {
-            setSearchResultNftAmount(searchResultNftAmountStorage);
         }
     });
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
@@ -2071,38 +2195,19 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, setPortfolioCoinClick, }) => {
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: menuIsOpen
                 ? Object.assign(Object.assign({}, styles.menuContent), styles.menuContentOpen) : styles.menuContent },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.menuCloseButton },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium }, onClick: () => setMenuIsOpen(false) })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Close__WEBPACK_IMPORTED_MODULE_9__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium }, onClick: () => setMenuIsOpen(false) })),
             menuIsOpen && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.scrollContainer },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_PortfolioBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { loading: loading, portfolioData: portfolioData, setPortfolioData: setPortfolioData, setPortfolioCoinClick: setPortfolioCoinClick }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_PortfolioBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { loading: loading, portfolioData: portfolioData, setPortfolioData: setPortfolioData, handleFetchTokenInfo: handleFetchTokenInfo }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_WalletTrackerBlock__WEBPACK_IMPORTED_MODULE_5__["default"], null),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Tweet to Me!"),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Using the extension? Let me know! I'm always looking for feedback"),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_9__["default"], { value: "question", style: styles.togglePrefButton, onClick: handleSupportClick },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_10__["default"], { style: {
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_10__["default"], { value: "question", style: styles.togglePrefButton, onClick: handleSupportClick },
+                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_QuestionAnswer__WEBPACK_IMPORTED_MODULE_11__["default"], { style: {
                             fontSize: 24,
                             cursor: "pointer",
                             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
                         } })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Search Results"),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, `Max number of Nfts from 11 results (${searchResultNftAmount})`),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_Box__WEBPACK_IMPORTED_MODULE_11__["default"], { sx: { width: 180 } },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_material_Slider__WEBPACK_IMPORTED_MODULE_12__["default"], { size: "small", "aria-label": "Max Nfts out of 11 search results", value: searchResultNftAmount, valueLabelDisplay: "auto", onChange: (event, newTokenNftRatio) => {
-                            if (Array.isArray(newTokenNftRatio)) {
-                                handleSearchResultNftAmount(newTokenNftRatio[0]);
-                            }
-                            else {
-                                handleSearchResultNftAmount(newTokenNftRatio);
-                            }
-                        }, step: 1, marks: [
-                            {
-                                value: 2,
-                                label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.sliderMark }, "2 Nfts"),
-                            },
-                            {
-                                value: 11,
-                                label: react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.sliderMark }, "11 Nfts"),
-                            },
-                        ], min: 2, max: 11, style: { color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_SearchResultNftAmountSettingsField__WEBPACK_IMPORTED_MODULE_8__.SearchResultNftAmountSettingsField, null),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_CoingeckoApiField__WEBPACK_IMPORTED_MODULE_7__.CoingeckoApiField, null))),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("br", null))));
 };
@@ -2169,11 +2274,6 @@ const styles = {
         background: "none",
         cursor: "pointer",
     },
-    sliderMark: {
-        fontSize: "12px",
-        fontWeight: "bold",
-        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
-    },
     togglePrefButton: {
         fontSize: "14px",
         color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
@@ -2213,7 +2313,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const PortfolioBlock = ({ portfolioData, setPortfolioData, loading, setPortfolioCoinClick, }) => {
+const PortfolioBlock = ({ portfolioData, setPortfolioData, loading, handleFetchTokenInfo, }) => {
     const [showInputField, setShowInputField] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const [inputAmount, setInputAmount] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
     const [clickedCoinId, setClickedCoinId] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("");
@@ -2236,7 +2336,7 @@ const PortfolioBlock = ({ portfolioData, setPortfolioData, loading, setPortfolio
         setClickedCoinId(coinInfoId);
         setClickedCoinTicker(coinTicker);
         setShowInputField(!showInputField);
-        setPortfolioCoinClick({ id: coinInfoId, ticker: coinTicker });
+        handleFetchTokenInfo(coinInfoId, false);
     };
     const handleSaveAmountInput = () => {
         const updatedPortfolioData = portfolioData.map((coinInfo) => {
@@ -2501,6 +2601,96 @@ const styles = {
 
 /***/ }),
 
+/***/ "./src/components/OverlayMenu/SearchResultNftAmountSettingsField.tsx":
+/*!***************************************************************************!*\
+  !*** ./src/components/OverlayMenu/SearchResultNftAmountSettingsField.tsx ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "SearchResultNftAmountSettingsField": () => (/* binding */ SearchResultNftAmountSettingsField)
+/* harmony export */ });
+/* harmony import */ var _mui_material_Box__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @mui/material/Box */ "./node_modules/@mui/material/Box/Box.js");
+/* harmony import */ var _mui_material_Slider__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @mui/material/Slider */ "./node_modules/@mui/material/Slider/Slider.js");
+/* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../static/colors */ "./src/static/colors.tsx");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+
+const SearchResultNftAmountSettingsField = () => {
+    const [searchResultNftAmount, setSearchResultNftAmount] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(3);
+    const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
+        const searchResultNftAmountStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_2__.getSearchResultNftAmountStorage)();
+        setSearchResultNftAmount(searchResultNftAmountStorage);
+    });
+    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+        checkStorage();
+    }, []);
+    const handleSearchResultNftAmount = (newSearchResultNftAmount) => {
+        if (newSearchResultNftAmount !== null) {
+            setSearchResultNftAmount(newSearchResultNftAmount);
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_2__.setSearchResultNftAmountStorage)(newSearchResultNftAmount);
+        }
+    };
+    return (react__WEBPACK_IMPORTED_MODULE_1___default().createElement((react__WEBPACK_IMPORTED_MODULE_1___default().Fragment), null,
+        react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: styles.sectionHeader }, "Search Results"),
+        react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: styles.explanationSubtext }, `Max number of Nfts from 13 results (${searchResultNftAmount})`),
+        react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_mui_material_Box__WEBPACK_IMPORTED_MODULE_3__["default"], { sx: { width: 180 } },
+            react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_mui_material_Slider__WEBPACK_IMPORTED_MODULE_4__["default"], { size: "small", "aria-label": "Max Nfts out of 13 search results", value: searchResultNftAmount, valueLabelDisplay: "auto", onChange: (event, newTokenNftRatio) => {
+                    if (Array.isArray(newTokenNftRatio)) {
+                        handleSearchResultNftAmount(newTokenNftRatio[0]);
+                    }
+                    else {
+                        handleSearchResultNftAmount(newTokenNftRatio);
+                    }
+                }, step: 1, marks: [
+                    {
+                        value: 2,
+                        label: react__WEBPACK_IMPORTED_MODULE_1___default().createElement("span", { style: styles.sliderMark }, "2 Nfts"),
+                    },
+                    {
+                        value: 11,
+                        label: react__WEBPACK_IMPORTED_MODULE_1___default().createElement("span", { style: styles.sliderMark }, "11 Nfts"),
+                    },
+                ], min: 2, max: 11, style: { color: _static_colors__WEBPACK_IMPORTED_MODULE_0__["default"].white_medium } }))));
+};
+const styles = {
+    sectionHeader: {
+        fontWeight: "bold",
+        margin: "18px 0 3px 0 ",
+        fontSize: "16px",
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_0__["default"].white_medium,
+    },
+    explanationSubtext: {
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_0__["default"].accent_medium,
+        fontSize: "12px",
+        marginBottom: "12px",
+        textAlign: "center",
+    },
+    sliderMark: {
+        fontSize: "12px",
+        fontWeight: "bold",
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_0__["default"].white_medium,
+    },
+};
+
+
+/***/ }),
+
 /***/ "./src/components/OverlayMenu/WalletTrackerBlock.tsx":
 /*!***********************************************************!*\
   !*** ./src/components/OverlayMenu/WalletTrackerBlock.tsx ***!
@@ -2747,10 +2937,10 @@ const styles = {
 
 /***/ }),
 
-/***/ "./src/components/PriceBar.tsx":
-/*!*************************************!*\
-  !*** ./src/components/PriceBar.tsx ***!
-  \*************************************/
+/***/ "./src/components/PriceBarField.tsx":
+/*!******************************************!*\
+  !*** ./src/components/PriceBarField.tsx ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2766,22 +2956,22 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
+const PriceBarField = ({ allTimeLow, allTimeHigh, price, }) => {
     const percentage = ((price - allTimeLow) / (allTimeHigh - allTimeLow)) * 100;
     const gradientWidth = Math.ceil(306 * (percentage / 100));
     const styles = {
         container: {
-            width: '306px',
-            height: '40px',
+            width: "306px",
+            height: "40px",
             backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
-            position: 'relative',
+            position: "relative",
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
-            overflow: 'hidden',
+            overflow: "hidden",
         },
         gradient: {
             width: `${gradientWidth}px`,
-            height: '40px',
-            position: 'absolute',
+            height: "40px",
+            position: "absolute",
             borderRadius: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].border_radius,
             top: 0,
             left: 0,
@@ -2790,30 +2980,30 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
             background: `linear-gradient(to right, ${_static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark}, rgba(220, 220, 256, 0.30)`,
         },
         allTimeLow: {
-            position: 'absolute',
+            position: "absolute",
             left: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
-            top: '50%',
-            transform: 'translateY(-50%)',
+            top: "50%",
+            transform: "translateY(-50%)",
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].red_medium,
             // fontFamily: 'Open Sans',
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_large,
         },
         price: {
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
             // fontFamily: 'Open Sans',
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_large,
         },
         allTimeHigh: {
-            position: 'absolute',
+            position: "absolute",
             right: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
-            top: '50%',
-            transform: 'translateY(-50%)',
+            top: "50%",
+            transform: "translateY(-50%)",
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_small,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].green_medium,
             // fontFamily: 'Open Sans',
@@ -2832,15 +3022,120 @@ const PriceBar = ({ allTimeLow, allTimeHigh, price }) => {
             "$",
             (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.amountFormatter)(allTimeHigh))));
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PriceBar);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PriceBarField);
 
 
 /***/ }),
 
-/***/ "./src/components/SocialBlock.tsx":
-/*!****************************************!*\
-  !*** ./src/components/SocialBlock.tsx ***!
-  \****************************************/
+/***/ "./src/components/SocialsFooter.tsx":
+/*!******************************************!*\
+  !*** ./src/components/SocialsFooter.tsx ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "SocialsFooter": () => (/* binding */ SocialsFooter)
+/* harmony export */ });
+/* harmony import */ var _SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SocialsNumberField */ "./src/components/SocialsNumberField.tsx");
+/* harmony import */ var _mui_icons_material_PlaylistAdd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @mui/icons-material/PlaylistAdd */ "./node_modules/@mui/icons-material/PlaylistAdd.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
+/* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+
+// const openseaIcon = require("../static/images/icons/opensea-icon.png");
+const blockchainIcon = __webpack_require__(/*! ../static/images/icons/blockchain-icon.png */ "./src/static/images/icons/blockchain-icon.png");
+const coingeckoIcon = __webpack_require__(/*! ../static/images/icons/coingecko-icon.png */ "./src/static/images/icons/coingecko-icon.png");
+const redditIcon = __webpack_require__(/*! ../static/images/icons/reddit-icon.png */ "./src/static/images/icons/reddit-icon.png");
+const telegramIcon = __webpack_require__(/*! ../static/images/icons/telegram-icon.png */ "./src/static/images/icons/telegram-icon.png");
+const twitterIcon = __webpack_require__(/*! ../static/images/icons/twitter-icon.png */ "./src/static/images/icons/twitter-icon.png");
+const websiteIcon = __webpack_require__(/*! ../static/images/icons/website-icon.png */ "./src/static/images/icons/website-icon.png");
+const discordIcon = __webpack_require__(/*! ../static/images/icons/discord-icon.png */ "./src/static/images/icons/discord-icon.png");
+const SocialsFooter = ({ coinInfo }) => {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+    const [portfolioCoins, setPortfolioCoins] = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)([]);
+    const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
+        const portfolioDataStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.getPortfolioDataStorage)();
+        const coinIds = [];
+        portfolioDataStorage === null || portfolioDataStorage === void 0 ? void 0 : portfolioDataStorage.forEach((coinInfo) => {
+            coinIds.push(coinInfo.id);
+        });
+        setPortfolioCoins(coinIds);
+    });
+    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(() => {
+        checkStorage();
+    }, []);
+    const addToPortfolio = () => __awaiter(void 0, void 0, void 0, function* () {
+        yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_3__.setPortfolioDataStorage)({
+            id: coinInfo.id,
+            ticker: coinInfo.symbol,
+            iconUrl: coinInfo.image.thumb,
+            amount: 0,
+            nft: false,
+        });
+        checkStorage();
+    });
+    console.log("coinInfo: ", coinInfo);
+    return (react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: Object.assign(Object.assign({}, styles.socialBlocks), styles.bottomMargin) },
+        ((_a = coinInfo.links) === null || _a === void 0 ? void 0 : _a.homepage[0]) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: websiteIcon, link: (_b = coinInfo.links) === null || _b === void 0 ? void 0 : _b.homepage[0] })),
+        ((_c = coinInfo.links) === null || _c === void 0 ? void 0 : _c.blockchain_site[0]) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: blockchainIcon, link: (_d = coinInfo.links) === null || _d === void 0 ? void 0 : _d.blockchain_site[0] })),
+        (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.id) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: coingeckoIcon, title: "Coingecko watchlist portfolios", mainValue: coinInfo.watchlist_portfolio_users, link: `https://www.coingecko.com/en/coins/${coinInfo.id}` })),
+        ((_e = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _e === void 0 ? void 0 : _e.twitter_screen_name) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: twitterIcon, title: "Twitter followers", mainValue: (_f = coinInfo.community_data) === null || _f === void 0 ? void 0 : _f.twitter_followers, link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` })),
+        ((_g = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _g === void 0 ? void 0 : _g.subreddit_url) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: redditIcon, title: "Reddit subs", mainValue: (_h = coinInfo.community_data) === null || _h === void 0 ? void 0 : _h.reddit_subscribers, link: (_j = coinInfo.links) === null || _j === void 0 ? void 0 : _j.subreddit_url })),
+        ((_k = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _k === void 0 ? void 0 : _k.telegram_channel_identifier) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: telegramIcon, title: "Telegram channel size", mainValue: (_l = coinInfo.community_data) === null || _l === void 0 ? void 0 : _l.telegram_channel_user_count, link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` })),
+        ((_m = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _m === void 0 ? void 0 : _m.discord) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_SocialsNumberField__WEBPACK_IMPORTED_MODULE_0__["default"], { image: discordIcon, title: "Discord channel size", link: (_o = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _o === void 0 ? void 0 : _o.discord })),
+        !portfolioCoins.includes(coinInfo.id) && (react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: styles.addToPortfolioIcon, title: "Add to Portfolio" },
+            react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_mui_icons_material_PlaylistAdd__WEBPACK_IMPORTED_MODULE_4__["default"], { style: styles.iconStyling, onClick: addToPortfolio })))));
+};
+const styles = {
+    socialBlocks: {
+        display: "flex",
+        justifyContent: "center",
+        gap: "9px",
+    },
+    bottomMargin: {
+        marginBottom: "12px",
+    },
+    addToPortfolioIcon: {
+        cursor: "pointer",
+        width: 38,
+        height: 42,
+        padding: "9px 0px 0px",
+        borderTopLeftRadius: 34,
+        borderTopRightRadius: 34,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_2__["default"].primary_dark,
+    },
+    iconStyling: {
+        fontSize: 20,
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_2__["default"].white_medium,
+    },
+};
+
+
+/***/ }),
+
+/***/ "./src/components/SocialsNumberField.tsx":
+/*!***********************************************!*\
+  !*** ./src/components/SocialsNumberField.tsx ***!
+  \***********************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -2856,7 +3151,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const SocialBlock = ({ image, mainValue, link, title, }) => {
+const SocialsNumberField = ({ image, mainValue, link, title, }) => {
     const [isHovered, setIsHovered] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
     const styles = {
         container: {
@@ -2900,14 +3195,14 @@ const SocialBlock = ({ image, mainValue, link, title, }) => {
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("img", { src: image, alt: "Social image", style: Object.assign(Object.assign({}, styles.image), (isHovered && styles.imageFocused)) }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue }, (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_3__.numberFormatter)(mainValue))));
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SocialBlock);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (SocialsNumberField);
 
 
 /***/ }),
 
-/***/ "./src/components/TickerBlock.tsx":
+/***/ "./src/components/TickerField.tsx":
 /*!****************************************!*\
-  !*** ./src/components/TickerBlock.tsx ***!
+  !*** ./src/components/TickerField.tsx ***!
   \****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -2918,36 +3213,36 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 
-const TickerBlock = ({ ticker }) => {
+const TickerField = ({ ticker }) => {
     const styles = {
         container: {
             height: 65,
             width: 260,
-            position: 'absolute',
-            top: '100px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            textAlign: 'center',
-            fontFamily: 'Open Sans, sans-serif',
-            color: '#0000001A',
+            position: "absolute",
+            top: "100px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            textAlign: "center",
+            fontFamily: "Open Sans, sans-serif",
+            color: "#0000001A",
             // backgroundColor: 'red'
         },
         tickerText: {
             fontSize: ticker.length > 9 ? 32 : ticker.length > 5 ? 40 : 64,
-            wordWrap: 'break-word',
+            wordWrap: "break-word",
         },
     };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.tickerText }, ticker.toUpperCase())));
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TickerBlock);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TickerField);
 
 
 /***/ }),
 
-/***/ "./src/components/TitleBlock.tsx":
+/***/ "./src/components/TitleField.tsx":
 /*!***************************************!*\
-  !*** ./src/components/TitleBlock.tsx ***!
+  !*** ./src/components/TitleField.tsx ***!
   \***************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -2962,28 +3257,29 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const TitleBlock = ({ tokenTitle, title }) => {
+const TitleField = ({ tokenTitle, title }) => {
     const styles = {
         container: {
             height: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
+            paddingTop: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
             paddingBottom: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].default_padding,
-            textAlign: 'center',
-            fontFamily: 'Open Sans, sans-serif',
+            textAlign: "center",
+            fontFamily: "Open Sans, sans-serif",
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_large,
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_large,
-            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium
+            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium,
         },
     };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container, title: title }, tokenTitle));
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TitleBlock);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TitleField);
 
 
 /***/ }),
 
-/***/ "./src/components/ValueBlock.tsx":
+/***/ "./src/components/ValueField.tsx":
 /*!***************************************!*\
-  !*** ./src/components/ValueBlock.tsx ***!
+  !*** ./src/components/ValueField.tsx ***!
   \***************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -2998,12 +3294,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const ValueBlock = ({ title, mainValue, secondaryValue, tooltipTitle }) => {
+const ValueField = ({ title, mainValue, secondaryValue, tooltipTitle, }) => {
     const styles = {
         rectangle: {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
             width: 144,
             height: 48,
             backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_dark,
@@ -3015,13 +3311,13 @@ const ValueBlock = ({ title, mainValue, secondaryValue, tooltipTitle }) => {
             fontWeight: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_weight_medium,
             color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_light,
             marginTop: 4,
-            marginBottom: 0
+            marginBottom: 0,
         },
         values: {
-            display: 'flex',
-            alignItems: 'flex-end',
+            display: "flex",
+            alignItems: "flex-end",
             height: 24,
-            marginBottom: 6
+            marginBottom: 6,
         },
         mainValue: {
             fontSize: _static_constants__WEBPACK_IMPORTED_MODULE_2__["default"].font_medium,
@@ -3039,10 +3335,9 @@ const ValueBlock = ({ title, mainValue, secondaryValue, tooltipTitle }) => {
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.title }, title),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.values },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.mainValue }, mainValue),
-            secondaryValue &&
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.secondaryValue }, secondaryValue))));
+            secondaryValue && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("span", { style: styles.secondaryValue }, secondaryValue)))));
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ValueBlock);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ValueField);
 
 
 /***/ }),
@@ -3058,20 +3353,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_dom_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom/client */ "./node_modules/react-dom/client.js");
 /* harmony import */ var _popup_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./popup.css */ "./src/popup/popup.css");
-/* harmony import */ var _components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/TitleBlock */ "./src/components/TitleBlock.tsx");
-/* harmony import */ var _components_PriceBar__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/PriceBar */ "./src/components/PriceBar.tsx");
-/* harmony import */ var _components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/ValueBlock */ "./src/components/ValueBlock.tsx");
-/* harmony import */ var _components_ExpandableTextBlock__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/ExpandableTextBlock */ "./src/components/ExpandableTextBlock.tsx");
-/* harmony import */ var _components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/SocialBlock */ "./src/components/SocialBlock.tsx");
-/* harmony import */ var _components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/ExchangeBlock */ "./src/components/ExchangeBlock.tsx");
-/* harmony import */ var _components_HeaderBlock_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/HeaderBlock/HeaderBlock */ "./src/components/HeaderBlock/HeaderBlock.tsx");
-/* harmony import */ var _components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../components/ChartsBlock */ "./src/components/ChartsBlock.tsx");
-/* harmony import */ var _components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../components/TickerBlock */ "./src/components/TickerBlock.tsx");
-/* harmony import */ var _utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../utils/amountFormatter */ "./src/utils/amountFormatter.ts");
-/* harmony import */ var _components_OverlayMenu_OverlayMenu__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../components/OverlayMenu/OverlayMenu */ "./src/components/OverlayMenu/OverlayMenu.tsx");
-/* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
-/* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../static/colors */ "./src/static/colors.tsx");
-/* harmony import */ var _mui_icons_material_PlaylistAdd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @mui/icons-material/PlaylistAdd */ "./node_modules/@mui/icons-material/PlaylistAdd.js");
+/* harmony import */ var _components_TitleField__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/TitleField */ "./src/components/TitleField.tsx");
+/* harmony import */ var _components_OverlayMenu_OverlayMenu__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/OverlayMenu/OverlayMenu */ "./src/components/OverlayMenu/OverlayMenu.tsx");
+/* harmony import */ var _components_HeaderField_HeaderField__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/HeaderField/HeaderField */ "./src/components/HeaderField/HeaderField.tsx");
+/* harmony import */ var _components_ChartsField__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/ChartsField */ "./src/components/ChartsField.tsx");
+/* harmony import */ var _components_TickerField__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/TickerField */ "./src/components/TickerField.tsx");
+/* harmony import */ var _api_getTrendingCoins__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../api/getTrendingCoins */ "./src/api/getTrendingCoins.ts");
+/* harmony import */ var _api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../api/fetchDetailedNftInfo */ "./src/api/fetchDetailedNftInfo.ts");
+/* harmony import */ var _api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../api/fetchDetailedTokenInfo */ "./src/api/fetchDetailedTokenInfo.ts");
+/* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
+/* harmony import */ var _components_NftInfoField__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../components/NftInfoField */ "./src/components/NftInfoField.tsx");
+/* harmony import */ var _components_CoinInfoField__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../components/CoinInfoField */ "./src/components/CoinInfoField.tsx");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -3093,181 +3385,80 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
-
-
 const bitcoinIcon = __webpack_require__(/*! ../static/images/icons/bitcoin-icon.png */ "./src/static/images/icons/bitcoin-icon.png");
-const blockchainIcon = __webpack_require__(/*! ../static/images/icons/blockchain-icon.png */ "./src/static/images/icons/blockchain-icon.png");
-const openseaIcon = __webpack_require__(/*! ../static/images/icons/opensea-icon.png */ "./src/static/images/icons/opensea-icon.png");
-const coingeckoIcon = __webpack_require__(/*! ../static/images/icons/coingecko-icon.png */ "./src/static/images/icons/coingecko-icon.png");
-const redditIcon = __webpack_require__(/*! ../static/images/icons/reddit-icon.png */ "./src/static/images/icons/reddit-icon.png");
-const telegramIcon = __webpack_require__(/*! ../static/images/icons/telegram-icon.png */ "./src/static/images/icons/telegram-icon.png");
-const twitterIcon = __webpack_require__(/*! ../static/images/icons/twitter-icon.png */ "./src/static/images/icons/twitter-icon.png");
-const websiteIcon = __webpack_require__(/*! ../static/images/icons/website-icon.png */ "./src/static/images/icons/website-icon.png");
-const discordIcon = __webpack_require__(/*! ../static/images/icons/discord-icon.png */ "./src/static/images/icons/discord-icon.png");
 
 
 const App = () => {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15;
+    var _a, _b;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [nftInfo, setNftInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
     const [txVolumeChartData, setTxVolumeChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
     const [tokenTxsChartData, setTokenTxsChartData] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    const [menuIsOpen, setMenuIsOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
-    const [portfolioCoins, setPortfolioCoins] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
-    const [portfolioCoinClick, setPortfolioCoinClick] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
+    const [isOverlayOpen, setIsOverlayOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+    const [searchResults, setSearchResults] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+        tokens: [],
+        total: 0,
+    });
+    const [loadingError, setLoadingError] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+        isLoading: true,
+        isError: false,
+    });
     // todo splash screen/ new icon
     // todo, make ref links of all exchange buttons
     // todo usdt socials
     //  zou ik uitbreiden naar een discord bot zoals whalebot, zo eentje die andere servers inviten en dat ze dan alle commands van whalebot kunnen gebruiken.
-    // ideas: store notes for accounts (discord/ twitter)
-    const addToPortfolio = () => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_14__.setPortfolioDataStorage)({
-            id: coinInfo.id,
-            ticker: coinInfo.symbol,
-            iconUrl: coinInfo.image.thumb,
-            amount: 0,
-            nft: false,
-        });
-        checkStorage();
+    // todo ideas: store notes for accounts (discord/ twitter)
+    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+        handleStartupInfo();
+    }, []);
+    // get detailed coin info and trending info on startup
+    const handleStartupInfo = () => __awaiter(void 0, void 0, void 0, function* () {
+        // check which token info to display on startup
+        const homeCoinStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_11__.getHomeCoinStorage)();
+        if (homeCoinStorage === null || homeCoinStorage === void 0 ? void 0 : homeCoinStorage.id) {
+            handleFetchTokenInfo(homeCoinStorage.id, homeCoinStorage === null || homeCoinStorage === void 0 ? void 0 : homeCoinStorage.nft);
+        }
+        else {
+            handleFetchTokenInfo("bitcoin", false); // default to corn
+        }
+        const trendingCoins = yield (0,_api_getTrendingCoins__WEBPACK_IMPORTED_MODULE_8__.getTrendingCoins)();
+        setSearchResults(trendingCoins);
     });
-    const checkStorage = () => __awaiter(void 0, void 0, void 0, function* () {
-        const portfolioDataStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_14__.getPortfolioDataStorage)();
-        if ((portfolioDataStorage === null || portfolioDataStorage === void 0 ? void 0 : portfolioDataStorage.length) > 0) {
-            const coinIds = [];
-            portfolioDataStorage.forEach((coinInfo) => {
-                coinIds.push(coinInfo.id);
-            });
-            setPortfolioCoins(coinIds);
+    const handleFetchTokenInfo = (coinId, isNft) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const fetchInfo = isNft ? _api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_9__.fetchDetailedNftInfo : _api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_10__.fetchDetailedTokenInfo;
+            const result = yield fetchInfo(coinId);
+            setLoadingError(result.loadingError);
+            setNftInfo(result.nftInfo);
+            setCoinInfo(result.coinInfo);
+            setTxVolumeChartData(result.txVolumeChartData);
+            setTokenTxsChartData(result.tokenTxsChartData);
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_11__.setHomeCoinStorage)({ id: coinId, nft: isNft });
+        }
+        catch (error) {
+            console.error("Error fetching info:", error);
+            setLoadingError({ isLoading: false, isError: true });
         }
     });
-    (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-        checkStorage();
-    }, [menuIsOpen]);
     // keep highest and lowest price on max chart
     // drag and zoom chart functionality
     // fix all anys
     // join a group via name/ code?
     // check watchlist etc.
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_OverlayMenu_OverlayMenu__WEBPACK_IMPORTED_MODULE_13__["default"], { menuIsOpen: menuIsOpen, setMenuIsOpen: setMenuIsOpen, setPortfolioCoinClick: setPortfolioCoinClick }),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.topContainer },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderBlock_HeaderBlock__WEBPACK_IMPORTED_MODULE_9__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small)
-                    ? coinInfo.image.small
-                    : ((_b = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.image) === null || _b === void 0 ? void 0 : _b.small)
-                        ? nftInfo.image.small
-                        : bitcoinIcon, setCoinInfo: setCoinInfo, setNftInfo: setNftInfo, setTxVolumeChartData: setTxVolumeChartData, setTokenTxsChartData: setTokenTxsChartData, setMenuIsOpen: setMenuIsOpen, portfolioCoinClick: portfolioCoinClick })),
-        (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { tokenTitle: coinInfo.name, title: "Use arrow keys to navigate" }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: coinInfo.symbol }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { price30dHistorydata: coinInfo.price30dHistoryData && coinInfo.price30dHistoryData, priceMaxHistorydata: coinInfo.priceMaxHistoryData && coinInfo.priceMaxHistoryData, tokenTxsChartData: tokenTxsChartData && tokenTxsChartData }))),
-        (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { tokenTitle: nftInfo.name, title: "Use arrow keys to navigate" }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: nftInfo.symbol }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], { txVolumeData: txVolumeChartData && txVolumeChartData }))),
-        !(nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) && !(coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleBlock__WEBPACK_IMPORTED_MODULE_3__["default"], { tokenTitle: "Fetching data", title: "Use arrow keys to navigate" }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerBlock__WEBPACK_IMPORTED_MODULE_11__["default"], { ticker: "" }),
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsBlock__WEBPACK_IMPORTED_MODULE_10__["default"], null))),
-        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomContainer },
-            (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin, title: "ATL / Price / ATH" },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_PriceBar__WEBPACK_IMPORTED_MODULE_4__["default"], { allTimeLow: (_d = (_c = coinInfo.market_data) === null || _c === void 0 ? void 0 : _c.atl) === null || _d === void 0 ? void 0 : _d.usd, allTimeHigh: (_f = (_e = coinInfo.market_data) === null || _e === void 0 ? void 0 : _e.ath) === null || _f === void 0 ? void 0 : _f.usd, price: (_h = (_g = coinInfo.market_data) === null || _g === void 0 ? void 0 : _g.current_price) === null || _h === void 0 ? void 0 : _h.usd })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Circ. Supply", tooltipTitle: "/ Total supply", mainValue: ((_j = coinInfo.market_data) === null || _j === void 0 ? void 0 : _j.circulating_supply)
-                            ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)((_k = coinInfo.market_data) === null || _k === void 0 ? void 0 : _k.circulating_supply)
-                            : "-", secondaryValue: ((_l = coinInfo.market_data) === null || _l === void 0 ? void 0 : _l.total_supply)
-                            ? `/ ${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)((_m = coinInfo.market_data) === null || _m === void 0 ? void 0 : _m.total_supply)}`
-                            : "/ -" }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Market Cap", tooltipTitle: "# Rank", mainValue: ((_o = coinInfo.market_data) === null || _o === void 0 ? void 0 : _o.market_cap.usd)
-                            ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)((_p = coinInfo.market_data) === null || _p === void 0 ? void 0 : _p.market_cap.usd)}`
-                            : "-", secondaryValue: coinInfo.market_cap_rank
-                            ? `#${coinInfo.market_cap_rank}`
-                            : "/ -" })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExchangeBlock__WEBPACK_IMPORTED_MODULE_8__["default"], { tickers: coinInfo.tickers })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { text: (_q = coinInfo.description) === null || _q === void 0 ? void 0 : _q.en })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.socialBlocks), styles.bottomMargin) },
-                    ((_r = coinInfo.links) === null || _r === void 0 ? void 0 : _r.homepage[0]) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: websiteIcon, link: (_s = coinInfo.links) === null || _s === void 0 ? void 0 : _s.homepage[0] })),
-                    ((_t = coinInfo.links) === null || _t === void 0 ? void 0 : _t.blockchain_site[0]) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: blockchainIcon, link: (_u = coinInfo.links) === null || _u === void 0 ? void 0 : _u.blockchain_site[0] })),
-                    (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.id) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, title: "Coingecko watchlist portfolios", mainValue: coinInfo.watchlist_portfolio_users, link: `https://www.coingecko.com/en/coins/${coinInfo.id}` })),
-                    ((_v = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _v === void 0 ? void 0 : _v.twitter_screen_name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, title: "Twitter followers", mainValue: (_w = coinInfo.community_data) === null || _w === void 0 ? void 0 : _w.twitter_followers, link: `https://twitter.com/${coinInfo.links.twitter_screen_name}` })),
-                    ((_x = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _x === void 0 ? void 0 : _x.subreddit_url) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: redditIcon, title: "Reddit subs", mainValue: (_y = coinInfo.community_data) === null || _y === void 0 ? void 0 : _y.reddit_subscribers, link: (_z = coinInfo.links) === null || _z === void 0 ? void 0 : _z.subreddit_url })),
-                    ((_0 = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.links) === null || _0 === void 0 ? void 0 : _0.telegram_channel_identifier) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, title: "Telegram channel size", mainValue: (_1 = coinInfo.community_data) === null || _1 === void 0 ? void 0 : _1.telegram_channel_user_count, link: `https://t.me/${coinInfo.links.telegram_channel_identifier}` })),
-                    !portfolioCoins.includes(coinInfo.id) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.addToPortfolioIcon, title: "Add to Portfolio" },
-                        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_PlaylistAdd__WEBPACK_IMPORTED_MODULE_16__["default"], { style: styles.iconStyling, onClick: addToPortfolio })))))),
-            (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Floor", tooltipTitle: "24h change %", mainValue: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)((_2 = nftInfo.floor_price) === null || _2 === void 0 ? void 0 : _2.usd) || "-"}`, secondaryValue: `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.percentageFormatter)(nftInfo.floor_price_in_usd_24h_percentage_change)}%` }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Native", tooltipTitle: "Native floor/ platform", mainValue: `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)((_3 = nftInfo.floor_price) === null || _3 === void 0 ? void 0 : _3.native_currency) || "-"}`, secondaryValue: nftInfo.native_currency
-                            ? (nftInfo.native_currency.charAt(0).toUpperCase() +
-                                nftInfo.native_currency.slice(1)).substring(0, 8)
-                            : "-" })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Total supply", mainValue: nftInfo.total_supply ? `${nftInfo.total_supply}` : "-" }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Unique owners", tooltipTitle: "24h change %", mainValue: nftInfo.number_of_unique_addresses
-                            ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.numberFormatter)(nftInfo.number_of_unique_addresses)
-                            : "-", secondaryValue: nftInfo.number_of_unique_addresses_24h_percentage_change
-                            ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.percentageFormatter)(nftInfo.number_of_unique_addresses_24h_percentage_change)}%`
-                            : "" })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Market Cap", mainValue: ((_4 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _4 === void 0 ? void 0 : _4.usd)
-                            ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)((_5 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _5 === void 0 ? void 0 : _5.usd)}`
-                            : "-" }),
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ValueBlock__WEBPACK_IMPORTED_MODULE_5__["default"], { title: "Volume", tooltipTitle: "24h change %", mainValue: nftInfo.volume_24h.usd
-                            ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.amountFormatter)(nftInfo.volume_24h.usd)}`
-                            : "-", secondaryValue: nftInfo.volume_in_usd_24h_percentage_change
-                            ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_12__.percentageFormatter)(nftInfo.volume_in_usd_24h_percentage_change)}%`
-                            : "" })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.bottomMargin },
-                    react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ExpandableTextBlock__WEBPACK_IMPORTED_MODULE_6__["default"], { text: nftInfo.description })),
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: Object.assign(Object.assign({}, styles.socialBlocks), styles.bottomMargin) },
-                    ((_6 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _6 === void 0 ? void 0 : _6.homepage) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: websiteIcon, link: (_7 = nftInfo.links) === null || _7 === void 0 ? void 0 : _7.homepage })),
-                    (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.id) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: coingeckoIcon, title: "Coingecko watchlist portfolios", link: `https://www.coingecko.com/en/nft/${nftInfo.id}` })),
-                    (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.contract_address) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: openseaIcon, title: "Opensea page", link: `https://opensea.io/assets?search[query]=${nftInfo.contract_address}` })),
-                    ((_8 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _8 === void 0 ? void 0 : _8.twitter) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: twitterIcon, title: "Twitter followers", link: (_9 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _9 === void 0 ? void 0 : _9.twitter })),
-                    ((_10 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _10 === void 0 ? void 0 : _10.reddit) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: redditIcon, title: "Reddit subs", link: (_11 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _11 === void 0 ? void 0 : _11.reddit })),
-                    ((_12 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _12 === void 0 ? void 0 : _12.telegram) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, title: "Telegram channel size", link: (_13 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _13 === void 0 ? void 0 : _13.telegram })),
-                    ((_14 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _14 === void 0 ? void 0 : _14.discord) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, title: "Discord channel size", link: (_15 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _15 === void 0 ? void 0 : _15.discord }))))))));
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_OverlayMenu_OverlayMenu__WEBPACK_IMPORTED_MODULE_4__["default"], { menuIsOpen: isOverlayOpen, setMenuIsOpen: setIsOverlayOpen, handleFetchTokenInfo: handleFetchTokenInfo }),
+        react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderField_HeaderField__WEBPACK_IMPORTED_MODULE_5__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) || ((_b = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.image) === null || _b === void 0 ? void 0 : _b.small) || bitcoinIcon, setSearchResults: setSearchResults, searchResults: searchResults, setMenuIsOpen: setIsOverlayOpen, handleFetchTokenInfo: handleFetchTokenInfo, loadingError: loadingError }),
+            !(nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) && !(coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleField__WEBPACK_IMPORTED_MODULE_3__["default"], { tokenTitle: "Fetching data", title: "Use arrow keys to navigate" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerField__WEBPACK_IMPORTED_MODULE_7__["default"], { ticker: "" }),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_ChartsField__WEBPACK_IMPORTED_MODULE_6__["default"], null))),
+            (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_CoinInfoField__WEBPACK_IMPORTED_MODULE_13__.CoinInfoField, { coinInfo: coinInfo, tokenTxsChartData: tokenTxsChartData })),
+            (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_NftInfoField__WEBPACK_IMPORTED_MODULE_12__.NftInfoField, { nftInfo: nftInfo, txVolumeChartData: txVolumeChartData })))));
 };
 const styles = {
-    topContainer: {
+    container: {
         padding: "12px",
-    },
-    bottomContainer: {
-        paddingLeft: "12px",
-        paddingRight: "12px",
-    },
-    dataBlocks: {
-        display: "flex",
-        justifyContent: "space-between",
-    },
-    socialBlocks: {
-        display: "flex",
-        justifyContent: "center",
-        gap: "9px",
-    },
-    bottomMargin: {
-        marginBottom: "12px",
-    },
-    addToPortfolioIcon: {
-        cursor: "pointer",
-        width: 38,
-        height: 42,
-        padding: "9px 0px 0px",
-        borderTopLeftRadius: 34,
-        borderTopRightRadius: 34,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_15__["default"].primary_dark,
-    },
-    iconStyling: {
-        fontSize: 20,
-        color: _static_colors__WEBPACK_IMPORTED_MODULE_15__["default"].white_medium,
-        // color: colors.secondary_dark,
     },
 };
 const root = document.createElement("div");
@@ -4697,18 +4888,16 @@ function setSearchResultNftAmountStorage(searchResultNftAmount) {
     });
 }
 function setHomeCoinStorage(homeCoinData) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            return new Promise((resolve) => {
-                chrome.storage.local.set({ homeCoinData }, () => {
-                    resolve();
-                });
+    try {
+        return new Promise((resolve) => {
+            chrome.storage.local.set({ homeCoinData }, () => {
+                resolve();
             });
-        }
-        catch (error) {
-            console.log("setHomeCoinStorage error: ", error);
-        }
-    });
+        });
+    }
+    catch (error) {
+        console.log("setHomeCoinStorage error: ", error);
+    }
 }
 function setPortfolioDataStorage(newCoinData) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -4972,16 +5161,6 @@ module.exports = __webpack_require__.p + "9fec87a5297912f46638.png";
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 module.exports = __webpack_require__.p + "559b02f9d985feb71f8a.png";
-
-/***/ }),
-
-/***/ "./src/static/images/icons/opensea-icon.png":
-/*!**************************************************!*\
-  !*** ./src/static/images/icons/opensea-icon.png ***!
-  \**************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-module.exports = __webpack_require__.p + "5a605124878b6be913b6.png";
 
 /***/ }),
 

@@ -3,6 +3,7 @@ import colors from "../static/colors";
 import constants from "../static/constants";
 import EXCHANGE_ICONS from "../static/exchangeIcons";
 import { amountFormatter } from "../utils/amountFormatter";
+
 const ExpandMoreIcon = require("../static/images/icons/expand-more-icon.png");
 const ExpandLessIcon = require("../static/images/icons/expand-less-icon.png");
 
@@ -18,7 +19,7 @@ interface ExchangeBlockProps {
   tickers: ITickers[];
 }
 
-const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ tickers }) => {
+const ExchangesField: React.FC<ExchangeBlockProps> = ({ tickers }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [focusedOptionIndex, setFocusedOptionIndex] = useState<number>(-1);
   const toggleExpanded = () => {
@@ -221,4 +222,4 @@ const ExchangeBlock: React.FC<ExchangeBlockProps> = ({ tickers }) => {
   );
 };
 
-export default ExchangeBlock;
+export default ExchangesField;
