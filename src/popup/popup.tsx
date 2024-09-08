@@ -7,7 +7,7 @@ import ValueBlock from "../components/ValueBlock";
 import ExpandableTextBlock from "../components/ExpandableTextBlock";
 import SocialBlock from "../components/SocialBlock";
 import ExchangeBlock from "../components/ExchangeBlock";
-import HeaderBlock from "../components/HeaderBlock";
+import HeaderBlock from "../components/HeaderBlock/HeaderBlock";
 import ChartsBlock from "../components/ChartsBlock";
 import { IDetailedCoinInfo } from "../models/ICoinInfo";
 import { IDetailedNftInfo } from "../models/INftInfo";
@@ -17,7 +17,7 @@ import {
   numberFormatter,
   percentageFormatter,
 } from "../utils/amountFormatter";
-import OverlayMenu from "../components/OverlayMenu";
+import OverlayMenu from "../components/OverlayMenu/OverlayMenu";
 import {
   setPortfolioDataStorage,
   getPortfolioDataStorage,
@@ -130,8 +130,6 @@ const App: React.FC = () => {
       <OverlayMenu
         menuIsOpen={menuIsOpen}
         setMenuIsOpen={setMenuIsOpen}
-        coinInfo={coinInfo}
-        nftInfo={nftInfo}
         setPortfolioCoinClick={setPortfolioCoinClick}
       />
       <div style={styles.topContainer}>
@@ -298,7 +296,7 @@ const App: React.FC = () => {
                 </div>
               )}
 
-              {/*/!*<SocialBlock image={discordIcon}  title={"Discord channel size"}  link={coinInfo.links.homepage[0]} />*!/ find out what to do with this*/}
+              {/*/!*<SocialBlock image={discordIcon}  title={"Discord channel size"}  link={coinInfo.links.homepage[0]} />*!/ todo find out what to do with this*/}
             </div>
           </>
         )}

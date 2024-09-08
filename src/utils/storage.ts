@@ -217,10 +217,6 @@ export async function setPortfolioDataStorage(
 ): Promise<void> {
   try {
     return new Promise((resolve) => {
-      // chrome.storage.local.set({ portfolioCoinData: [] }, () => {
-      //   resolve();
-      // });
-
       chrome.storage.local.get("portfolioCoinData", (result) => {
         const existingData = result.portfolioCoinData || [];
         let updatedData = [];
