@@ -14,7 +14,7 @@ import {
   setSearchResultNftAmountStorage,
 } from "../../utils/storage";
 import { IDetailedCoinInfo } from "../../models/ICoinInfo";
-import { fetchCoinsPrices } from "../../utils/api";
+import { fetchCoinsPrices } from "../../api/api";
 import WalletTrackerBlock from "./WalletTrackerBlock";
 import PortfolioBlock from "./PortfolioBlock";
 import { CoingeckoApiField } from "./CoingeckoApiField";

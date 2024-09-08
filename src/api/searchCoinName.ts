@@ -1,6 +1,6 @@
 import { ISearchCoinList, ISearchOptions } from "../models/ICoinInfo";
 import { fetchNameSearch } from "./api";
-import { getSearchResultNftAmountStorage } from "./storage";
+import { getSearchResultNftAmountStorage } from "../utils/storage";
 
 export const searchCoinName = async (searchInput: string) => {
   try {

@@ -35,46 +35,7 @@ const discordIcon = require("../static/images/icons/discord-icon.png");
 
 import colors from "../static/colors";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
-
-const styles: { [key: string]: CSSProperties } = {
-  topContainer: {
-    padding: "12px",
-  },
-  bottomContainer: {
-    paddingLeft: "12px",
-    paddingRight: "12px",
-  },
-  dataBlocks: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  socialBlocks: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "9px",
-  },
-  bottomMargin: {
-    marginBottom: "12px",
-  },
-  addToPortfolioIcon: {
-    cursor: "pointer",
-    width: 38,
-    height: 42,
-    padding: "9px 0px 0px",
-    borderTopLeftRadius: 34,
-    borderTopRightRadius: 34,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    backgroundColor: colors.primary_dark,
-  },
-  iconStyling: {
-    fontSize: 20,
-    color: colors.white_medium,
-    // color: colors.secondary_dark,
-  },
-};
+import { fetchExchangesList } from "../api/api";
 
 const App: React.FC = () => {
   const [coinInfo, setCoinInfo] = useState<IDetailedCoinInfo>();
@@ -100,6 +61,7 @@ const App: React.FC = () => {
       amount: 0,
       nft: false,
     });
+
     checkStorage();
   };
 
@@ -441,6 +403,46 @@ const App: React.FC = () => {
       </div>
     </>
   );
+};
+
+const styles: { [key: string]: CSSProperties } = {
+  topContainer: {
+    padding: "12px",
+  },
+  bottomContainer: {
+    paddingLeft: "12px",
+    paddingRight: "12px",
+  },
+  dataBlocks: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  socialBlocks: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "9px",
+  },
+  bottomMargin: {
+    marginBottom: "12px",
+  },
+  addToPortfolioIcon: {
+    cursor: "pointer",
+    width: 38,
+    height: 42,
+    padding: "9px 0px 0px",
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    backgroundColor: colors.primary_dark,
+  },
+  iconStyling: {
+    fontSize: 20,
+    color: colors.white_medium,
+    // color: colors.secondary_dark,
+  },
 };
 
 const root = document.createElement("div");

@@ -82,6 +82,813 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /***/ }),
 
+/***/ "./src/api/api.ts":
+/*!************************!*\
+  !*** ./src/api/api.ts ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "fetchCoinInfo": () => (/* binding */ fetchCoinInfo),
+/* harmony export */   "fetchCoinsPrices": () => (/* binding */ fetchCoinsPrices),
+/* harmony export */   "fetchExchangesList": () => (/* binding */ fetchExchangesList),
+/* harmony export */   "fetchLatestAddressTxs": () => (/* binding */ fetchLatestAddressTxs),
+/* harmony export */   "fetchNameSearch": () => (/* binding */ fetchNameSearch),
+/* harmony export */   "fetchNftInfo": () => (/* binding */ fetchNftInfo),
+/* harmony export */   "fetchNftTxs": () => (/* binding */ fetchNftTxs),
+/* harmony export */   "fetchPriceHistoryData": () => (/* binding */ fetchPriceHistoryData),
+/* harmony export */   "fetchTokenTxs": () => (/* binding */ fetchTokenTxs),
+/* harmony export */   "fetchTrendingCoins": () => (/* binding */ fetchTrendingCoins)
+/* harmony export */ });
+/* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
+/* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+// const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250'
+function fetchNameSearch(searchQuery) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const API_KEY = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
+            const res = yield fetch(`https://api.coingecko.com/api/v3/search?query=${searchQuery}&x_cg_demo_api_key=${API_KEY}`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, Coingecko searchQuery ${searchQuery}: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error("Error fetching  Coingecko searchQuery ${searchQuery}", error);
+            throw error;
+        }
+    });
+}
+function fetchTrendingCoins() {
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // if got trending coins in the last 3 hours, return from storage
+            const trendingCoinsStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getTrendingCoinsStorage)();
+            const currentTime = new Date().getTime();
+            const lastUpdated = trendingCoinsStorage === null || trendingCoinsStorage === void 0 ? void 0 : trendingCoinsStorage.lastUpdated;
+            if (((_b = (_a = trendingCoinsStorage === null || trendingCoinsStorage === void 0 ? void 0 : trendingCoinsStorage.trendingCoins) === null || _a === void 0 ? void 0 : _a.coins) === null || _b === void 0 ? void 0 : _b.length) > 0 &&
+                lastUpdated > currentTime - _static_constants__WEBPACK_IMPORTED_MODULE_1__.CACHE_TIME_LONG) {
+                console.log("STORAGE - GOT TRENDING COINS");
+                return trendingCoinsStorage.trendingCoins;
+            }
+            else {
+                try {
+                    console.log("FETCHING TRENDING COINS");
+                    const API_KEY = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
+                    const res = yield fetch(`https://api.coingecko.com/api/v3/search/trending?&x_cg_demo_api_key=${API_KEY}`);
+                    if (!res.ok) {
+                        throw new Error(`Fetch error, Hot Coins: ${res.status} ${res.statusText}`);
+                    }
+                    const trendingCoins = yield res.json();
+                    yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.setTrendingCoinsStorage)(trendingCoins);
+                    return trendingCoins;
+                }
+                catch (error) {
+                    console.error("Error-fetchTrendingCoins: fetching trending Coins:", error);
+                    throw error;
+                }
+            }
+        }
+        catch (error) {
+            console.error("Error-fetchTrendingCoins: getting trending Coins:", error);
+            throw error;
+        }
+    });
+}
+function fetchCoinsPrices(coinIds) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // if got coin in the last 20 minutes, return from storage
+            const storedCoinPricesData = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getCoinPricesDataStorage)();
+            const currentTime = new Date().getTime();
+            const lastUpdated = storedCoinPricesData === null || storedCoinPricesData === void 0 ? void 0 : storedCoinPricesData.lastUpdated;
+            function arraysEqual(a, b) {
+                if (a.length !== b.length)
+                    return false;
+                for (let i = 0; i < a.length; i++) {
+                    if (a[i] !== b[i])
+                        return false;
+                }
+                return true;
+            }
+            if (lastUpdated > currentTime - _static_constants__WEBPACK_IMPORTED_MODULE_1__.CACHE_TIME_SHORT &&
+                arraysEqual(storedCoinPricesData === null || storedCoinPricesData === void 0 ? void 0 : storedCoinPricesData.coinIds, coinIds)) {
+                console.log(`STORAGE - GOT COINPRICES $${coinIds}`);
+                return storedCoinPricesData.coinPrices;
+            }
+            else {
+                try {
+                    const API_KEY = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
+                    const coinSearchUrl = coinIds.join("%2C");
+                    const res = yield fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinSearchUrl}&vs_currencies=usd&include_24hr_change=true&x_cg_demo_api_key=${API_KEY}`);
+                    if (!res.ok) {
+                        throw new Error(`Error-fetchCoinsPrices: coin info data (${coinIds}): ${res.status} ${res.statusText}`);
+                    }
+                    console.log(`FETCHED COIN PRICES ${coinIds}`);
+                    const coinPrices = yield res.json();
+                    (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.setCoinPricesDataStorage)(coinPrices, coinIds);
+                    return coinPrices;
+                }
+                catch (error) {
+                    console.error(`fetchCoinsPrices-fetching coin info data (${coinIds}):`, error);
+                    throw error;
+                }
+            }
+        }
+        catch (error) {
+            console.error(`Error-fetchCoinsPrices: getting coin info data (${coinIds}):`, error);
+        }
+    });
+}
+function fetchPriceHistoryData(coinId, quote, chartRange) {
+    return __awaiter(this, void 0, void 0, function* () {
+        coinId = coinId || "bitcoin";
+        quote = quote || "usd";
+        chartRange = chartRange || "30";
+        try {
+            // if got coin in the last 20 minutes, return from storage
+            const storedCoinPriceHistoryData = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getStoredCoinPriceHistoryData)();
+            const currentTime = new Date().getTime();
+            const lastUpdated = storedCoinPriceHistoryData === null || storedCoinPriceHistoryData === void 0 ? void 0 : storedCoinPriceHistoryData.lastUpdated;
+            if (lastUpdated > currentTime - _static_constants__WEBPACK_IMPORTED_MODULE_1__.CACHE_TIME_SHORT &&
+                (storedCoinPriceHistoryData === null || storedCoinPriceHistoryData === void 0 ? void 0 : storedCoinPriceHistoryData.coinId) === coinId &&
+                (storedCoinPriceHistoryData === null || storedCoinPriceHistoryData === void 0 ? void 0 : storedCoinPriceHistoryData.chartRange) === chartRange) {
+                console.log(`STORAGE - GOT COIN PRICEHISTORY $${coinId} ${chartRange}`);
+                return storedCoinPriceHistoryData.priceHistory;
+            }
+            else {
+                try {
+                    const API_KEY = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
+                    const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily&x_cg_demo_api_key=${API_KEY}`);
+                    if (!res.ok) {
+                        throw new Error(`Fetch error, price history data (${coinId}): ${res.status} ${res.statusText}`);
+                    }
+                    console.log(`FETCHED - COIN price history $${coinId}`);
+                    const priceHistory = yield res.json();
+                    (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.setStoredCoinPriceHistoryDataStorage)(priceHistory, coinId, chartRange);
+                    return priceHistory;
+                }
+                catch (error) {
+                    console.error(`Error fetching price history data (${coinId}):`, error);
+                    throw error;
+                }
+            }
+        }
+        catch (error) {
+            console.error(`Error-fetchPriceHistoryData: getting coin info data (${coinId}):`, error);
+        }
+    });
+}
+function fetchCoinInfo(coinId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        coinId = coinId || "bitcoin";
+        try {
+            // if got coin in the last 20 minutes, return from storage
+            const storedCoinStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getStoredCoinDataStorage)();
+            const currentTime = new Date().getTime();
+            const lastUpdated = storedCoinStorage === null || storedCoinStorage === void 0 ? void 0 : storedCoinStorage.lastUpdated;
+            if ((storedCoinStorage === null || storedCoinStorage === void 0 ? void 0 : storedCoinStorage.coinId) === coinId &&
+                lastUpdated > currentTime - 300000) {
+                console.log(`STORAGE - GOT COIN INFO $${coinId}`);
+                return storedCoinStorage.storedCoin;
+            }
+            else {
+                try {
+                    const API_KEY = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
+                    const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false&x_cg_demo_api_key=${API_KEY}`);
+                    if (!res.ok) {
+                        throw new Error(`Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`);
+                    }
+                    console.log(`FETCHED COIN INFO $${coinId}`);
+                    const coinInfo = yield res.json();
+                    (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.setStoredCoinDataStorage)(coinInfo, coinId);
+                    return coinInfo;
+                }
+                catch (error) {
+                    console.error(`Error-fetchCoinInfo: fetching coin info data (${coinId}):`, error);
+                    throw error;
+                }
+            }
+        }
+        catch (error) {
+            console.error(`Error-fetchCoinInfo: getting coin info data (${coinId}):`, error);
+        }
+    });
+}
+function fetchNftInfo(coinId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const API_KEY = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
+            const res = yield fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}?&x_cg_demo_api_key=${API_KEY}`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, NFT info data (${coinId}): ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error(`Error fetching NFT info data (${coinId}):`, error);
+            throw error;
+        }
+    });
+}
+function fetchNftTxs(domainName, contractAddress, txAmount) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const API_KEY = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
+            const res = yield fetch(`https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&x_cg_demo_api_key=${API_KEY}`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, ${domainName} nft txs info: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error("Error fetching nft token txs info:", error);
+            throw error;
+        }
+    });
+}
+function fetchTokenTxs(domainName, contractAddress, txAmount) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch(`https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc&apikey=${_static_constants__WEBPACK_IMPORTED_MODULE_1__.SHARED_API_KEY_ETHERSCAN}`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, ${domainName} token txs info: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error("Error fetching token txs info:", error);
+            throw error;
+        }
+    });
+}
+function fetchLatestAddressTxs(address) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const res = yield fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${_static_constants__WEBPACK_IMPORTED_MODULE_1__.SHARED_API_KEY_ETHERSCAN}`);
+            if (!res.ok) {
+                throw new Error(`Fetch error, ${address} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`);
+            }
+            return yield res.json();
+        }
+        catch (error) {
+            console.error("Error fetching txstchLatestAddressTxs:", error);
+            throw error;
+        }
+    });
+}
+// used to fetch exchanges
+function fetchExchangesList() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let pageNr = 1;
+            let perPage = 250;
+            let allExchanges = [];
+            while (true) {
+                const res = yield fetch(`https://api.coingecko.com/api/v3/exchanges?per_page=${perPage}&page=${pageNr}`);
+                if (!res.ok) {
+                    throw new Error(`Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`);
+                }
+                const exchanges = yield res.json();
+                allExchanges.push(...exchanges);
+                if (exchanges.length < perPage) {
+                    // Reached the last page, exit the loop
+                    break;
+                }
+                pageNr++;
+            }
+            const exchangesObject = allExchanges.reduce((acc, exchange) => {
+                acc[exchange.id] = exchange.image;
+                // acc[`"${exchange.id}"`] = exchange.image;
+                return acc;
+            }, {});
+            console.log("exchangesObject", JSON.stringify(exchangesObject, null, 2));
+            console.log("exchangesObject.length", Object.keys(exchangesObject).length);
+        }
+        catch (error) {
+            console.error("Error fetching Coingecko exchanges List:", error);
+            throw error;
+        }
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/api/delay.ts":
+/*!**************************!*\
+  !*** ./src/api/delay.ts ***!
+  \**************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "delay": () => (/* binding */ delay)
+/* harmony export */ });
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+
+/***/ }),
+
+/***/ "./src/api/fetchDetailedNftInfo.ts":
+/*!*****************************************!*\
+  !*** ./src/api/fetchDetailedNftInfo.ts ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "fetchDetailedNftInfo": () => (/* binding */ fetchDetailedNftInfo)
+/* harmony export */ });
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
+/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/api/delay.ts");
+/* harmony import */ var _getNftTxChartData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getNftTxChartData */ "./src/api/getNftTxChartData.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+const fetchDetailedNftInfo = (coinId, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        setLoadingError({ isLoading: true, isError: false });
+        setTxVolumeChartData([]);
+        setTokenTxsChartData([]);
+        const [nftInfo] = yield Promise.all([(0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftInfo)(coinId)]);
+        if (!nftInfo) {
+            setLoadingError({ isLoading: false, isError: true });
+            console.log(`No results for nftInfo ${coinId}`);
+            return;
+        }
+        setNftInfo(nftInfo);
+        setCoinInfo(null);
+        if (nftInfo.asset_platform_id && nftInfo.contract_address) {
+            yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(1000);
+            const txVolumeData = yield (0,_getNftTxChartData__WEBPACK_IMPORTED_MODULE_2__.getNftTxChartData)(nftInfo.asset_platform_id, nftInfo.contract_address);
+            if (!txVolumeData) {
+                setLoadingError({ isLoading: false, isError: true });
+                console.log(`No results for getNftTxChartData ${coinId}`);
+                return;
+            }
+            if (txVolumeData.length > 0) {
+                setTxVolumeChartData(txVolumeData);
+            }
+        }
+        setLoadingError({ isLoading: false, isError: false });
+    }
+    catch (error) {
+        setLoadingError({ isLoading: false, isError: true });
+        setNftInfo(null);
+        setTxVolumeChartData([]);
+        setCoinInfo(null);
+        console.error(`fetchDetailedNftInfo: Error searching for coin: ${coinId}`, error);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/api/fetchDetailedTokenInfo.ts":
+/*!*******************************************!*\
+  !*** ./src/api/fetchDetailedTokenInfo.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "fetchDetailedTokenInfo": () => (/* binding */ fetchDetailedTokenInfo)
+/* harmony export */ });
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
+/* harmony import */ var _utils_formatChartData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/formatChartData */ "./src/utils/formatChartData.ts");
+/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./delay */ "./src/api/delay.ts");
+/* harmony import */ var _getTokenTxChartData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getTokenTxChartData */ "./src/api/getTokenTxChartData.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+const fetchDetailedTokenInfo = (coinId, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        setLoadingError({ isLoading: true, isError: false });
+        setTxVolumeChartData([]);
+        setTokenTxsChartData([]);
+        const [coinInfo, priceMaxHistoryDataRes] = yield Promise.all([
+            (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchCoinInfo)(coinId),
+            (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchPriceHistoryData)(coinId, "usd", "365"),
+        ]);
+        if (!coinInfo) {
+            console.log(`No results for coinInfo ${coinId}`);
+            setLoadingError({ isLoading: false, isError: true });
+            return;
+        }
+        if (!priceMaxHistoryDataRes) {
+            console.log(`No results for priceMaxHistoryData ${coinId}`);
+            setLoadingError({ isLoading: false, isError: true });
+            return;
+        }
+        // get past 30 days
+        coinInfo.price30dHistoryData = (0,_utils_formatChartData__WEBPACK_IMPORTED_MODULE_1__.formatChartData)({
+            prices: priceMaxHistoryDataRes.prices.slice(-31),
+            total_volumes: priceMaxHistoryDataRes.total_volumes.slice(-31),
+        });
+        coinInfo.priceMaxHistoryData = (0,_utils_formatChartData__WEBPACK_IMPORTED_MODULE_1__.formatChartData)(priceMaxHistoryDataRes);
+        setCoinInfo(coinInfo);
+        setNftInfo(null);
+        if (coinInfo.asset_platform_id && coinInfo.contract_address) {
+            yield (0,_delay__WEBPACK_IMPORTED_MODULE_2__.delay)(1000);
+            const tokenTxChartData = yield (0,_getTokenTxChartData__WEBPACK_IMPORTED_MODULE_3__.getTokenTxChartData)(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
+            if (!tokenTxChartData) {
+                setLoadingError({ isLoading: false, isError: true });
+                console.log(`No results for getTokenTxChartData ${coinId}`);
+                return;
+            }
+            setTokenTxsChartData(tokenTxChartData);
+        }
+        setLoadingError({ isLoading: false, isError: false });
+        return;
+    }
+    catch (error) {
+        setLoadingError({ isLoading: false, isError: true });
+        console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/api/getNftTxChartData.ts":
+/*!**************************************!*\
+  !*** ./src/api/getNftTxChartData.ts ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getNftTxChartData": () => (/* binding */ getNftTxChartData)
+/* harmony export */ });
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
+/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/api/delay.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+const getNftTxChartData = (platformId, contractAddress) => __awaiter(void 0, void 0, void 0, function* () {
+    let domain;
+    switch (platformId) {
+        case "arbitrum-one":
+            domain = "api.arbiscan.io";
+            break;
+        case "avalanche":
+            domain = "api.snowtrace.io";
+            break;
+        case "base":
+            domain = "api.basescan.org";
+            break;
+        case "binance-smart-chain":
+            domain = "api.bscscan.com";
+            break;
+        case "celo":
+            domain = "api.celoscan.io";
+            break;
+        case "cronos":
+            domain = "api.cronoscan.com";
+            break;
+        case "ethereum":
+            domain = "api.etherscan.io";
+            break;
+        case "fantom":
+            domain = "api.ftmscan.com";
+            break;
+        case "polygon-pos":
+            domain = "api.polygonscan.com";
+            break;
+        case "optimistic-ethereum":
+            domain = "api-optimistic.etherscan.io";
+            break;
+        default:
+            console.log(`getNftTxChartData error: Invalid platformId: ${platformId}`);
+            return [];
+    }
+    let nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(domain, contractAddress, 10000);
+    if (nftTxsData.status === "0") {
+        console.log("nftTxsData.status ==== 0: ", nftTxsData);
+        yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(5500);
+        nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(domain, contractAddress, 10000);
+    }
+    if (nftTxsData.status !== "0" && nftTxsData.result) {
+        const nftTxsChartFormat = Object.entries(nftTxsData.result.reduce((result, txInfo) => {
+            const date = new Date(Number(txInfo.timeStamp) * 1000);
+            const dateString = date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "2-digit",
+            });
+            if (result[dateString]) {
+                result[dateString].volume += 1;
+            }
+            else {
+                result[dateString] = { date: date, volume: 1 };
+            }
+            return result;
+        }, {})).map(([, { date, volume }]) => ({ date, volume }));
+        return nftTxsChartFormat.reverse();
+    }
+    console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
+    return null;
+});
+
+
+/***/ }),
+
+/***/ "./src/api/getTokenTxChartData.ts":
+/*!****************************************!*\
+  !*** ./src/api/getTokenTxChartData.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getTokenTxChartData": () => (/* binding */ getTokenTxChartData)
+/* harmony export */ });
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
+/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/api/delay.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+const getTokenTxChartData = (platformId, contractAddress, tokenValue) => __awaiter(void 0, void 0, void 0, function* () {
+    let domain;
+    let explorerUrl;
+    switch (platformId) {
+        case "arbitrum-one":
+            domain = "api.arbiscan.io";
+            explorerUrl = "arbiscan.io";
+            break;
+        case "avalanche":
+            domain = "api.snowtrace.io";
+            explorerUrl = "snowtrace.io";
+            break;
+        case "base":
+            domain = "api.basescan.org";
+            explorerUrl = "basescan.org";
+            break;
+        case "binance-smart-chain":
+            domain = "api.bscscan.com";
+            explorerUrl = "bscscan.com";
+            break;
+        case "celo":
+            domain = "api.celoscan.io";
+            explorerUrl = "celoscan.io";
+            break;
+        case "cronos":
+            domain = "api.cronoscan.com";
+            explorerUrl = "cronoscan.com";
+            break;
+        case "ethereum":
+            domain = "api.etherscan.io";
+            explorerUrl = "etherscan.io";
+            break;
+        case "fantom":
+            domain = "api.ftmscan.com";
+            explorerUrl = "ftmscan.com";
+            break;
+        case "polygon-pos":
+            domain = "api.polygonscan.com";
+            explorerUrl = "polygonscan.com";
+            break;
+        case "optimistic-ethereum":
+            domain = "api-optimistic.etherscan.io";
+            explorerUrl = "optimistic.etherscan.io";
+            break;
+        default:
+            console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
+            return [];
+    }
+    let tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(domain, contractAddress, 10000);
+    if (tokenTxsData.status === "0") {
+        console.log("tokenTxsData.status ==== 0: ", tokenTxsData);
+        yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(5500);
+        tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(domain, contractAddress, 10000);
+    }
+    console.log("tokenTxsData123", tokenTxsData);
+    if (tokenTxsData.status !== "0" && tokenTxsData.result) {
+        const arrayWithIndices = tokenTxsData.result.map((item, index) => (Object.assign(Object.assign({}, item), { index })));
+        const sortedArray = arrayWithIndices.sort((a, b) => b.value - a.value);
+        const top50Array = sortedArray.slice(0, 50);
+        const originalOrderArray = top50Array.sort((a, b) => b.index - a.index);
+        let tokenTxsChartData = [];
+        originalOrderArray.forEach((txInfo) => {
+            tokenTxsChartData.push({
+                date: new Date(Number(txInfo.timeStamp) * 1000),
+                amount: parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal)),
+                txHash: txInfo.hash,
+                explorerUrl: "https://" + explorerUrl + "/tx/" + txInfo.hash,
+                usdValue: (parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal))) *
+                    tokenValue,
+                native: platformId,
+            });
+        });
+        return tokenTxsChartData;
+    }
+    return null;
+});
+
+
+/***/ }),
+
+/***/ "./src/api/getTrendingCoins.ts":
+/*!*************************************!*\
+  !*** ./src/api/getTrendingCoins.ts ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getTrendingCoins": () => (/* binding */ getTrendingCoins)
+/* harmony export */ });
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
+/* harmony import */ var _utils_logTrendingCoinsSocialsPost__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/logTrendingCoinsSocialsPost */ "./src/utils/logTrendingCoinsSocialsPost.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+const getTrendingCoins = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const trendingCoins = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTrendingCoins)();
+        let searchFormat = { tokens: [], total: 0 };
+        searchFormat.tokens.push({
+            id: "",
+            name: `Top Trending`,
+            image: "",
+            marketCapRank: "",
+            nft: true,
+        });
+        trendingCoins.coins.forEach((coin) => {
+            searchFormat.tokens.push({
+                id: coin.item.id,
+                name: coin.item.name,
+                image: coin.item.small,
+                marketCapRank: coin.item.market_cap_rank,
+                nft: false,
+            });
+        });
+        (0,_utils_logTrendingCoinsSocialsPost__WEBPACK_IMPORTED_MODULE_1__.logTrendingCoinsSocialsPost)(trendingCoins);
+        return searchFormat;
+    }
+    catch (error) {
+        console.error("getTrendingCoins: Error fetching trending coins:", error);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/api/searchCoinName.ts":
+/*!***********************************!*\
+  !*** ./src/api/searchCoinName.ts ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "searchCoinName": () => (/* binding */ searchCoinName)
+/* harmony export */ });
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
+/* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+const searchCoinName = (searchInput) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const searchResults = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNameSearch)(searchInput);
+        if (searchResults.coins.length === 0 && searchResults.nfts.length === 0) {
+            return {
+                tokens: [
+                    {
+                        id: "noResult",
+                        name: "No results",
+                        image: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256",
+                        marketCapRank: "",
+                        nft: false,
+                    },
+                ],
+                total: 0,
+            };
+        }
+        const nrOfNfts = (yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_1__.getSearchResultNftAmountStorage)()) || 3;
+        let displayNrOfNfts = Math.min(searchResults.nfts.length, nrOfNfts);
+        let displayNrOfCoins = 13 - displayNrOfNfts;
+        let searchFormat = { tokens: [], total: 0 };
+        // SET COINS
+        searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
+            searchFormat.tokens.push({
+                id: coin.id,
+                name: coin.name,
+                image: coin.large,
+                marketCapRank: coin.market_cap_rank,
+                nft: false,
+            });
+        });
+        // SET NFTs
+        searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
+            searchFormat.tokens.push({
+                id: nft.id,
+                name: nft.name,
+                image: nft.thumb,
+                marketCapRank: "NFT",
+                nft: true,
+            });
+        });
+        searchFormat.total = searchResults.coins.length + searchResults.nfts.length;
+        if (searchFormat.total > 13) {
+            searchFormat.tokens.push({
+                id: "",
+                name: `${searchFormat.total - 13} others`,
+                image: "",
+                marketCapRank: "",
+                nft: true,
+            });
+        }
+        return searchFormat;
+    }
+    catch (error) {
+        console.error("handleSearch: Error searching for coins:", error);
+        return {
+            tokens: [
+                {
+                    id: "noResult",
+                    name: "No results",
+                    image: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256",
+                    marketCapRank: "",
+                    nft: false,
+                },
+            ],
+            total: 0,
+        };
+    }
+});
+
+
+/***/ }),
+
 /***/ "./src/components/ChartsBlock.tsx":
 /*!****************************************!*\
   !*** ./src/components/ChartsBlock.tsx ***!
@@ -664,9 +1471,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../static/constants */ "./src/static/constants.tsx");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
-/* harmony import */ var _utils_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/fetchDetailedTokenInfo */ "./src/utils/fetchDetailedTokenInfo.ts");
-/* harmony import */ var _utils_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/fetchDetailedNftInfo */ "./src/utils/fetchDetailedNftInfo.ts");
-/* harmony import */ var _utils_getTrendingCoins__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../utils/getTrendingCoins */ "./src/utils/getTrendingCoins.ts");
+/* harmony import */ var _api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../api/fetchDetailedTokenInfo */ "./src/api/fetchDetailedTokenInfo.ts");
+/* harmony import */ var _api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../api/fetchDetailedNftInfo */ "./src/api/fetchDetailedNftInfo.ts");
+/* harmony import */ var _api_getTrendingCoins__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../api/getTrendingCoins */ "./src/api/getTrendingCoins.ts");
 /* harmony import */ var _HeaderMenuItem__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./HeaderMenuItem */ "./src/components/HeaderBlock/HeaderMenuItem.tsx");
 /* harmony import */ var _OverlayButton__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./OverlayButton */ "./src/components/HeaderBlock/OverlayButton.tsx");
 /* harmony import */ var _SearchBar__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./SearchBar */ "./src/components/HeaderBlock/SearchBar.tsx");
@@ -706,13 +1513,13 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
         // check which token info to display on startup
         const homeCoinStorage = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_2__.getHomeCoinStorage)();
         if ((homeCoinStorage === null || homeCoinStorage === void 0 ? void 0 : homeCoinStorage.id) && (homeCoinStorage === null || homeCoinStorage === void 0 ? void 0 : homeCoinStorage.nft)) {
-            (0,_utils_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_4__.fetchDetailedNftInfo)(homeCoinStorage.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
+            (0,_api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_4__.fetchDetailedNftInfo)(homeCoinStorage.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
         }
         else if (homeCoinStorage === null || homeCoinStorage === void 0 ? void 0 : homeCoinStorage.id) {
-            (0,_utils_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)(homeCoinStorage.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
+            (0,_api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)(homeCoinStorage.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
         }
         else {
-            (0,_utils_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)("bitcoin", setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
+            (0,_api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)("bitcoin", setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
         }
     });
     // get detailed coin info and trending info on startup
@@ -721,7 +1528,7 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     }, []);
     const handleStartupInfo = () => __awaiter(void 0, void 0, void 0, function* () {
         checkStartupCoinInfo();
-        const trendingCoins = yield (0,_utils_getTrendingCoins__WEBPACK_IMPORTED_MODULE_5__.getTrendingCoins)();
+        const trendingCoins = yield (0,_api_getTrendingCoins__WEBPACK_IMPORTED_MODULE_5__.getTrendingCoins)();
         setDisplayResults(trendingCoins);
         if (inputRef.current) {
             inputRef.current.focus();
@@ -768,16 +1575,16 @@ const HeaderBlock = ({ mainLogo, setCoinInfo, setNftInfo, setTxVolumeChartData, 
     };
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         if (portfolioCoinClick === null || portfolioCoinClick === void 0 ? void 0 : portfolioCoinClick.id) {
-            (0,_utils_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)(portfolioCoinClick.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
+            (0,_api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)(portfolioCoinClick.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
         }
     }, [portfolioCoinClick]);
     const handleCoinOptionClick = (tokenInfo) => __awaiter(void 0, void 0, void 0, function* () {
         if (!tokenInfo.nft) {
-            (0,_utils_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)(tokenInfo.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
+            (0,_api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_3__.fetchDetailedTokenInfo)(tokenInfo.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
             yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_2__.setHomeCoinStorage)({ id: tokenInfo.id, nft: false });
         }
         else {
-            (0,_utils_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_4__.fetchDetailedNftInfo)(tokenInfo.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
+            (0,_api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_4__.fetchDetailedNftInfo)(tokenInfo.id, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData);
             yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_2__.setHomeCoinStorage)({ id: tokenInfo.id, nft: true });
         }
         setIsExpanded(false);
@@ -940,8 +1747,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mui/icons-material/SyncProblem */ "./node_modules/@mui/icons-material/SyncProblem.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _utils_searchCoinName__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/searchCoinName */ "./src/utils/searchCoinName.ts");
-/* harmony import */ var _utils_getTrendingCoins__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/getTrendingCoins */ "./src/utils/getTrendingCoins.ts");
+/* harmony import */ var _api_searchCoinName__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../api/searchCoinName */ "./src/api/searchCoinName.ts");
+/* harmony import */ var _api_getTrendingCoins__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../api/getTrendingCoins */ "./src/api/getTrendingCoins.ts");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -983,7 +1790,7 @@ const SearchBar = ({ mainLogo, inputRef, isExpanded, setIsExpanded, setDisplayRe
     const handleSearch = (event) => __awaiter(void 0, void 0, void 0, function* () {
         if (event.key === "Enter") {
             if (searchInput.length > 0) {
-                const searchResult = yield (0,_utils_searchCoinName__WEBPACK_IMPORTED_MODULE_3__.searchCoinName)(searchInput);
+                const searchResult = yield (0,_api_searchCoinName__WEBPACK_IMPORTED_MODULE_3__.searchCoinName)(searchInput);
                 if (searchResult.total === 0) {
                     setSearchInput("");
                 }
@@ -992,7 +1799,7 @@ const SearchBar = ({ mainLogo, inputRef, isExpanded, setIsExpanded, setDisplayRe
             }
             else {
                 setIsExpanded(false);
-                const trendingCoins = yield (0,_utils_getTrendingCoins__WEBPACK_IMPORTED_MODULE_4__.getTrendingCoins)();
+                const trendingCoins = yield (0,_api_getTrendingCoins__WEBPACK_IMPORTED_MODULE_4__.getTrendingCoins)();
                 setDisplayResults(trendingCoins);
             }
         }
@@ -1186,7 +1993,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mui_material_Slider__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @mui/material/Slider */ "./node_modules/@mui/material/Slider/Slider.js");
 /* harmony import */ var _mui_material_ToggleButton__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @mui/material/ToggleButton */ "./node_modules/@mui/material/ToggleButton/ToggleButton.js");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
-/* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/api */ "./src/utils/api.ts");
+/* harmony import */ var _api_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../api/api */ "./src/api/api.ts");
 /* harmony import */ var _WalletTrackerBlock__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./WalletTrackerBlock */ "./src/components/OverlayMenu/WalletTrackerBlock.tsx");
 /* harmony import */ var _PortfolioBlock__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./PortfolioBlock */ "./src/components/OverlayMenu/PortfolioBlock.tsx");
 /* harmony import */ var _CoingeckoApiField__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./CoingeckoApiField */ "./src/components/OverlayMenu/CoingeckoApiField.tsx");
@@ -1234,7 +2041,7 @@ const OverlayMenu = ({ menuIsOpen, setMenuIsOpen, setPortfolioCoinClick, }) => {
             portfolioDataStorage.forEach((coinInfo) => {
                 coinIds.push(coinInfo.id);
             });
-            const coinsPricesData = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_4__.fetchCoinsPrices)(coinIds);
+            const coinsPricesData = yield (0,_api_api__WEBPACK_IMPORTED_MODULE_4__.fetchCoinsPrices)(coinIds);
             portfolioDataStorage.forEach((coinData) => {
                 const coinPriceData = coinsPricesData[coinData.id];
                 if (coinPriceData) {
@@ -1709,7 +2516,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../static/constants */ "./src/static/constants.tsx");
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/storage */ "./src/utils/storage.ts");
-/* harmony import */ var _utils_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/api */ "./src/utils/api.ts");
+/* harmony import */ var _api_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../api/api */ "./src/api/api.ts");
 /* harmony import */ var _utils_isEthereumAddress__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../utils/isEthereumAddress */ "./src/utils/isEthereumAddress.ts");
 /* harmony import */ var _utils_formatAddressShort__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../utils/formatAddressShort */ "./src/utils/formatAddressShort.ts");
 /* harmony import */ var _mui_icons_material_Delete__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mui/icons-material/Delete */ "./node_modules/@mui/icons-material/Delete.js");
@@ -1769,7 +2576,7 @@ const WalletTrackerBlock = ({}) => {
             setFeedbackMsg("Max 3 accounts allowed");
             return;
         }
-        const latestTxsNewAddress = yield (0,_utils_api__WEBPACK_IMPORTED_MODULE_4__.fetchLatestAddressTxs)(trackAddressInput);
+        const latestTxsNewAddress = yield (0,_api_api__WEBPACK_IMPORTED_MODULE_4__.fetchLatestAddressTxs)(trackAddressInput);
         if (((_a = latestTxsNewAddress === null || latestTxsNewAddress === void 0 ? void 0 : latestTxsNewAddress.result) === null || _a === void 0 ? void 0 : _a.length) > 0) {
             const latestNonce = (_b = latestTxsNewAddress.result[0]) === null || _b === void 0 ? void 0 : _b.nonce;
             const newAccountToTrack = {
@@ -2300,45 +3107,6 @@ const websiteIcon = __webpack_require__(/*! ../static/images/icons/website-icon.
 const discordIcon = __webpack_require__(/*! ../static/images/icons/discord-icon.png */ "./src/static/images/icons/discord-icon.png");
 
 
-const styles = {
-    topContainer: {
-        padding: "12px",
-    },
-    bottomContainer: {
-        paddingLeft: "12px",
-        paddingRight: "12px",
-    },
-    dataBlocks: {
-        display: "flex",
-        justifyContent: "space-between",
-    },
-    socialBlocks: {
-        display: "flex",
-        justifyContent: "center",
-        gap: "9px",
-    },
-    bottomMargin: {
-        marginBottom: "12px",
-    },
-    addToPortfolioIcon: {
-        cursor: "pointer",
-        width: 38,
-        height: 42,
-        padding: "9px 0px 0px",
-        borderTopLeftRadius: 34,
-        borderTopRightRadius: 34,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_15__["default"].primary_dark,
-    },
-    iconStyling: {
-        fontSize: 20,
-        color: _static_colors__WEBPACK_IMPORTED_MODULE_15__["default"].white_medium,
-        // color: colors.secondary_dark,
-    },
-};
 const App = () => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15;
     const [coinInfo, setCoinInfo] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
@@ -2463,6 +3231,45 @@ const App = () => {
                     ((_12 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _12 === void 0 ? void 0 : _12.telegram) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, title: "Telegram channel size", link: (_13 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _13 === void 0 ? void 0 : _13.telegram })),
                     ((_14 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _14 === void 0 ? void 0 : _14.discord) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_SocialBlock__WEBPACK_IMPORTED_MODULE_7__["default"], { image: telegramIcon, title: "Discord channel size", link: (_15 = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.links) === null || _15 === void 0 ? void 0 : _15.discord }))))))));
 };
+const styles = {
+    topContainer: {
+        padding: "12px",
+    },
+    bottomContainer: {
+        paddingLeft: "12px",
+        paddingRight: "12px",
+    },
+    dataBlocks: {
+        display: "flex",
+        justifyContent: "space-between",
+    },
+    socialBlocks: {
+        display: "flex",
+        justifyContent: "center",
+        gap: "9px",
+    },
+    bottomMargin: {
+        marginBottom: "12px",
+    },
+    addToPortfolioIcon: {
+        cursor: "pointer",
+        width: 38,
+        height: 42,
+        padding: "9px 0px 0px",
+        borderTopLeftRadius: 34,
+        borderTopRightRadius: 34,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_15__["default"].primary_dark,
+    },
+    iconStyling: {
+        fontSize: 20,
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_15__["default"].white_medium,
+        // color: colors.secondary_dark,
+    },
+};
 const root = document.createElement("div");
 document.body.appendChild(root);
 (0,react_dom_client__WEBPACK_IMPORTED_MODULE_1__.createRoot)(root).render(react__WEBPACK_IMPORTED_MODULE_0___default().createElement(App, null));
@@ -2545,583 +3352,909 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 const EXCHANGE_ICONS = {
-    "binance": "https://assets.coingecko.com/markets/images/52/small/binance.jpg?1519353250",
-    "gdax": "https://assets.coingecko.com/markets/images/23/small/Coinbase_Coin_Primary.png?1621471875",
-    "bybit_spot": "https://assets.coingecko.com/markets/images/698/small/bybit_spot.png?1629971794",
-    "okex": "https://assets.coingecko.com/markets/images/96/small/WeChat_Image_20220117220452.png?1642428377",
-    "huobi": "https://assets.coingecko.com/markets/images/25/small/logo_V_colour_black.png?1669177364",
-    "kucoin": "https://assets.coingecko.com/markets/images/61/small/kucoin.png?1640584259",
-    "crypto_com": "https://assets.coingecko.com/markets/images/589/small/h2oMjPp6_400x400.jpg?1669699705",
-    "binance_us": "https://assets.coingecko.com/markets/images/469/small/Binance.png?1568875842",
-    "bitfinex": "https://assets.coingecko.com/markets/images/4/small/BItfinex.png?1615895883",
-    "gate": "https://assets.coingecko.com/markets/images/60/small/gate_io_logo1.jpg?1654596784",
-    "bitget": "https://assets.coingecko.com/markets/images/540/small/Bitget_new_logo_2.png?1630049618",
-    "mxc": "https://assets.coingecko.com/markets/images/409/small/MEXC_logo_square.jpeg?1673000123",
-    "kraken": "https://assets.coingecko.com/markets/images/29/small/kraken.jpg?1584251255",
-    "bingx": "https://assets.coingecko.com/markets/images/812/small/YtFwQwJr_400x400.jpg?1646056092",
-    "phemex": "https://assets.coingecko.com/markets/images/564/small/Phemex_logo_4.png?1641357471",
-    "gemini": "https://assets.coingecko.com/markets/images/50/small/gemini.png?1605704107",
-    "okcoin": "https://assets.coingecko.com/markets/images/415/small/okcoin_Logomark_SatoshiBlack.png?1619574335",
-    "whitebit": "https://assets.coingecko.com/markets/images/418/small/whitebit_final.png?1667923522",
-    "upbit": "https://assets.coingecko.com/markets/images/117/small/upbit.png?1520388800",
-    "bkex": "https://assets.coingecko.com/markets/images/293/small/New_BKEX_logo.png?1646724631",
-    "digifinex": "https://assets.coingecko.com/markets/images/225/small/DF_logo.png?1594264355",
-    "bitmart": "https://assets.coingecko.com/markets/images/239/small/Bitmart.png?1628066397",
-    "btcex": "https://assets.coingecko.com/markets/images/753/small/C8tiQdwL_400x400.jpg?1641348961",
-    "coinsbit": "https://assets.coingecko.com/markets/images/267/small/Coinsbit.png?1605153697",
-    "btse": "https://assets.coingecko.com/markets/images/464/small/BTSE.jpg?1568012415",
-    "tidex": "https://assets.coingecko.com/markets/images/43/small/favicon.png?1651817092",
-    "bitrue": "https://assets.coingecko.com/markets/images/254/small/unnamed_%281%29.png?1656295820",
-    "hotbit": "https://assets.coingecko.com/markets/images/201/small/hotbit.jpg?1531043195",
-    "exmo": "https://assets.coingecko.com/markets/images/59/small/tt_ava.jpg?1669360697",
-    "coinex": "https://assets.coingecko.com/markets/images/135/small/coinex.jpg?1527737297",
-    "bitso": "https://assets.coingecko.com/markets/images/8/small/Bitso-icon-dark.png?1581909156",
-    "bitkub": "https://assets.coingecko.com/markets/images/249/small/bitkub.png?1537180687",
-    "bitbank": "https://assets.coingecko.com/markets/images/122/small/bitbank.jpg?1521186278",
-    "max_maicoin": "https://assets.coingecko.com/markets/images/218/small/max.jpg?1533888641",
-    "wootrade": "https://assets.coingecko.com/markets/images/683/small/woo.png?1677468948",
-    "indodax": "https://assets.coingecko.com/markets/images/3/small/logogram-Indodax-new-_JPG_format.jpg?1580974378",
-    "bittrex": "https://assets.coingecko.com/markets/images/10/small/BG-color-250x250_icon.png?1596167574",
-    "blockchain_com": "https://assets.coingecko.com/markets/images/613/small/unnamedddd.png?1610503741",
-    "coinspro": "https://assets.coingecko.com/markets/images/999/small/coinspro.png?1668488887",
-    "nice_hash": "https://assets.coingecko.com/markets/images/546/small/logo_small_light.png?1637836622",
-    "lbank": "https://assets.coingecko.com/markets/images/118/small/LBank_logo.png?1666234663",
-    "p2pb2b": "https://assets.coingecko.com/markets/images/251/small/ow0xng56_400x400.jpeg?1664939403",
-    "bithumb": "https://assets.coingecko.com/markets/images/6/small/bithumb_BI.png?1573104549",
-    "bigone": "https://assets.coingecko.com/markets/images/100/small/qcFFufEY_400x400.jpg?1561103345",
-    "coinstore": "https://assets.coingecko.com/markets/images/747/small/coinstore.jpeg?1639530357",
-    "paribu": "https://assets.coingecko.com/markets/images/136/small/paribu.jpg?1527734779",
-    "bitmax": "https://assets.coingecko.com/markets/images/277/small/%E5%8E%9F%E8%89%B2.png?1650557355",
-    "poloniex": "https://assets.coingecko.com/markets/images/37/small/poloniex.png?1663310089",
-    "bitstamp": "https://assets.coingecko.com/markets/images/9/small/bitstamp.jpg?1519627979",
-    "dextrade": "https://assets.coingecko.com/markets/images/380/small/Dex-Trade_logo_new.png?1599629803",
-    "btcturk": "https://assets.coingecko.com/markets/images/223/small/BTCTurk-exchange.jpg?1536726120",
-    "qmall": "https://assets.coingecko.com/markets/images/1108/small/qmall.jpeg?1680079189",
-    "bitflyer": "https://assets.coingecko.com/markets/images/5/small/bitFlyer-logo.png?1643256033",
-    "cryptology": "https://assets.coingecko.com/markets/images/287/small/logo-symbol.png?1669975181",
-    "latoken": "https://assets.coingecko.com/markets/images/124/small/LA_token.png?1605773251",
-    "kanga": "https://assets.coingecko.com/markets/images/852/small/KaNGa_logo.png?1681790128",
-    "luno": "https://assets.coingecko.com/markets/images/33/small/luno.jpg?1519996997",
-    "finexbox": "https://assets.coingecko.com/markets/images/318/small/finexbox20190920.jpg?1568959220",
-    "bitopro": "https://assets.coingecko.com/markets/images/358/small/bitopro_coingecko_250x250_%281%29.png?1575884378",
-    "cex": "https://assets.coingecko.com/markets/images/56/small/main-icon.png?1617267530",
-    "korbit": "https://assets.coingecko.com/markets/images/28/small/korbit-logo.png?1584091827",
-    "c_patex": "https://assets.coingecko.com/markets/images/246/small/Exchange.jpg?1681192003",
-    "bitpanda": "https://assets.coingecko.com/markets/images/474/small/appicon-ios-pro.png?1622626638",
-    "coin_metro": "https://assets.coingecko.com/markets/images/386/small/Coinmetro_Exchange_Logo_%282%29.png?1646280101",
-    "delta_spot": "https://assets.coingecko.com/markets/images/642/small/delta_spot.jpg?1617283005",
-    "kuna": "https://assets.coingecko.com/markets/images/97/small/kuna_exchange.png?1545126178",
-    "bitmex_spot": "https://assets.coingecko.com/markets/images/866/small/bitmex.jpeg?1652794708",
-    "xt": "https://assets.coingecko.com/markets/images/404/small/logo400x400.png?1575881839",
-    "bitforex": "https://assets.coingecko.com/markets/images/214/small/BitForex-Logo.png?1573808227",
-    "cointr": "https://assets.coingecko.com/markets/images/1028/small/cointr.png?1673681204",
-    "pionex": "https://assets.coingecko.com/markets/images/1026/small/pionex.png?1673508138",
-    "uniswap_v3_arbitrum": "https://assets.coingecko.com/markets/images/702/small/uniswap-v3.png?1631616149",
-    "uniswap_v2": "https://assets.coingecko.com/markets/images/535/small/256x256_Black-1.png?1590893262",
-    "pancakeswap_new": "https://assets.coingecko.com/markets/images/687/small/pancakeswap.jpeg?1626060212",
-    "difx": "https://assets.coingecko.com/markets/images/1138/small/difx.png?1683531591",
-    "pancakeswap-v3-bsc": "https://assets.coingecko.com/markets/images/1111/small/pancakeswap.jpeg?1680396625",
-    "uniswap_v3_polygon_pos": "https://assets.coingecko.com/markets/images/752/small/uniswap-polygon.png?1640329417",
-    "coindcx": "https://assets.coingecko.com/markets/images/520/small/coindcx.png?1585318880",
-    "bitvavo": "https://assets.coingecko.com/markets/images/714/small/bitvavo-mark-square-black.png?1633688872",
-    "bitcoin_com": "https://assets.coingecko.com/markets/images/467/small/fmfw.png?1635491491",
-    "pointpay": "https://assets.coingecko.com/markets/images/1060/small/pointpay.png?1676882506",
-    "quickswap_v3": "https://assets.coingecko.com/markets/images/982/small/quick.png?1676951259",
-    "traderjoe-v2-1-avalanche": "https://assets.coingecko.com/markets/images/1124/small/traderjoe.png?1682383556",
-    "uniswap_v3_optimism": "https://assets.coingecko.com/markets/images/725/small/uniswap-v3.png?1634896204",
-    "orca": "https://assets.coingecko.com/markets/images/691/small/orca.png?1628047248",
-    "gmo_japan": "https://assets.coingecko.com/markets/images/430/small/gmo_z_com.png?1561112572",
-    "independent_reserve": "https://assets.coingecko.com/markets/images/389/small/x_V5Jquo_400x400.png?1556071437",
-    "syncswap": "https://assets.coingecko.com/markets/images/1113/small/kg4-p_V7_400x400.jpg?1680752024",
-    "dodo_bsc": "https://assets.coingecko.com/markets/images/640/small/41tgsq69_400x400.png?1618372654",
-    "velodrome": "https://assets.coingecko.com/markets/images/933/small/velodrome-finance.png?1660261754",
-    "bitazza": "https://assets.coingecko.com/markets/images/837/small/btzlogo200x200_darkgreen.png?1648702264",
-    "canto_dex": "https://assets.coingecko.com/markets/images/943/small/canto.jpeg?1661216713",
-    "valr": "https://assets.coingecko.com/markets/images/1036/small/valr.png?1674711237",
-    "btcmarkets": "https://assets.coingecko.com/markets/images/237/small/BTCMarkets_logo2.png?1677732205",
-    "nominex": "https://assets.coingecko.com/markets/images/530/small/logo-200x200.png?1587543672",
-    "camelot": "https://assets.coingecko.com/markets/images/1007/small/vj5DIMhP_400x400.jpeg?1670561015",
-    "osmosis": "https://assets.coingecko.com/markets/images/684/small/osmosis-dex.jpeg?1624850295",
-    "klayswap": "https://assets.coingecko.com/markets/images/1008/small/klayswap.jpeg?1670810834",
-    "lcx": "https://assets.coingecko.com/markets/images/638/small/LCX.jpg?1616748175",
-    "pancakeswap_stableswap": "https://assets.coingecko.com/markets/images/1035/small/pancakeswap.jpeg?1674702488",
-    "coinjar": "https://assets.coingecko.com/markets/images/176/small/Logomark_2022200h_thumb.png?1657688357",
-    "wazirx": "https://assets.coingecko.com/markets/images/274/small/wazirx.jpg?1540450020",
-    "zaif": "https://assets.coingecko.com/markets/images/99/small/zaif.png?1519627467",
-    "bitlo": "https://assets.coingecko.com/markets/images/968/small/bitlo-logo-b.png?1677732049",
-    "katana": "https://assets.coingecko.com/markets/images/731/small/ronin-katana.png?1636437019",
-    "bitbuy": "https://assets.coingecko.com/markets/images/858/small/OQiasZUI_400x400.jpeg?1651835216",
-    "coinlist": "https://assets.coingecko.com/markets/images/587/small/black.png?1683178461",
-    "klever_exchange": "https://assets.coingecko.com/markets/images/984/small/BitcoinMe%283%29.png?1683595940",
-    "nash": "https://assets.coingecko.com/markets/images/472/small/Nash-token_icon.png?1569458675",
-    "flybit": "https://assets.coingecko.com/markets/images/655/small/flybit_logo_%EA%B0%80%EB%A1%9C%ED%98%95.png?1619148627",
-    "uniswap_v3": "https://assets.coingecko.com/markets/images/665/small/uniswap-v3.png?1620241698",
-    "toobit": "https://assets.coingecko.com/markets/images/1139/small/35W1E9Zw_400x400.jpg?1683613350",
-    "deepcoin": "https://assets.coingecko.com/markets/images/1005/small/%E2%98%85%E6%96%B9-%E9%80%8F%E6%98%8E7.png?1678175660",
-    "probit": "https://assets.coingecko.com/markets/images/370/small/probit.png?1594886584",
-    "coinone": "https://assets.coingecko.com/markets/images/20/small/coinone_circle_500x500.png?1606460853",
-    "fameex": "https://assets.coingecko.com/markets/images/1018/small/fameex.jpg?1678950802",
-    "coincheck": "https://assets.coingecko.com/markets/images/18/small/Coincheck.jpg?1519703836",
-    "bit_com": "https://assets.coingecko.com/markets/images/823/small/bit_old.jpg?1669104460",
-    "sushiswap": "https://assets.coingecko.com/markets/images/576/small/2048x2048_Logo.png?1609208464",
-    "bitbns": "https://assets.coingecko.com/markets/images/541/small/HS7eNJdt_400x400.jpg?1592294824",
-    "apex_pro": "https://assets.coingecko.com/markets/images/1010/small/apex_pro.png?1670999139",
-    "balancer": "https://assets.coingecko.com/markets/images/673/small/balancer-v2.png?1621005731",
-    "currency": "https://assets.coingecko.com/markets/images/512/small/Currency.com_200x200.png?1582086630",
-    "traderjoe-v2-1-arbitrum": "https://assets.coingecko.com/markets/images/1126/small/traderjoe.png?1682383857",
-    "uniswap-bsc": "https://assets.coingecko.com/markets/images/1092/small/uniswap.jpeg?1678933206",
-    "spookyswap": "https://assets.coingecko.com/markets/images/662/small/spookyswap.png?1639279823",
-    "toko_crypto": "https://assets.coingecko.com/markets/images/501/small/toko.png?1578328877",
-    "bilaxy": "https://assets.coingecko.com/markets/images/193/small/bilaxy.png?1575876562",
-    "thena": "https://assets.coingecko.com/markets/images/1039/small/thena.png?1675060616",
-    "tokpie": "https://assets.coingecko.com/markets/images/436/small/logo_circle_100x100.png?1562226767",
-    "fastex": "https://assets.coingecko.com/markets/images/1091/small/fastex.png?1678776256",
-    "stocks_exchange": "https://assets.coingecko.com/markets/images/62/small/stex.png?1538384870",
-    "pancakeswap-v3-ethereum": "https://assets.coingecko.com/markets/images/1112/small/pancakeswap.jpeg?1680397048",
-    "quickswap": "https://assets.coingecko.com/markets/images/629/small/quick.png?1676951276",
-    "coinzoom": "https://assets.coingecko.com/markets/images/656/small/Up7Yiexp_400x400.png?1619165177",
-    "beethovenx": "https://assets.coingecko.com/markets/images/729/small/JrrbHgla_400x400.png?1635921837",
-    "kickex": "https://assets.coingecko.com/markets/images/635/small/KickEX_logo.png?1652324492",
-    "novadax": "https://assets.coingecko.com/markets/images/328/small/preview-full-novadax-exchange.jpg?1575440958",
-    "fraxswap_ethereum": "https://assets.coingecko.com/markets/images/911/small/JjqQ9ROz_400x400.jpeg?1656568640",
-    "sushiswap_arbitrum": "https://assets.coingecko.com/markets/images/701/small/sushiswap3.png?1631339015",
-    "tokenize": "https://assets.coingecko.com/markets/images/383/small/tokenize-exchange.png?1586138532",
-    "thena-fusion": "https://assets.coingecko.com/markets/images/1123/small/thena.jpeg?1681986498",
-    "shibaswap": "https://assets.coingecko.com/markets/images/686/small/shibaswap.png?1625986970",
-    "bitbay": "https://assets.coingecko.com/markets/images/2/small/logo_zonda.png?1638780494",
-    "traderjoe-v2-avalanche": "https://assets.coingecko.com/markets/images/1030/small/TraderJoe.png?1674093446",
-    "traderjoe": "https://assets.coingecko.com/markets/images/692/small/traderjoe.png?1628152581",
-    "equalizer": "https://assets.coingecko.com/markets/images/1021/small/equalizer.jpeg?1672970272",
-    "mute": "https://assets.coingecko.com/markets/images/1104/small/mute.io.jpg?1679899843",
-    "nomiswap_stable": "https://assets.coingecko.com/markets/images/997/small/nomiswap.jpeg?1667789286",
-    "stellaswap-v3": "https://assets.coingecko.com/markets/images/1052/small/stellaswap.jpeg?1675929920",
-    "pangolin": "https://assets.coingecko.com/markets/images/627/small/Pangolin_Logo_Yellow_Dark_Round.png?1669695691",
-    "traderjoe-v2-arbitrum": "https://assets.coingecko.com/markets/images/1031/small/TraderJoe.png?1674093818",
-    "arbidex": "https://assets.coingecko.com/markets/images/1097/small/arbidex.jpg?1679637024",
-    "emirex": "https://assets.coingecko.com/markets/images/592/small/Emirex.png?1602067691",
-    "foxbit": "https://assets.coingecko.com/markets/images/864/small/foxbit.jpeg?1652175698",
-    "hermes_protocol": "https://assets.coingecko.com/markets/images/904/small/0xb27BbeaACA2C00d6258C3118BAB6b5B6975161c8.png?1655374501",
-    "deribit_spot": "https://assets.coingecko.com/markets/images/1144/small/deribit.jpeg?1683796094",
-    "sushiswap_polygon_pos": "https://assets.coingecko.com/markets/images/668/small/sushiswap-polygon-matic.png?1620476993",
-    "apeswap_bsc": "https://assets.coingecko.com/markets/images/651/small/APESWAP.png?1618806870",
-    "archerswap": "https://assets.coingecko.com/markets/images/1095/small/archerswap.jpg?1679636355",
-    "velocore": "https://assets.coingecko.com/markets/images/1116/small/velocore.png?1680942683",
-    "wemix_fi": "https://assets.coingecko.com/markets/images/1020/small/wemix.png?1672817205",
-    "sushiswap_arbitrum_nova": "https://assets.coingecko.com/markets/images/944/small/sushiswap-arbitrum-nova.png?1661179683",
-    "mmfinance-v3-arbitrum": "https://assets.coingecko.com/markets/images/1120/small/mm_finance.jpeg?1681696221",
-    "kujira": "https://assets.coingecko.com/markets/images/918/small/FIN-Kujira_200w.png?1658214729",
-    "mm_finance": "https://assets.coingecko.com/markets/images/764/small/g7GDg3bv_400x400.jpg?1641539227",
-    "kyberswap_classic_arbitrum": "https://assets.coingecko.com/markets/images/1077/small/kyberswap.png?1678156709",
-    "defi_kingdoms_crystalvale": "https://assets.coingecko.com/markets/images/846/small/dfk_crystalvale_logo.png?1649052617",
-    "babydogeswap": "https://assets.coingecko.com/markets/images/986/small/BabyDogeSwap.png?1666232760",
-    "kumex": "https://assets.coingecko.com/markets/images/471/small/kucoin.png?1640588148",
-    "wigoswap": "https://assets.coingecko.com/markets/images/819/small/wigoswap-dex.jpeg?1646109656",
-    "apeswap_polygon": "https://assets.coingecko.com/markets/images/718/small/dCfHngLf_400x400.jpeg?1655093813",
-    "bancor": "https://assets.coingecko.com/markets/images/108/small/huTMi4ru_400x400.jpeg?1658212378",
-    "rcpswap": "https://assets.coingecko.com/markets/images/945/small/rcp-swap.png?1661179873",
-    "icecreamswap-core": "https://assets.coingecko.com/markets/images/1068/small/icecreamswap.png?1677765364",
-    "nomiswap": "https://assets.coingecko.com/markets/images/909/small/Wxo7M8g4_400x400.jpeg?1656297959",
-    "lfgswap-core": "https://assets.coingecko.com/markets/images/1067/small/lfgswap.jpeg?1677765103",
-    "uniswap_v3_celo": "https://assets.coingecko.com/markets/images/1099/small/uniswap.jpeg?1679733735",
-    "netswap": "https://assets.coingecko.com/markets/images/760/small/netswap.png?1641437122",
-    "sushiswap_bsc": "https://assets.coingecko.com/markets/images/720/small/sushiswap-polygon-matic.png?1634201163",
-    "stellaswap": "https://assets.coingecko.com/markets/images/797/small/stellaswap.jpg?1644378572",
-    "solarbeam": "https://assets.coingecko.com/markets/images/711/small/solarbeamlogo.png?1636094667",
-    "spiritswap": "https://assets.coingecko.com/markets/images/671/small/soully-full_m.png?1660609370",
-    "kyberswap_classic_optimism": "https://assets.coingecko.com/markets/images/1055/small/kyberswap.jpeg?1676351019",
-    "arbswap_arbitrum_one": "https://assets.coingecko.com/markets/images/1078/small/Arbswap.jpeg?1678162051",
-    "solisnek": "https://assets.coingecko.com/markets/images/1121/small/solisnek.jpeg?1681696649",
-    "wagyuswap": "https://assets.coingecko.com/markets/images/809/small/wagyuu.jpg?1645632618",
-    "pancakeswap_ethereum": "https://assets.coingecko.com/markets/images/987/small/pancakeswap.jpeg?1666345534",
-    "sushiswap_fantom": "https://assets.coingecko.com/markets/images/677/small/sushiswap-fantom.png?1621508759",
-    "kyberswap_elastic_avalanche": "https://assets.coingecko.com/markets/images/961/small/kyberswap.jpeg?1662693719",
-    "kyberswap_elastic_polygon": "https://assets.coingecko.com/markets/images/959/small/kyberswap.jpeg?1662616218",
-    "cherryswap": "https://assets.coingecko.com/markets/images/703/small/JH86gKQT_400x400.jpeg?1655278375",
-    "spacefi": "https://assets.coingecko.com/markets/images/1073/small/SpaceFi.png?1678089607",
-    "lif3": "https://assets.coingecko.com/markets/images/920/small/GJKa0NuI_400x400.jpeg?1658796410",
-    "defi_swap": "https://assets.coingecko.com/markets/images/637/small/crypto-com-mco-coin-logo.png?1616490722",
-    "bluemove": "https://assets.coingecko.com/markets/images/1135/small/bluemove.png?1683259059",
-    "loopring": "https://assets.coingecko.com/markets/images/542/small/Loopring.png?1592388445",
-    "baryon_network": "https://assets.coingecko.com/markets/images/922/small/baryon_network.jpeg?1659325746",
-    "zyberswap": "https://assets.coingecko.com/markets/images/1045/small/zyberswap.jpeg?1675725512",
-    "elk_finance_bsc": "https://assets.coingecko.com/markets/images/881/small/elk.jpeg?1654080525",
-    "soulswap": "https://assets.coingecko.com/markets/images/759/small/soulswap.jpeg?1641203564",
-    "kibbleswap": "https://assets.coingecko.com/markets/images/947/small/kibbleswap.png?1661308250",
-    "radioshack_bsc": "https://assets.coingecko.com/markets/images/868/small/radioshack.jpeg?1652917826",
-    "gemswap": "https://assets.coingecko.com/markets/images/1131/small/gemswap.jpeg?1682676891",
-    "3xcalibur": "https://assets.coingecko.com/markets/images/1009/small/3xcalibur.jpeg?1670899412",
-    "mars_ecosystem": "https://assets.coingecko.com/markets/images/778/small/mars.jpg?1641892399",
-    "sushiswap_avalanche": "https://assets.coingecko.com/markets/images/780/small/sushiswap-avalanche.png?1661179731",
-    "kyberswap_elastic_arbitrum": "https://assets.coingecko.com/markets/images/963/small/kyberswap.jpeg?1662695820",
-    "glide_finance": "https://assets.coingecko.com/markets/images/847/small/glide.jpeg?1649129722",
-    "trisolaris": "https://assets.coingecko.com/markets/images/756/small/trisolaris.ico?1640346886",
-    "bakeryswap": "https://assets.coingecko.com/markets/images/626/small/bakeryswap.png?1613740980",
-    "sushiswap_xdai": "https://assets.coingecko.com/markets/images/678/small/512x512_Logo_no_chop.png?1621847591",
-    "makiswap": "https://assets.coingecko.com/markets/images/767/small/twitterlogo_%281%29.jpg?1641547416",
-    "shadowswap": "https://assets.coingecko.com/markets/images/1069/small/shadowswap.jpeg?1677765495",
-    "darkknight": "https://assets.coingecko.com/markets/images/826/small/darkknight.png?1646540326",
-    "tealswap": "https://assets.coingecko.com/markets/images/1011/small/tealswap.jpeg?1671074777",
-    "sushiswap_celo": "https://assets.coingecko.com/markets/images/728/small/sushiswap.png?1635786149",
-    "swapr_arbitrum": "https://assets.coingecko.com/markets/images/710/small/swapr.jpeg?1633429570",
-    "elk_finance_polygon": "https://assets.coingecko.com/markets/images/885/small/elk.jpeg?1654149377",
-    "defi_kingdoms": "https://assets.coingecko.com/markets/images/721/small/defi_kingdoms.png?1634697345",
-    "tranquil_finance": "https://assets.coingecko.com/markets/images/850/small/tranquil_finance.jpeg?1649769691",
-    "sushiswap_harmony": "https://assets.coingecko.com/markets/images/700/small/sushiswap.png?1630817471",
-    "swapsicle": "https://assets.coingecko.com/markets/images/1088/small/swapsicle.jpg?1678338086",
-    "kuswap": "https://assets.coingecko.com/markets/images/685/small/kuswap.jpeg?1625637468",
-    "lif3-polygon": "https://assets.coingecko.com/markets/images/1032/small/lif3.png?1674096935",
-    "voltswap_meter": "https://assets.coingecko.com/markets/images/783/small/voltswap.png?1642745686",
-    "crodex": "https://assets.coingecko.com/markets/images/750/small/crodex.png?1639738492",
-    "lfgswap": "https://assets.coingecko.com/markets/images/969/small/lfgswap.jpeg?1664255378",
-    "lif3-bsc": "https://assets.coingecko.com/markets/images/1033/small/lif3.png?1674097218",
-    "pegasys": "https://assets.coingecko.com/markets/images/833/small/z7mrIY4N_400x400.png?1647313761",
-    "traderjoe-v2-bsc": "https://assets.coingecko.com/markets/images/1079/small/traderjoe.png?1678237192",
-    "swapr_xdai": "https://assets.coingecko.com/markets/images/670/small/dxswap-black.png?1620878646",
-    "occamx": "https://assets.coingecko.com/markets/images/845/small/faJ6ZSwv_400x400.jpg?1648920861",
-    "muesliswap-milkada": "https://assets.coingecko.com/markets/images/851/small/muesli.png?1652778632",
-    "alienfi": "https://assets.coingecko.com/markets/images/1083/small/alienfi.jpg?1678263783",
-    "animeswap": "https://assets.coingecko.com/markets/images/1096/small/animeswap.jpg?1679636866",
-    "kyberswap_elastic_optimism": "https://assets.coingecko.com/markets/images/962/small/kyberswap.jpeg?1662695089",
-    "croswap": "https://assets.coingecko.com/markets/images/1042/small/croswap.jpeg?1675232729",
-    "jswap": "https://assets.coingecko.com/markets/images/749/small/jswap.jpeg?1651047551",
-    "surfswap": "https://assets.coingecko.com/markets/images/1017/small/surfswap.jpeg?1671722347",
-    "klex": "https://assets.coingecko.com/markets/images/995/small/klex.png?1667456909",
-    "paintswap": "https://assets.coingecko.com/markets/images/723/small/paintswap.png?1634880497",
-    "nearpad": "https://assets.coingecko.com/markets/images/757/small/nearpad.png?1640773960",
-    "sphynx_brise": "https://assets.coingecko.com/markets/images/915/small/FkSDUwDc_400x400.jpeg?1658112136",
-    "radioshack_avalanche": "https://assets.coingecko.com/markets/images/870/small/radioshack.jpeg?1653372509",
-    "solarflare": "https://assets.coingecko.com/markets/images/834/small/Solarflare.png?1647326452",
-    "polaris": "https://assets.coingecko.com/markets/images/1065/small/polaris.jpeg?1677571612",
-    "fuzz_finance": "https://assets.coingecko.com/markets/images/839/small/fuzz.jpeg?1648191395",
-    "saitaswap-ethereum": "https://assets.coingecko.com/markets/images/1128/small/MRzM13ry_400x400.jpg?1682396517",
-    "tarmex": "https://assets.coingecko.com/markets/images/1041/small/ttsDxH-J_400x400.jpg?1675074660",
-    "fairdesk": "https://assets.coingecko.com/markets/images/1047/small/fairdesk.jpeg?1675753897",
-    "saitaswap-bsc": "https://assets.coingecko.com/markets/images/1130/small/MRzM13ry_400x400_%281%29.jpg?1682655294",
-    "chiliz": "https://assets.coingecko.com/markets/images/518/small/r6-s7Yi2_400x400.png?1666622417",
-    "dooar_ethereum": "https://assets.coingecko.com/markets/images/925/small/dooar.png?1660228098",
-    "mm-finance-arbitrum": "https://assets.coingecko.com/markets/images/1117/small/mm_finance.jpeg?1681092241",
-    "mmfinance_polygon": "https://assets.coingecko.com/markets/images/934/small/1.png?1660353574",
-    "honeyswap_polygon": "https://assets.coingecko.com/markets/images/688/small/honeyswap.png?1627465040",
-    "dooar_bsc": "https://assets.coingecko.com/markets/images/928/small/dooar.png?1660228091",
-    "beethoven_x_optimism": "https://assets.coingecko.com/markets/images/1040/small/beethovenx.jpeg?1675062796",
-    "hitbtc": "https://assets.coingecko.com/markets/images/24/small/hitbtc.png?1603975458",
-    "txbit": "https://assets.coingecko.com/markets/images/366/small/txbit.png?1674720388",
-    "biswap": "https://assets.coingecko.com/markets/images/745/small/rXUu-spA_400x400.jpeg?1654851329",
-    "gopax": "https://assets.coingecko.com/markets/images/144/small/gopax.jpg?1523527412",
-    "zigzag": "https://assets.coingecko.com/markets/images/873/small/zigzag.png?1653471335",
-    "cetus": "https://assets.coingecko.com/markets/images/1134/small/cetus.png?1683252681",
-    "bitstorage": "https://assets.coingecko.com/markets/images/394/small/Bitstorage.png?1680587088",
-    "chronos": "https://assets.coingecko.com/markets/images/1140/small/chronos.jpeg?1683536759",
-    "oceanex": "https://assets.coingecko.com/markets/images/341/small/Oceanex.png?1548153658",
-    "stormgain": "https://assets.coingecko.com/markets/images/608/small/CpDGk9Hn_400x400.png?1607582976",
-    "swappi": "https://assets.coingecko.com/markets/images/865/small/swappi.jpeg?1652427205",
-    "dodo_arbitrum": "https://assets.coingecko.com/markets/images/707/small/dodo_logo.png?1632849982",
-    "dodo_polygon": "https://assets.coingecko.com/markets/images/709/small/dodo_logo.png?1633078678",
-    "vvs": "https://assets.coingecko.com/markets/images/736/small/vvs-finance.jpeg?1636702806",
-    "trade_ogre": "https://assets.coingecko.com/markets/images/101/small/tradeogre.jpeg?1521428643",
-    "changelly": "https://assets.coingecko.com/markets/images/580/small/pro_logo_cmc.png?1600833621",
-    "spacefi_zksync": "https://assets.coingecko.com/markets/images/1105/small/spacefi.png?1679899924",
-    "catex": "https://assets.coingecko.com/markets/images/354/small/catex.png?1550735332",
-    "liquidswap": "https://assets.coingecko.com/markets/images/1057/small/liquidswap.png?1676533490",
-    "coinzix": "https://assets.coingecko.com/markets/images/1006/small/coinzix.png?1670384963",
-    "fubt": "https://assets.coingecko.com/markets/images/382/small/FUBT.png?1554432595",
-    "quickswap-polygon-zkevm": "https://assets.coingecko.com/markets/images/1109/small/quickswap-polygon-zkevm.jpeg?1680085726",
-    "kinesis_money": "https://assets.coingecko.com/markets/images/1122/small/kinesis.png?1681981053",
-    "bit2c": "https://assets.coingecko.com/markets/images/145/small/bit2c.jpeg?1523867875",
-    "lykke": "https://assets.coingecko.com/markets/images/111/small/transparent_star_200x200.png?1651142872",
-    "tomb_swap_fantom": "https://assets.coingecko.com/markets/images/821/small/xt2eSfi5_400x400.jpg?1646121970",
-    "verse": "https://assets.coingecko.com/markets/images/980/small/verse2.png?1672799829",
-    "solidly": "https://assets.coingecko.com/markets/images/832/small/Solidly.jpeg?1647231525",
-    "claimswap": "https://assets.coingecko.com/markets/images/912/small/9pbkueWn_400x400.jpeg?1656653942",
-    "crema_finance": "https://assets.coingecko.com/markets/images/878/small/U0VuehUR_400x400.jpeg?1653902419",
-    "huobi_japan": "https://assets.coingecko.com/markets/images/431/small/BitTrade.jpg?1680844242",
-    "deversifi": "https://assets.coingecko.com/markets/images/511/small/COINGECKO_DVF_200x200.jpeg?1657853638",
-    "quickswap_dogechain": "https://assets.coingecko.com/markets/images/954/small/quick.png?1676951270",
-    "spiritswap_v2": "https://assets.coingecko.com/markets/images/935/small/soully-full_m.png?1660612152",
-    "south_xchange": "https://assets.coingecko.com/markets/images/132/small/southxchange.png?1526357146",
-    "kaidex_v3": "https://assets.coingecko.com/markets/images/949/small/kaidex_v3.png?1661481078",
-    "honeyswap": "https://assets.coingecko.com/markets/images/599/small/honeyswap.png?1603246921",
-    "tethys": "https://assets.coingecko.com/markets/images/761/small/tethys.jpeg?1641375232",
-    "astroport": "https://assets.coingecko.com/markets/images/822/small/EPpDQTZo_400x400.jpeg?1646185725",
-    "gravity_finance": "https://assets.coingecko.com/markets/images/1027/small/gravity-finance.jpeg?1673611945",
-    "birake": "https://assets.coingecko.com/markets/images/419/small/Birake.png?1559647171",
-    "sterling": "https://assets.coingecko.com/markets/images/1082/small/sterlingfi.jpeg?1678260767",
-    "dystopia": "https://assets.coingecko.com/markets/images/884/small/dystopialogo.png?1654147890",
-    "milkyswap-milkada": "https://assets.coingecko.com/markets/images/843/small/milkyswap.jpeg?1648688455",
-    "saros": "https://assets.coingecko.com/markets/images/861/small/saros.png?1651828065",
-    "apeswap-arbitrum": "https://assets.coingecko.com/markets/images/1110/small/apeswap.jpeg?1681203122",
-    "traderjoe-v2-1-bsc": "https://assets.coingecko.com/markets/images/1125/small/traderjoe.png?1682383717",
-    "wannaswap": "https://assets.coingecko.com/markets/images/755/small/wannaswap.png?1640346842",
-    "aux": "https://assets.coingecko.com/markets/images/1053/small/aux.jpeg?1676003832",
-    "benswap_smart_bitcoin_cash": "https://assets.coingecko.com/markets/images/743/small/benswap-logo.png?1638787023",
-    "sakeswap": "https://assets.coingecko.com/markets/images/598/small/SakeSwap_Avatar_01B.png?1603187695",
-    "radioshack_polygon_pos": "https://assets.coingecko.com/markets/images/872/small/radioshack.jpeg?1653372997",
-    "aprobit": "https://assets.coingecko.com/markets/images/567/small/aprobit_logo.png?1597289585",
-    "sharkyswap": "https://assets.coingecko.com/markets/images/1063/small/sharky.jpg?1677420598",
-    "pangolin-songbird": "https://assets.coingecko.com/markets/images/971/small/Pangolin-DEX.png?1674720537",
-    "firebird_finance_polygon": "https://assets.coingecko.com/markets/images/730/small/firebird-finance.png?1636117048",
-    "swapfish": "https://assets.coingecko.com/markets/images/1024/small/swapfish.png?1673328541",
-    "uniwswap": "https://assets.coingecko.com/markets/images/976/small/uniwswap.jpeg?1664359840",
-    "openswap": "https://assets.coingecko.com/markets/images/770/small/T1k6Bn9b_400x400.jpg?1641787401",
-    "bithash": "https://assets.coingecko.com/markets/images/171/small/bithash.png?1562037390",
-    "biconomy": "https://assets.coingecko.com/markets/images/633/small/biconomy-cex.png?1642930152",
-    "azbit": "https://assets.coingecko.com/markets/images/787/small/logo.png?1679018698",
-    "dcoin": "https://assets.coingecko.com/markets/images/319/small/%E8%B5%84%E6%BA%90_4_3x_2.png?1590117049",
-    "cointiger": "https://assets.coingecko.com/markets/images/204/small/cointiger.png?1588935091",
-    "citex": "https://assets.coingecko.com/markets/images/390/small/CITEX-LOGO.png?1564028815",
-    "bit2me": "https://assets.coingecko.com/markets/images/1137/small/bit2me.png?1683531473",
-    "bullish_com": "https://assets.coingecko.com/markets/images/905/small/bullish_com.png?1655198360",
-    "bithumb_global": "https://assets.coingecko.com/markets/images/405/small/bitgloball.png?1639543042",
-    "ace": "https://assets.coingecko.com/markets/images/1016/small/ace.jpeg?1671694541",
-    "bitci": "https://assets.coingecko.com/markets/images/450/small/Bitci.jpg?1564137859",
-    "koinbazar": "https://assets.coingecko.com/markets/images/751/small/photo_2023-02-19_12-57-51.jpg?1678415170",
-    "vindax": "https://assets.coingecko.com/markets/images/388/small/uToizY7z_400x400.jpg?1556070669",
-    "exmarkets": "https://assets.coingecko.com/markets/images/363/small/42200149_2115011248752220_3911078373144657920_n.jpg?1551247813",
-    "localtrade": "https://assets.coingecko.com/markets/images/338/small/LT_Icon_Main.png?1664328842",
-    "fatbtc": "https://assets.coingecko.com/markets/images/295/small/363.png?1540287518",
-    "balancer_polygon": "https://assets.coingecko.com/markets/images/694/small/Balancer.png?1628656480",
-    "maiar": "https://assets.coingecko.com/markets/images/741/small/maiar-dex.png?1638433160",
-    "orderly_network": "https://assets.coingecko.com/markets/images/1015/small/Orderly_Network_Brandmark_Transparent.png?1671762725",
-    "dfyn": "https://assets.coingecko.com/markets/images/674/small/dyfn.png?1621239014",
-    "equilibre": "https://assets.coingecko.com/markets/images/1071/small/equilibre.jpeg?1677893664",
-    "financex": "https://assets.coingecko.com/markets/images/362/small/financex.png?1684128079",
-    "quipuswap": "https://assets.coingecko.com/markets/images/726/small/quipuswap.jpg?1655280417",
-    "bisq": "https://assets.coingecko.com/markets/images/244/small/bisq-network.jpg?1536725935",
-    "kaidex": "https://assets.coingecko.com/markets/images/727/small/Kaidex.PNG?1635338694",
-    "narkasa": "https://assets.coingecko.com/markets/images/573/small/narkasa.jpg?1599029564",
-    "zbx": "https://assets.coingecko.com/markets/images/634/small/zbx.png?1615265647",
-    "idex": "https://assets.coingecko.com/markets/images/123/small/idex.jpeg?1639662931",
-    "babyswap": "https://assets.coingecko.com/markets/images/853/small/babyswap.jpeg?1650853057",
-    "arthswap": "https://assets.coingecko.com/markets/images/877/small/logo_colour_bk.png?1653873751",
-    "mojitoswap": "https://assets.coingecko.com/markets/images/772/small/mojito.jpg?1641789194",
-    "alterdice": "https://assets.coingecko.com/markets/images/327/small/alterdice_%281%29.png?1604294926",
-    "dexalot": "https://assets.coingecko.com/markets/images/824/small/DEXALOT-Logo-Mark_4x.png?1679032482",
-    "ubeswap": "https://assets.coingecko.com/markets/images/667/small/ubeswap.png?1620395520",
-    "balanced_network": "https://assets.coingecko.com/markets/images/712/small/balanced.png?1633688429",
-    "b2bx": "https://assets.coingecko.com/markets/images/226/small/b2bx.jpg?1534242273",
-    "coinmargin": "https://assets.coingecko.com/markets/images/574/small/CoinMargin.png?1601532697",
-    "beamswap": "https://assets.coingecko.com/markets/images/793/small/T0wBtdfX_400x400.jpg?1644252792",
-    "knightswap": "https://assets.coingecko.com/markets/images/825/small/knightswap.png?1646540231",
-    "miaswap": "https://assets.coingecko.com/markets/images/1029/small/miaswap.jpeg?1673833511",
-    "vitex": "https://assets.coingecko.com/markets/images/502/small/ViteX.png?1578290945",
-    "solidlizard": "https://assets.coingecko.com/markets/images/1058/small/solidlizard.jpeg?1676859082",
-    "waves": "https://assets.coingecko.com/markets/images/140/small/Favicon_2x.png?1667531626",
-    "elk_finance_avax": "https://assets.coingecko.com/markets/images/790/small/elk_finance.jpg?1644215199",
-    "safe_trade": "https://assets.coingecko.com/markets/images/215/small/safe-trade-logo.png?1533195614",
-    "impossible_finance": "https://assets.coingecko.com/markets/images/766/small/9SxWPsH6_400x400.jpg?1641537968",
-    "yoshi_exchange_ftm": "https://assets.coingecko.com/markets/images/805/small/YoshiIcon.png?1645009739",
-    "bitexbook": "https://assets.coingecko.com/markets/images/375/small/logo_bitexbook.png?1553668542",
-    "voltage_finance": "https://assets.coingecko.com/markets/images/768/small/voltage-finance.png?1644051646",
-    "planet_finance": "https://assets.coingecko.com/markets/images/739/small/gJX6V4mK_400x400.jpg?1637856552",
-    "protofi": "https://assets.coingecko.com/markets/images/841/small/HAx3HSbC_400x400.jpeg?1648607486",
-    "wavelength": "https://assets.coingecko.com/markets/images/991/small/wavelength.jpeg?1666926930",
-    "xswap": "https://assets.coingecko.com/markets/images/1000/small/xswap.jpeg?1668698596",
-    "zenlink_astar": "https://assets.coingecko.com/markets/images/923/small/zenlink.jpeg?1659332905",
-    "terraswap": "https://assets.coingecko.com/markets/images/835/small/Terraswap.png?1647410415",
-    "freiexchange": "https://assets.coingecko.com/markets/images/153/small/freiexchange.jpg?1527734462",
-    "nachoswap": "https://assets.coingecko.com/markets/images/801/small/xHJFtmT3_400x400.png?1644906112",
-    "radioshack_ethereum": "https://assets.coingecko.com/markets/images/871/small/radioshack.jpeg?1653372680",
-    "hydra": "https://assets.coingecko.com/markets/images/958/small/7iRuAuNw_400x400.jpeg?1663810957",
-    "impossible_finance_v3": "https://assets.coingecko.com/markets/images/990/small/Impossible_Finance_V3.jpeg?1666853377",
-    "luaswap": "https://assets.coingecko.com/markets/images/601/small/logo.d77b343b.png?1605083693",
-    "baguette": "https://assets.coingecko.com/markets/images/699/small/baguette.png?1630816972",
-    "sphynx_swap": "https://assets.coingecko.com/markets/images/910/small/FkSDUwDc_400x400.jpeg?1656298578",
-    "dem_exchange": "https://assets.coingecko.com/markets/images/624/small/Demex_Logo_Symbol.png?1613628716",
-    "zenlink_moonbeam": "https://assets.coingecko.com/markets/images/830/small/iShot2022-03-14_14.54.22.png?1647240935",
-    "kdswap": "https://assets.coingecko.com/markets/images/977/small/kadena.png?1664434849",
-    "diffusion": "https://assets.coingecko.com/markets/images/856/small/diffusion_dex.jpeg?1651107465",
-    "yoshi_exchange_bsc": "https://assets.coingecko.com/markets/images/804/small/YoshiIcon.png?1645009248",
-    "baptswap": "https://assets.coingecko.com/markets/images/1106/small/baptswap.jpg?1679994357",
-    "zenlink_moonriver": "https://assets.coingecko.com/markets/images/829/small/200_200.png?1647233595",
-    "huckleberry": "https://assets.coingecko.com/markets/images/746/small/huckleberry.png?1639405377",
-    "autoshark_finance": "https://assets.coingecko.com/markets/images/788/small/autoshark.png?1643859744",
-    "btcsquare": "https://assets.coingecko.com/markets/images/149/small/btcsquare_logo.png?1594263864",
-    "photonswap": "https://assets.coingecko.com/markets/images/785/small/photonswap.jpg?1643105071",
-    "levinswap_xdai": "https://assets.coingecko.com/markets/images/679/small/levinswap.jpeg?1622079667",
-    "dogeswap": "https://assets.coingecko.com/markets/images/936/small/DogeSwap.png?1660614306",
-    "value_liquid_bsc": "https://assets.coingecko.com/markets/images/641/small/vswap.png?1617331539",
-    "yobit": "https://assets.coingecko.com/markets/images/46/small/yobit.png?1519799488",
-    "trubit": "https://assets.coingecko.com/markets/images/1103/small/trubit.png?1679894265",
-    "btc_alpha": "https://assets.coingecko.com/markets/images/155/small/btc-alpha.png?1653539884",
-    "mercatox": "https://assets.coingecko.com/markets/images/53/small/mercatox.jpg?1520933436",
-    "omgfin": "https://assets.coingecko.com/markets/images/396/small/Screenshot_11.png?1556858288",
-    "btcbox": "https://assets.coingecko.com/markets/images/154/small/btcbox.jpg?1525685758",
-    "platypus_finance": "https://assets.coingecko.com/markets/images/862/small/logo-platypus-v2-icon-only.png?1652157572",
-    "bitexlive": "https://assets.coingecko.com/markets/images/321/small/logo-short.png?1570602566",
-    "bw": "https://assets.coingecko.com/markets/images/326/small/bw.com.jpg?1548664400",
-    "pancakeswap_aptos": "https://assets.coingecko.com/markets/images/1059/small/pancakeswap.jpeg?1676882255",
-    "mdex": "https://assets.coingecko.com/markets/images/631/small/mdex.png?1614153051",
-    "zebpay": "https://assets.coingecko.com/markets/images/151/small/Zebpay.jpg?1552892533",
-    "acdx": "https://assets.coingecko.com/markets/images/605/small/acdx-xlogo.png?1671632249",
-    "bione": "https://assets.coingecko.com/markets/images/387/small/Bione_full.jpg?1596065675",
-    "mdex_bsc": "https://assets.coingecko.com/markets/images/676/small/Mdex.png?1621486546",
-    "globe_exchange": "https://assets.coingecko.com/markets/images/973/small/globe_exchange.png?1664353248",
-    "wanswap": "https://assets.coingecko.com/markets/images/798/small/OWIhzGn8_400x400.jpg?1644542972",
-    "bitsten": "https://assets.coingecko.com/markets/images/292/small/Bitsten_Exchange.jpg?1540449645",
-    "coinfield": "https://assets.coingecko.com/markets/images/188/small/coinfield.jpg?1529816716",
-    "fx_swap": "https://assets.coingecko.com/markets/images/981/small/functionx.jpeg?1665540108",
-    "bitubu": "https://assets.coingecko.com/markets/images/508/small/bitubu.png?1676439743",
-    "doveswap-v3": "https://assets.coingecko.com/markets/images/1132/small/dovish.jpeg?1683011017",
-    "yokaiswap": "https://assets.coingecko.com/markets/images/970/small/yokai.png?1664256377",
-    "nami_exchange": "https://assets.coingecko.com/markets/images/550/small/namiexchange_logo_200x200.png?1594954056",
-    "step-exchange": "https://assets.coingecko.com/markets/images/965/small/StepEx.jpg?1663228514",
-    "mimo": "https://assets.coingecko.com/markets/images/695/small/mimo.png?1629357559",
-    "graviex": "https://assets.coingecko.com/markets/images/206/small/graviex-logo.png?1531798374",
-    "btc_trade_ua": "https://assets.coingecko.com/markets/images/169/small/btctradeua.png?1527501701",
-    "probit_kr": "https://assets.coingecko.com/markets/images/690/small/probit_kr.jpg?1627376209",
-    "kyberswap_classic_avalanche": "https://assets.coingecko.com/markets/images/704/small/kyberswap.png?1638932614",
-    "swych": "https://assets.coingecko.com/markets/images/937/small/Swych-500x500.png?1660739362",
-    "dao_swap": "https://assets.coingecko.com/markets/images/972/small/DAO_Maker.jpeg?1664344167",
-    "chainex": "https://assets.coingecko.com/markets/images/275/small/VTwwcyVk_400x400.jpg?1538644568",
-    "acsi_finance": "https://assets.coingecko.com/markets/images/696/small/acsi.png?1632133946",
-    "oreoswap": "https://assets.coingecko.com/markets/images/1062/small/oreoswap.png?1676883244",
-    "polycat_finance": "https://assets.coingecko.com/markets/images/771/small/polycat.png?1642418816",
-    "kyberswap_classic_bsc": "https://assets.coingecko.com/markets/images/706/small/kyberswap.png?1638932575",
-    "julswap": "https://assets.coingecko.com/markets/images/632/small/Logo-D-Unicorn.png?1644857375",
-    "mindgames-arbitrum": "https://assets.coingecko.com/markets/images/1089/small/Mindgames.jpeg?1678632413",
-    "lydia_finance": "https://assets.coingecko.com/markets/images/763/small/512_pure_logo.png?1641567787",
-    "hanbitco": "https://assets.coingecko.com/markets/images/488/small/200_%EB%B2%A0%EC%9D%B4%EC%A7%80.png?1584686295",
-    "globiance": "https://assets.coingecko.com/markets/images/1072/small/globiance.jpeg?1678083089",
-    "sharkswap": "https://assets.coingecko.com/markets/images/890/small/sharkswap.jpeg?1654675693",
-    "zipswap": "https://assets.coingecko.com/markets/images/854/small/zipswap.jpeg?1650892664",
-    "polydex": "https://assets.coingecko.com/markets/images/792/small/pic.png?1644215539",
-    "forteswap": "https://assets.coingecko.com/markets/images/1038/small/forte.png?1674806811",
-    "comethswap": "https://assets.coingecko.com/markets/images/644/small/comethswap.png?1617361625",
-    "morpheus_swap": "https://assets.coingecko.com/markets/images/781/small/46ygcxie_400x400.jpg?1642560395",
-    "polyzap": "https://assets.coingecko.com/markets/images/680/small/polyzap-swap.jpeg?1622079597",
-    "hakuswap": "https://assets.coingecko.com/markets/images/802/small/AoDC8sk-_400x400.jpeg?1644982842",
-    "amaterasu": "https://assets.coingecko.com/markets/images/886/small/amaterasu-dex.png?1654227604",
-    "powswap": "https://assets.coingecko.com/markets/images/967/small/powswap.jpeg?1663928549",
-    "unnamed": "https://assets.coingecko.com/markets/images/478/small/H6tgDbj.png?1570166355",
-    "balancer_arbitrum": "https://assets.coingecko.com/markets/images/716/small/balancer.png?1634040072",
-    "bcex": "https://assets.coingecko.com/markets/images/190/small/bcex.jpg?1529987152",
-    "velocimeter_v2": "https://assets.coingecko.com/markets/images/1094/small/velocimeter.jpg?1679480253",
-    "bitonbay": "https://assets.coingecko.com/markets/images/280/small/bitonbay-exchange.png?1539072657",
-    "integral_size": "https://assets.coingecko.com/markets/images/1022/small/integral_size.jpeg?1672994513",
-    "balancer_v1": "https://assets.coingecko.com/markets/images/537/small/Balancer.png?1591631731",
-    "tdax": "https://assets.coingecko.com/markets/images/231/small/satangpro.jpg?1549866880",
-    "nanu_exchange": "https://assets.coingecko.com/markets/images/252/small/nanu-exchange.jpg?1536725777",
-    "stake_cube": "https://assets.coingecko.com/markets/images/429/small/sc-4096x4096.png?1636537469",
-    "kyberswap_classic_polygon": "https://assets.coingecko.com/markets/images/705/small/kyberswap.png?1638932592",
-    "bitbegin": "https://assets.coingecko.com/markets/images/317/small/3Wmuydm.png?1678415317",
-    "cronaswap": "https://assets.coingecko.com/markets/images/762/small/cronaswap.png?1641437204",
-    "excalibur": "https://assets.coingecko.com/markets/images/836/small/Excalibur.jpeg?1647829951",
-    "purcow": "https://assets.coingecko.com/markets/images/306/small/Purcow.png?1540548096",
-    "viperswap": "https://assets.coingecko.com/markets/images/666/small/viperswap.png?1620368750",
-    "tangoswap": "https://assets.coingecko.com/markets/images/784/small/w3UpakzC_400x400.jpg?1642748177",
-    "oracleswap": "https://assets.coingecko.com/markets/images/1127/small/oracle.jpeg?1682387660",
-    "auroraswap": "https://assets.coingecko.com/markets/images/758/small/auroraswap.png?1640773986",
-    "curve_ethereum": "https://assets.coingecko.com/markets/images/538/small/Curve.png?1591605481",
-    "jupiter": "https://assets.coingecko.com/markets/images/815/small/jupiter.png?1656742248",
-    "openocean_finance": "https://assets.coingecko.com/markets/images/713/small/ooe.png?1633688592",
-    "sunswap_v1": "https://assets.coingecko.com/markets/images/840/small/pMErCWk4_400x400.jpeg?1648638373",
-    "woofi": "https://assets.coingecko.com/markets/images/919/small/WOOFi-Logo.png?1658231713",
-    "bibox": "https://assets.coingecko.com/markets/images/114/small/bibox.jpg?1520752603",
-    "raydium2": "https://assets.coingecko.com/markets/images/649/small/raydium.jpeg?1619080851",
-    "dodo": "https://assets.coingecko.com/markets/images/588/small/dodoex.png?1601864278",
-    "defichain": "https://assets.coingecko.com/markets/images/831/small/symbol-defi-blockchain_200.png?1646984909",
-    "wombat": "https://assets.coingecko.com/markets/images/1004/small/wombat.png?1669788032",
-    "thorswap": "https://assets.coingecko.com/markets/images/732/small/thorchain.jpg?1647487378",
-    "upbit_indonesia": "https://assets.coingecko.com/markets/images/483/small/UM9P5MNb_400x400.png?1571029017",
-    "thorwallet": "https://assets.coingecko.com/markets/images/993/small/thorwallet.jpeg?1667813174",
-    "altcointrader": "https://assets.coingecko.com/markets/images/661/small/Altcoin.png?1619755597",
-    "unisat": "https://assets.coingecko.com/markets/images/1143/small/unisat.jpeg?1683795027",
-    "minswap": "https://assets.coingecko.com/markets/images/983/small/minswap.png?1665723834",
-    "powertrade": "https://assets.coingecko.com/markets/images/827/small/powertrade.jpeg?1646810613",
-    "curve_arbitrum": "https://assets.coingecko.com/markets/images/924/small/Curve.png?1659429551",
-    "wingriders": "https://assets.coingecko.com/markets/images/1061/small/wingriders.png?1676882632",
-    "zipmex": "https://assets.coingecko.com/markets/images/616/small/ZMT_Token.png?1637254537",
-    "ref_finance": "https://assets.coingecko.com/markets/images/697/small/ref_finance.jpg?1629873564",
-    "astroport_v2": "https://assets.coingecko.com/markets/images/1081/small/astroport.jpeg?1678247137",
-    "curve_polygon": "https://assets.coingecko.com/markets/images/926/small/Curve.png?1659951652",
-    "clipper_ethereum": "https://assets.coingecko.com/markets/images/717/small/clipper.png?1634175867",
-    "tinyman": "https://assets.coingecko.com/markets/images/952/small/tinyman.jpeg?1661757528",
-    "ferro_protocol": "https://assets.coingecko.com/markets/images/1075/small/ferro_protocol.png?1678088319",
-    "thala": "https://assets.coingecko.com/markets/images/1118/small/thala.jpeg?1681197840",
-    "saber": "https://assets.coingecko.com/markets/images/738/small/saber.png?1637607391",
-    "bitfex": "https://assets.coingecko.com/markets/images/335/small/e8Qto1_t_400x400.jpg?1547027830",
-    "curve_fantom": "https://assets.coingecko.com/markets/images/927/small/W1sQNVWo_400x400.jpeg?1660026138",
-    "clipper_optimism": "https://assets.coingecko.com/markets/images/875/small/oJ7a91sA_400x400.jpeg?1653576620",
-    "curve_avalanche": "https://assets.coingecko.com/markets/images/921/small/Curve.png?1659341513",
-    "abcc": "https://assets.coingecko.com/markets/images/172/small/abcc.png?1546228821",
-    "sundaeswap": "https://assets.coingecko.com/markets/images/974/small/sundaeswap.png?1664353388",
-    "dforceswap_polygon": "https://assets.coingecko.com/markets/images/1093/small/7h5VV8EE_400x400.jpg?1679558651",
-    "loopring_amm": "https://assets.coingecko.com/markets/images/618/small/Loopring.jpg?1611557168",
-    "acala_swap": "https://assets.coingecko.com/markets/images/883/small/acala.jpeg?1654145207",
-    "kava": "https://assets.coingecko.com/markets/images/719/small/photo_2021-10-14_19-47-17.jpg?1634212486",
-    "opnx_spot": "https://assets.coingecko.com/markets/images/1114/small/opnx.jpeg?1680755486",
-    "bancor_v3": "https://assets.coingecko.com/markets/images/916/small/huTMi4ru_400x400.jpeg?1658212390",
-    "curve_optimism": "https://assets.coingecko.com/markets/images/931/small/W1sQNVWo_400x400.jpeg?1660124966",
-    "iziswap": "https://assets.coingecko.com/markets/images/1003/small/iziswap.png?1669273186",
-    "dforceswap_arbitrum": "https://assets.coingecko.com/markets/images/1086/small/dforce.jpeg?1678292727",
-    "four_swap": "https://assets.coingecko.com/markets/images/857/small/EdGSwj0y_400x400.jpg?1651219424",
-    "oraidex": "https://assets.coingecko.com/markets/images/992/small/oraidex.png?1667441572",
-    "sovryn": "https://assets.coingecko.com/markets/images/1001/small/sovryn.png?1669089390",
-    "bitinka": "https://assets.coingecko.com/markets/images/235/small/bitinka-exchange.jpg?1535514362",
-    "zilswap": "https://assets.coingecko.com/markets/images/652/small/1Artboard_2_2x.png?1628058377",
-    "clipper_polygon": "https://assets.coingecko.com/markets/images/740/small/clipper.png?1638320772",
-    "polkaswap": "https://assets.coingecko.com/markets/images/715/small/PSWAP.png?1633690422",
-    "curve_xdai": "https://assets.coingecko.com/markets/images/930/small/W1sQNVWo_400x400.jpeg?1660125046",
-    "karura_swap": "https://assets.coingecko.com/markets/images/880/small/z6Z3A427_400x400.jpeg?1653986413",
-    "stellar_term": "https://assets.coingecko.com/markets/images/233/small/stellarterm-decentralized-exchange.png?1535430497",
-    "one_inch_liquidity_protocol": "https://assets.coingecko.com/markets/images/611/small/1inch-liquidity-protocol.png?1608873020",
-    "plenty_network": "https://assets.coingecko.com/markets/images/1049/small/plenty_network.jpeg?1675753905",
-    "flatqube": "https://assets.coingecko.com/markets/images/879/small/RXXNTXEA_400x400.jpeg?1654074517",
-    "alexgo": "https://assets.coingecko.com/markets/images/951/small/alexgo.png?1661757431",
-    "concave": "https://assets.coingecko.com/markets/images/848/small/concave.jpeg?1649166994",
-    "crescent": "https://assets.coingecko.com/markets/images/932/small/PeQ_j_ca_400x400.jpeg?1660212972",
-    "paymium": "https://assets.coingecko.com/markets/images/133/small/paymium_logo-ico.png?1670424600",
-    "cswap": "https://assets.coingecko.com/markets/images/1102/small/cswap.jpeg?1679894077",
-    "libre_swap": "https://assets.coingecko.com/markets/images/1090/small/libre_swap.jpeg?1678776162",
-    "solidlydex": "https://assets.coingecko.com/markets/images/1023/small/solid128.png?1673234064",
-    "inx_one": "https://assets.coingecko.com/markets/images/1076/small/inx_one.jpeg?1678088419",
-    "spicyswap": "https://assets.coingecko.com/markets/images/988/small/spicyswap.png?1666694881",
-    "energiswap": "https://assets.coingecko.com/markets/images/860/small/Energi.jpeg?1651826135",
-    "kyberswap_classic_ethereum": "https://assets.coingecko.com/markets/images/647/small/kyberswap.png?1638932482",
-    "kaddex": "https://assets.coingecko.com/markets/images/1070/small/kaddex.jpeg?1677769912",
-    "ellipsis_finance": "https://assets.coingecko.com/markets/images/1043/small/ellipsis.jpeg?1675317061",
-    "muesliswap": "https://assets.coingecko.com/markets/images/975/small/muesliswap.png?1664353445",
-    "ruby_exchange": "https://assets.coingecko.com/markets/images/953/small/Coin-01.png?1675866327",
-    "newdex": "https://assets.coingecko.com/markets/images/314/small/4bFYszpP_400x400.jpg?1541110686",
-    "spartan_protocol": "https://assets.coingecko.com/markets/images/867/small/C2obYdLV_400x400.png?1653098075",
-    "magicswap": "https://assets.coingecko.com/markets/images/1037/small/magicswap.jpeg?1674725497",
-    "openleverage": "https://assets.coingecko.com/markets/images/929/small/256x256_OLE_Token_Logo.png?1660113966",
-    "elk_finance_ethereum": "https://assets.coingecko.com/markets/images/891/small/elk.jpeg?1655004493",
-    "swop_fi": "https://assets.coingecko.com/markets/images/659/small/yztclCs.png?1619603199",
-    "sinegy": "https://assets.coingecko.com/markets/images/615/small/sinegy-logo-200x200px.png?1610953531",
-    "dforceswap_optimism": "https://assets.coingecko.com/markets/images/1087/small/dforce.jpeg?1678292719",
-    "namebase": "https://assets.coingecko.com/markets/images/510/small/namebase.jpg?1581476165",
-    "leonicornswap": "https://assets.coingecko.com/markets/images/803/small/leonicornswap.jpg?1645008350",
-    "secondbtc": "https://assets.coingecko.com/markets/images/320/small/secondbtc.png?1554861587",
-    "yodeswap": "https://assets.coingecko.com/markets/images/946/small/yodeswap.png?1661307973",
-    "xcad": "https://assets.coingecko.com/markets/images/978/small/xcad.png?1664441450",
-    "zebitex": "https://assets.coingecko.com/markets/images/566/small/zebitex_logo.png?1596782748",
-    "coingi": "https://assets.coingecko.com/markets/images/170/small/coingi.png?1527501455",
-    "curve_moonbeam": "https://assets.coingecko.com/markets/images/1051/small/curve.jpeg?1676437461",
-    "neutroswap": "https://assets.coingecko.com/markets/images/1133/small/neutroswap.jpeg?1683011987",
-    "loop_markets": "https://assets.coingecko.com/markets/images/813/small/loop.png?1646224514",
-    "coinfalcon": "https://assets.coingecko.com/markets/images/126/small/cinfalcon.jpg?1522142307",
-    "hebeswap": "https://assets.coingecko.com/markets/images/955/small/hebeswap.jpeg?1662010489",
-    "dove_wallet": "https://assets.coingecko.com/markets/images/453/small/btx.png?1653461006",
-    "capricorn": "https://assets.coingecko.com/markets/images/913/small/9QiVZDbl_400x400.jpeg?1657006333",
-    "tetuswap": "https://assets.coingecko.com/markets/images/800/small/XZdZhhl2_400x400.jpeg?1644843781",
-    "duckydefi": "https://assets.coingecko.com/markets/images/888/small/duckydefi.png?1654503252",
-    "spice_trade_avalanche": "https://assets.coingecko.com/markets/images/956/small/Spice_Trade.jpeg?1662356802",
-    "tropical_finance": "https://assets.coingecko.com/markets/images/774/small/8CF96417-4FC7-4E3B-857C-E157F4060DED.png?1641794033",
-    "pinkswap": "https://assets.coingecko.com/markets/images/681/small/pinkswap.png?1623330530",
-    "altmarkets": "https://assets.coingecko.com/markets/images/269/small/altmarkets.png?1550836537",
-    "oolongswap": "https://assets.coingecko.com/markets/images/734/small/Capture.PNG?1636633723",
-    "dforceswap_bsc": "https://assets.coingecko.com/markets/images/1085/small/dforce.jpeg?1678292734",
-    "greenhouse_dex": "https://assets.coingecko.com/markets/images/889/small/ANnNLN8x_400x400.jpeg?1654575956",
-    "1bch": "https://assets.coingecko.com/markets/images/791/small/m4FKR6aS_400x400.jpg?1644214295",
-    "dogeshrek": "https://assets.coingecko.com/markets/images/939/small/dogeshrek.png?1660700140",
-    "saucerswap_dex": "https://assets.coingecko.com/markets/images/1014/small/sswap.png?1672109031",
-    "empiredex_empire": "https://assets.coingecko.com/markets/images/1064/small/empire.jpeg?1677571160",
-    "bobswap_polygon": "https://assets.coingecko.com/markets/images/1056/small/zkBob.png?1676359700",
-    "binance_dex_mini": "missing_small.png",
-    "swapr_ethereum": "https://assets.coingecko.com/markets/images/689/small/dxswap-black.png?1627464962",
-    "defi_plaza": "https://assets.coingecko.com/markets/images/908/small/a8Qe_bCU_400x400.png?1656300829",
-    "cantoswap": "https://assets.coingecko.com/markets/images/1050/small/cantoswap.png?1675753952"
+    binance: "https://coin-images.coingecko.com/markets/images/52/small/binance.jpg?1706864274",
+    bybit_spot: "https://coin-images.coingecko.com/markets/images/698/small/bybit_spot.png?1706864649",
+    okex: "https://coin-images.coingecko.com/markets/images/96/small/WeChat_Image_20220117220452.png?1706864283",
+    gdax: "https://coin-images.coingecko.com/markets/images/23/small/Coinbase_Coin_Primary.png?1706864258",
+    kucoin: "https://coin-images.coingecko.com/markets/images/61/small/kucoin.png?1706864282",
+    kraken: "https://coin-images.coingecko.com/markets/images/29/small/kraken.jpg?1706864265",
+    binance_us: "https://coin-images.coingecko.com/markets/images/469/small/Binance.png?1706864454",
+    bitget: "https://coin-images.coingecko.com/markets/images/540/small/2023-07-25_21.47.43.jpg?1706864507",
+    crypto_com: "https://coin-images.coingecko.com/markets/images/589/small/h2oMjPp6_400x400.jpg?1706864542",
+    bigone: "https://coin-images.coingecko.com/markets/images/100/small/qcFFufEY_400x400.jpg?1706864287",
+    bingx: "https://coin-images.coingecko.com/markets/images/812/small/YtFwQwJr_400x400.jpg?1706864837",
+    bitstamp: "https://coin-images.coingecko.com/markets/images/9/small/bitstamp.jpg?1706864251",
+    "hashkey-global": "https://coin-images.coingecko.com/markets/images/1582/small/20240422-181043.jpg?1715067065",
+    hashkey_exchange: "https://coin-images.coingecko.com/markets/images/1206/small/hashkey_2.png?1706869603",
+    wootrade: "https://coin-images.coingecko.com/markets/images/683/small/woo.png?1706864629",
+    huobi: "https://coin-images.coingecko.com/markets/images/25/small/htx.png?1721712842",
+    whitebit: "https://coin-images.coingecko.com/markets/images/418/small/800_800.jpg?1706864419",
+    lbank: "https://coin-images.coingecko.com/markets/images/118/small/LBank_logo.png?1706864296",
+    gate: "https://coin-images.coingecko.com/markets/images/60/small/gate_io_logo1.jpg?1706864280",
+    xt: "https://coin-images.coingecko.com/markets/images/404/small/20240701-155217.jpeg?1719895821",
+    mxc: "https://coin-images.coingecko.com/markets/images/409/small/MEXC_logo_square.jpeg?1706864416",
+    upbit: "https://coin-images.coingecko.com/markets/images/117/small/upbit.png?1706864294",
+    bitmart: "https://coin-images.coingecko.com/markets/images/239/small/Bitmart.png?1706864341",
+    azbit: "https://coin-images.coingecko.com/markets/images/787/small/logo.png?1706864819",
+    fameex: "https://coin-images.coingecko.com/markets/images/1018/small/fameex.jpg?1706865005",
+    latoken: "https://coin-images.coingecko.com/markets/images/124/small/latoken.png?1706864301",
+    bitunix: "https://coin-images.coingecko.com/markets/images/1185/small/APP_icon_1024.png?1706865197",
+    btse: "https://coin-images.coingecko.com/markets/images/464/small/BTSE.jpg?1706864449",
+    dextrade: "https://coin-images.coingecko.com/markets/images/380/small/Dex-Trade.png?1706864395",
+    coinex: "https://coin-images.coingecko.com/markets/images/135/small/coinex.jpg?1706864305",
+    phemex: "https://coin-images.coingecko.com/markets/images/564/small/phemex_logo.png?1706864519",
+    bitdelta: "https://coin-images.coingecko.com/markets/images/1317/small/BitDelta_Logo_200x200.png?1706865321",
+    fastex: "https://coin-images.coingecko.com/markets/images/1091/small/fastex.png?1706865112",
+    gemini: "https://coin-images.coingecko.com/markets/images/50/small/gemini.png?1706864273",
+    bitso: "https://coin-images.coingecko.com/markets/images/8/small/Bitso-icon-dark.png?1706864249",
+    deribit_spot: "https://coin-images.coingecko.com/markets/images/1144/small/deribit.jpeg?1706865161",
+    indodax: "https://coin-images.coingecko.com/markets/images/3/small/logogram-Indodax-new-_JPG_format.jpg?1706864243",
+    bitcointry_exchange: "https://coin-images.coingecko.com/markets/images/1231/small/bitcointry.png?1716374556",
+    luno: "https://coin-images.coingecko.com/markets/images/33/small/RGB_LUNO_SYMBOL_NAVY_BLUE_1.png?1706864266",
+    coinspro: "https://coin-images.coingecko.com/markets/images/999/small/coinspro.png?1706864987",
+    backpack_exchange: "https://coin-images.coingecko.com/markets/images/1387/small/backpack.jpeg?1708663541",
+    bitcastle: "https://coin-images.coingecko.com/markets/images/1341/small/bitcastle_logo.png?1706865343",
+    xeggex: "https://coin-images.coingecko.com/markets/images/1299/small/XeggeX_Logo_200.png?1706865292",
+    nice_hash: "https://coin-images.coingecko.com/markets/images/546/small/logo_small_light.png?1706864513",
+    okcoin: "https://coin-images.coingecko.com/markets/images/415/small/okcoin_Logomark_SatoshiBlack.png?1706864417",
+    p2pb2b: "https://coin-images.coingecko.com/markets/images/251/small/ow0xng56_400x400.jpeg?1706864347",
+    coinw: "https://coin-images.coingecko.com/markets/images/1172/small/coinw_new_logo.png?1713879109",
+    biconomy: "https://coin-images.coingecko.com/markets/images/633/small/logo_B._200x200.png?1723787144",
+    bitmax: "https://coin-images.coingecko.com/markets/images/277/small/%E5%8E%9F%E8%89%B2.png?1706864357",
+    bithumb: "https://coin-images.coingecko.com/markets/images/6/small/bithumb_BI.png?1706864248",
+    deepcoin: "https://coin-images.coingecko.com/markets/images/1005/small/deepcoin.jpeg?1706864992",
+    toobit: "https://coin-images.coingecko.com/markets/images/1139/small/Toobit_logo400X400.png?1706865157",
+    bitvavo: "https://coin-images.coingecko.com/markets/images/714/small/bitvavo-mark-square-black.png?1706864670",
+    paribu: "https://coin-images.coingecko.com/markets/images/136/small/paribu.jpg?1706864307",
+    slex: "https://coin-images.coingecko.com/markets/images/1527/small/slex_200x200_2.png?1711335245",
+    blofin_spot: "https://coin-images.coingecko.com/markets/images/1645/small/blofin_logo.jpeg?1718852326",
+    bitfinex: "https://coin-images.coingecko.com/markets/images/4/small/BItfinex.png?1706864245",
+    exmo: "https://coin-images.coingecko.com/markets/images/59/small/tt_ava.jpg?1706864278",
+    bitflyer: "https://coin-images.coingecko.com/markets/images/5/small/bitFlyer-logo.png?1706864247",
+    bitkub: "https://coin-images.coingecko.com/markets/images/249/small/bitkub.png?1706864345",
+    bitbank: "https://coin-images.coingecko.com/markets/images/122/small/bitbank.jpg?1706864298",
+    max_maicoin: "https://coin-images.coingecko.com/markets/images/218/small/max.jpg?1706864331",
+    bitopro: "https://coin-images.coingecko.com/markets/images/358/small/bitopro_coingecko_250x250_%281%29.png?1706864386",
+    itbit: "https://coin-images.coingecko.com/markets/images/26/small/itbit.png?1706864262",
+    korbit: "https://coin-images.coingecko.com/markets/images/28/small/korbit-logo.png?1706864263",
+    "okcoin-japan": "https://coin-images.coingecko.com/markets/images/1420/small/OKJlogo%E6%96%B9%E5%BD%A2.jpg?1707298108",
+    kuna: "https://coin-images.coingecko.com/markets/images/97/small/kuna_exchange.png?1706864284",
+    cryptology: "https://coin-images.coingecko.com/markets/images/287/small/logo-symbol.png?1706864361",
+    nonkyc_io: "https://coin-images.coingecko.com/markets/images/1281/small/NKYC-Logo.png?1706865279",
+    tokenize: "https://coin-images.coingecko.com/markets/images/383/small/tokenize-exchange.png?1706864398",
+    coindcx: "https://coin-images.coingecko.com/markets/images/520/small/coindcx.png?1706864493",
+    bittime: "https://coin-images.coingecko.com/markets/images/1296/small/1024.png?1706865289",
+    cryptal: "https://coin-images.coingecko.com/markets/images/1352/small/photo_2023-12-22_16.16.29.jpeg?1706865379",
+    cex: "https://coin-images.coingecko.com/markets/images/56/small/main-icon.png?1706864277",
+    delta_spot: "https://coin-images.coingecko.com/markets/images/642/small/delta_spot.jpg?1706864589",
+    blockchain_com: "https://coin-images.coingecko.com/markets/images/613/small/unnamedddd.png?1706864559",
+    bitmex_spot: "https://coin-images.coingecko.com/markets/images/866/small/bitmex.jpeg?1706864881",
+    digifinex: "https://coin-images.coingecko.com/markets/images/225/small/DF_logo.png?1706864334",
+    tapbit: "https://coin-images.coingecko.com/markets/images/1374/small/Tapbit-Logo.png?1706865388",
+    weex: "https://coin-images.coingecko.com/markets/images/1398/small/WEEX-icon-200.png?1706865400",
+    hotcoin_global: "https://coin-images.coingecko.com/markets/images/1345/small/Hotcoin_logo.jpg?1706901913",
+    uniswap_v3: "https://coin-images.coingecko.com/markets/images/665/small/uniswap-v3.png?1706864608",
+    orangex: "https://coin-images.coingecko.com/markets/images/1272/small/Subtract.png?1706865272",
+    bitvenus_spot: "https://coin-images.coingecko.com/markets/images/1253/small/BitVenus_logo.png?1709559502",
+    "pancakeswap-v3-bsc": "https://coin-images.coingecko.com/markets/images/1111/small/pancakeswap.jpeg?1706865132",
+    pionex: "https://coin-images.coingecko.com/markets/images/1026/small/pionex.png?1706865056",
+    "raydium-clmm": "https://coin-images.coingecko.com/markets/images/1421/small/raydium.jpeg?1707371905",
+    uniswap_v3_arbitrum: "https://coin-images.coingecko.com/markets/images/702/small/uniswap-v3.png?1706864655",
+    bitrue: "https://coin-images.coingecko.com/markets/images/254/small/unnamed_%281%29.png?1706864350",
+    probit: "https://coin-images.coingecko.com/markets/images/370/small/probit.png?1706864390",
+    uniswap_v2: "https://coin-images.coingecko.com/markets/images/535/small/256x256_Black-1.png?1706864503",
+    bitci: "https://coin-images.coingecko.com/markets/images/450/small/Bitci.jpg?1706864442",
+    coinstore: "https://coin-images.coingecko.com/markets/images/747/small/coinstore.jpeg?1706864780",
+    pointpay: "https://coin-images.coingecko.com/markets/images/1060/small/pointpay_logo2.png?1716858068",
+    c_patex: "https://coin-images.coingecko.com/markets/images/246/small/Exchange.jpg?1706864344",
+    bydfi: "https://coin-images.coingecko.com/markets/images/1186/small/photo_2024-03-20_11-10-03.jpg?1710914231",
+    pancakeswap_new: "https://coin-images.coingecko.com/markets/images/687/small/pancakeswap.jpeg?1706864634",
+    bit2me: "https://coin-images.coingecko.com/markets/images/1137/small/bit2me.png?1706865155",
+    uniswap_v3_polygon_pos: "https://coin-images.coingecko.com/markets/images/752/small/uniswap-polygon.png?1706864784",
+    "uniswap-v3-base": "https://coin-images.coingecko.com/markets/images/1212/small/uniswap-v3.jpg?1706865221",
+    balancer: "https://coin-images.coingecko.com/markets/images/673/small/balancer-v2.png?1706864616",
+    "pancakeswap-v3-arbitrum": "https://coin-images.coingecko.com/markets/images/1225/small/pancakeswap.jpeg?1706865233",
+    bullish_com: "https://coin-images.coingecko.com/markets/images/905/small/bullish_com.png?1706864904",
+    "traderjoe-v2-2-arbitrum": "https://coin-images.coingecko.com/markets/images/1677/small/traderjoe.png?1722318740",
+    bitcoin_com: "https://coin-images.coingecko.com/markets/images/467/small/fmfw.png?1706864453",
+    fairdesk: "https://coin-images.coingecko.com/markets/images/1047/small/fairdesk.jpeg?1706865073",
+    cetus: "https://coin-images.coingecko.com/markets/images/1134/small/cetus.png?1706865152",
+    "pancakeswap-v3-ethereum": "https://coin-images.coingecko.com/markets/images/1112/small/pancakeswap.jpeg?1706865133",
+    earnbit: "https://coin-images.coingecko.com/markets/images/1686/small/EarnBIT_logo.png?1723102496",
+    gmo_japan: "https://coin-images.coingecko.com/markets/images/430/small/gmo_z_com.png?1706864428",
+    uniswap_v3_optimism: "https://coin-images.coingecko.com/markets/images/725/small/uniswap-v3.png?1706864684",
+    bitstorage: "https://coin-images.coingecko.com/markets/images/394/small/Group_3575807.png?1706864409",
+    "pancakeswap-v3-base": "https://coin-images.coingecko.com/markets/images/1264/small/pancakeswap.jpeg?1706865267",
+    kanga: "https://coin-images.coingecko.com/markets/images/852/small/KaNGa_logo.png?1706864870",
+    "traderjoe-v2-2-avalanche": "https://coin-images.coingecko.com/markets/images/1676/small/traderjoe.png?1722318593",
+    "lynex-linea": "https://coin-images.coingecko.com/markets/images/1250/small/lynex.png?1706865254",
+    bitazza: "https://coin-images.coingecko.com/markets/images/837/small/btzlogo200x200_darkgreen.png?1706864859",
+    "traderjoe-v2-1-arbitrum": "https://coin-images.coingecko.com/markets/images/1126/small/JoeToken.png?1706865145",
+    "thruster-v3": "https://coin-images.coingecko.com/markets/images/1460/small/thrusterfi.jpeg?1709253847",
+    uniswap_v3_celo: "https://coin-images.coingecko.com/markets/images/1099/small/uniswap.jpeg?1706865119",
+    osmosis: "https://coin-images.coingecko.com/markets/images/684/small/osmosis-dex.jpeg?1706864630",
+    "nuri-v2": "https://coin-images.coingecko.com/markets/images/1601/small/nuri_discord.png?1723623493",
+    tokpie: "https://coin-images.coingecko.com/markets/images/436/small/logo_circle_100x100.png?1706864435",
+    ekubo: "https://coin-images.coingecko.com/markets/images/1423/small/ekubo.png?1707919680",
+    "aerodrome-base": "https://coin-images.coingecko.com/markets/images/1271/small/aerodrome.jpeg?1706865271",
+    "turbos-finance": "https://coin-images.coingecko.com/markets/images/1323/small/Turbos_Logo_dark_mode.png?1706865327",
+    pulsex: "https://coin-images.coingecko.com/markets/images/1148/small/pulsex.jpeg?1706865164",
+    bitlo: "https://coin-images.coingecko.com/markets/images/968/small/bitlo-logo-b.png?1706864959",
+    "uniswap-v2-base": "https://coin-images.coingecko.com/markets/images/1472/small/uniswap.png?1709698489",
+    wigoswap: "https://coin-images.coingecko.com/markets/images/819/small/wigoswap-dex.jpeg?1706864842",
+    "baseswap-v3": "https://coin-images.coingecko.com/markets/images/1600/small/baseswap.png?1715829589",
+    coin_metro: "https://coin-images.coingecko.com/markets/images/386/small/Coinmetro_Exchange_Logo_%282%29.png?1706864399",
+    "liquidswap-v0-5": "https://coin-images.coingecko.com/markets/images/1556/small/liquidswap.png?1713234333",
+    independent_reserve: "https://coin-images.coingecko.com/markets/images/389/small/x_V5Jquo_400x400.png?1706864404",
+    apex_pro: "https://coin-images.coingecko.com/markets/images/1010/small/apex_pro.png?1706864996",
+    "pancakeswap-v3-zksync": "https://coin-images.coingecko.com/markets/images/1193/small/pancakeswap.jpeg?1706865204",
+    nostra: "https://coin-images.coingecko.com/markets/images/1425/small/Nostra-Logo-for-Coingecko.png?1716206530",
+    sushiswap: "https://coin-images.coingecko.com/markets/images/576/small/2048x2048_Logo.png?1706864530",
+    mercado_bitcoin: "https://coin-images.coingecko.com/markets/images/34/small/logo_MB_hexagono.png?1706864267",
+    "vertex-protocol-spot": "https://coin-images.coingecko.com/markets/images/1293/small/vertex.png?1706865286",
+    btcmarkets: "https://coin-images.coingecko.com/markets/images/237/small/BTCMarkets_logo2.png?1706864340",
+    "iziswap-scroll": "https://coin-images.coingecko.com/markets/images/1331/small/iziswap.png?1706865334",
+    canto_dex: "https://coin-images.coingecko.com/markets/images/943/small/canto.jpeg?1706864936",
+    "pancakeswap-v3-linea": "https://coin-images.coingecko.com/markets/images/1258/small/pcs.jpeg?1706865261",
+    "zkswap-finance": "https://coin-images.coingecko.com/markets/images/1273/small/200x200_Logo.png?1706865273",
+    "quickswap-v3-manta-pacific": "https://coin-images.coingecko.com/markets/images/1353/small/quickswap.jpeg?1706865379",
+    traderjoe: "https://coin-images.coingecko.com/markets/images/692/small/JoeToken.png?1706864641",
+    "tokan-exchange": "https://coin-images.coingecko.com/markets/images/1604/small/tokan-exchange.png?1715933001",
+    "velodrome-finance-v2": "https://coin-images.coingecko.com/markets/images/1181/small/velodrome.jpeg?1706865194",
+    "swapbased-v3": "https://coin-images.coingecko.com/markets/images/1593/small/SwapBased_Logo__1_-removebg-preview.png?1715323576",
+    foxbit: "https://coin-images.coingecko.com/markets/images/864/small/foxbit.jpeg?1706864880",
+    "oku-trade-taiko": "https://coin-images.coingecko.com/markets/images/1657/small/oku_logo_bg_%287%29_1.png?1719801152",
+    zaif: "https://coin-images.coingecko.com/markets/images/99/small/zaif.png?1706864286",
+    "balancer-gnosis": "https://coin-images.coingecko.com/markets/images/1141/small/balancer-bal-logo.png?1706865159",
+    coinzoom: "https://coin-images.coingecko.com/markets/images/656/small/Up7Yiexp_400x400.png?1706864601",
+    coinlist: "https://coin-images.coingecko.com/markets/images/587/small/black.png?1706864539",
+    raydium2: "https://coin-images.coingecko.com/markets/images/649/small/raydium.jpeg?1706864594",
+    "aerodrome-slipstream": "https://coin-images.coingecko.com/markets/images/1579/small/aerodrome.jpeg?1714981922",
+    meteora: "https://coin-images.coingecko.com/markets/images/1520/small/meteora.jpeg?1710908196",
+    coincheck: "https://coin-images.coingecko.com/markets/images/18/small/Coincheck.jpg?1706864255",
+    "traderjoe-v2-1-avalanche": "https://coin-images.coingecko.com/markets/images/1124/small/JoeToken.png?1706865143",
+    websea: "https://coin-images.coingecko.com/markets/images/1365/small/websea-logo-png.png?1706865385",
+    orca: "https://coin-images.coingecko.com/markets/images/691/small/orca.png?1706864640",
+    curve_ethereum: "https://coin-images.coingecko.com/markets/images/538/small/Curve.png?1706864506",
+    quickswap_v3: "https://coin-images.coingecko.com/markets/images/982/small/quickswap_latest.png?1706864972",
+    "uniswap-bsc": "https://coin-images.coingecko.com/markets/images/1092/small/uniswap.jpeg?1706865113",
+    icrypex: "https://coin-images.coingecko.com/markets/images/1222/small/X.png?1706865230",
+    novadax: "https://coin-images.coingecko.com/markets/images/328/small/preview-full-novadax-exchange.jpg?1706864379",
+    "velodrome-finance-slipstream": "https://coin-images.coingecko.com/markets/images/1498/small/velodrome.jpeg?1710226947",
+    kumex: "https://coin-images.coingecko.com/markets/images/471/small/kucoin.png?1706864457",
+    dedust: "https://coin-images.coingecko.com/markets/images/1233/small/2023-08-18_16.45.04.jpg?1706865239",
+    toko_crypto: "https://coin-images.coingecko.com/markets/images/501/small/toko.png?1706864476",
+    huobi_japan: "https://coin-images.coingecko.com/markets/images/431/small/BitTrade.jpg?1706864429",
+    "uniswap-v3-avalanche": "https://coin-images.coingecko.com/markets/images/1182/small/uniswap.jpeg?1706865195",
+    ace: "https://coin-images.coingecko.com/markets/images/1016/small/ace.jpeg?1706865004",
+    ston_fi: "https://coin-images.coingecko.com/markets/images/1216/small/ston.jpeg?1706865224",
+    "sushiswap-v3-arbitrum": "https://coin-images.coingecko.com/markets/images/1162/small/sushiswap.png?1706865177",
+    qmall: "https://coin-images.coingecko.com/markets/images/1108/small/qmall.jpeg?1706865129",
+    stormgain: "https://coin-images.coingecko.com/markets/images/608/small/CpDGk9Hn_400x400.png?1706864555",
+    cube: "https://coin-images.coingecko.com/markets/images/1519/small/Cube_Wordmark_Vertical_White_With_Black_BG_%282%29.png?1713153820",
+    nominex: "https://coin-images.coingecko.com/markets/images/530/small/logo-200x200.png?1706864500",
+    tanx: "https://coin-images.coingecko.com/markets/images/1397/small/small_logo_dark.png?1706865400",
+    quickswap: "https://coin-images.coingecko.com/markets/images/629/small/quickswap_latest.png?1706864574",
+    "uniswap-v3-zksync": "https://coin-images.coingecko.com/markets/images/1663/small/uniswap-v3.jpg?1720395951",
+    "merchant-moe-liquidity-book-mantle": "https://coin-images.coingecko.com/markets/images/1594/small/lb.png?1715330017",
+    balancer_arbitrum: "https://coin-images.coingecko.com/markets/images/716/small/balancer.png?1706864673",
+    valr: "https://coin-images.coingecko.com/markets/images/1036/small/VALR.png?1720089142",
+    coinjar: "https://coin-images.coingecko.com/markets/images/176/small/Logomark_2022200h_thumb.png?1706864322",
+    bitbns: "https://coin-images.coingecko.com/markets/images/541/small/HS7eNJdt_400x400.jpg?1706864509",
+    "pulsex-v2": "https://coin-images.coingecko.com/markets/images/1176/small/oYHR8Nqd_400x400.jpg?1706865189",
+    metalx: "https://coin-images.coingecko.com/markets/images/1309/small/logo.png?1706865302",
+    pancakeswap_stableswap: "https://coin-images.coingecko.com/markets/images/1035/small/pancakeswap.jpeg?1706865064",
+    gopax: "https://coin-images.coingecko.com/markets/images/144/small/gopax.jpg?1706864311",
+    bitbay: "https://coin-images.coingecko.com/markets/images/2/small/photo_2023-12-19_22.59.45.jpeg?1706864242",
+    dodo_polygon: "https://coin-images.coingecko.com/markets/images/709/small/dodo_logo.png?1706864663",
+    syncswap: "https://coin-images.coingecko.com/markets/images/1113/small/kg4-p_V7_400x400.jpg?1706865133",
+    maverick_protocol: "https://coin-images.coingecko.com/markets/images/1160/small/maverick.png?1706865175",
+    vvs: "https://coin-images.coingecko.com/markets/images/736/small/vvs-finance.jpeg?1706864699",
+    "syncswap-scroll": "https://coin-images.coingecko.com/markets/images/1333/small/syncswap-linea.jpg?1706865336",
+    "syncswap-v2-1-scroll": "https://coin-images.coingecko.com/markets/images/1647/small/syncswap-linea.jpg?1719200111",
+    liquidswap: "https://coin-images.coingecko.com/markets/images/1057/small/liquidswap.png?1706865082",
+    astroport_neutron: "https://coin-images.coingecko.com/markets/images/1168/small/astroport.jpeg?1706865182",
+    "kim-v4": "https://coin-images.coingecko.com/markets/images/1554/small/kim.jpeg?1713158866",
+    "fenix-finance": "https://coin-images.coingecko.com/markets/images/1623/small/fenix.png?1717642512",
+    "iziswap-mode": "https://coin-images.coingecko.com/markets/images/1568/small/izumi-logo-symbol.png?1714034428",
+    "iziswap-mantle": "https://coin-images.coingecko.com/markets/images/1247/small/iziswap.png?1706865251",
+    "syncswap-v2-1-zksync": "https://coin-images.coingecko.com/markets/images/1644/small/syncswap-linea.jpg?1718793053",
+    tinyman: "https://coin-images.coingecko.com/markets/images/952/small/tinyman.jpeg?1706864945",
+    wemix_fi: "https://coin-images.coingecko.com/markets/images/1020/small/wemix.png?1706865007",
+    "quickswap-v3-astar-zkevm": "https://coin-images.coingecko.com/markets/images/1503/small/quickswap.jpeg?1710821503",
+    "sushiswap-v3-base": "https://coin-images.coingecko.com/markets/images/1203/small/lFs3rTxB_400x400.png?1706865213",
+    fraxswap_ethereum: "https://coin-images.coingecko.com/markets/images/911/small/JjqQ9ROz_400x400.jpeg?1706864908",
+    "saucerswap-v2": "https://coin-images.coingecko.com/markets/images/1363/small/SAUCERSWAPv2_1.png?1706865384",
+    "sushiswap-v3-polygon": "https://coin-images.coingecko.com/markets/images/1163/small/sushiswap.png?1706865178",
+    "quickswap-polygon-zkevm": "https://coin-images.coingecko.com/markets/images/1109/small/quickswap_latest.png?1706865130",
+    "iziswap-linea": "https://coin-images.coingecko.com/markets/images/1248/small/iziswap.png?1706865252",
+    "oku-trade-linea": "https://coin-images.coingecko.com/markets/images/1628/small/oku_logo_bg_%287%29_1.png?1718083343",
+    "wagmi-kava": "https://coin-images.coingecko.com/markets/images/1324/small/WAGMI_NEW_LOGO_PNG.png?1710470936",
+    "oku-trade-scroll": "https://coin-images.coingecko.com/markets/images/1511/small/oku_trade.jpeg?1710844199",
+    btcbox: "https://coin-images.coingecko.com/markets/images/154/small/btcbox.jpg?1706864316",
+    "solidly-v3-arbitrum": "https://coin-images.coingecko.com/markets/images/1513/small/solidly.png?1710901655",
+    merlinswap: "https://coin-images.coingecko.com/markets/images/1437/small/merlinswap.jpeg?1708522912",
+    pangolin: "https://coin-images.coingecko.com/markets/images/627/small/Pangolin_Logo_Yellow_Dark_Round.png?1706864570",
+    "sushiswap-v3-scroll": "https://coin-images.coingecko.com/markets/images/1493/small/sushiswap-sushi-logo.png?1710145206",
+    "syncswap-linea": "https://coin-images.coingecko.com/markets/images/1187/small/syncswap-linea.jpg?1706865199",
+    "sushiswap-v2-base": "https://coin-images.coingecko.com/markets/images/1322/small/sushiswap.png?1706865326",
+    "quickswap-v3-immutable-zkevm": "https://coin-images.coingecko.com/markets/images/1504/small/quickswap.jpeg?1710821675",
+    "pancakeswap-v1-bsc": "https://coin-images.coingecko.com/markets/images/1492/small/pancakeswap-cake-logo.png?1710143583",
+    "syncswap-v2-1-linea": "https://coin-images.coingecko.com/markets/images/1648/small/syncswap-linea.jpg?1719200315",
+    balancer_polygon: "https://coin-images.coingecko.com/markets/images/694/small/Balancer.png?1706864644",
+    spookyswap: "https://coin-images.coingecko.com/markets/images/662/small/spookyswap.png?1706864607",
+    defi_kingdoms_crystalvale: "https://coin-images.coingecko.com/markets/images/846/small/dfk_crystalvale_logo.png?1706864866",
+    "sushiswap-aptos": "https://coin-images.coingecko.com/markets/images/1687/small/sushiswap.png?1723426231",
+    thena: "https://coin-images.coingecko.com/markets/images/1039/small/thena_logo.jpg?1706973463",
+    "thruster-v2-0-3-fee-tier": "https://coin-images.coingecko.com/markets/images/1462/small/thurster.jpeg?1709267854",
+    equalizer: "https://coin-images.coingecko.com/markets/images/1021/small/equalizer.jpeg?1706865008",
+    "9inch": "https://coin-images.coingecko.com/markets/images/1339/small/9inch.jpeg?1706865341",
+    "uniswap-v2-polygon": "https://coin-images.coingecko.com/markets/images/1487/small/uniswapv2.jpeg?1710130219",
+    "iziswap-taiko": "https://coin-images.coingecko.com/markets/images/1619/small/izumi-logo-symbol.png?1717593108",
+    "alien-base": "https://coin-images.coingecko.com/markets/images/1244/small/alienbase.jpeg?1706865249",
+    "balancer-v2-base": "https://coin-images.coingecko.com/markets/images/1223/small/balancer-v2.png?1706865231",
+    kinesis_money: "https://coin-images.coingecko.com/markets/images/1122/small/kinesis.png?1706865141",
+    camelot: "https://coin-images.coingecko.com/markets/images/1007/small/vj5DIMhP_400x400.jpeg?1706864994",
+    "curve-base": "https://coin-images.coingecko.com/markets/images/1634/small/CurveFi_32.png?1718177643",
+    "merchant-moe-mantle": "https://coin-images.coingecko.com/markets/images/1400/small/MOE.png?1706865401",
+    "fraxswap-fraxtal": "https://coin-images.coingecko.com/markets/images/1463/small/fraxtal.jpeg?1709564845",
+    difx: "https://coin-images.coingecko.com/markets/images/1138/small/difx.png?1706865156",
+    shibaswap: "https://coin-images.coingecko.com/markets/images/686/small/shibaswap.png?1706864633",
+    sushiswap_arbitrum: "https://coin-images.coingecko.com/markets/images/701/small/sushiswap3.png?1706864653",
+    beethovenx: "https://coin-images.coingecko.com/markets/images/729/small/JrrbHgla_400x400.png?1706864690",
+    jellyswap: "https://coin-images.coingecko.com/markets/images/1653/small/jellyswap.png?1719311769",
+    sushiswap_polygon_pos: "https://coin-images.coingecko.com/markets/images/668/small/sushiswap-polygon-matic.png?1706864611",
+    "synthswap-v3": "https://coin-images.coingecko.com/markets/images/1652/small/synth.png?1719310757",
+    "stellaswap-v3": "https://coin-images.coingecko.com/markets/images/1052/small/stellaswap.jpeg?1706865078",
+    blasterswap: "https://coin-images.coingecko.com/markets/images/1470/small/blasterswap.jpeg?1709630846",
+    "pancakeswap-v3-polygon-zkevm": "https://coin-images.coingecko.com/markets/images/1174/small/pancakeswap.jpeg?1706865188",
+    klayswap: "https://coin-images.coingecko.com/markets/images/1008/small/klayswap.jpeg?1706864995",
+    alexgo: "https://coin-images.coingecko.com/markets/images/951/small/alexgo.png?1706864944",
+    "pearl-exchange": "https://coin-images.coingecko.com/markets/images/1170/small/pearlfi.jpeg?1706865184",
+    increment_swap: "https://coin-images.coingecko.com/markets/images/1314/small/MwzRbcq.png?1706865307",
+    "solidly-v3-fantom": "https://coin-images.coingecko.com/markets/images/1391/small/solidly.png?1706865396",
+    "sushiswap-v3-linea": "https://coin-images.coingecko.com/markets/images/1277/small/sushiswap.png?1706865276",
+    dackieswap: "https://coin-images.coingecko.com/markets/images/1251/small/dackieswap.jpeg?1706865255",
+    balanced_network: "https://coin-images.coingecko.com/markets/images/712/small/balanced.png?1706864667",
+    "wagmi-metis": "https://coin-images.coingecko.com/markets/images/1403/small/WAGMI_NEW_LOGO_PNG.png?1710470836",
+    "lynex-v2-linea": "https://coin-images.coingecko.com/markets/images/1497/small/lynex.jpeg?1710216065",
+    "smardex-ethereum": "https://coin-images.coingecko.com/markets/images/1155/small/SDEX_logo_transparent_outside_240x240.png?1706865171",
+    "magicsea-v2.1-iota-evm": "https://coin-images.coingecko.com/markets/images/1659/small/magicsea.png?1719989304",
+    "velodrome-finance-v2-mode": "https://coin-images.coingecko.com/markets/images/1684/small/velodrome.jpeg?1722938781",
+    "kinetix-v3": "https://coin-images.coingecko.com/markets/images/1334/small/kinetix.jpeg?1706865336",
+    sologenic: "https://coin-images.coingecko.com/markets/images/1146/small/sologenic.png?1706865163",
+    quickswap_v3_x_layer: "https://coin-images.coingecko.com/markets/images/1616/small/QS.jpeg?1717171164",
+    "beam-swap": "https://coin-images.coingecko.com/markets/images/1357/small/beam.png?1706865381",
+    mute: "https://coin-images.coingecko.com/markets/images/1104/small/koi_finance.jpeg?1711947967",
+    "pancakeswap-v3-opbnb": "https://coin-images.coingecko.com/markets/images/1294/small/pcs.jpeg?1706865287",
+    "orion-bsc": "https://coin-images.coingecko.com/markets/images/1450/small/orion.jpeg?1709114146",
+    "oku-trade-manta-pacific": "https://coin-images.coingecko.com/markets/images/1641/small/oku-trade.jpeg?1718791048",
+    "voltage-finance-v3": "https://coin-images.coingecko.com/markets/images/1441/small/Volt.png?1709016668",
+    mm_finance: "https://coin-images.coingecko.com/markets/images/764/small/g7GDg3bv_400x400.jpg?1706864793",
+    arthswap: "https://coin-images.coingecko.com/markets/images/877/small/logo_colour_bk.png?1706864889",
+    defi_swap: "https://coin-images.coingecko.com/markets/images/637/small/crypto-com-mco-coin-logo.png?1706864583",
+    eddyfinance: "https://coin-images.coingecko.com/markets/images/1428/small/eddyfinance.jpeg?1708309698",
+    "kriya-dex": "https://coin-images.coingecko.com/markets/images/1360/small/kriya.jpeg?1706865382",
+    apertureswap: "https://coin-images.coingecko.com/markets/images/1306/small/aperture-finance.jpeg?1706865298",
+    "wagmi-iota-evm": "https://coin-images.coingecko.com/markets/images/1675/small/Favicon.png?1722241131",
+    "sushiswap-v3-optimism": "https://coin-images.coingecko.com/markets/images/1161/small/sushiswap.png?1706865176",
+    velodrome: "https://coin-images.coingecko.com/markets/images/933/small/velodrome-finance.png?1706864928",
+    "blasterswap-v3": "https://coin-images.coingecko.com/markets/images/1636/small/blasterswap.jpeg?1718242165",
+    "iziswap-zetachain": "https://coin-images.coingecko.com/markets/images/1436/small/izumi-logo-symbol.png?1708522517",
+    "saitaswap-bsc": "https://coin-images.coingecko.com/markets/images/1130/small/MRzM13ry_400x400_%281%29.jpg?1706865149",
+    spacefi_zksync: "https://coin-images.coingecko.com/markets/images/1105/small/spacefi.png?1706865125",
+    "uniswap-v2-arbitrum": "https://coin-images.coingecko.com/markets/images/1474/small/uniswapv2.jpeg?1709718772",
+    "solidly-v3-base": "https://coin-images.coingecko.com/markets/images/1515/small/solidly.png?1710903857",
+    spartadex: "https://coin-images.coingecko.com/markets/images/1213/small/sparta-logo-200x200.jpg?1706865222",
+    spiritswap: "https://coin-images.coingecko.com/markets/images/671/small/soully-full_m.png?1706864615",
+    "ebisus-bay": "https://coin-images.coingecko.com/markets/images/1532/small/ebisusbay.jpeg?1711939020",
+    "sushiswap-v3-skale": "https://coin-images.coingecko.com/markets/images/1665/small/sushiswap.png?1720687290",
+    "smardex-bsc": "https://coin-images.coingecko.com/markets/images/1229/small/SDEX_logo_transparent.png?1706865237",
+    "iziswap-manta-pacific": "https://coin-images.coingecko.com/markets/images/1330/small/iziswap.png?1706865333",
+    "jediswap-starknet-alpha": "https://coin-images.coingecko.com/markets/images/1305/small/jediswap.jpeg?1706865297",
+    oraidex: "https://coin-images.coingecko.com/markets/images/992/small/oraidex.png?1706864981",
+    pancakeswap_ethereum: "https://coin-images.coingecko.com/markets/images/987/small/pancakeswap.jpeg?1706864976",
+    verse: "https://coin-images.coingecko.com/markets/images/980/small/verse2.png?1706864970",
+    "icecreamswap-v3-core": "https://coin-images.coingecko.com/markets/images/1575/small/icecreamswapcore.png?1714725953",
+    tethys: "https://coin-images.coingecko.com/markets/images/761/small/tethys.jpeg?1706864790",
+    "pancakeswap-v2-arbitrum": "https://coin-images.coingecko.com/markets/images/1224/small/pancakeswap.jpeg?1706865232",
+    "uniswap-v2-bsc": "https://coin-images.coingecko.com/markets/images/1475/small/uniswapv2.jpeg?1709720998",
+    "curve-fraxtal": "https://coin-images.coingecko.com/markets/images/1633/small/CurveFi_32.png?1718177158",
+    defi_kingdoms: "https://coin-images.coingecko.com/markets/images/721/small/defi_kingdoms.png?1706864680",
+    radioshack_bsc: "https://coin-images.coingecko.com/markets/images/868/small/radioshack.jpeg?1706864883",
+    fx_swap: "https://coin-images.coingecko.com/markets/images/981/small/MX_logo.png?1711946174",
+    "syncswap-v2-zksync": "https://coin-images.coingecko.com/markets/images/1452/small/syncswap-linea.jpg?1709181813",
+    starkdefi: "https://coin-images.coingecko.com/markets/images/1426/small/starkdefi.png?1708079026",
+    "uniswap-v3-zora": "https://coin-images.coingecko.com/markets/images/1662/small/uniswap-v3.jpg?1720395755",
+    "oku-trade-moonbeam": "https://coin-images.coingecko.com/markets/images/1655/small/oku_logo_bg_%287%29_1.png?1719539316",
+    deversifi: "https://coin-images.coingecko.com/markets/images/511/small/COINGECKO_DVF_200x200.jpeg?1706864484",
+    "klayswap-v3": "https://coin-images.coingecko.com/markets/images/1220/small/klayswap.jpeg?1706865228",
+    swapr_xdai: "https://coin-images.coingecko.com/markets/images/670/small/dxswap-black.png?1706864614",
+    "uniswap-v3-blast": "https://coin-images.coingecko.com/markets/images/1547/small/uniswap-uni-logo.png?1712382624",
+    swapbased: "https://coin-images.coingecko.com/markets/images/1242/small/swapbased.jpeg?1706865247",
+    "traderjoe-v2-avalanche": "https://coin-images.coingecko.com/markets/images/1030/small/JoeToken.png?1706865059",
+    astroport_injective: "https://coin-images.coingecko.com/markets/images/1167/small/astroport.jpeg?1706865181",
+    "sushiswap-v3-bsc": "https://coin-images.coingecko.com/markets/images/1164/small/sushiswap.png?1706865179",
+    "sushiswap-v3-core": "https://coin-images.coingecko.com/markets/images/1399/small/sushiswap-sushi-logo.png?1706865400",
+    energiswap: "https://coin-images.coingecko.com/markets/images/860/small/Energi.jpeg?1706864876",
+    xswap: "https://coin-images.coingecko.com/markets/images/1000/small/xswap.jpeg?1706864988",
+    sushiswap_xdai: "https://coin-images.coingecko.com/markets/images/678/small/512x512_Logo_no_chop.png?1706864622",
+    swapmode: "https://coin-images.coingecko.com/markets/images/1483/small/swapmode.jpeg?1710128188",
+    "sushiswap-v3-arbitrum-nova": "https://coin-images.coingecko.com/markets/images/1179/small/sushiswap.png?1706865192",
+    firefly: "https://coin-images.coingecko.com/markets/images/1615/small/manta.jpeg?1717128017",
+    "thena-opbnb": "https://coin-images.coingecko.com/markets/images/1386/small/thena_logo.jpg?1706973482",
+    "sushiswap-v3-fantom": "https://coin-images.coingecko.com/markets/images/1180/small/sushiswap.png?1706865193",
+    kim: "https://coin-images.coingecko.com/markets/images/1484/small/kim.jpeg?1710128309",
+    sushiswap_bsc: "https://coin-images.coingecko.com/markets/images/720/small/sushiswap-polygon-matic.png?1706864678",
+    "lif3-v3-fantom": "https://coin-images.coingecko.com/markets/images/1411/small/LIF3.png?1706865408",
+    "vanillaswap-v3-defimetachain": "https://coin-images.coingecko.com/markets/images/1664/small/VanillaLabs_Ice_Favicon-400x583.png?1720593961",
+    sushiswap_arbitrum_nova: "https://coin-images.coingecko.com/markets/images/944/small/sushiswap-arbitrum-nova.png?1706864937",
+    solarbeam: "https://coin-images.coingecko.com/markets/images/711/small/solarbeamlogo.png?1706864666",
+    "iziswap-zklink-nova": "https://coin-images.coingecko.com/markets/images/1603/small/iziswap.png?1715915145",
+    "dackieswap-v2": "https://coin-images.coingecko.com/markets/images/1275/small/dackieswap.jpeg?1706865275",
+    "monoswap-v3-blast": "https://coin-images.coingecko.com/markets/images/1489/small/monoswap.jpeg?1710134265",
+    "vanillaswap-v2-defimetachain": "https://coin-images.coingecko.com/markets/images/1630/small/vanilla.jpeg?1718160749",
+    "magicsea-iota-evm": "https://coin-images.coingecko.com/markets/images/1651/small/magicsea.png?1719310482",
+    kyberswap_classic_ethereum: "https://coin-images.coingecko.com/markets/images/647/small/kyberswap.png?1706864593",
+    "pangolin-flare": "https://coin-images.coingecko.com/markets/images/1025/small/Pangolin-DEX.png?1706865055",
+    "icecreamswap-core": "https://coin-images.coingecko.com/markets/images/1068/small/icecreamswap.png?1706865093",
+    "arthswap-astar-zkevm": "https://coin-images.coingecko.com/markets/images/1491/small/arthswap.jpeg?1710139202",
+    "sushiswap-v3-thundercore": "https://coin-images.coingecko.com/markets/images/1177/small/sushiswap.png?1706865190",
+    "smardex-arbitrum": "https://coin-images.coingecko.com/markets/images/1228/small/smardex.png?1706865236",
+    "smardex-base": "https://coin-images.coingecko.com/markets/images/1261/small/sdex-logo.png?1706865264",
+    spartan_protocol: "https://coin-images.coingecko.com/markets/images/867/small/C2obYdLV_400x400.png?1706864882",
+    vapordex: "https://coin-images.coingecko.com/markets/images/1427/small/vapordex.png?1708079748",
+    soswap: "https://coin-images.coingecko.com/markets/images/1246/small/RAI.finance_Logo_VF_icon_logo_dark.png?1706865250",
+    "iziswap-x-layer": "https://coin-images.coingecko.com/markets/images/1567/small/iziswap.png?1714033924",
+    "robots-farm-base": "https://coin-images.coingecko.com/markets/images/1578/small/Robots.Farm_DEX_logo.png?1714728978",
+    elk_finance_avax: "https://coin-images.coingecko.com/markets/images/790/small/elk_finance.jpg?1706864821",
+    "velocimeter-base": "https://coin-images.coingecko.com/markets/images/1241/small/velocimeter.png?1706865246",
+    henjindex: "https://coin-images.coingecko.com/markets/images/1622/small/henjindex.jpeg?1717642089",
+    swapr_arbitrum: "https://coin-images.coingecko.com/markets/images/710/small/swapr.jpeg?1706864664",
+    "pancakeswap-v2-zksync": "https://coin-images.coingecko.com/markets/images/1201/small/PSiAEax7_400x400.jpg?1706865212",
+    dem_exchange: "https://coin-images.coingecko.com/markets/images/624/small/Demex_Logo_Symbol.png?1706864568",
+    miaswap: "https://coin-images.coingecko.com/markets/images/1029/small/miaswap.jpeg?1706865058",
+    spiritswap_v2: "https://coin-images.coingecko.com/markets/images/935/small/soully-full_m.png?1706864929",
+    radioshack_polygon_pos: "https://coin-images.coingecko.com/markets/images/872/small/radioshack.jpeg?1706864886",
+    "traderjoe-v2-1-bsc": "https://coin-images.coingecko.com/markets/images/1125/small/JoeToken.png?1706865144",
+    etcmc: "https://coin-images.coingecko.com/markets/images/1440/small/etcmc.jpeg?1708934995",
+    swapblast: "https://coin-images.coingecko.com/markets/images/1467/small/SBF200.png?1709625541",
+    "zora-energy-swap": "https://coin-images.coingecko.com/markets/images/1479/small/zora.jpeg?1709872000",
+    cubiswap: "https://coin-images.coingecko.com/markets/images/1280/small/cubiswap.png?1706865278",
+    sushiswap_harmony: "https://coin-images.coingecko.com/markets/images/700/small/sushiswap.png?1706864652",
+    julswap: "https://coin-images.coingecko.com/markets/images/632/small/Logo-D-Unicorn.png?1706864577",
+    elk_finance_polygon: "https://coin-images.coingecko.com/markets/images/885/small/elk.jpeg?1706864896",
+    "lif3-v3-bsc": "https://coin-images.coingecko.com/markets/images/1412/small/LIF3.png?1706865408",
+    sushiswap_avalanche: "https://coin-images.coingecko.com/markets/images/780/small/sushiswap-avalanche.png?1706864814",
+    paintswap: "https://coin-images.coingecko.com/markets/images/723/small/paintswap.png?1706864683",
+    elk_finance_bsc: "https://coin-images.coingecko.com/markets/images/881/small/elk.jpeg?1706864893",
+    sushiswap_fantom: "https://coin-images.coingecko.com/markets/images/677/small/sushiswap-fantom.png?1706864621",
+    arbswap_arbitrum_one: "https://coin-images.coingecko.com/markets/images/1078/small/Arbswap.jpeg?1706865101",
+    mars_ecosystem: "https://coin-images.coingecko.com/markets/images/778/small/mars.jpg?1706864812",
+    nearpad: "https://coin-images.coingecko.com/markets/images/757/small/nearpad.png?1706864786",
+    "vapordex-v2": "https://coin-images.coingecko.com/markets/images/1445/small/vapordex.png?1709107610",
+    "sushiswap-v3-zetachain": "https://coin-images.coingecko.com/markets/images/1510/small/sushiswap-sushi-logo.png?1710842676",
+    sushiswap_celo: "https://coin-images.coingecko.com/markets/images/728/small/sushiswap.png?1706864688",
+    "wagmi-zksync": "https://coin-images.coingecko.com/markets/images/1325/small/WAGMI_NEW_LOGO_PNG.png?1710470908",
+    gravity_finance: "https://coin-images.coingecko.com/markets/images/1027/small/gravity-finance.jpeg?1706865057",
+    zyberswap: "https://coin-images.coingecko.com/markets/images/1045/small/zyberswap.jpeg?1706865072",
+    "smardex-polygon": "https://coin-images.coingecko.com/markets/images/1230/small/SDEX_logo_transparent.png?1706865238",
+    darkknight: "https://coin-images.coingecko.com/markets/images/826/small/darkknight.png?1706864849",
+    swapsicle: "https://coin-images.coingecko.com/markets/images/1088/small/swapsicle.jpg?1706865109",
+    cswap: "https://coin-images.coingecko.com/markets/images/1102/small/cswap.jpeg?1706865122",
+    dystopia: "https://coin-images.coingecko.com/markets/images/884/small/dystopialogo.png?1706864895",
+    "pangolin-songbird": "https://coin-images.coingecko.com/markets/images/971/small/Pangolin-DEX.png?1706864962",
+    quickswap_dogechain: "https://coin-images.coingecko.com/markets/images/954/small/quickswap_latest.png?1706864947",
+    greenhouse_dex: "https://coin-images.coingecko.com/markets/images/889/small/ANnNLN8x_400x400.jpeg?1706864900",
+    nachoswap: "https://coin-images.coingecko.com/markets/images/801/small/xHJFtmT3_400x400.png?1706864828",
+    kdswap: "https://coin-images.coingecko.com/markets/images/977/small/kadena.png?1706864967",
+    "crowdswap-polygon": "https://coin-images.coingecko.com/markets/images/1274/small/1500-1500-01.png?1706865274",
+    dao_swap: "https://coin-images.coingecko.com/markets/images/972/small/DAO_Maker.jpeg?1706864963",
+    huckleberry: "https://coin-images.coingecko.com/markets/images/746/small/huckleberry.png?1706864779",
+    "uniswap-v2-blast": "https://coin-images.coingecko.com/markets/images/1548/small/uniswap-uni-logo.png?1712382748",
+    swapfish: "https://coin-images.coingecko.com/markets/images/1024/small/swapfish.png?1706865054",
+    claimswap: "https://coin-images.coingecko.com/markets/images/912/small/9pbkueWn_400x400.jpeg?1706864909",
+    "dackieswap-v3-mode": "https://coin-images.coingecko.com/markets/images/1577/small/dackieswap.jpeg?1714726770",
+    openswap: "https://coin-images.coingecko.com/markets/images/770/small/T1k6Bn9b_400x400.jpg?1706864798",
+    baryon_network: "https://coin-images.coingecko.com/markets/images/922/small/baryon_network.jpeg?1706864918",
+    fuzz_finance: "https://coin-images.coingecko.com/markets/images/839/small/fuzz.jpeg?1706864860",
+    baseswap: "https://coin-images.coingecko.com/markets/images/1209/small/R5J5HOG.png?1706865218",
+    "marswap-cronos-zkevm": "https://coin-images.coingecko.com/markets/images/1694/small/marswap.png?1724206154",
+    "kaiaswap-klaytn": "https://coin-images.coingecko.com/markets/images/1688/small/kaiaswap.jpg?1723616488",
+    fwx: "https://coin-images.coingecko.com/markets/images/1689/small/FWX_logo_X.png?1723618795",
+    "h2-finance": "https://coin-images.coingecko.com/markets/images/1692/small/H2Logo-D_5VFPFO.png?1724060839",
+    "ebisus-bay-cronos-zkevm": "https://coin-images.coingecko.com/markets/images/1693/small/ebisusbay.jpeg?1724061781",
+    "elk-finance-q-mainnet": "https://coin-images.coingecko.com/markets/images/1699/small/elk-finance.jpg?1724743057",
+    "justmoney-tron": "https://coin-images.coingecko.com/markets/images/1707/small/justmoney.png?1725343207",
+    "unchain-x": "https://coin-images.coingecko.com/markets/images/1696/small/unchain-x.png?1724290990",
+    honeyswap_polygon: "https://coin-images.coingecko.com/markets/images/688/small/honeyswap.png?1706864636",
+    "pegasys-v3-rollux": "https://coin-images.coingecko.com/markets/images/1175/small/pegasys.png?1706865189",
+    "swapsicle-v2-telos": "https://coin-images.coingecko.com/markets/images/1346/small/swapsicle.jpeg?1706865345",
+    dooar_bsc: "https://coin-images.coingecko.com/markets/images/928/small/dooar.png?1706864923",
+    "sunswap-v3": "https://coin-images.coingecko.com/markets/images/1698/small/sun.jpg?1724724659",
+    dogeswap: "https://coin-images.coingecko.com/markets/images/936/small/DogeSwap.png?1706864930",
+    ethervista: "https://coin-images.coingecko.com/markets/images/1706/small/ethervista.jpg?1725270580",
+    mintswap: "https://coin-images.coingecko.com/markets/images/1700/small/MintSwap_t2.png?1724895680",
+    dooar_ethereum: "https://coin-images.coingecko.com/markets/images/925/small/dooar.png?1706864921",
+    "swapsicle-v2-mantle": "https://coin-images.coingecko.com/markets/images/1347/small/swapsicle.jpeg?1706865346",
+    "kewlswap-chiliz-chain": "https://coin-images.coingecko.com/markets/images/1549/small/kewlswap.jpeg?1712557658",
+    saucerswap: "https://coin-images.coingecko.com/markets/images/1014/small/SAUCE.png?1706865000",
+    value_liquid_bsc: "https://coin-images.coingecko.com/markets/images/641/small/vswap.png?1706864587",
+    dinosaureggs: "https://coin-images.coingecko.com/markets/images/1166/small/qmsNZ61K_400x400.jpg?1706865181",
+    "cleopatra-exchange": "https://coin-images.coingecko.com/markets/images/1405/small/cleo.jpeg?1706865404",
+    beethoven_x_optimism: "https://coin-images.coingecko.com/markets/images/1040/small/beethovenx.jpeg?1706865068",
+    synthswap: "https://coin-images.coingecko.com/markets/images/1211/small/synth.png?1706865220",
+    "yaka-finance": "https://coin-images.coingecko.com/markets/images/1695/small/yaka-finance.png?1724290881",
+    trubit: "https://coin-images.coingecko.com/markets/images/1103/small/trubit.png?1706865122",
+    poloniex: "https://coin-images.coingecko.com/markets/images/37/small/poloniex.png?1706864269",
+    fmcpay: "https://coin-images.coingecko.com/markets/images/1371/small/Logo_Icon_FMCPAY_200X200_%282%29.png?1706865387",
+    hitbtc: "https://coin-images.coingecko.com/markets/images/24/small/hitbtc.png?1706864259",
+    bitexen: "https://coin-images.coingecko.com/markets/images/693/small/Bitexen_Logo_Short.png?1706864642",
+    dcoin: "https://coin-images.coingecko.com/markets/images/319/small/%E8%B5%84%E6%BA%90_4_3x_2.png?1706864372",
+    injective: "https://coin-images.coingecko.com/markets/images/775/small/Primary_Symbol.png?1706864802",
+    trade_ogre: "https://coin-images.coingecko.com/markets/images/101/small/tradeogre.jpeg?1706864289",
+    koinbazar: "https://coin-images.coingecko.com/markets/images/751/small/photo_2023-02-19_12-57-51.jpg?1706864782",
+    dodo_arbitrum: "https://coin-images.coingecko.com/markets/images/707/small/dodo_logo.png?1706864661",
+    curve_optimism: "https://coin-images.coingecko.com/markets/images/931/small/W1sQNVWo_400x400.jpeg?1706864926",
+    lcx: "https://coin-images.coingecko.com/markets/images/638/small/LCX.jpg?1706864585",
+    fatbtc: "https://coin-images.coingecko.com/markets/images/295/small/363.png?1706864365",
+    koinpark: "https://coin-images.coingecko.com/markets/images/1550/small/200-200_LIGHT.png?1712715539",
+    coincatch: "https://coin-images.coingecko.com/markets/images/1214/small/Lark20230707-101051.png?1706865223",
+    "kine-protocol-spot": "https://coin-images.coingecko.com/markets/images/1356/small/img_v2_eeb68b7f-790a-4738-b1c1-97126f7e58dh.png?1706865380",
+    currency: "https://coin-images.coingecko.com/markets/images/512/small/Currency.com_200x200.png?1706864486",
+    pancakeswap_aptos: "https://coin-images.coingecko.com/markets/images/1059/small/pancakeswap.jpeg?1706865084",
+    oceanex: "https://coin-images.coingecko.com/markets/images/341/small/Oceanex.png?1706864383",
+    kickex: "https://coin-images.coingecko.com/markets/images/635/small/KickEX_logo.png?1706864581",
+    "solidly-v3": "https://coin-images.coingecko.com/markets/images/1344/small/solid_logo_200.png?1706865344",
+    "solidly-v3-optimism": "https://coin-images.coingecko.com/markets/images/1514/small/solidly.png?1710903747",
+    catex: "https://coin-images.coingecko.com/markets/images/354/small/catex.png?1706864384",
+    "thena-fusion": "https://coin-images.coingecko.com/markets/images/1123/small/thena_logo.jpg?1706973472",
+    dragonswap: "https://coin-images.coingecko.com/markets/images/1624/small/dragonswap.jpeg?1717644591",
+    bitpanda: "https://coin-images.coingecko.com/markets/images/474/small/file_1366-attachment_thumb.jpg?1706864460",
+    bunnyswap: "https://coin-images.coingecko.com/markets/images/1574/small/friend.texh.jpeg?1714715384",
+    trisolaris: "https://coin-images.coingecko.com/markets/images/756/small/trisolaris.ico?1706864786",
+    kujira: "https://coin-images.coingecko.com/markets/images/918/small/FIN-Kujira_200w.png?1706864914",
+    retro: "https://coin-images.coingecko.com/markets/images/1204/small/retro.png?1706865214",
+    swappi: "https://coin-images.coingecko.com/markets/images/865/small/swappi.jpeg?1706864881",
+    bit2c: "https://coin-images.coingecko.com/markets/images/145/small/bit2c.jpeg?1706864312",
+    bitbegin: "https://coin-images.coingecko.com/markets/images/317/small/3Wmuydm.png?1706864369",
+    bancor: "https://coin-images.coingecko.com/markets/images/108/small/Bancor_Token.png?1710479364",
+    methlab: "https://coin-images.coingecko.com/markets/images/1512/small/methlab.jpeg?1710845139",
+    "byte-exchange": "https://coin-images.coingecko.com/markets/images/1198/small/200x200.png?1706865209",
+    "fusionx-v3": "https://coin-images.coingecko.com/markets/images/1184/small/fusionxv3.png?1706865196",
+    orderly_network: "https://coin-images.coingecko.com/markets/images/1015/small/Orderly_Network_Brandmark_Transparent.png?1706865001",
+    "spookyswap-v3": "https://coin-images.coingecko.com/markets/images/1533/small/spookyswap.png?1711939526",
+    bladeswap: "https://coin-images.coingecko.com/markets/images/1569/small/bladeswap.jpeg?1714466410",
+    ramses: "https://coin-images.coingecko.com/markets/images/1136/small/ramses.jpeg?1706865154",
+    "hercules-v2": "https://coin-images.coingecko.com/markets/images/1543/small/hercules.jpeg?1712218804",
+    "astroport-sei": "https://coin-images.coingecko.com/markets/images/1257/small/astroport-removebg-preview.png?1706865260",
+    "dtxswap-taiko": "https://coin-images.coingecko.com/markets/images/1642/small/dtx.jpeg?1718791843",
+    alcor: "https://coin-images.coingecko.com/markets/images/1581/small/alcor-200x200.png?1714982776",
+    "sushiswap-v3-ethereum": "https://coin-images.coingecko.com/markets/images/1340/small/sushiswap.png?1706865342",
+    klever_exchange: "https://coin-images.coingecko.com/markets/images/984/small/BitcoinMe%283%29.png?1706864973",
+    bakeryswap: "https://coin-images.coingecko.com/markets/images/626/small/bakeryswap.png?1706864569",
+    nash: "https://coin-images.coingecko.com/markets/images/472/small/Nash-token_icon.png?1706864458",
+    bluemove: "https://coin-images.coingecko.com/markets/images/1135/small/bluemove.png?1706865153",
+    digitalexchange_id: "https://coin-images.coingecko.com/markets/images/1265/small/digitalexchange_logo.png?1706865267",
+    verylongswap: "https://coin-images.coingecko.com/markets/images/1671/small/vls.jpg?1721623480",
+    ubeswap: "https://coin-images.coingecko.com/markets/images/667/small/ubeswap.png?1706864609",
+    waves: "https://coin-images.coingecko.com/markets/images/140/small/Favicon_2x.png?1706864309",
+    chainex: "https://coin-images.coingecko.com/markets/images/275/small/VTwwcyVk_400x400.jpg?1706864355",
+    "camelot-sanko": "https://coin-images.coingecko.com/markets/images/1618/small/camelot.jpeg?1717542839",
+    "pharaoh-exchange-v1": "https://coin-images.coingecko.com/markets/images/1602/small/pharaoh.jpeg?1715914666",
+    voltage_finance: "https://coin-images.coingecko.com/markets/images/768/small/12-Volt-logo-1-1.png?1706864797",
+    mojitoswap: "https://coin-images.coingecko.com/markets/images/772/small/mojito.jpg?1706864800",
+    "pearlfi-v1-5": "https://coin-images.coingecko.com/markets/images/1227/small/pearlfi.jpeg?1706865235",
+    "thruster-v2-1-0-fee-tier": "https://coin-images.coingecko.com/markets/images/1529/small/thrusterfi.jpeg?1711498433",
+    planet_finance: "https://coin-images.coingecko.com/markets/images/739/small/gJX6V4mK_400x400.jpg?1706864773",
+    illuminex: "https://coin-images.coingecko.com/markets/images/1442/small/illumineX_logo_transparent_small.png?1709029167",
+    virtuswap: "https://coin-images.coingecko.com/markets/images/1313/small/VirtuSwap_Logo_Red_200x200.png?1706865306",
+    solidly: "https://coin-images.coingecko.com/markets/images/832/small/Solidly.jpeg?1706864855",
+    magicswap: "https://coin-images.coingecko.com/markets/images/1037/small/magicswap.jpeg?1706865065",
+    wannaswap: "https://coin-images.coingecko.com/markets/images/755/small/wannaswap.png?1706864785",
+    "lif3-ethereum": "https://coin-images.coingecko.com/markets/images/1407/small/Lif3_Icon.png?1706865405",
+    yoshi_exchange_ftm: "https://coin-images.coingecko.com/markets/images/805/small/YoshiIcon.png?1706864832",
+    lydia_finance: "https://coin-images.coingecko.com/markets/images/763/small/512_pure_logo.png?1706864792",
+    chronos: "https://coin-images.coingecko.com/markets/images/1140/small/chronos.jpeg?1706865158",
+    velocore: "https://coin-images.coingecko.com/markets/images/1116/small/velocore.png?1706865136",
+    impossible_finance_v3: "https://coin-images.coingecko.com/markets/images/990/small/Impossible_Finance_V3.jpeg?1706864979",
+    "lif3-polygon": "https://coin-images.coingecko.com/markets/images/1032/small/lif3.png?1706865061",
+    warpgate: "https://coin-images.coingecko.com/markets/images/1455/small/warpgate.jpeg?1709189908",
+    "uniswap-v2-optimism": "https://coin-images.coingecko.com/markets/images/1486/small/uniswapv2.jpeg?1710130044",
+    pinkswap: "https://coin-images.coingecko.com/markets/images/681/small/pinkswap.png?1706864626",
+    yoshi_exchange_bsc: "https://coin-images.coingecko.com/markets/images/804/small/YoshiIcon.png?1706864831",
+    dogeshrek: "https://coin-images.coingecko.com/markets/images/939/small/dogeshrek.png?1706864933",
+    nomiswap: "https://coin-images.coingecko.com/markets/images/909/small/Wxo7M8g4_400x400.jpeg?1706864906",
+    chiliz: "https://coin-images.coingecko.com/markets/images/518/small/r6-s7Yi2_400x400.png?1706864490",
+    yobit: "https://coin-images.coingecko.com/markets/images/46/small/yobit.png?1706864272",
+    "camelot-v3": "https://coin-images.coingecko.com/markets/images/1119/small/camelot.jpeg?1706865139",
+    dodo: "https://coin-images.coingecko.com/markets/images/588/small/dodoex.png?1706864541",
+    bit_com: "https://coin-images.coingecko.com/markets/images/823/small/BIT_-_Coingecko.jpg?1715828772",
+    katana: "https://coin-images.coingecko.com/markets/images/731/small/ronin-katana.png?1706864692",
+    mercatox: "https://coin-images.coingecko.com/markets/images/53/small/mercatox.jpg?1706864276",
+    changelly: "https://coin-images.coingecko.com/markets/images/580/small/pro_logo_cmc.png?1706864535",
+    "biswap-v3-1": "https://coin-images.coingecko.com/markets/images/1318/small/biswap.jpeg?1706865322",
+    "hercules-v3": "https://coin-images.coingecko.com/markets/images/1541/small/hercules.jpeg?1712112776",
+    biswap: "https://coin-images.coingecko.com/markets/images/745/small/rXUu-spA_400x400.jpeg?1706864778",
+    vindax: "https://coin-images.coingecko.com/markets/images/388/small/uToizY7z_400x400.jpg?1706864402",
+    tdax: "https://coin-images.coingecko.com/markets/images/231/small/orbix.jpeg?1706864337",
+    maiar: "https://coin-images.coingecko.com/markets/images/741/small/maiar-dex.png?1706864774",
+    dexalot: "https://coin-images.coingecko.com/markets/images/824/small/DEXALOT-Logo-Mark_4x.png?1706864847",
+    "gull-network": "https://coin-images.coingecko.com/markets/images/1635/small/gullnetwork.jpeg?1718241925",
+    acdx: "https://coin-images.coingecko.com/markets/images/605/small/acdx-xlogo.png?1706864553",
+    "nile-v1": "https://coin-images.coingecko.com/markets/images/1501/small/nile.png?1710383023",
+    "agni-finance": "https://coin-images.coingecko.com/markets/images/1199/small/agni.png?1706865210",
+    "enosys-flare": "https://coin-images.coingecko.com/markets/images/1303/small/enosys.jpeg?1706865295",
+    bitonbay: "https://coin-images.coingecko.com/markets/images/280/small/bitonbay-exchange.png?1706864358",
+    "balancer-v2-avalanche": "missing_small.png",
+    dfyn: "https://coin-images.coingecko.com/markets/images/674/small/dyfn.png?1706864618",
+    emirex: "https://coin-images.coingecko.com/markets/images/592/small/Emirex.png?1706864545",
+    "potatoswap-x-layer": "https://coin-images.coingecko.com/markets/images/1565/small/potatoswap.jpeg?1713931706",
+    "pearlfi-v2-re-al": "https://coin-images.coingecko.com/markets/images/1608/small/pearlfi.jpeg?1716372264",
+    "blazeswap-flare": "https://coin-images.coingecko.com/markets/images/1188/small/blazeswap.jpg?1706865200",
+    ecxx: "https://coin-images.coingecko.com/markets/images/411/small/Ecxx.png?1558594001",
+    giottus: "https://coin-images.coingecko.com/markets/images/1525/small/giottus.jpeg?1711363303",
+    "dooar-polygon": "https://coin-images.coingecko.com/markets/images/1417/small/dooar.png?1706865410",
+    crema_finance: "https://coin-images.coingecko.com/markets/images/878/small/U0VuehUR_400x400.jpeg?1706864890",
+    babydogeswap: "https://coin-images.coingecko.com/markets/images/986/small/BabyDogeSwap.png?1706864975",
+    fluxbeam: "https://coin-images.coingecko.com/markets/images/1435/small/fluxbeam.jpeg?1708496363",
+    "bitswap-v3-bouncebit": "https://coin-images.coingecko.com/markets/images/1606/small/bitswap.jpeg?1716210333",
+    stellaswap: "https://coin-images.coingecko.com/markets/images/797/small/stellaswap.jpg?1706864824",
+    "10kswap-starknet-alpha": "https://coin-images.coingecko.com/markets/images/1298/small/10kswap.jpeg?1706865291",
+    stake_cube: "https://coin-images.coingecko.com/markets/images/429/small/sc-4096x4096.png?1706864425",
+    pacificswap: "https://coin-images.coingecko.com/markets/images/1332/small/pacificswap.jpeg?1706865335",
+    archerswap: "https://coin-images.coingecko.com/markets/images/1095/small/archerswap.jpg?1706865115",
+    babyswap: "https://coin-images.coingecko.com/markets/images/853/small/babyswap.jpeg?1706864872",
+    lykke: "https://coin-images.coingecko.com/markets/images/111/small/discord_icon.png?1709556207",
+    knightswap: "https://coin-images.coingecko.com/markets/images/825/small/knightswap.png?1706864847",
+    honeyswap: "https://coin-images.coingecko.com/markets/images/599/small/honeyswap.png?1706864549",
+    tomb_swap_fantom: "https://coin-images.coingecko.com/markets/images/821/small/xt2eSfi5_400x400.jpg?1706864844",
+    impossible_finance: "https://coin-images.coingecko.com/markets/images/766/small/9SxWPsH6_400x400.jpg?1706864795",
+    "orion-ethereum": "https://coin-images.coingecko.com/markets/images/1449/small/orion.jpeg?1709112940",
+    "oku-trade-filecoin": "missing_small.png",
+    suiswap: "https://coin-images.coingecko.com/markets/images/1158/small/suiswap.jpeg?1706865174",
+    "bitswap-v2-bouncebit": "https://coin-images.coingecko.com/markets/images/1620/small/bitswap.jpeg?1717595314",
+    cronaswap: "https://coin-images.coingecko.com/markets/images/762/small/cronaswap.png?1706864791",
+    coinswap: "https://coin-images.coingecko.com/markets/images/1552/small/coinswap.jpeg?1713158659",
+    justmoney_bttc: "https://coin-images.coingecko.com/markets/images/1150/small/justmoney.png?1706865166",
+    swych: "https://coin-images.coingecko.com/markets/images/937/small/Swych-500x500.png?1706864931",
+    freiexchange: "https://coin-images.coingecko.com/markets/images/153/small/freiexchange.jpg?1706864315",
+    protofi: "https://coin-images.coingecko.com/markets/images/841/small/HAx3HSbC_400x400.jpeg?1706864862",
+    hebeswap: "https://coin-images.coingecko.com/markets/images/955/small/hebeswap.jpeg?1706864948",
+    soulswap: "https://coin-images.coingecko.com/markets/images/759/small/soulswap.jpeg?1706864788",
+    occamx: "https://coin-images.coingecko.com/markets/images/845/small/faJ6ZSwv_400x400.jpg?1706864865",
+    bitexbook: "https://coin-images.coingecko.com/markets/images/375/small/logo_bitexbook.png?1706864391",
+    beamswap: "https://coin-images.coingecko.com/markets/images/793/small/T0wBtdfX_400x400.jpg?1706864823",
+    aux: "https://coin-images.coingecko.com/markets/images/1053/small/aux.jpeg?1706865079",
+    usdfi: "https://coin-images.coingecko.com/markets/images/1194/small/usdfi.jpg?1706865205",
+    "onsen-swap": "https://coin-images.coingecko.com/markets/images/1154/small/onsenswap.jpeg?1706865170",
+    "lfgswap-core": "https://coin-images.coingecko.com/markets/images/1067/small/lfgswap.jpeg?1706865092",
+    baptswap: "https://coin-images.coingecko.com/markets/images/1106/small/baptswap.jpg?1706865125",
+    "sushiswap-v3-polygon-zkevm": "https://coin-images.coingecko.com/markets/images/1178/small/sushiswap.png?1706865191",
+    lfgswap: "https://coin-images.coingecko.com/markets/images/969/small/lfgswap.jpeg?1706864960",
+    "muesliswap-milkada": "https://coin-images.coingecko.com/markets/images/851/small/muesli.png?1706864869",
+    tangoswap: "https://coin-images.coingecko.com/markets/images/784/small/w3UpakzC_400x400.jpg?1706864817",
+    solarflare: "https://coin-images.coingecko.com/markets/images/834/small/Solarflare.png?1706864856",
+    "balancer-v2-polygon-zkevm": "https://coin-images.coingecko.com/markets/images/1528/small/balancer-v2.png?1711496392",
+    uniwswap: "https://coin-images.coingecko.com/markets/images/976/small/uniwswap.jpeg?1706864966",
+    "revoswap-v2": "https://coin-images.coingecko.com/markets/images/1564/small/revoswap.png?1713935752",
+    laserswap: "https://coin-images.coingecko.com/markets/images/1632/small/laserswap.jpeg?1718175681",
+    kibbleswap: "https://coin-images.coingecko.com/markets/images/947/small/kibbleswap.png?1706864940",
+    "squadswap-v3": "https://coin-images.coingecko.com/markets/images/1413/small/SquadSwap_Logo_-_main.png?1706865409",
+    oracleswap: "https://coin-images.coingecko.com/markets/images/1127/small/oracle.jpeg?1706865146",
+    "ra-exchange-v1": "https://coin-images.coingecko.com/markets/images/1502/small/ra.jpeg?1710406681",
+    "roguex-protocol": "https://coin-images.coingecko.com/markets/images/1471/small/roguex.jpeg?1709632707",
+    silkswap: "https://coin-images.coingecko.com/markets/images/1595/small/silkswap.jpeg?1715338735",
+    "hyperswap-areon-network": "https://coin-images.coingecko.com/markets/images/1639/small/hyperswap.jpg?1721896967",
+    "sparkdex-v3": "https://coin-images.coingecko.com/markets/images/1679/small/sparkdex.png?1722488702",
+    skydrome: "https://coin-images.coingecko.com/markets/images/1329/small/skydrome.jpeg?1706865332",
+    gasx: "https://coin-images.coingecko.com/markets/images/1469/small/gasx.jpeg?1709630274",
+    "kodo-exchange": "https://coin-images.coingecko.com/markets/images/1666/small/logo-orig.png?1721180108",
+    rockswap: "https://coin-images.coingecko.com/markets/images/1338/small/rockswap.jpeg?1706865340",
+    orangedx: "https://coin-images.coingecko.com/markets/images/1561/small/orangedx.jpeg?1713836472",
+    "ra-exchange": "https://coin-images.coingecko.com/markets/images/1480/small/ra.jpeg?1709881855",
+    zenlink_astar: "https://coin-images.coingecko.com/markets/images/923/small/zenlink.jpeg?1706864919",
+    "cyberblast-v3": "https://coin-images.coingecko.com/markets/images/1477/small/cyberblast.jpeg?1709789506",
+    "butter-xyz": "https://coin-images.coingecko.com/markets/images/1404/small/butter.xyz.png?1706865403",
+    supswap: "https://coin-images.coingecko.com/markets/images/1482/small/supswap.jpeg?1710126207",
+    scrollswap: "https://coin-images.coingecko.com/markets/images/1315/small/scrollswap.jpeg?1706865319",
+    howswap: "https://coin-images.coingecko.com/markets/images/1559/small/1000009942.png?1713348806",
+    voltswap_meter: "https://coin-images.coingecko.com/markets/images/783/small/voltswap.png?1706864816",
+    shadowswap: "https://coin-images.coingecko.com/markets/images/1069/small/shadowswap.jpeg?1706865094",
+    scribe: "https://coin-images.coingecko.com/markets/images/1685/small/scribe.png?1723091126",
+    viridian: "https://coin-images.coingecko.com/markets/images/1637/small/viridian.jpeg?1718243793",
+    "skydrome-v2": "https://coin-images.coingecko.com/markets/images/1526/small/skydrome.jpeg?1711334177",
+    "line-hub-v3": "https://coin-images.coingecko.com/markets/images/1599/small/linehub.png?1715826694",
+    meshswap: "https://coin-images.coingecko.com/markets/images/1165/small/meshswap.jpeg?1706865180",
+    infusion: "https://coin-images.coingecko.com/markets/images/1538/small/logo_blue.png?1711962117",
+    basex: "https://coin-images.coingecko.com/markets/images/1555/small/basex.jpeg?1713158959",
+    benswap_smart_bitcoin_cash: "https://coin-images.coingecko.com/markets/images/743/small/benswap-logo.png?1706864776",
+    honorswap: "https://coin-images.coingecko.com/markets/images/1553/small/honorswap.jpeg?1713158758",
+    rcpswap: "https://coin-images.coingecko.com/markets/images/945/small/rcp-swap.png?1706864938",
+    "moraswap-v2": "https://coin-images.coingecko.com/markets/images/1361/small/avatar-blue.png?1706865383",
+    bitswap: "https://coin-images.coingecko.com/markets/images/1406/small/bitswap.jpeg?1706865404",
+    zenlink_moonbeam: "https://coin-images.coingecko.com/markets/images/830/small/iShot2022-03-14_14.54.22.png?1706864853",
+    "xswap-v3": "https://coin-images.coingecko.com/markets/images/1390/small/200x200.png?1706865395",
+    shimmersea: "https://coin-images.coingecko.com/markets/images/1321/small/shimmersea.jpeg?1706865325",
+    "derpdex-base": "https://coin-images.coingecko.com/markets/images/1302/small/DP-1_%281%29.png?1706865294",
+    nomiswap_stable: "https://coin-images.coingecko.com/markets/images/997/small/nomiswap.jpeg?1706864985",
+    autoshark_finance: "https://coin-images.coingecko.com/markets/images/788/small/autoshark.png?1706864820",
+    squadswap: "https://coin-images.coingecko.com/markets/images/1409/small/SquadSwap_Logo_-_main.png?1706865407",
+    bilaxy: "https://coin-images.coingecko.com/markets/images/193/small/bilaxy.png?1706864324",
+    bitexlive: "https://coin-images.coingecko.com/markets/images/321/small/logo-short.png?1706864374",
+    alterdice: "https://coin-images.coingecko.com/markets/images/327/small/alterdice_%281%29.png?1706864377",
+    btc_alpha: "https://coin-images.coingecko.com/markets/images/155/small/btc-alpha.png?1706864317",
+    degate: "https://coin-images.coingecko.com/markets/images/1157/small/degate_white.jpeg?1706865173",
+    btcc: "https://coin-images.coingecko.com/markets/images/12/small/BTCC-LogoOnly_200x200.png?1722494798",
+    apeswap_bsc: "https://coin-images.coingecko.com/markets/images/651/small/APESWAP.png?1706864596",
+    bitsten: "https://coin-images.coingecko.com/markets/images/292/small/Bitsten_Exchange.jpg?1706864362",
+    "hiveswap-v3": "https://coin-images.coingecko.com/markets/images/1530/small/hiveswap.jpeg?1711516739",
+    "pharaoh-exchange": "https://coin-images.coingecko.com/markets/images/1415/small/pharaoh.jpeg?1706865409",
+    mdex_bsc: "https://coin-images.coingecko.com/markets/images/676/small/Mdex.png?1706864619",
+    safe_trade: "https://coin-images.coingecko.com/markets/images/215/small/safe-trade-logo.png?1706864330",
+    nami_exchange: "https://coin-images.coingecko.com/markets/images/550/small/namiexchange_logo_200x200.png?1706864517",
+    vitex: "https://coin-images.coingecko.com/markets/images/502/small/ViteX.png?1706864477",
+    netswap: "https://coin-images.coingecko.com/markets/images/760/small/netswap.png?1706864789",
+    paymium: "https://coin-images.coingecko.com/markets/images/133/small/paymium_logo-ico.png?1706864304",
+    mimo: "https://coin-images.coingecko.com/markets/images/695/small/mimo.png?1706864645",
+    curve_avalanche: "https://coin-images.coingecko.com/markets/images/921/small/Curve.png?1706864917",
+    "ramses-v2": "https://coin-images.coingecko.com/markets/images/1171/small/ramses.jpeg?1706865185",
+    "secta-finance-v3": "https://coin-images.coingecko.com/markets/images/1458/small/secta.jpeg?1709190906",
+    horizondex: "https://coin-images.coingecko.com/markets/images/1192/small/horizondex.jpg?1706865204",
+    "secta-finance-v2": "https://coin-images.coingecko.com/markets/images/1456/small/secta.jpeg?1709190312",
+    apeswap_polygon: "https://coin-images.coingecko.com/markets/images/718/small/dCfHngLf_400x400.jpeg?1706864676",
+    "doveswap-v3": "https://coin-images.coingecko.com/markets/images/1132/small/dovish.jpeg?1706865150",
+    "velocimeter-fantom": "https://coin-images.coingecko.com/markets/images/1240/small/velocimeter.png?1706865245",
+    comethswap: "https://coin-images.coingecko.com/markets/images/644/small/comethswap.png?1706864590",
+    birake: "https://coin-images.coingecko.com/markets/images/419/small/Birake.png?1706864421",
+    morpheus_swap: "https://coin-images.coingecko.com/markets/images/781/small/46ygcxie_400x400.jpg?1706864815",
+    zbx: "https://coin-images.coingecko.com/markets/images/634/small/zbx.png?1706864579",
+    punkswap: "https://coin-images.coingecko.com/markets/images/1316/small/punkswap.png?1706865320",
+    zipswap: "https://coin-images.coingecko.com/markets/images/854/small/zipswap.jpeg?1706864873",
+    ezkalibur: "https://coin-images.coingecko.com/markets/images/1190/small/ezkalibur.jpg?1706865202",
+    graviex: "https://coin-images.coingecko.com/markets/images/206/small/graviex-logo.png?1706864327",
+    sakeswap: "https://coin-images.coingecko.com/markets/images/598/small/SakeSwap_Avatar_01B.png?1706864547",
+    globiance: "https://coin-images.coingecko.com/markets/images/1072/small/globiance.jpeg?1706865096",
+    "mm-finance-arbitrum": "https://coin-images.coingecko.com/markets/images/1117/small/mm_finance.jpeg?1706865137",
+    excalibur: "https://coin-images.coingecko.com/markets/images/836/small/Excalibur.jpeg?1706864858",
+    "apeswap-arbitrum": "https://coin-images.coingecko.com/markets/images/1110/small/apeswap.jpeg?1706865131",
+    levinswap_xdai: "https://coin-images.coingecko.com/markets/images/679/small/levinswap.jpeg?1706864623",
+    sphynx_swap: "https://coin-images.coingecko.com/markets/images/910/small/FkSDUwDc_400x400.jpeg?1706864907",
+    algebra_finance: "https://coin-images.coingecko.com/markets/images/818/small/hKS3_uyj_400x400.jpg?1706864841",
+    powswap: "https://coin-images.coingecko.com/markets/images/967/small/powswap.jpeg?1706864958",
+    yokaiswap: "https://coin-images.coingecko.com/markets/images/970/small/yokai.png?1706864961",
+    auroraswap: "https://coin-images.coingecko.com/markets/images/758/small/auroraswap.png?1706864787",
+    kuswap: "https://coin-images.coingecko.com/markets/images/685/small/kuswap.jpeg?1706864632",
+    "rawr-trade": "https://coin-images.coingecko.com/markets/images/1494/small/rawr.png?1710145532",
+    wanswap: "https://coin-images.coingecko.com/markets/images/798/small/OWIhzGn8_400x400.jpg?1706864825",
+    localtrade: "https://coin-images.coingecko.com/markets/images/338/small/LT_Icon_Main.png?1706864382",
+    bcex: "https://coin-images.coingecko.com/markets/images/190/small/bcex.jpg?1706864323",
+    curve_fantom: "https://coin-images.coingecko.com/markets/images/927/small/W1sQNVWo_400x400.jpeg?1706864922",
+    "fathom-dex": "https://coin-images.coingecko.com/markets/images/1468/small/fathom.jpeg?1709626211",
+    polycat_finance: "https://coin-images.coingecko.com/markets/images/771/small/polycat.png?1706864799",
+    tranquil_finance: "https://coin-images.coingecko.com/markets/images/850/small/tranquil_finance.jpeg?1706864869",
+    equilibre: "https://coin-images.coingecko.com/markets/images/1071/small/equilibre.jpeg?1706865095",
+    "niza-global": "https://coin-images.coingecko.com/markets/images/1611/small/niza-200x200.png?1716952078",
+    curve_arbitrum: "https://coin-images.coingecko.com/markets/images/924/small/Curve.png?1706864920",
+    nile: "https://coin-images.coingecko.com/markets/images/1447/small/nile.png?1709111075",
+    curve_polygon: "https://coin-images.coingecko.com/markets/images/926/small/Curve.png?1706864922",
+    globe_exchange: "https://coin-images.coingecko.com/markets/images/973/small/globe_exchange.png?1706864964",
+    phux: "https://coin-images.coingecko.com/markets/images/1202/small/phux.jpeg?1706865213",
+    nanu_exchange: "https://coin-images.coingecko.com/markets/images/252/small/nanu-exchange.jpg?1706864348",
+    kyberswap_classic_polygon: "https://coin-images.coingecko.com/markets/images/705/small/kyberswap.png?1706864659",
+    "equalizer-base": "https://coin-images.coingecko.com/markets/images/1307/small/hq_png_icon_file.png?1706865299",
+    wagyuswap: "https://coin-images.coingecko.com/markets/images/809/small/wagyuu.jpg?1706864834",
+    secondbtc: "https://coin-images.coingecko.com/markets/images/320/small/secondbtc.png?1706864373",
+    purcow: "https://coin-images.coingecko.com/markets/images/306/small/Purcow.png?1706864366",
+    komodo_wallet: "https://coin-images.coingecko.com/markets/images/1337/small/Icon-Light-50.png?1706865339",
+    echodex: "https://coin-images.coingecko.com/markets/images/1252/small/echodex.jpeg?1706865256",
+    kyberswap_classic_bsc: "https://coin-images.coingecko.com/markets/images/706/small/kyberswap.png?1706864660",
+    animeswap: "https://coin-images.coingecko.com/markets/images/1096/small/animeswap.jpg?1706865116",
+    "degenswap-degenchain": "https://coin-images.coingecko.com/markets/images/1536/small/degen.jpeg?1711948161",
+    citadelswap: "https://coin-images.coingecko.com/markets/images/1364/small/citadel.jpeg?1706865385",
+    blazeswap: "https://coin-images.coingecko.com/markets/images/1189/small/blazeswap.jpg?1706865201",
+    zenlink_moonriver: "https://coin-images.coingecko.com/markets/images/829/small/200_200.png?1706864852",
+    crodex: "https://coin-images.coingecko.com/markets/images/750/small/crodex.png?1706864781",
+    solidlizard: "https://coin-images.coingecko.com/markets/images/1058/small/solidlizard.jpeg?1706865083",
+    cetoswap: "https://coin-images.coingecko.com/markets/images/1534/small/ceto.jpeg?1711944545",
+    "convergence-finance-v2": "https://coin-images.coingecko.com/markets/images/1540/small/convergence.jpeg?1712057896",
+    arbidex: "https://coin-images.coingecko.com/markets/images/1097/small/arbidex.jpg?1706865117",
+    derpdex: "https://coin-images.coingecko.com/markets/images/1300/small/DP-1_%281%29.png?1706865292",
+    hakuswap: "https://coin-images.coingecko.com/markets/images/802/small/AoDC8sk-_400x400.jpeg?1706864829",
+    jupiter: "https://coin-images.coingecko.com/markets/images/815/small/jup-mark-color.png?1723188000",
+    btcturk: "https://coin-images.coingecko.com/markets/images/223/small/btctrurk_kripto.png?1706864333",
+    coinone: "https://coin-images.coingecko.com/markets/images/20/small/coinone_circle_500x500.png?1706864256",
+    changenow: "https://coin-images.coingecko.com/markets/images/1661/small/changenow-logo-new.jpg?1720085714",
+    dodo_bsc: "https://coin-images.coingecko.com/markets/images/640/small/41tgsq69_400x400.png?1706864586",
+    thala: "https://coin-images.coingecko.com/markets/images/1118/small/thala.jpeg?1706865138",
+    thorswap: "https://coin-images.coingecko.com/markets/images/732/small/thorchain.jpg?1706864694",
+    maverick_protocol_base: "missing_small.png",
+    coinsbit: "https://coin-images.coingecko.com/markets/images/267/small/Coinsbit.png?1706864351",
+    mudrex: "https://coin-images.coingecko.com/markets/images/1287/small/Frame_480964336.png?1706865282",
+    openocean_finance: "https://coin-images.coingecko.com/markets/images/713/small/ooe.png?1706864669",
+    "cellana-finance": "https://coin-images.coingecko.com/markets/images/1500/small/Cellana_logo_mark.png?1710910970",
+    "hyperliquid-spot": "https://coin-images.coingecko.com/markets/images/1571/small/PFP.png?1714470912",
+    woofi: "https://coin-images.coingecko.com/markets/images/919/small/WOOFi-Logo.png?1706864915",
+    tidex: "https://coin-images.coingecko.com/markets/images/43/small/favicon.png?1706864270",
+    sunswap_v1: "https://coin-images.coingecko.com/markets/images/840/small/pMErCWk4_400x400.jpeg?1706864861",
+    coinbase_international: "https://coin-images.coingecko.com/markets/images/1385/small/coinbase.png?1706865394",
+    ref_finance: "https://coin-images.coingecko.com/markets/images/697/small/ref_finance.jpg?1706864648",
+    defichain: "https://coin-images.coingecko.com/markets/images/831/small/symbol-defi-blockchain_200.png?1706864854",
+    icpswap: "https://coin-images.coingecko.com/markets/images/1395/small/icp.png?1706865399",
+    minswap: "https://coin-images.coingecko.com/markets/images/983/small/minswap.png?1706864973",
+    hydradx: "https://coin-images.coingecko.com/markets/images/1218/small/hydration_%281%29.png?1718880229",
+    aftermath_finance: "https://coin-images.coingecko.com/markets/images/1393/small/aftermath-logo-white-gray.png?1706865397",
+    stellar_term: "https://coin-images.coingecko.com/markets/images/233/small/stellarterm-decentralized-exchange.png?1706864338",
+    thorwallet: "https://coin-images.coingecko.com/markets/images/993/small/thorwallet.jpeg?1706864982",
+    maverick_protocol_zksync: "https://coin-images.coingecko.com/markets/images/1267/small/maverick.jpeg?1706865268",
+    matcha_ethereum: "https://coin-images.coingecko.com/markets/images/1585/small/matcha_logo.jpg?1715308358",
+    matcha_polygon: "https://coin-images.coingecko.com/markets/images/1590/small/matcha_logo.png?1715159121",
+    caviarnine: "https://coin-images.coingecko.com/markets/images/1383/small/caviar_trans_200.png?1706865393",
+    bibox: "https://coin-images.coingecko.com/markets/images/114/small/bibox.jpg?1706864293",
+    altcointrader: "https://coin-images.coingecko.com/markets/images/661/small/Altcoin.png?1706864605",
+    splash: "https://coin-images.coingecko.com/markets/images/1673/small/Splash-logo.png?1721800457",
+    "clipper-arbitrum": "https://coin-images.coingecko.com/markets/images/1375/small/clipper.jpeg?1706865389",
+    clipper_ethereum: "https://coin-images.coingecko.com/markets/images/717/small/clipper.png?1706864674",
+    "flowx-finance": "https://coin-images.coingecko.com/markets/images/1291/small/FlowX_DEX_Logo.png?1706865284",
+    ayin: "https://coin-images.coingecko.com/markets/images/1336/small/ayin-coin.png?1706865338",
+    magic_eden_runes: "https://coin-images.coingecko.com/markets/images/1609/small/magiceden.png?1716884981",
+    matcha_base: "https://coin-images.coingecko.com/markets/images/1588/small/matcha_logo.png?1715159039",
+    iziswap_zksync: "https://coin-images.coingecko.com/markets/images/1147/small/iziswap.png?1706865163",
+    okex_ordinals: "https://coin-images.coingecko.com/markets/images/1389/small/okx_ord.jpeg?1706865395",
+    zebpay: "https://coin-images.coingecko.com/markets/images/151/small/Zebpay.jpg?1706864313",
+    "maya-protocol": "https://coin-images.coingecko.com/markets/images/1546/small/Transparent_Logo_Maya.png?1712286903",
+    "sushiswap-v3-filecoin": "https://coin-images.coingecko.com/markets/images/1672/small/sushiswap-sushi-logo.png?1721789413",
+    tokenlon: "https://coin-images.coingecko.com/markets/images/516/small/Tokenlon_1_4x.png?1706864488",
+    clipper_optimism: "https://coin-images.coingecko.com/markets/images/875/small/oJ7a91sA_400x400.jpeg?1706864888",
+    wingriders: "https://coin-images.coingecko.com/markets/images/1061/small/wingriders.png?1706865086",
+    shade_protocol: "https://coin-images.coingecko.com/markets/images/1159/small/shade_protocol.jpeg?1706865174",
+    ociswap: "https://coin-images.coingecko.com/markets/images/1667/small/photo_2024-08-06_11.48.25.jpeg?1722916120",
+    kaidex: "https://coin-images.coingecko.com/markets/images/727/small/Kaidex.PNG?1706864687",
+    acala_swap: "https://coin-images.coingecko.com/markets/images/883/small/acala.jpeg?1706864894",
+    polkaswap: "https://coin-images.coingecko.com/markets/images/715/small/PSWAP.png?1706864672",
+    "dodo-mantle": "https://coin-images.coingecko.com/markets/images/1683/small/DODO-Logo3.png?1722823836",
+    sundaeswap: "https://coin-images.coingecko.com/markets/images/974/small/sundaeswap.png?1706864964",
+    polkadex: "https://coin-images.coingecko.com/markets/images/1631/small/polkadex.jpeg?1718354312",
+    astrovault: "https://coin-images.coingecko.com/markets/images/1304/small/AXV_Orb_-_200.png?1706865296",
+    loopring_amm: "https://coin-images.coingecko.com/markets/images/618/small/Loopring.jpg?1706864565",
+    common: "https://coin-images.coingecko.com/markets/images/1670/small/common_signet.png?1721201166",
+    icdex: "https://coin-images.coingecko.com/markets/images/1562/small/icdex.jpeg?1713959309",
+    "velar-stacks": "https://coin-images.coingecko.com/markets/images/1598/small/velar.jpeg?1715916142",
+    unisat: "https://coin-images.coingecko.com/markets/images/1143/small/unisat.jpeg?1706865160",
+    matcha_arbitrum_one: "https://coin-images.coingecko.com/markets/images/1587/small/matcha_logo.png?1715159028",
+    matcha_optimism: "https://coin-images.coingecko.com/markets/images/1586/small/matcha_logo.png?1715149760",
+    astroport_osmosis: "https://coin-images.coingecko.com/markets/images/1605/small/astroport.jpeg?1716207415",
+    glide_finance: "https://coin-images.coingecko.com/markets/images/847/small/glide.jpeg?1706864867",
+    "saitaswap-ethereum": "https://coin-images.coingecko.com/markets/images/1128/small/MRzM13ry_400x400.jpg?1706865147",
+    bifrost_swap: "https://coin-images.coingecko.com/markets/images/1396/small/D3-1.jpg?1706865399",
+    dexlab: "https://coin-images.coingecko.com/markets/images/1650/small/dexlab_symbol_200.png?1719303108",
+    onedex: "https://coin-images.coingecko.com/markets/images/1326/small/Twitter_header_-_2.png?1706865329",
+    sovryn: "https://coin-images.coingecko.com/markets/images/1001/small/sovryn.png?1706864989",
+    dexter: "https://coin-images.coingecko.com/markets/images/1145/small/dexter.jpeg?1706865162",
+    sonic: "https://coin-images.coingecko.com/markets/images/1381/small/sonic.jpeg?1706865392",
+    ashswap: "https://coin-images.coingecko.com/markets/images/1151/small/photo_2024-04-05_14.03.18.jpeg?1712297006",
+    defiplaza_radix: "https://coin-images.coingecko.com/markets/images/1382/small/defiplaza.png?1706865392",
+    clipper_polygon: "https://coin-images.coingecko.com/markets/images/740/small/clipper.png?1706864774",
+    zilswap: "https://coin-images.coingecko.com/markets/images/652/small/1Artboard_2_2x.png?1706864597",
+    matcha_bsc: "https://coin-images.coingecko.com/markets/images/1591/small/matcha_logo.png?1715159212",
+    karura_swap: "https://coin-images.coingecko.com/markets/images/880/small/z6Z3A427_400x400.jpeg?1706864892",
+    "pancakeswap-stableswap-arbitrum": "https://coin-images.coingecko.com/markets/images/1508/small/pancakeswap-cake-logo.png?1710836905",
+    kava: "https://coin-images.coingecko.com/markets/images/719/small/photo_2021-10-14_19-47-17.jpg?1706864677",
+    kyberswap_elastic_polygon: "https://coin-images.coingecko.com/markets/images/959/small/kyberswap.jpeg?1706864951",
+    wombat: "https://coin-images.coingecko.com/markets/images/1004/small/wombat.png?1706864991",
+    openbook: "https://coin-images.coingecko.com/markets/images/1311/small/openbook.png?1706865304",
+    bitker: "https://coin-images.coingecko.com/markets/images/286/small/33170059_211565709569963_2583462973603315712_n.jpg?1706864360",
+    "curve-bsc": "https://coin-images.coingecko.com/markets/images/1551/small/curve-dao-token-crv-logo.png?1713152923",
+    terraport: "https://coin-images.coingecko.com/markets/images/1376/small/Terraport_logo_200x200.png?1706865389",
+    inx_one: "https://coin-images.coingecko.com/markets/images/1076/small/inx_one.jpeg?1706865100",
+    zenlink_bitfrost_kusama: "https://coin-images.coingecko.com/markets/images/1210/small/zenlink.png?1706865219",
+    "white-whale-migaloo": "https://coin-images.coingecko.com/markets/images/1384/small/whitewhale.jpeg?1706865393",
+    loopring: "https://coin-images.coingecko.com/markets/images/542/small/Loopring.png?1706864510",
+    matcha_avalanche: "https://coin-images.coingecko.com/markets/images/1589/small/matcha_logo.png?1715159094",
+    spectrum_finance: "https://coin-images.coingecko.com/markets/images/1372/small/photo_2023-03-15_14-08-41.jpg?1706865387",
+    wombat_arbitrum: "https://coin-images.coingecko.com/markets/images/1156/small/wombat.jpeg?1706865172",
+    forteswap: "https://coin-images.coingecko.com/markets/images/1038/small/forte.png?1706865066",
+    "kyberswap-elastic-linea": "https://coin-images.coingecko.com/markets/images/1226/small/kyberswap.jpeg?1706865234",
+    quipuswap: "https://coin-images.coingecko.com/markets/images/726/small/quipuswap.jpg?1706864685",
+    plenty_network: "https://coin-images.coingecko.com/markets/images/1049/small/plenty_network.jpeg?1706865075",
+    iziswap: "https://coin-images.coingecko.com/markets/images/1003/small/iziswap.png?1706864990",
+    neutroswap: "https://coin-images.coingecko.com/markets/images/1133/small/neutroswap.jpeg?1706865151",
+    woofswap: "https://coin-images.coingecko.com/markets/images/1262/small/41214123.png?1706865265",
+    swop_fi: "https://coin-images.coingecko.com/markets/images/659/small/yztclCs.png?1706864603",
+    kyberswap_classic_avalanche: "https://coin-images.coingecko.com/markets/images/704/small/kyberswap.png?1706864657",
+    "universal-swaps": "https://coin-images.coingecko.com/markets/images/1558/small/universalswaps.jpeg?1713345871",
+    kyberswap_elastic_arbitrum: "https://coin-images.coingecko.com/markets/images/963/small/kyberswap.jpeg?1706864955",
+    web3_world: "https://coin-images.coingecko.com/markets/images/1627/small/W3WLogo_200x200.png?1718072198",
+    dforceswap_optimism: "https://coin-images.coingecko.com/markets/images/1087/small/dforce.jpeg?1706865109",
+    libre_swap: "https://coin-images.coingecko.com/markets/images/1090/small/libre_swap.jpeg?1706865111",
+    polaris: "https://coin-images.coingecko.com/markets/images/1065/small/polaris.jpeg?1706865090",
+    velocimeter_v2: "https://coin-images.coingecko.com/markets/images/1094/small/velocimeter.jpg?1706865114",
+    "shibaswap-shibarium": "https://coin-images.coingecko.com/markets/images/1668/small/shibaswap.png?1721181682",
+    "virtuswap-arbitrum-one": "https://coin-images.coingecko.com/markets/images/1522/small/Copy_of_VirtuSwap_Logo_Red_200x200.png?1710927921",
+    namebase: "https://coin-images.coingecko.com/markets/images/510/small/namebase.jpg?1706864483",
+    kyberswap_elastic_optimism: "https://coin-images.coingecko.com/markets/images/962/small/kyberswap.jpeg?1706864954",
+    acsi_finance: "https://coin-images.coingecko.com/markets/images/696/small/acsi.png?1706864646",
+    spicyswap: "https://coin-images.coingecko.com/markets/images/988/small/spicyswap.png?1706864977",
+    btc_trade_ua: "https://coin-images.coingecko.com/markets/images/169/small/btctradeua.png?1706864319",
+    kyberswap_classic_optimism: "https://coin-images.coingecko.com/markets/images/1055/small/kyberswap.jpeg?1706865081",
+    radioshack_avalanche: "https://coin-images.coingecko.com/markets/images/870/small/radioshack.jpeg?1706864884",
+    kyberswap_classic_arbitrum: "https://coin-images.coingecko.com/markets/images/1077/small/kyberswap.png?1706865100",
+    "milkyswap-milkada": "https://coin-images.coingecko.com/markets/images/843/small/milkyswap.jpeg?1706864863",
+    duckydefi: "https://coin-images.coingecko.com/markets/images/888/small/duckydefi.png?1706864899",
+    gemswap: "https://coin-images.coingecko.com/markets/images/1131/small/gemswap.jpeg?1706865150",
+    radioshack_ethereum: "https://coin-images.coingecko.com/markets/images/871/small/radioshack.jpeg?1706864885",
+    goosefx: "https://coin-images.coingecko.com/markets/images/1521/small/logo_%281%29.png?1710919863",
+    "velocimeter-v3": "https://coin-images.coingecko.com/markets/images/1446/small/velocimeter.png?1709108915",
+    "steam-exchange-rails-network": "missing_small.png",
+    bevmswap: "https://coin-images.coingecko.com/markets/images/1596/small/logobevmswap.png?1715748561",
+    sterling: "https://coin-images.coingecko.com/markets/images/1082/small/sterlingfi.jpeg?1706865104",
+    tealswap: "https://coin-images.coingecko.com/markets/images/1011/small/tealswap-profile.png?1706864997",
+    solidlydex: "https://coin-images.coingecko.com/markets/images/1023/small/solid_logo_200.png?1701687307",
+    oreoswap: "https://coin-images.coingecko.com/markets/images/1062/small/oreoswap.png?1706865087",
+    "vvs-v3-ethereum": "https://coin-images.coingecko.com/markets/images/1535/small/vvs.jpeg?1711947672",
+    amaterasu: "https://coin-images.coingecko.com/markets/images/886/small/amaterasu-dex.png?1706864897",
+    solisnek: "https://coin-images.coingecko.com/markets/images/1121/small/solisnek.jpeg?1706865140",
+    photonswap: "https://coin-images.coingecko.com/markets/images/785/small/photonswap.jpg?1706864818",
+    "satori-base": "https://coin-images.coingecko.com/markets/images/1465/small/satori.jpeg?1709613133",
+    taikoswap: "https://coin-images.coingecko.com/markets/images/1614/small/ts.jpeg?1716985816",
+    "uniswap-v2-avalanche": "https://coin-images.coingecko.com/markets/images/1485/small/uniswapv2.jpeg?1710129801",
+    sharkyswap: "https://coin-images.coingecko.com/markets/images/1063/small/sharky.jpg?1706865088",
+    "traderjoe-v2-arbitrum": "https://coin-images.coingecko.com/markets/images/1031/small/JoeToken.png?1706865060",
+    kaidex_v3: "https://coin-images.coingecko.com/markets/images/949/small/kaidex_v3.png?1706864942",
+    "stratum-exchange": "https://coin-images.coingecko.com/markets/images/1431/small/stratum.png?1708319505",
+    "satori-linea": "https://coin-images.coingecko.com/markets/images/1466/small/satori.jpeg?1709614371",
+    elk_finance_telos: "https://coin-images.coingecko.com/markets/images/810/small/ltcWLpfU_400x400.jpg?1706864835",
+    apeswap_telos: "https://coin-images.coingecko.com/markets/images/998/small/apeswap_telos.jpeg?1706864986",
+    unisat_runes: "https://coin-images.coingecko.com/markets/images/1610/small/unisat.png?1716884996",
+    "impossible-finance-humanode": "https://coin-images.coingecko.com/markets/images/1369/small/impossible_finance.png?1706865386",
+    "baso-finance": "https://coin-images.coingecko.com/markets/images/1245/small/baso-finance.jpeg?1706865250",
+    icpex: "https://coin-images.coingecko.com/markets/images/1640/small/icpex.jpeg?1718776423",
+    yodeswap: "https://coin-images.coingecko.com/markets/images/946/small/yodeswap.png?1706864939",
+    dforceswap_arbitrum: "https://coin-images.coingecko.com/markets/images/1086/small/dforce.jpeg?1706865108",
+    "oasisswap-base": "https://coin-images.coingecko.com/markets/images/1197/small/oasisswap.jpeg?1706865208",
+    "mindgames-arbitrum": "https://coin-images.coingecko.com/markets/images/1089/small/Mindgames.jpeg?1706865110",
+    crescent: "https://coin-images.coingecko.com/markets/images/932/small/PeQ_j_ca_400x400.jpeg?1706864927",
+    carbon: "https://coin-images.coingecko.com/markets/images/1237/small/Carbon_Icon.png?1706865243",
+    "monoswap-V2-blast": "https://coin-images.coingecko.com/markets/images/1490/small/monoswap.jpeg?1710134388",
+    ellipsis_finance: "https://coin-images.coingecko.com/markets/images/1043/small/ellipsis.jpeg?1706865070",
+    baguette: "https://coin-images.coingecko.com/markets/images/699/small/baguette.png?1706864650",
+    "fusionx-v2": "https://coin-images.coingecko.com/markets/images/1183/small/fusionxv3.png?1706865196",
+    bossswap: "https://coin-images.coingecko.com/markets/images/777/small/bossswap.jpg?1706864811",
+    agora_swap: "https://coin-images.coingecko.com/markets/images/844/small/Agora_Logo.png?1706864864",
+    basin: "https://coin-images.coingecko.com/markets/images/1597/small/basin%28green%29-200x200.png?1715759437",
+    rocketswap: "https://coin-images.coingecko.com/markets/images/1215/small/rocketswap.jpeg?1706865223",
+    "saturn-swap": "https://coin-images.coingecko.com/markets/images/1697/small/SaturnSwapLogo.png?1724299443",
+    alienfi: "https://coin-images.coingecko.com/markets/images/1083/small/alienfi.jpg?1706865105",
+    hyperblast: "https://coin-images.coingecko.com/markets/images/1488/small/hyperblast.jpeg?1710132864",
+    heliswap: "https://coin-images.coingecko.com/markets/images/1256/small/Copy_of_HELI_Logo_Draft-05.png?1706865259",
+    "abstradex-x-layer": "https://coin-images.coingecko.com/markets/images/1566/small/abstradex.jpeg?1713932058",
+    "bitgenie-merlin-chain": "https://coin-images.coingecko.com/markets/images/1621/small/bitgenie.jpeg?1717595758",
+    dezswap: "https://coin-images.coingecko.com/markets/images/1419/small/dezswap.jpeg?1707295781",
+    "hbarsuite-dex": "https://coin-images.coingecko.com/markets/images/1704/small/hbarsuite.jpg?1725327177",
+    sobal: "https://coin-images.coingecko.com/markets/images/1191/small/sobal.jpg?1706865203",
+    "dracula-finance": "https://coin-images.coingecko.com/markets/images/1219/small/fang.png?1706865227",
+    "dyorswap-blast": "https://coin-images.coingecko.com/markets/images/1459/small/fTzyY21w_400x400.jpg?1709242119",
+    dojoswap: "https://coin-images.coingecko.com/markets/images/1414/small/white_logo_black_circle.png?1706837519",
+    "step-exchange": "https://coin-images.coingecko.com/markets/images/965/small/StepEx.jpg?1706864957",
+    "curve-celo": "https://coin-images.coingecko.com/markets/images/1377/small/curve.png?1706865390",
+    "derpdex-opbnb": "https://coin-images.coingecko.com/markets/images/1301/small/DP-1_%281%29.png?1706865293",
+    mangata: "https://coin-images.coingecko.com/markets/images/1254/small/1_UTCu41TXKZY39tiUEc2EUg_2x.png?1706865258",
+    binance_dex_mini: "missing_small.png",
+    binaryswap: "https://coin-images.coingecko.com/markets/images/1270/small/0101.jpeg?1706865270",
+    dusa: "https://coin-images.coingecko.com/markets/images/1563/small/Dusa_Labs_logo_carre%CC%81_%281%29.png?1713853529",
+    ferro_protocol: "https://coin-images.coingecko.com/markets/images/1075/small/ferro_protocol.png?1706865099",
+    melegaswap: "https://coin-images.coingecko.com/markets/images/1327/small/MELEGA_logo_halo_500x500.png?1706865330",
+    econia: "https://coin-images.coingecko.com/markets/images/1646/small/econia.jpeg?1718939359",
+    bluelotusdao: "https://coin-images.coingecko.com/markets/images/1638/small/Blue_Lotus_-__Logo-07_%281%29.png?1718262773",
+    "myswap-cl": "https://coin-images.coingecko.com/markets/images/1572/small/myswap.png?1714726978",
+    "antfarm-ethereum": "https://coin-images.coingecko.com/markets/images/1454/small/antfarm.jpeg?1709184127",
+    everdex: "https://coin-images.coingecko.com/markets/images/1660/small/Everdex_logo_200_x_200.png?1720085700",
+    "helix-markets-ic": "https://coin-images.coingecko.com/markets/images/1690/small/HM_Logo_transparent.png?1723787225",
+    upbit_indonesia: "https://coin-images.coingecko.com/markets/images/483/small/UM9P5MNb_400x400.png?1706864466",
+    flatqube: "https://coin-images.coingecko.com/markets/images/879/small/RXXNTXEA_400x400.jpeg?1706864891",
+    "kaleidoswap-arbitrum": "https://coin-images.coingecko.com/markets/images/1438/small/kaleidoswap.jpeg?1708931472",
+    "evo-exchange": "https://coin-images.coingecko.com/markets/images/1703/small/EVO_Mark_Purple_-_Black_Box-2.png?1725004889",
+    "antfarm-avalanche": "https://coin-images.coingecko.com/markets/images/1453/small/antfarm.jpeg?1709182983",
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (EXCHANGE_ICONS);
 
@@ -3251,470 +4384,6 @@ function percentageFormatter(amount) {
 
 /***/ }),
 
-/***/ "./src/utils/api.ts":
-/*!**************************!*\
-  !*** ./src/utils/api.ts ***!
-  \**************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "fetchCoinInfo": () => (/* binding */ fetchCoinInfo),
-/* harmony export */   "fetchCoinsPrices": () => (/* binding */ fetchCoinsPrices),
-/* harmony export */   "fetchLatestAddressTxs": () => (/* binding */ fetchLatestAddressTxs),
-/* harmony export */   "fetchNameSearch": () => (/* binding */ fetchNameSearch),
-/* harmony export */   "fetchNftInfo": () => (/* binding */ fetchNftInfo),
-/* harmony export */   "fetchNftTxs": () => (/* binding */ fetchNftTxs),
-/* harmony export */   "fetchPriceHistoryData": () => (/* binding */ fetchPriceHistoryData),
-/* harmony export */   "fetchTokenTxs": () => (/* binding */ fetchTokenTxs),
-/* harmony export */   "fetchTrendingCoins": () => (/* binding */ fetchTrendingCoins)
-/* harmony export */ });
-/* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./storage */ "./src/utils/storage.ts");
-/* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-// const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250'
-function fetchNameSearch(searchQuery) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const API_KEY = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
-            const res = yield fetch(`https://api.coingecko.com/api/v3/search?query=${searchQuery}&x_cg_demo_api_key=${API_KEY}`);
-            if (!res.ok) {
-                throw new Error(`Fetch error, Coingecko searchQuery ${searchQuery}: ${res.status} ${res.statusText}`);
-            }
-            return yield res.json();
-        }
-        catch (error) {
-            console.error("Error fetching  Coingecko searchQuery ${searchQuery}", error);
-            throw error;
-        }
-    });
-}
-function fetchTrendingCoins() {
-    var _a, _b;
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            // if got trending coins in the last 3 hours, return from storage
-            const trendingCoinsStorage = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getTrendingCoinsStorage)();
-            const currentTime = new Date().getTime();
-            const lastUpdated = trendingCoinsStorage === null || trendingCoinsStorage === void 0 ? void 0 : trendingCoinsStorage.lastUpdated;
-            if (((_b = (_a = trendingCoinsStorage === null || trendingCoinsStorage === void 0 ? void 0 : trendingCoinsStorage.trendingCoins) === null || _a === void 0 ? void 0 : _a.coins) === null || _b === void 0 ? void 0 : _b.length) > 0 &&
-                lastUpdated > currentTime - _static_constants__WEBPACK_IMPORTED_MODULE_1__.CACHE_TIME_LONG) {
-                console.log("STORAGE - GOT TRENDING COINS");
-                return trendingCoinsStorage.trendingCoins;
-            }
-            else {
-                try {
-                    console.log("FETCHING TRENDING COINS");
-                    const API_KEY = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
-                    const res = yield fetch(`https://api.coingecko.com/api/v3/search/trending?&x_cg_demo_api_key=${API_KEY}`);
-                    if (!res.ok) {
-                        throw new Error(`Fetch error, Hot Coins: ${res.status} ${res.statusText}`);
-                    }
-                    const trendingCoins = yield res.json();
-                    yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.setTrendingCoinsStorage)(trendingCoins);
-                    return trendingCoins;
-                }
-                catch (error) {
-                    console.error("Error-fetchTrendingCoins: fetching trending Coins:", error);
-                    throw error;
-                }
-            }
-        }
-        catch (error) {
-            console.error("Error-fetchTrendingCoins: getting trending Coins:", error);
-            throw error;
-        }
-    });
-}
-function fetchCoinsPrices(coinIds) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            // if got coin in the last 20 minutes, return from storage
-            const storedCoinPricesData = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getCoinPricesDataStorage)();
-            const currentTime = new Date().getTime();
-            const lastUpdated = storedCoinPricesData === null || storedCoinPricesData === void 0 ? void 0 : storedCoinPricesData.lastUpdated;
-            function arraysEqual(a, b) {
-                if (a.length !== b.length)
-                    return false;
-                for (let i = 0; i < a.length; i++) {
-                    if (a[i] !== b[i])
-                        return false;
-                }
-                return true;
-            }
-            if (lastUpdated > currentTime - _static_constants__WEBPACK_IMPORTED_MODULE_1__.CACHE_TIME_SHORT &&
-                arraysEqual(storedCoinPricesData === null || storedCoinPricesData === void 0 ? void 0 : storedCoinPricesData.coinIds, coinIds)) {
-                console.log(`STORAGE - GOT COINPRICES $${coinIds}`);
-                return storedCoinPricesData.coinPrices;
-            }
-            else {
-                try {
-                    const API_KEY = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
-                    const coinSearchUrl = coinIds.join("%2C");
-                    const res = yield fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinSearchUrl}&vs_currencies=usd&include_24hr_change=true&x_cg_demo_api_key=${API_KEY}`);
-                    if (!res.ok) {
-                        throw new Error(`Error-fetchCoinsPrices: coin info data (${coinIds}): ${res.status} ${res.statusText}`);
-                    }
-                    console.log(`FETCHED COIN PRICES ${coinIds}`);
-                    const coinPrices = yield res.json();
-                    (0,_storage__WEBPACK_IMPORTED_MODULE_0__.setCoinPricesDataStorage)(coinPrices, coinIds);
-                    return coinPrices;
-                }
-                catch (error) {
-                    console.error(`fetchCoinsPrices-fetching coin info data (${coinIds}):`, error);
-                    throw error;
-                }
-            }
-        }
-        catch (error) {
-            console.error(`Error-fetchCoinsPrices: getting coin info data (${coinIds}):`, error);
-        }
-    });
-}
-function fetchPriceHistoryData(coinId, quote, chartRange) {
-    return __awaiter(this, void 0, void 0, function* () {
-        coinId = coinId || "bitcoin";
-        quote = quote || "usd";
-        chartRange = chartRange || "30";
-        try {
-            // if got coin in the last 20 minutes, return from storage
-            const storedCoinPriceHistoryData = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getStoredCoinPriceHistoryData)();
-            const currentTime = new Date().getTime();
-            const lastUpdated = storedCoinPriceHistoryData === null || storedCoinPriceHistoryData === void 0 ? void 0 : storedCoinPriceHistoryData.lastUpdated;
-            if (lastUpdated > currentTime - _static_constants__WEBPACK_IMPORTED_MODULE_1__.CACHE_TIME_SHORT &&
-                (storedCoinPriceHistoryData === null || storedCoinPriceHistoryData === void 0 ? void 0 : storedCoinPriceHistoryData.coinId) === coinId &&
-                (storedCoinPriceHistoryData === null || storedCoinPriceHistoryData === void 0 ? void 0 : storedCoinPriceHistoryData.chartRange) === chartRange) {
-                console.log(`STORAGE - GOT COIN PRICEHISTORY $${coinId} ${chartRange}`);
-                return storedCoinPriceHistoryData.priceHistory;
-            }
-            else {
-                try {
-                    const API_KEY = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
-                    const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${quote}&days=${chartRange}&interval=daily&x_cg_demo_api_key=${API_KEY}`);
-                    if (!res.ok) {
-                        throw new Error(`Fetch error, price history data (${coinId}): ${res.status} ${res.statusText}`);
-                    }
-                    console.log(`FETCHED - COIN price history $${coinId}`);
-                    const priceHistory = yield res.json();
-                    (0,_storage__WEBPACK_IMPORTED_MODULE_0__.setStoredCoinPriceHistoryDataStorage)(priceHistory, coinId, chartRange);
-                    return priceHistory;
-                }
-                catch (error) {
-                    console.error(`Error fetching price history data (${coinId}):`, error);
-                    throw error;
-                }
-            }
-        }
-        catch (error) {
-            console.error(`Error-fetchPriceHistoryData: getting coin info data (${coinId}):`, error);
-        }
-    });
-}
-function fetchCoinInfo(coinId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        coinId = coinId || "bitcoin";
-        try {
-            // if got coin in the last 20 minutes, return from storage
-            const storedCoinStorage = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getStoredCoinDataStorage)();
-            const currentTime = new Date().getTime();
-            const lastUpdated = storedCoinStorage === null || storedCoinStorage === void 0 ? void 0 : storedCoinStorage.lastUpdated;
-            if ((storedCoinStorage === null || storedCoinStorage === void 0 ? void 0 : storedCoinStorage.coinId) === coinId &&
-                lastUpdated > currentTime - 300000) {
-                console.log(`STORAGE - GOT COIN INFO $${coinId}`);
-                return storedCoinStorage.storedCoin;
-            }
-            else {
-                try {
-                    const API_KEY = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
-                    const res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&market_data=true&community_data=true&developer_data=false&sparkline=false&x_cg_demo_api_key=${API_KEY}`);
-                    if (!res.ok) {
-                        throw new Error(`Fetch error, coin info data (${coinId}): ${res.status} ${res.statusText}`);
-                    }
-                    console.log(`FETCHED COIN INFO $${coinId}`);
-                    const coinInfo = yield res.json();
-                    (0,_storage__WEBPACK_IMPORTED_MODULE_0__.setStoredCoinDataStorage)(coinInfo, coinId);
-                    return coinInfo;
-                }
-                catch (error) {
-                    console.error(`Error-fetchCoinInfo: fetching coin info data (${coinId}):`, error);
-                    throw error;
-                }
-            }
-        }
-        catch (error) {
-            console.error(`Error-fetchCoinInfo: getting coin info data (${coinId}):`, error);
-        }
-    });
-}
-function fetchNftInfo(coinId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const API_KEY = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
-            const res = yield fetch(`https://api.coingecko.com/api/v3/nfts/${coinId}?&x_cg_demo_api_key=${API_KEY}`);
-            if (!res.ok) {
-                throw new Error(`Fetch error, NFT info data (${coinId}): ${res.status} ${res.statusText}`);
-            }
-            return yield res.json();
-        }
-        catch (error) {
-            console.error(`Error fetching NFT info data (${coinId}):`, error);
-            throw error;
-        }
-    });
-}
-function fetchNftTxs(domainName, contractAddress, txAmount) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const API_KEY = yield (0,_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
-            const res = yield fetch(`https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&x_cg_demo_api_key=${API_KEY}`);
-            if (!res.ok) {
-                throw new Error(`Fetch error, ${domainName} nft txs info: ${res.status} ${res.statusText}`);
-            }
-            return yield res.json();
-        }
-        catch (error) {
-            console.error("Error fetching nft token txs info:", error);
-            throw error;
-        }
-    });
-}
-function fetchTokenTxs(domainName, contractAddress, txAmount) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const res = yield fetch(`https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc&apikey=${_static_constants__WEBPACK_IMPORTED_MODULE_1__.SHARED_API_KEY_ETHERSCAN}`);
-            if (!res.ok) {
-                throw new Error(`Fetch error, ${domainName} token txs info: ${res.status} ${res.statusText}`);
-            }
-            return yield res.json();
-        }
-        catch (error) {
-            console.error("Error fetching token txs info:", error);
-            throw error;
-        }
-    });
-}
-function fetchLatestAddressTxs(address) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const res = yield fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${_static_constants__WEBPACK_IMPORTED_MODULE_1__.SHARED_API_KEY_ETHERSCAN}`);
-            if (!res.ok) {
-                throw new Error(`Fetch error, ${address} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`);
-            }
-            return yield res.json();
-        }
-        catch (error) {
-            console.error("Error fetching txstchLatestAddressTxs:", error);
-            throw error;
-        }
-    });
-}
-// used to fetch exchanges
-// export async function fetchExchangesList(): Promise<any> {
-// 	try {
-// 		let pageNr = 1;
-// 		let perPage = 250;
-// 		let allExchanges = [];
-//
-// 		while (true) {
-// 			const res = await fetch(`${COINGECKO_EXCHANGES_LIST_API}?per_page=${perPage}&page=${pageNr}`);
-//
-// 			if (!res.ok) {
-// 				throw new Error(`Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`);
-// 			}
-// 			const exchanges = await res.json();
-// 			allExchanges.push(...exchanges);
-// 			if (exchanges.length < perPage) {
-// 				// Reached the last page, exit the loop
-// 				break;
-// 			}
-// 			pageNr++;
-// 		}
-//
-// 		const exchangesObject = allExchanges.reduce((acc, exchange) => {
-// 			acc[exchange.id] = exchange.image;
-// 			// acc[`"${exchange.id}"`] = exchange.image;
-// 			return acc;
-// 		}, {});
-//
-// 		console.log("exchangesObject", JSON.stringify(exchangesObject, null, 2))
-// 		console.log("exchangesObject.length", Object.keys(exchangesObject).length)
-//
-// 		} catch (error) {
-// 			console.error('Error fetching Coingecko exchanges List:', error);
-// 			throw error;
-// 		}
-// }
-
-
-/***/ }),
-
-/***/ "./src/utils/delay.ts":
-/*!****************************!*\
-  !*** ./src/utils/delay.ts ***!
-  \****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "delay": () => (/* binding */ delay)
-/* harmony export */ });
-function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-
-/***/ }),
-
-/***/ "./src/utils/fetchDetailedNftInfo.ts":
-/*!*******************************************!*\
-  !*** ./src/utils/fetchDetailedNftInfo.ts ***!
-  \*******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "fetchDetailedNftInfo": () => (/* binding */ fetchDetailedNftInfo)
-/* harmony export */ });
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/utils/api.ts");
-/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/utils/delay.ts");
-/* harmony import */ var _getNftTxChartData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getNftTxChartData */ "./src/utils/getNftTxChartData.ts");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-const fetchDetailedNftInfo = (coinId, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        setLoadingError({ isLoading: true, isError: false });
-        setTxVolumeChartData([]);
-        setTokenTxsChartData([]);
-        const [nftInfo] = yield Promise.all([(0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftInfo)(coinId)]);
-        if (!nftInfo) {
-            setLoadingError({ isLoading: false, isError: true });
-            console.log(`No results for nftInfo ${coinId}`);
-            return;
-        }
-        setNftInfo(nftInfo);
-        setCoinInfo(null);
-        if (nftInfo.asset_platform_id && nftInfo.contract_address) {
-            yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(1000);
-            const txVolumeData = yield (0,_getNftTxChartData__WEBPACK_IMPORTED_MODULE_2__.getNftTxChartData)(nftInfo.asset_platform_id, nftInfo.contract_address);
-            if (!txVolumeData) {
-                setLoadingError({ isLoading: false, isError: true });
-                console.log(`No results for getNftTxChartData ${coinId}`);
-                return;
-            }
-            if (txVolumeData.length > 0) {
-                setTxVolumeChartData(txVolumeData);
-            }
-        }
-        setLoadingError({ isLoading: false, isError: false });
-    }
-    catch (error) {
-        setLoadingError({ isLoading: false, isError: true });
-        setNftInfo(null);
-        setTxVolumeChartData([]);
-        setCoinInfo(null);
-        console.error(`fetchDetailedNftInfo: Error searching for coin: ${coinId}`, error);
-    }
-});
-
-
-/***/ }),
-
-/***/ "./src/utils/fetchDetailedTokenInfo.ts":
-/*!*********************************************!*\
-  !*** ./src/utils/fetchDetailedTokenInfo.ts ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "fetchDetailedTokenInfo": () => (/* binding */ fetchDetailedTokenInfo)
-/* harmony export */ });
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/utils/api.ts");
-/* harmony import */ var _formatChartData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./formatChartData */ "./src/utils/formatChartData.ts");
-/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./delay */ "./src/utils/delay.ts");
-/* harmony import */ var _getTokenTxChartData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getTokenTxChartData */ "./src/utils/getTokenTxChartData.ts");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-
-
-const fetchDetailedTokenInfo = (coinId, setLoadingError, setCoinInfo, setNftInfo, setTxVolumeChartData, setTokenTxsChartData) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        setLoadingError({ isLoading: true, isError: false });
-        setTxVolumeChartData([]);
-        setTokenTxsChartData([]);
-        const [coinInfo, priceMaxHistoryDataRes] = yield Promise.all([
-            (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchCoinInfo)(coinId),
-            (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchPriceHistoryData)(coinId, "usd", "365"),
-        ]);
-        if (!coinInfo) {
-            console.log(`No results for coinInfo ${coinId}`);
-            setLoadingError({ isLoading: false, isError: true });
-            return;
-        }
-        if (!priceMaxHistoryDataRes) {
-            console.log(`No results for priceMaxHistoryData ${coinId}`);
-            setLoadingError({ isLoading: false, isError: true });
-            return;
-        }
-        // get past 30 days
-        coinInfo.price30dHistoryData = (0,_formatChartData__WEBPACK_IMPORTED_MODULE_1__.formatChartData)({
-            prices: priceMaxHistoryDataRes.prices.slice(-31),
-            total_volumes: priceMaxHistoryDataRes.total_volumes.slice(-31),
-        });
-        coinInfo.priceMaxHistoryData = (0,_formatChartData__WEBPACK_IMPORTED_MODULE_1__.formatChartData)(priceMaxHistoryDataRes);
-        setCoinInfo(coinInfo);
-        setNftInfo(null);
-        if (coinInfo.asset_platform_id && coinInfo.contract_address) {
-            yield (0,_delay__WEBPACK_IMPORTED_MODULE_2__.delay)(1000);
-            const tokenTxChartData = yield (0,_getTokenTxChartData__WEBPACK_IMPORTED_MODULE_3__.getTokenTxChartData)(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
-            if (!tokenTxChartData) {
-                setLoadingError({ isLoading: false, isError: true });
-                console.log(`No results for getTokenTxChartData ${coinId}`);
-                return;
-            }
-            setTokenTxsChartData(tokenTxChartData);
-        }
-        setLoadingError({ isLoading: false, isError: false });
-        return;
-    }
-    catch (error) {
-        setLoadingError({ isLoading: false, isError: true });
-        console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
-    }
-});
-
-
-/***/ }),
-
 /***/ "./src/utils/formatAddressShort.ts":
 /*!*****************************************!*\
   !*** ./src/utils/formatAddressShort.ts ***!
@@ -3806,254 +4475,6 @@ function downsampling(originalArray, maxDataPoints) {
 
 /***/ }),
 
-/***/ "./src/utils/getNftTxChartData.ts":
-/*!****************************************!*\
-  !*** ./src/utils/getNftTxChartData.ts ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getNftTxChartData": () => (/* binding */ getNftTxChartData)
-/* harmony export */ });
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/utils/api.ts");
-/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/utils/delay.ts");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-const getNftTxChartData = (platformId, contractAddress) => __awaiter(void 0, void 0, void 0, function* () {
-    let domain;
-    switch (platformId) {
-        case "arbitrum-one":
-            domain = "api.arbiscan.io";
-            break;
-        case "avalanche":
-            domain = "api.snowtrace.io";
-            break;
-        case "base":
-            domain = "api.basescan.org";
-            break;
-        case "binance-smart-chain":
-            domain = "api.bscscan.com";
-            break;
-        case "celo":
-            domain = "api.celoscan.io";
-            break;
-        case "cronos":
-            domain = "api.cronoscan.com";
-            break;
-        case "ethereum":
-            domain = "api.etherscan.io";
-            break;
-        case "fantom":
-            domain = "api.ftmscan.com";
-            break;
-        case "polygon-pos":
-            domain = "api.polygonscan.com";
-            break;
-        case "optimistic-ethereum":
-            domain = "api-optimistic.etherscan.io";
-            break;
-        default:
-            console.log(`getNftTxChartData error: Invalid platformId: ${platformId}`);
-            return [];
-    }
-    let nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(domain, contractAddress, 10000);
-    if (nftTxsData.status === "0") {
-        console.log("nftTxsData.status ==== 0: ", nftTxsData);
-        yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(5500);
-        nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(domain, contractAddress, 10000);
-    }
-    if (nftTxsData.status !== "0" && nftTxsData.result) {
-        const nftTxsChartFormat = Object.entries(nftTxsData.result.reduce((result, txInfo) => {
-            const date = new Date(Number(txInfo.timeStamp) * 1000);
-            const dateString = date.toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit",
-            });
-            if (result[dateString]) {
-                result[dateString].volume += 1;
-            }
-            else {
-                result[dateString] = { date: date, volume: 1 };
-            }
-            return result;
-        }, {})).map(([, { date, volume }]) => ({ date, volume }));
-        return nftTxsChartFormat.reverse();
-    }
-    console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
-    return null;
-});
-
-
-/***/ }),
-
-/***/ "./src/utils/getTokenTxChartData.ts":
-/*!******************************************!*\
-  !*** ./src/utils/getTokenTxChartData.ts ***!
-  \******************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getTokenTxChartData": () => (/* binding */ getTokenTxChartData)
-/* harmony export */ });
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/utils/api.ts");
-/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/utils/delay.ts");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-const getTokenTxChartData = (platformId, contractAddress, tokenValue) => __awaiter(void 0, void 0, void 0, function* () {
-    let domain;
-    let explorerUrl;
-    switch (platformId) {
-        case "arbitrum-one":
-            domain = "api.arbiscan.io";
-            explorerUrl = "arbiscan.io";
-            break;
-        case "avalanche":
-            domain = "api.snowtrace.io";
-            explorerUrl = "snowtrace.io";
-            break;
-        case "base":
-            domain = "api.basescan.org";
-            explorerUrl = "basescan.org";
-            break;
-        case "binance-smart-chain":
-            domain = "api.bscscan.com";
-            explorerUrl = "bscscan.com";
-            break;
-        case "celo":
-            domain = "api.celoscan.io";
-            explorerUrl = "celoscan.io";
-            break;
-        case "cronos":
-            domain = "api.cronoscan.com";
-            explorerUrl = "cronoscan.com";
-            break;
-        case "ethereum":
-            domain = "api.etherscan.io";
-            explorerUrl = "etherscan.io";
-            break;
-        case "fantom":
-            domain = "api.ftmscan.com";
-            explorerUrl = "ftmscan.com";
-            break;
-        case "polygon-pos":
-            domain = "api.polygonscan.com";
-            explorerUrl = "polygonscan.com";
-            break;
-        case "optimistic-ethereum":
-            domain = "api-optimistic.etherscan.io";
-            explorerUrl = "optimistic.etherscan.io";
-            break;
-        default:
-            console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
-            return [];
-    }
-    let tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(domain, contractAddress, 10000);
-    if (tokenTxsData.status === "0") {
-        console.log("tokenTxsData.status ==== 0: ", tokenTxsData);
-        yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(5500);
-        tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(domain, contractAddress, 10000);
-    }
-    console.log("tokenTxsData123", tokenTxsData);
-    if (tokenTxsData.status !== "0" && tokenTxsData.result) {
-        const arrayWithIndices = tokenTxsData.result.map((item, index) => (Object.assign(Object.assign({}, item), { index })));
-        const sortedArray = arrayWithIndices.sort((a, b) => b.value - a.value);
-        const top50Array = sortedArray.slice(0, 50);
-        const originalOrderArray = top50Array.sort((a, b) => b.index - a.index);
-        let tokenTxsChartData = [];
-        originalOrderArray.forEach((txInfo) => {
-            tokenTxsChartData.push({
-                date: new Date(Number(txInfo.timeStamp) * 1000),
-                amount: parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal)),
-                txHash: txInfo.hash,
-                explorerUrl: "https://" + explorerUrl + "/tx/" + txInfo.hash,
-                usdValue: (parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal))) *
-                    tokenValue,
-                native: platformId,
-            });
-        });
-        return tokenTxsChartData;
-    }
-    return null;
-});
-
-
-/***/ }),
-
-/***/ "./src/utils/getTrendingCoins.ts":
-/*!***************************************!*\
-  !*** ./src/utils/getTrendingCoins.ts ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getTrendingCoins": () => (/* binding */ getTrendingCoins)
-/* harmony export */ });
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/utils/api.ts");
-/* harmony import */ var _logTrendingCoinsSocialsPost__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./logTrendingCoinsSocialsPost */ "./src/utils/logTrendingCoinsSocialsPost.ts");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-const getTrendingCoins = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const trendingCoins = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTrendingCoins)();
-        let searchFormat = { tokens: [], total: 0 };
-        searchFormat.tokens.push({
-            id: "",
-            name: `Top Trending`,
-            image: "",
-            marketCapRank: "",
-            nft: true,
-        });
-        trendingCoins.coins.forEach((coin) => {
-            searchFormat.tokens.push({
-                id: coin.item.id,
-                name: coin.item.name,
-                image: coin.item.small,
-                marketCapRank: coin.item.market_cap_rank,
-                nft: false,
-            });
-        });
-        (0,_logTrendingCoinsSocialsPost__WEBPACK_IMPORTED_MODULE_1__.logTrendingCoinsSocialsPost)(trendingCoins);
-        return searchFormat;
-    }
-    catch (error) {
-        console.error("getTrendingCoins: Error fetching trending coins:", error);
-    }
-});
-
-
-/***/ }),
-
 /***/ "./src/utils/isEthereumAddress.ts":
 /*!****************************************!*\
   !*** ./src/utils/isEthereumAddress.ts ***!
@@ -4100,102 +4521,6 @@ const logTrendingCoinsSocialsPost = (trendingCoins) => {
 
 /***/ }),
 
-/***/ "./src/utils/searchCoinName.ts":
-/*!*************************************!*\
-  !*** ./src/utils/searchCoinName.ts ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "searchCoinName": () => (/* binding */ searchCoinName)
-/* harmony export */ });
-/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/utils/api.ts");
-/* harmony import */ var _storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./storage */ "./src/utils/storage.ts");
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
-
-const searchCoinName = (searchInput) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const searchResults = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNameSearch)(searchInput);
-        if (searchResults.coins.length === 0 && searchResults.nfts.length === 0) {
-            return {
-                tokens: [
-                    {
-                        id: "noResult",
-                        name: "No results",
-                        image: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256",
-                        marketCapRank: "",
-                        nft: false,
-                    },
-                ],
-                total: 0,
-            };
-        }
-        const nrOfNfts = (yield (0,_storage__WEBPACK_IMPORTED_MODULE_1__.getSearchResultNftAmountStorage)()) || 3;
-        let displayNrOfNfts = Math.min(searchResults.nfts.length, nrOfNfts);
-        let displayNrOfCoins = 13 - displayNrOfNfts;
-        let searchFormat = { tokens: [], total: 0 };
-        // SET COINS
-        searchResults.coins.slice(0, displayNrOfCoins).forEach((coin) => {
-            searchFormat.tokens.push({
-                id: coin.id,
-                name: coin.name,
-                image: coin.large,
-                marketCapRank: coin.market_cap_rank,
-                nft: false,
-            });
-        });
-        // SET NFTs
-        searchResults.nfts.slice(0, displayNrOfNfts).forEach((nft) => {
-            searchFormat.tokens.push({
-                id: nft.id,
-                name: nft.name,
-                image: nft.thumb,
-                marketCapRank: "NFT",
-                nft: true,
-            });
-        });
-        searchFormat.total = searchResults.coins.length + searchResults.nfts.length;
-        if (searchFormat.total > 13) {
-            searchFormat.tokens.push({
-                id: "",
-                name: `${searchFormat.total - 13} others`,
-                image: "",
-                marketCapRank: "",
-                nft: true,
-            });
-        }
-        return searchFormat;
-    }
-    catch (error) {
-        console.error("handleSearch: Error searching for coins:", error);
-        return {
-            tokens: [
-                {
-                    id: "noResult",
-                    name: "No results",
-                    image: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256",
-                    marketCapRank: "",
-                    nft: false,
-                },
-            ],
-            total: 0,
-        };
-    }
-});
-
-
-/***/ }),
-
 /***/ "./src/utils/storage.ts":
 /*!******************************!*\
   !*** ./src/utils/storage.ts ***!
@@ -4226,7 +4551,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "setTrendingCoinsStorage": () => (/* binding */ setTrendingCoinsStorage)
 /* harmony export */ });
 /* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
-/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/utils/delay.ts");
+/* harmony import */ var _api_delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../api/delay */ "./src/api/delay.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -4537,7 +4862,7 @@ function getCoingeckoApiKeyStorage() {
                     resolve(res.coingeckoApiKey);
                 }
                 else {
-                    yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(_static_constants__WEBPACK_IMPORTED_MODULE_0__.SHARED_API_DELAY);
+                    yield (0,_api_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(_static_constants__WEBPACK_IMPORTED_MODULE_0__.SHARED_API_DELAY);
                     resolve(_static_constants__WEBPACK_IMPORTED_MODULE_0__.SHARED_API_KEY_COINGECKO);
                 }
             }));

@@ -1,6 +1,6 @@
 import { fetchTrendingCoins } from "./api";
 import { ISearchOptions } from "../models/ICoinInfo";
-import { logTrendingCoinsSocialsPost } from "./logTrendingCoinsSocialsPost";
+import { logTrendingCoinsSocialsPost } from "../utils/logTrendingCoinsSocialsPost";
 
 export const getTrendingCoins = async () => {
   try {

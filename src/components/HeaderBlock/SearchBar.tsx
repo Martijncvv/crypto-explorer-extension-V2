@@ -4,8 +4,8 @@ import colors from "../../static/colors";
 import CircularProgress from "@mui/material/CircularProgress";
 import SyncProblemIcon from "@mui/icons-material/SyncProblem";
 import React, { CSSProperties, useEffect, useState } from "react";
-import { searchCoinName } from "../../utils/searchCoinName";
-import { getTrendingCoins } from "../../utils/getTrendingCoins";
+import { searchCoinName } from "../../api/searchCoinName";
+import { getTrendingCoins } from "../../api/getTrendingCoins";
 import { getCoingeckoApiKeyStorage } from "../../utils/storage";
 
 export const SearchBar = ({

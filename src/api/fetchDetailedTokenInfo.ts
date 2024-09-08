@@ -1,5 +1,5 @@
 import { fetchCoinInfo, fetchPriceHistoryData } from "./api";
-import { formatChartData } from "./formatChartData";
+import { formatChartData } from "../utils/formatChartData";
 import { delay } from "./delay";
 import { getTokenTxChartData } from "./getTokenTxChartData";
 

@@ -7,7 +7,7 @@ import {
   SHARED_API_DELAY,
   SHARED_API_KEY_COINGECKO,
 } from "../static/constants";
-import { delay } from "./delay";
+import { delay } from "../api/delay";
 
 export type TrackedAccountType = {
   name: string;
