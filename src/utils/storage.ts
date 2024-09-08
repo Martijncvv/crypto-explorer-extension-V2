@@ -3,8 +3,11 @@ import {
   IPriceHistoryData,
   ITrendingCoinList,
 } from "../models/ICoinInfo";
-import { SHARED_API_DELAY, SHARED_API_KEY } from "../static/constants";
-import { delay } from "./delay";
+import {
+  SHARED_API_DELAY,
+  SHARED_API_KEY_COINGECKO,
+} from "../static/constants";
+import { delay } from "../api/delay";
 
 export type TrackedAccountType = {
   name: string;
@@ -40,15 +43,12 @@ export interface LocalStorageData {
     nft: boolean;
   };
   // selectedToken?: string;
-  searchPref?: string;
   coingeckoApiKey?: string;
-  startPref?: string;
   searchResultNftAmount?: number;
   trackedAccounts?: TrackedAccountType[];
 }
 
 // SETTERS
-
 export async function setTrendingCoinsStorage(
   trendingCoins: ITrendingCoinList,
 ): Promise<boolean> {
@@ -173,18 +173,6 @@ export async function setStoredCoinDataStorage(
   }
 }
 
-export async function setSearchPrefStorage(searchPref: string): Promise<void> {
-  try {
-    return new Promise((resolve) => {
-      chrome.storage.local.set({ searchPref: searchPref }, () => {
-        resolve();
-      });
-    });
-  } catch (error) {
-    console.log("setSearchPrefStorage error: ", error);
-  }
-}
-
 export async function setCoingeckoApiKeyStorage(
   coingeckoApiKey: string,
 ): Promise<void> {
@@ -196,18 +184,6 @@ export async function setCoingeckoApiKeyStorage(
     });
   } catch (error) {
     console.log("setCoingeckoApiKeyStorage error: ", error);
-  }
-}
-
-export async function setStartPrefStorage(startPref: string): Promise<void> {
-  try {
-    return new Promise((resolve) => {
-      chrome.storage.local.set({ startPref: startPref }, () => {
-        resolve();
-      });
-    });
-  } catch (error) {
-    console.log("setStartPrefStorage error: ", error);
   }
 }
 
@@ -225,7 +201,7 @@ export async function setSearchResultNftAmountStorage(
   }
 }
 
-export async function setHomeCoinStorage(
+export function setHomeCoinStorage(
   homeCoinData: LocalStorageData["homeCoinData"],
 ): Promise<void> {
   try {
@@ -244,13 +220,9 @@ export async function setPortfolioDataStorage(
 ): Promise<void> {
   try {
     return new Promise((resolve) => {
-      // chrome.storage.local.set({ portfolioCoinData: [] }, () => {
-      //   resolve();
-      // });
-
       chrome.storage.local.get("portfolioCoinData", (result) => {
         const existingData = result.portfolioCoinData || [];
-        let updatedData = [];
+        let updatedData;
         if (existingData.length > 0) {
           const existingCoinIndex = existingData.findIndex(
             (coin) => coin.id === newCoinData.id,
@@ -324,17 +296,6 @@ export async function removePortfolioCoinStorage(
 }
 
 // GETTERS
-// export async function getSelectedTokenStorage(): Promise<string> {
-//   return new Promise((resolve) => {
-//     chrome.storage.local.get(["selectedToken"], (res: LocalStorageData) => {
-//       if (res?.selectedToken) {
-//         resolve(res.selectedToken);
-//       } else {
-//         resolve(null);
-//       }
-//     });
-//   });
-// }
 
 export async function getTrendingCoinsStorage(): Promise<{
   lastUpdated: number;
@@ -417,18 +378,6 @@ export async function getTrackedAccountsStorage(): Promise<
   });
 }
 
-export async function getSearchPrefStorage(): Promise<string> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(["searchPref"], (res: LocalStorageData) => {
-      if (res?.searchPref) {
-        resolve(res.searchPref);
-      } else {
-        resolve(null);
-      }
-    });
-  });
-}
-
 export async function getCoingeckoApiKeyStorage(): Promise<string> {
   return new Promise((resolve) => {
     chrome.storage.local.get(
@@ -438,22 +387,10 @@ export async function getCoingeckoApiKeyStorage(): Promise<string> {
           resolve(res.coingeckoApiKey);
         } else {
           await delay(SHARED_API_DELAY);
-          resolve(SHARED_API_KEY);
+          resolve(SHARED_API_KEY_COINGECKO);
         }
       },
     );
-  });
-}
-
-export async function getStartPrefStorage(): Promise<string> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(["startPref"], (res: LocalStorageData) => {
-      if (res?.startPref) {
-        resolve(res.startPref);
-      } else {
-        resolve(null);
-      }
-    });
   });
 }
 

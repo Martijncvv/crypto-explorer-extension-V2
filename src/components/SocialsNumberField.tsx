@@ -10,7 +10,7 @@ interface SocialBlockProps {
   title?: string;
 }
 
-const SocialBlock: React.FC<SocialBlockProps> = ({
+const SocialsNumberField: React.FC<SocialBlockProps> = ({
   image,
   mainValue,
   link,
@@ -78,4 +78,4 @@ const SocialBlock: React.FC<SocialBlockProps> = ({
   );
 };
 
-export default SocialBlock;
+export default SocialsNumberField;

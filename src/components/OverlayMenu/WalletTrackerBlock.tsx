@@ -6,7 +6,7 @@ import {
   setTrackedAccountsStorage,
   TrackedAccountType,
 } from "../../utils/storage";
-import { fetchLatestAddressTxs } from "../../utils/api";
+import { fetchLatestAddressTxs } from "../../api/api";
 import { isEthereumAddress } from "../../utils/isEthereumAddress";
 import { formatAddressShort } from "../../utils/formatAddressShort";
 import DeleteIcon from "@mui/icons-material/Delete";

@@ -21,7 +21,7 @@ interface ChartsBlockProps {
   tokenTxsChartData?: any;
 }
 
-const ChartsBlock: React.FC<ChartsBlockProps> = ({
+const ChartsField: React.FC<ChartsBlockProps> = ({
   price30dHistorydata,
   priceMaxHistorydata,
   txVolumeData,
@@ -579,4 +579,4 @@ const ChartsBlock: React.FC<ChartsBlockProps> = ({
   );
 };
 
-export default ChartsBlock;
+export default ChartsField;

@@ -1,7 +1,7 @@
 {
   "name": "Crypto portfolio: Blockchain & Crypto tracker",
   "description": "Your Real-Time (on-chain) Cryptocurrency, NFT-explorer and wallet tracker.",
-  "version": "2.0.14",
+  "version": "2.0.15",
   "manifest_version": 3,
   "icons": {
     "16": "images/CryptoExplorer_logo_128.png",
