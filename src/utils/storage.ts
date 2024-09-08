@@ -3,7 +3,10 @@ import {
   IPriceHistoryData,
   ITrendingCoinList,
 } from "../models/ICoinInfo";
-import { SHARED_API_DELAY, SHARED_API_KEY } from "../static/constants";
+import {
+  SHARED_API_DELAY,
+  SHARED_API_KEY_COINGECKO,
+} from "../static/constants";
 import { delay } from "./delay";
 
 export type TrackedAccountType = {
@@ -219,7 +222,7 @@ export async function setPortfolioDataStorage(
     return new Promise((resolve) => {
       chrome.storage.local.get("portfolioCoinData", (result) => {
         const existingData = result.portfolioCoinData || [];
-        let updatedData = [];
+        let updatedData;
         if (existingData.length > 0) {
           const existingCoinIndex = existingData.findIndex(
             (coin) => coin.id === newCoinData.id,
@@ -384,7 +387,7 @@ export async function getCoingeckoApiKeyStorage(): Promise<string> {
           resolve(res.coingeckoApiKey);
         } else {
           await delay(SHARED_API_DELAY);
-          resolve(SHARED_API_KEY);
+          resolve(SHARED_API_KEY_COINGECKO);
         }
       },
     );

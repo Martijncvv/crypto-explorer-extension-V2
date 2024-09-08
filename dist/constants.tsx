@@ -34,5 +34,6 @@ export const CACHE_TIME_LONG = 10800000; // 3 hours
 
 export const SHARED_API_DELAY = 2000; // 2 secs
 
-export const SHARED_API_KEY = "CG-TAvyqB8W2DTmod8w3KeMDw8h";
+export const SHARED_API_KEY_COINGECKO = "CG-TAvyqB8W2DTmod8w3KeMDw8h";
+export const SHARED_API_KEY_ETHERSCAN = "9Z1G1NN35M1URWAANE5CBZ2WJRJMABDCC8";
 export default constants;

@@ -17,7 +17,11 @@ import {
   setStoredCoinPriceHistoryDataStorage,
   setTrendingCoinsStorage,
 } from "./storage";
-import { CACHE_TIME_LONG, CACHE_TIME_SHORT } from "../static/constants";
+import {
+  CACHE_TIME_LONG,
+  CACHE_TIME_SHORT,
+  SHARED_API_KEY_ETHERSCAN,
+} from "../static/constants";
 
 // const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250'
 
@@ -300,7 +304,7 @@ export async function fetchTokenTxs(
 ): Promise<ITokenTxs> {
   try {
     const res = await fetch(
-      `https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc`,
+      `https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc&apikey=${SHARED_API_KEY_ETHERSCAN}`,
     );
 
     if (!res.ok) {
@@ -320,7 +324,7 @@ export async function fetchLatestAddressTxs(
 ): Promise<ITokenTxs> {
   try {
     const res = await fetch(
-      `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc`,
+      `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${SHARED_API_KEY_ETHERSCAN}`,
     );
 
     if (!res.ok) {

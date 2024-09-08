@@ -1,4 +1,4 @@
-import constants, { SHARED_API_KEY } from "../../static/constants";
+import constants, { SHARED_API_KEY_COINGECKO } from "../../static/constants";
 import SearchIcon from "@mui/icons-material/Search";
 import colors from "../../static/colors";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -23,7 +23,7 @@ export const SearchBar = ({
 
   const handleDisplayApiFeedback = async () => {
     const API_KEY = await getCoingeckoApiKeyStorage();
-    if (API_KEY === SHARED_API_KEY) {
+    if (API_KEY === SHARED_API_KEY_COINGECKO) {
       setCoingeckoKeyFeedback(true);
     } else {
       setCoingeckoKeyFeedback(false);
