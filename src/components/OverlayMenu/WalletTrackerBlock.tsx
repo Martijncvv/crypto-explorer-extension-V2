@@ -113,7 +113,7 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({}) => {
         Get notified when account creates tx
       </div>
       {trackedAccounts?.length > 0 ? (
-        trackedAccounts.map((account, index) => (
+        trackedAccounts.map((account) => (
           <div
             key={`${account.name}-${account.address}`}
             style={styles.accountItemContainer}
@@ -160,7 +160,7 @@ const WalletTrackerBlock: React.FC<WalletTrackerBlockProps> = ({}) => {
             value={trackAccountNameInput}
             onChange={(e) => setTrackAccountNameInput(e.target.value)}
             style={styles.trackNameInputField}
-            placeholder={`Name`}
+            placeholder={`Label`}
           />
         </div>
         <div style={styles.trackAccountInputContainer}>

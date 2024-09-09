@@ -22,18 +22,16 @@ export const CoinInfoField: React.FC<ICoinInfoFieldProps> = ({
 }) => {
   return (
     <>
-      <TitleField
-        tokenTitle={coinInfo.name}
-        title={"Use arrow keys to navigate"}
-      />
-      <TickerField ticker={coinInfo.symbol} />
+      <div style={styles.topContainer}>
+        <TitleField
+          tokenTitle={coinInfo.name}
+          title={"Use arrow keys to navigate"}
+        />
+        <TickerField ticker={coinInfo.symbol} />
+      </div>
       <ChartsField
-        price30dHistorydata={
-          coinInfo.price30dHistoryData && coinInfo.price30dHistoryData
-        }
-        priceMaxHistorydata={
-          coinInfo.priceMaxHistoryData && coinInfo.priceMaxHistoryData
-        }
+        price30dHistorydata={coinInfo.price30dHistoryData}
+        priceMaxHistorydata={coinInfo.priceMaxHistoryData}
         tokenTxsChartData={tokenTxsChartData}
       />
 
@@ -86,6 +84,12 @@ export const CoinInfoField: React.FC<ICoinInfoFieldProps> = ({
 };
 
 const styles: { [key: string]: CSSProperties } = {
+  topContainer: {
+    padding: "0 12px",
+  },
+  bottomContainer: {
+    padding: "0 12px",
+  },
   dataBlocks: {
     display: "flex",
     justifyContent: "space-between",

@@ -95,16 +95,18 @@ const App: React.FC = () => {
         handleFetchTokenInfo={handleFetchTokenInfo}
       />
       <div style={styles.container}>
-        <HeaderField
-          mainLogo={
-            coinInfo?.image?.small || nftInfo?.image?.small || bitcoinIcon
-          }
-          setSearchResults={setSearchResults}
-          searchResults={searchResults}
-          setMenuIsOpen={setIsOverlayOpen}
-          handleFetchTokenInfo={handleFetchTokenInfo}
-          isLoadingError={isLoadingError}
-        />
+        <div style={styles.headerContainer}>
+          <HeaderField
+            mainLogo={
+              coinInfo?.image?.small || nftInfo?.image?.small || bitcoinIcon
+            }
+            setSearchResults={setSearchResults}
+            searchResults={searchResults}
+            setMenuIsOpen={setIsOverlayOpen}
+            handleFetchTokenInfo={handleFetchTokenInfo}
+            isLoadingError={isLoadingError}
+          />
+        </div>
 
         {!nftInfo?.name && !coinInfo?.name && (
           <>
@@ -136,8 +138,11 @@ const App: React.FC = () => {
 };
 
 const styles: { [key: string]: CSSProperties } = {
+  headerContainer: {
+    padding: "0px 12px",
+  },
   container: {
-    padding: "12px 12px 0px",
+    padding: "12px 0px 0px",
   },
 };
 

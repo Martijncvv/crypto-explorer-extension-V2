@@ -279,9 +279,8 @@ export async function fetchNftTxs(
   txAmount: number,
 ): Promise<ITokenTxs> {
   try {
-    const API_KEY = await getCoingeckoApiKeyStorage();
     const res = await fetch(
-      `https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&x_cg_demo_api_key=${API_KEY}`,
+      `https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&apikey=${SHARED_API_KEY_ETHERSCAN}`,
     );
 
     if (!res.ok) {
@@ -340,41 +339,41 @@ export async function fetchLatestAddressTxs(
 }
 
 // used to fetch exchanges
-export async function fetchExchangesList(): Promise<any> {
-  try {
-    let pageNr = 1;
-    let perPage = 250;
-    let allExchanges = [];
-
-    while (true) {
-      const res = await fetch(
-        `https://api.coingecko.com/api/v3/exchanges?per_page=${perPage}&page=${pageNr}`,
-      );
-
-      if (!res.ok) {
-        throw new Error(
-          `Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`,
-        );
-      }
-      const exchanges = await res.json();
-      allExchanges.push(...exchanges);
-      if (exchanges.length < perPage) {
-        // Reached the last page, exit the loop
-        break;
-      }
-      pageNr++;
-    }
-
-    const exchangesObject = allExchanges.reduce((acc, exchange) => {
-      acc[exchange.id] = exchange.image;
-      // acc[`"${exchange.id}"`] = exchange.image;
-      return acc;
-    }, {});
-
-    console.log("exchangesObject", JSON.stringify(exchangesObject, null, 2));
-    console.log("exchangesObject.length", Object.keys(exchangesObject).length);
-  } catch (error) {
-    console.error("Error fetching Coingecko exchanges List:", error);
-    throw error;
-  }
-}
+// export async function fetchExchangesList(): Promise<any> {
+//   try {
+//     let pageNr = 1;
+//     let perPage = 250;
+//     let allExchanges = [];
+//
+//     while (true) {
+//       const res = await fetch(
+//         `https://api.coingecko.com/api/v3/exchanges?per_page=${perPage}&page=${pageNr}`,
+//       );
+//
+//       if (!res.ok) {
+//         throw new Error(
+//           `Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`,
+//         );
+//       }
+//       const exchanges = await res.json();
+//       allExchanges.push(...exchanges);
+//       if (exchanges.length < perPage) {
+//         // Reached the last page, exit the loop
+//         break;
+//       }
+//       pageNr++;
+//     }
+//
+//     const exchangesObject = allExchanges.reduce((acc, exchange) => {
+//       acc[exchange.id] = exchange.image;
+//       // acc[`"${exchange.id}"`] = exchange.image;
+//       return acc;
+//     }, {});
+//
+//     console.log("exchangesObject", JSON.stringify(exchangesObject, null, 2));
+//     console.log("exchangesObject.length", Object.keys(exchangesObject).length);
+//   } catch (error) {
+//     console.error("Error fetching Coingecko exchanges List:", error);
+//     throw error;
+//   }
+// }

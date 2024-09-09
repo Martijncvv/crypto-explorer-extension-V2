@@ -64,7 +64,7 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
           nftInfo,
           txVolumeChartData,
           tokenTxsChartData,
-          isLoadingError: isLoadingError,
+          isLoadingError,
         };
       }
 

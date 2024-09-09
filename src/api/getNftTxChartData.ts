@@ -78,6 +78,8 @@ export const getNftTxChartData = async (
     ).map(([, { date, volume }]) => ({ date, volume }));
     return nftTxsChartFormat.reverse();
   }
-  console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
+  console.log(
+    `getTokenTxChartData error: Couldn't find txs for: ${contractAddress} on ${platformId}`,
+  );
   return null;
 };

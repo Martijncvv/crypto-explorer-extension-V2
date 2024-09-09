@@ -92,7 +92,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "fetchCoinInfo": () => (/* binding */ fetchCoinInfo),
 /* harmony export */   "fetchCoinsPrices": () => (/* binding */ fetchCoinsPrices),
-/* harmony export */   "fetchExchangesList": () => (/* binding */ fetchExchangesList),
 /* harmony export */   "fetchLatestAddressTxs": () => (/* binding */ fetchLatestAddressTxs),
 /* harmony export */   "fetchNameSearch": () => (/* binding */ fetchNameSearch),
 /* harmony export */   "fetchNftInfo": () => (/* binding */ fetchNftInfo),
@@ -307,8 +306,7 @@ function fetchNftInfo(coinId) {
 function fetchNftTxs(domainName, contractAddress, txAmount) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const API_KEY = yield (0,_utils_storage__WEBPACK_IMPORTED_MODULE_0__.getCoingeckoApiKeyStorage)();
-            const res = yield fetch(`https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&x_cg_demo_api_key=${API_KEY}`);
+            const res = yield fetch(`https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&apikey=${_static_constants__WEBPACK_IMPORTED_MODULE_1__.SHARED_API_KEY_ETHERSCAN}`);
             if (!res.ok) {
                 throw new Error(`Fetch error, ${domainName} nft txs info: ${res.status} ${res.statusText}`);
             }
@@ -351,39 +349,44 @@ function fetchLatestAddressTxs(address) {
     });
 }
 // used to fetch exchanges
-function fetchExchangesList() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            let pageNr = 1;
-            let perPage = 250;
-            let allExchanges = [];
-            while (true) {
-                const res = yield fetch(`https://api.coingecko.com/api/v3/exchanges?per_page=${perPage}&page=${pageNr}`);
-                if (!res.ok) {
-                    throw new Error(`Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`);
-                }
-                const exchanges = yield res.json();
-                allExchanges.push(...exchanges);
-                if (exchanges.length < perPage) {
-                    // Reached the last page, exit the loop
-                    break;
-                }
-                pageNr++;
-            }
-            const exchangesObject = allExchanges.reduce((acc, exchange) => {
-                acc[exchange.id] = exchange.image;
-                // acc[`"${exchange.id}"`] = exchange.image;
-                return acc;
-            }, {});
-            console.log("exchangesObject", JSON.stringify(exchangesObject, null, 2));
-            console.log("exchangesObject.length", Object.keys(exchangesObject).length);
-        }
-        catch (error) {
-            console.error("Error fetching Coingecko exchanges List:", error);
-            throw error;
-        }
-    });
-}
+// export async function fetchExchangesList(): Promise<any> {
+//   try {
+//     let pageNr = 1;
+//     let perPage = 250;
+//     let allExchanges = [];
+//
+//     while (true) {
+//       const res = await fetch(
+//         `https://api.coingecko.com/api/v3/exchanges?per_page=${perPage}&page=${pageNr}`,
+//       );
+//
+//       if (!res.ok) {
+//         throw new Error(
+//           `Fetch error, Coingecko exchanges List: ${res.status} ${res.statusText}`,
+//         );
+//       }
+//       const exchanges = await res.json();
+//       allExchanges.push(...exchanges);
+//       if (exchanges.length < perPage) {
+//         // Reached the last page, exit the loop
+//         break;
+//       }
+//       pageNr++;
+//     }
+//
+//     const exchangesObject = allExchanges.reduce((acc, exchange) => {
+//       acc[exchange.id] = exchange.image;
+//       // acc[`"${exchange.id}"`] = exchange.image;
+//       return acc;
+//     }, {});
+//
+//     console.log("exchangesObject", JSON.stringify(exchangesObject, null, 2));
+//     console.log("exchangesObject.length", Object.keys(exchangesObject).length);
+//   } catch (error) {
+//     console.error("Error fetching Coingecko exchanges List:", error);
+//     throw error;
+//   }
+// }
 
 
 /***/ }),
@@ -568,7 +571,7 @@ const fetchDetailedTokenInfo = (coinId) => __awaiter(void 0, void 0, void 0, fun
                     nftInfo,
                     txVolumeChartData,
                     tokenTxsChartData,
-                    isLoadingError: isLoadingError,
+                    isLoadingError,
                 };
             }
             tokenTxsChartData = fetchedTokenTxChartData;
@@ -676,7 +679,7 @@ const getNftTxChartData = (platformId, contractAddress) => __awaiter(void 0, voi
         }, {})).map(([, { date, volume }]) => ({ date, volume }));
         return nftTxsChartFormat.reverse();
     }
-    console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
+    console.log(`getTokenTxChartData error: Couldn't find txs for: ${contractAddress} on ${platformId}`);
     return null;
 });
 
@@ -1301,9 +1304,10 @@ __webpack_require__.r(__webpack_exports__);
 const CoinInfoField = ({ coinInfo, tokenTxsChartData, }) => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
     return (react__WEBPACK_IMPORTED_MODULE_3___default().createElement((react__WEBPACK_IMPORTED_MODULE_3___default().Fragment), null,
-        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TitleField__WEBPACK_IMPORTED_MODULE_0__["default"], { tokenTitle: coinInfo.name, title: "Use arrow keys to navigate" }),
-        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TickerField__WEBPACK_IMPORTED_MODULE_1__["default"], { ticker: coinInfo.symbol }),
-        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ChartsField__WEBPACK_IMPORTED_MODULE_2__["default"], { price30dHistorydata: coinInfo.price30dHistoryData && coinInfo.price30dHistoryData, priceMaxHistorydata: coinInfo.priceMaxHistoryData && coinInfo.priceMaxHistoryData, tokenTxsChartData: tokenTxsChartData }),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.topContainer },
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TitleField__WEBPACK_IMPORTED_MODULE_0__["default"], { tokenTitle: coinInfo.name, title: "Use arrow keys to navigate" }),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TickerField__WEBPACK_IMPORTED_MODULE_1__["default"], { ticker: coinInfo.symbol })),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ChartsField__WEBPACK_IMPORTED_MODULE_2__["default"], { price30dHistorydata: coinInfo.price30dHistoryData, priceMaxHistorydata: coinInfo.priceMaxHistoryData, tokenTxsChartData: tokenTxsChartData }),
         react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.bottomContainer },
             react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.bottomMargin, title: "ATL / Price / ATH" },
                 react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_PriceBarField__WEBPACK_IMPORTED_MODULE_8__["default"], { allTimeLow: (_b = (_a = coinInfo.market_data) === null || _a === void 0 ? void 0 : _a.atl) === null || _b === void 0 ? void 0 : _b.usd, allTimeHigh: (_d = (_c = coinInfo.market_data) === null || _c === void 0 ? void 0 : _c.ath) === null || _d === void 0 ? void 0 : _d.usd, price: (_f = (_e = coinInfo.market_data) === null || _e === void 0 ? void 0 : _e.current_price) === null || _f === void 0 ? void 0 : _f.usd })),
@@ -1323,6 +1327,12 @@ const CoinInfoField = ({ coinInfo, tokenTxsChartData, }) => {
             react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_SocialsFooter__WEBPACK_IMPORTED_MODULE_7__.SocialsFooter, { coinInfo: coinInfo }))));
 };
 const styles = {
+    topContainer: {
+        padding: "0 12px",
+    },
+    bottomContainer: {
+        padding: "0 12px",
+    },
     dataBlocks: {
         display: "flex",
         justifyContent: "space-between",
@@ -1966,36 +1976,44 @@ __webpack_require__.r(__webpack_exports__);
 const NftInfoField = ({ nftInfo, txVolumeChartData, }) => {
     var _a, _b, _c, _d;
     return (react__WEBPACK_IMPORTED_MODULE_3___default().createElement((react__WEBPACK_IMPORTED_MODULE_3___default().Fragment), null,
-        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TitleField__WEBPACK_IMPORTED_MODULE_0__["default"], { tokenTitle: nftInfo.name, title: "Use arrow keys to navigate" }),
-        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TickerField__WEBPACK_IMPORTED_MODULE_1__["default"], { ticker: nftInfo.symbol }),
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.topContainer },
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TitleField__WEBPACK_IMPORTED_MODULE_0__["default"], { tokenTitle: nftInfo.name, title: "Use arrow keys to navigate" }),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_TickerField__WEBPACK_IMPORTED_MODULE_1__["default"], { ticker: nftInfo.symbol })),
         react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ChartsField__WEBPACK_IMPORTED_MODULE_2__["default"], { txVolumeData: txVolumeChartData }),
-        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
-            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Floor", tooltipTitle: "24h change %", mainValue: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_a = nftInfo.floor_price) === null || _a === void 0 ? void 0 : _a.usd) || "-"}`, secondaryValue: `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.percentageFormatter)(nftInfo.floor_price_in_usd_24h_percentage_change)}%` }),
-            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Native", tooltipTitle: "Native floor/ platform", mainValue: `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_b = nftInfo.floor_price) === null || _b === void 0 ? void 0 : _b.native_currency) || "-"}`, secondaryValue: nftInfo.native_currency
-                    ? (nftInfo.native_currency.charAt(0).toUpperCase() +
-                        nftInfo.native_currency.slice(1)).substring(0, 8)
-                    : "-" })),
-        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
-            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Total supply", mainValue: nftInfo.total_supply ? `${nftInfo.total_supply}` : "-" }),
-            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Unique owners", tooltipTitle: "24h change %", mainValue: nftInfo.number_of_unique_addresses
-                    ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.numberFormatter)(nftInfo.number_of_unique_addresses)
-                    : "-", secondaryValue: nftInfo.number_of_unique_addresses_24h_percentage_change
-                    ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.percentageFormatter)(nftInfo.number_of_unique_addresses_24h_percentage_change)}%`
-                    : "" })),
-        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
-            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Market Cap", mainValue: ((_c = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _c === void 0 ? void 0 : _c.usd)
-                    ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_d = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _d === void 0 ? void 0 : _d.usd)}`
-                    : "-" }),
-            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Volume", tooltipTitle: "24h change %", mainValue: nftInfo.volume_24h.usd
-                    ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(nftInfo.volume_24h.usd)}`
-                    : "-", secondaryValue: nftInfo.volume_in_usd_24h_percentage_change
-                    ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.percentageFormatter)(nftInfo.volume_in_usd_24h_percentage_change)}%`
-                    : "" })),
-        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.bottomMargin },
-            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__["default"], { text: nftInfo.description })),
-        react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_SocialsFooter__WEBPACK_IMPORTED_MODULE_7__.SocialsFooter, { coinInfo: nftInfo })));
+        react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.bottomContainer },
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Floor", tooltipTitle: "24h change %", mainValue: `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_a = nftInfo.floor_price) === null || _a === void 0 ? void 0 : _a.usd) || "-"}`, secondaryValue: `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.percentageFormatter)(nftInfo.floor_price_in_usd_24h_percentage_change)}%` }),
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Native", tooltipTitle: "Native floor/ platform", mainValue: `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_b = nftInfo.floor_price) === null || _b === void 0 ? void 0 : _b.native_currency) || "-"}`, secondaryValue: nftInfo.native_currency
+                        ? (nftInfo.native_currency.charAt(0).toUpperCase() +
+                            nftInfo.native_currency.slice(1)).substring(0, 8)
+                        : "-" })),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Total supply", mainValue: nftInfo.total_supply ? `${nftInfo.total_supply}` : "-" }),
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Unique owners", tooltipTitle: "24h change %", mainValue: nftInfo.number_of_unique_addresses
+                        ? (0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.numberFormatter)(nftInfo.number_of_unique_addresses)
+                        : "-", secondaryValue: nftInfo.number_of_unique_addresses_24h_percentage_change
+                        ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.percentageFormatter)(nftInfo.number_of_unique_addresses_24h_percentage_change)}%`
+                        : "" })),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: Object.assign(Object.assign({}, styles.dataBlocks), styles.bottomMargin) },
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Market Cap", mainValue: ((_c = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _c === void 0 ? void 0 : _c.usd)
+                        ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)((_d = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.market_cap) === null || _d === void 0 ? void 0 : _d.usd)}`
+                        : "-" }),
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ValueField__WEBPACK_IMPORTED_MODULE_4__["default"], { title: "Volume", tooltipTitle: "24h change %", mainValue: nftInfo.volume_24h.usd
+                        ? `$${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.amountFormatter)(nftInfo.volume_24h.usd)}`
+                        : "-", secondaryValue: nftInfo.volume_in_usd_24h_percentage_change
+                        ? `${(0,_utils_amountFormatter__WEBPACK_IMPORTED_MODULE_5__.percentageFormatter)(nftInfo.volume_in_usd_24h_percentage_change)}%`
+                        : "" })),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement("div", { style: styles.bottomMargin },
+                react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_ExpandableTextField__WEBPACK_IMPORTED_MODULE_6__["default"], { text: nftInfo.description })),
+            react__WEBPACK_IMPORTED_MODULE_3___default().createElement(_SocialsFooter__WEBPACK_IMPORTED_MODULE_7__.SocialsFooter, { coinInfo: nftInfo }))));
 };
 const styles = {
+    topContainer: {
+        padding: "0 12px",
+    },
+    bottomContainer: {
+        padding: "0 12px",
+    },
     dataBlocks: {
         display: "flex",
         justifyContent: "space-between",
@@ -2807,7 +2825,7 @@ const WalletTrackerBlock = ({}) => {
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.sectionHeader }, "Track \u039E Account"),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.explanationSubtext }, "Get notified when account creates tx"),
-        (trackedAccounts === null || trackedAccounts === void 0 ? void 0 : trackedAccounts.length) > 0 ? (trackedAccounts.map((account, index) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: `${account.name}-${account.address}`, style: styles.accountItemContainer },
+        (trackedAccounts === null || trackedAccounts === void 0 ? void 0 : trackedAccounts.length) > 0 ? (trackedAccounts.map((account) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: `${account.name}-${account.address}`, style: styles.accountItemContainer },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.valueItems },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.accountItemName, onClick: () => handleOpenTab(`https://etherscan.io/address/${account.address}`) }, account.name),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.accountItemAddress, onClick: () => handleOpenTab(`https://etherscan.io/address/${account.address}`) }, (0,_utils_formatAddressShort__WEBPACK_IMPORTED_MODULE_6__.formatAddressShort)(account.address))),
@@ -2815,7 +2833,7 @@ const WalletTrackerBlock = ({}) => {
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_mui_icons_material_Delete__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { fontSize: 14, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].white_medium } })))))) : (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.placeholderText }, "Add account to track")),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.newAccountTrackInputField },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.trackAccountInputContainer },
-                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: trackAccountNameInput, onChange: (e) => setTrackAccountNameInput(e.target.value), style: styles.trackNameInputField, placeholder: `Name` })),
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: trackAccountNameInput, onChange: (e) => setTrackAccountNameInput(e.target.value), style: styles.trackNameInputField, placeholder: `Label` })),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.trackAccountInputContainer },
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", { type: "text", value: (0,_utils_formatAddressShort__WEBPACK_IMPORTED_MODULE_6__.formatAddressShort)(trackAddressInput), onChange: (e) => setTrackAddressInput(e.target.value), style: styles.trackAddressInputField, placeholder: `Address` })),
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.trackAccountInputContainer },
@@ -3448,7 +3466,8 @@ const App = () => {
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_OverlayMenu_OverlayMenu__WEBPACK_IMPORTED_MODULE_4__["default"], { menuIsOpen: isOverlayOpen, setMenuIsOpen: setIsOverlayOpen, handleFetchTokenInfo: handleFetchTokenInfo }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
-            react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderField_HeaderField__WEBPACK_IMPORTED_MODULE_5__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) || ((_b = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.image) === null || _b === void 0 ? void 0 : _b.small) || bitcoinIcon, setSearchResults: setSearchResults, searchResults: searchResults, setMenuIsOpen: setIsOverlayOpen, handleFetchTokenInfo: handleFetchTokenInfo, isLoadingError: isLoadingError }),
+            react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.headerContainer },
+                react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_HeaderField_HeaderField__WEBPACK_IMPORTED_MODULE_5__["default"], { mainLogo: ((_a = coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.image) === null || _a === void 0 ? void 0 : _a.small) || ((_b = nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.image) === null || _b === void 0 ? void 0 : _b.small) || bitcoinIcon, setSearchResults: setSearchResults, searchResults: searchResults, setMenuIsOpen: setIsOverlayOpen, handleFetchTokenInfo: handleFetchTokenInfo, isLoadingError: isLoadingError })),
             !(nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) && !(coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TitleField__WEBPACK_IMPORTED_MODULE_3__["default"], { tokenTitle: "Fetching data", title: "Use arrow keys to navigate" }),
                 react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_TickerField__WEBPACK_IMPORTED_MODULE_7__["default"], { ticker: "" }),
@@ -3457,8 +3476,11 @@ const App = () => {
             (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.name) && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_NftInfoField__WEBPACK_IMPORTED_MODULE_12__.NftInfoField, { nftInfo: nftInfo, txVolumeChartData: txVolumeChartData })))));
 };
 const styles = {
+    headerContainer: {
+        padding: "0px 12px",
+    },
     container: {
-        padding: "12px 12px 0px",
+        padding: "12px 0px 0px",
     },
 };
 const root = document.createElement("div");
