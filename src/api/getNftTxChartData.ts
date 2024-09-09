@@ -1,55 +1,27 @@
 import { fetchNftTxs } from "./api";
 import { delay } from "./delay";
+import { getNetworkDetails } from "../utils/getNetworkDetails";
 
 export const getNftTxChartData = async (
   platformId: string,
   contractAddress: string,
 ): Promise<any> => {
-  let domain: string;
+  const networkDetails = getNetworkDetails(platformId);
 
-  switch (platformId) {
-    case "arbitrum-one":
-      domain = "api.arbiscan.io";
-      break;
-    case "avalanche":
-      domain = "api.snowtrace.io";
-      break;
-    case "base":
-      domain = "api.basescan.org";
-      break;
-    case "binance-smart-chain":
-      domain = "api.bscscan.com";
-      break;
-    case "celo":
-      domain = "api.celoscan.io";
-      break;
-    case "cronos":
-      domain = "api.cronoscan.com";
-      break;
-    case "ethereum":
-      domain = "api.etherscan.io";
-      break;
-    case "fantom":
-      domain = "api.ftmscan.com";
-      break;
-    case "polygon-pos":
-      domain = "api.polygonscan.com";
-      break;
-    case "optimistic-ethereum":
-      domain = "api-optimistic.etherscan.io";
-      break;
-
-    default:
-      console.log(`getNftTxChartData error: Invalid platformId: ${platformId}`);
-      return [];
-  }
-
-  let nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
+  let nftTxsData = await fetchNftTxs(
+    networkDetails.domain,
+    contractAddress,
+    10000,
+  );
 
   if (nftTxsData.status === "0") {
     console.log("nftTxsData.status ==== 0: ", nftTxsData);
     await delay(5500);
-    nftTxsData = await fetchNftTxs(domain, contractAddress, 10000);
+    nftTxsData = await fetchNftTxs(
+      networkDetails.domain,
+      contractAddress,
+      10000,
+    );
   }
 
   if (nftTxsData.status !== "0" && nftTxsData.result) {

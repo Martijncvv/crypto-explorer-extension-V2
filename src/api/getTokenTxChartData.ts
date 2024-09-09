@@ -1,68 +1,28 @@
 import { fetchTokenTxs } from "./api";
 import { delay } from "./delay";
+import { getNetworkDetails } from "../utils/getNetworkDetails";
 
 export const getTokenTxChartData = async (
   platformId: string,
   contractAddress: string,
   tokenValue: number,
 ): Promise<any> => {
-  let domain: string;
-  let explorerUrl: string;
+  const networkDetails = getNetworkDetails(platformId);
 
-  switch (platformId) {
-    case "arbitrum-one":
-      domain = "api.arbiscan.io";
-      explorerUrl = "arbiscan.io";
-      break;
-    case "avalanche":
-      domain = "api.snowtrace.io";
-      explorerUrl = "snowtrace.io";
-      break;
-    case "base":
-      domain = "api.basescan.org";
-      explorerUrl = "basescan.org";
-      break;
-    case "binance-smart-chain":
-      domain = "api.bscscan.com";
-      explorerUrl = "bscscan.com";
-      break;
-    case "celo":
-      domain = "api.celoscan.io";
-      explorerUrl = "celoscan.io";
-      break;
-    case "cronos":
-      domain = "api.cronoscan.com";
-      explorerUrl = "cronoscan.com";
-      break;
-    case "ethereum":
-      domain = "api.etherscan.io";
-      explorerUrl = "etherscan.io";
-      break;
-    case "fantom":
-      domain = "api.ftmscan.com";
-      explorerUrl = "ftmscan.com";
-      break;
-    case "polygon-pos":
-      domain = "api.polygonscan.com";
-      explorerUrl = "polygonscan.com";
-      break;
-    case "optimistic-ethereum":
-      domain = "api-optimistic.etherscan.io";
-      explorerUrl = "optimistic.etherscan.io";
-      break;
-    default:
-      console.log(
-        `getTokenTxChartData error: Invalid platformId: ${platformId}`,
-      );
-      return [];
-  }
-
-  let tokenTxsData = await fetchTokenTxs(domain, contractAddress, 10000);
+  let tokenTxsData = await fetchTokenTxs(
+    networkDetails.domain,
+    contractAddress,
+    10000,
+  );
 
   if (tokenTxsData.status === "0") {
     console.log("tokenTxsData.status ==== 0: ", tokenTxsData);
     await delay(5500);
-    tokenTxsData = await fetchTokenTxs(domain, contractAddress, 10000);
+    tokenTxsData = await fetchTokenTxs(
+      networkDetails.domain,
+      contractAddress,
+      10000,
+    );
   }
   if (tokenTxsData.status !== "0" && tokenTxsData.result) {
     const arrayWithIndices: any = tokenTxsData.result.map((item, index) => ({
@@ -81,7 +41,8 @@ export const getTokenTxChartData = async (
         date: new Date(Number(txInfo.timeStamp) * 1000),
         amount: parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal),
         txHash: txInfo.hash,
-        explorerUrl: "https://" + explorerUrl + "/tx/" + txInfo.hash,
+        explorerUrl:
+          "https://" + networkDetails.explorerUrl + "/tx/" + txInfo.hash,
         usdValue:
           (parseInt(txInfo.value) / 10 ** parseInt(txInfo.tokenDecimal)) *
           tokenValue,
