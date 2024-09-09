@@ -57,7 +57,7 @@ export const getNetworkDetails = (
       domain = "api-optimistic.etherscan.io";
       explorerUrl = "optimistic.etherscan.io";
       break;
-    case "scroll": // todo check
+    case "scroll":
       domain = "api.scrollscan.com";
       explorerUrl = "scrollscan.com";
       break;

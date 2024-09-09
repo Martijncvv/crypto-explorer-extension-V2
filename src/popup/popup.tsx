@@ -83,6 +83,7 @@ const App: React.FC = () => {
       setIsLoadingError({ isLoading: true, isError: false });
       const result = await fetchDetailedNftInfo(coinId);
       setIsLoadingError(result.isLoadingError);
+      setCoinInfo(null);
       setNftInfo(result.nftInfo);
       setHomeCoinStorage({ id: coinId, nft: true });
 
@@ -121,6 +122,7 @@ const App: React.FC = () => {
       setIsLoadingError({ isLoading: true, isError: false });
       const result = await fetchDetailedTokenInfo(coinId);
       setIsLoadingError(result.isLoadingError);
+      setNftInfo(null);
       setCoinInfo(result.coinInfo);
       setHomeCoinStorage({ id: coinId, nft: false });
 

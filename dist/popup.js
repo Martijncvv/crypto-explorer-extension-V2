@@ -3329,6 +3329,7 @@ const App = () => {
             setIsLoadingError({ isLoading: true, isError: false });
             const result = yield (0,_api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_9__.fetchDetailedNftInfo)(coinId);
             setIsLoadingError(result.isLoadingError);
+            setCoinInfo(null);
             setNftInfo(result.nftInfo);
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_11__.setHomeCoinStorage)({ id: coinId, nft: true });
             // Fetch transaction volume data if NFT info is available
@@ -3361,6 +3362,7 @@ const App = () => {
             setIsLoadingError({ isLoading: true, isError: false });
             const result = yield (0,_api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_10__.fetchDetailedTokenInfo)(coinId);
             setIsLoadingError(result.isLoadingError);
+            setNftInfo(null);
             setCoinInfo(result.coinInfo);
             (0,_utils_storage__WEBPACK_IMPORTED_MODULE_11__.setHomeCoinStorage)({ id: coinId, nft: false });
             // Fetch token transaction chart data if applicable
@@ -4675,7 +4677,7 @@ const getNetworkDetails = (platformId) => {
             domain = "api-optimistic.etherscan.io";
             explorerUrl = "optimistic.etherscan.io";
             break;
-        case "scroll": // todo check
+        case "scroll":
             domain = "api.scrollscan.com";
             explorerUrl = "scrollscan.com";
             break;
