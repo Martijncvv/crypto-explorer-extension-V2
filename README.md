@@ -76,6 +76,8 @@ I would like to thank CoinGecko and Etherscan for providing real-time cryptocurr
 
 ### Figma design
 
+V2 experimentations of components with V1 in the bottom right corner
+
 <p align="center">
   <img src="preview-images/figma-design.png" alt="Figma design" width="800" >
 </p>
