@@ -17,6 +17,15 @@ export const SearchBarField = ({
   setSearchInput,
   searchInput,
   isLoadingError,
+}: {
+  mainLogo: string;
+  inputRef: any;
+  isExpanded: boolean;
+  setIsExpanded: (isExpanded: boolean) => void;
+  setDisplayResults: (searchResults: any) => void;
+  setSearchInput: (searchInput: string) => void;
+  searchInput: string;
+  isLoadingError: { isLoading: boolean; isError: boolean };
 }) => {
   const [coingeckoKeyFeedback, setCoingeckoKeyFeedback] =
     useState<boolean>(false);
@@ -105,8 +114,18 @@ export const SearchBarField = ({
       )}
       {isLoadingError.isError && (
         <div style={styles.indicationIcon} title={"Refresh limit: 5/sec"}>
-          <SyncProblemIcon
-            style={{ fontSize: 30, color: colors.secondary_medium }}
+          {/*<SyncProblemIcon*/}
+          {/*  style={{ fontSize: 30, color: colors.secondary_medium }}*/}
+          {/*/>*/}
+          <CircularProgress
+            size={41}
+            thickness={1}
+            style={{
+              position: "absolute",
+              right: 12,
+              zIndex: 1,
+              color: "red",
+            }}
           />
         </div>
       )}
