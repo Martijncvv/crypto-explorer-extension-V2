@@ -104,13 +104,13 @@ I would like to thank CoinGecko and Etherscan for providing real-time cryptocurr
   <img src="preview-images/doge-1280-800.jpg" alt="Doge USD" width="800" >
 </p>
 
-### Shiba exchanges
+### Shiba Onchain txs by size; 50 largest of the last 10.000 txs
 
 <p align="center">
   <img src="preview-images/shib-1280-800.jpg" alt="Shib USD" width="800" >
 </p>
 
-### Pudgy NFT info
+### Pudgy NFT info; nr of txs/day
 
 <p align="center">
   <img src="preview-images/pudgy-1280-800.jpg" alt="Pudgy USD" width="800" >
