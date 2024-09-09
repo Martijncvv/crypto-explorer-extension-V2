@@ -419,8 +419,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "fetchDetailedNftInfo": () => (/* binding */ fetchDetailedNftInfo)
 /* harmony export */ });
 /* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
-/* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/api/delay.ts");
-/* harmony import */ var _getNftTxChartData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getNftTxChartData */ "./src/api/getNftTxChartData.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -431,17 +429,15 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
     });
 };
 
-
-
 const fetchDetailedNftInfo = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
     let nftInfo = null;
     let coinInfo = null;
     let txVolumeChartData = [];
-    let tokenTxsChartData = [];
     let isLoadingError;
     try {
         // Fetch NFT info
         nftInfo = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftInfo)(coinId);
+        isLoadingError = { isLoading: false, isError: false };
         if (!nftInfo) {
             isLoadingError = { isLoading: false, isError: true };
             console.log(`No results for nftInfo ${coinId}`);
@@ -449,30 +445,9 @@ const fetchDetailedNftInfo = (coinId) => __awaiter(void 0, void 0, void 0, funct
                 nftInfo,
                 coinInfo,
                 txVolumeChartData,
-                tokenTxsChartData,
                 isLoadingError,
             };
         }
-        // Fetch transaction volume data if NFT info is available
-        if (nftInfo.asset_platform_id && nftInfo.contract_address) {
-            yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(1000);
-            const txVolumeData = yield (0,_getNftTxChartData__WEBPACK_IMPORTED_MODULE_2__.getNftTxChartData)(nftInfo.asset_platform_id, nftInfo.contract_address);
-            if (!txVolumeData) {
-                isLoadingError = { isLoading: false, isError: true };
-                console.log(`No results for getNftTxChartData ${coinId}`);
-                return {
-                    nftInfo,
-                    coinInfo,
-                    txVolumeChartData,
-                    tokenTxsChartData,
-                    isLoadingError,
-                };
-            }
-            if (txVolumeData.length > 0) {
-                txVolumeChartData = txVolumeData;
-            }
-        }
-        isLoadingError = { isLoading: false, isError: false };
     }
     catch (error) {
         isLoadingError = { isLoading: false, isError: true };
@@ -486,7 +461,6 @@ const fetchDetailedNftInfo = (coinId) => __awaiter(void 0, void 0, void 0, funct
         nftInfo,
         coinInfo,
         txVolumeChartData,
-        tokenTxsChartData,
         isLoadingError,
     };
 });
@@ -506,7 +480,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
 /* harmony import */ var _utils_formatChartData__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/formatChartData */ "./src/utils/formatChartData.ts");
-/* harmony import */ var _getTokenTxChartData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getTokenTxChartData */ "./src/api/getTokenTxChartData.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -518,12 +491,9 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
-
 const fetchDetailedTokenInfo = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
     let coinInfo = null;
     let nftInfo = null;
-    let txVolumeChartData = [];
-    let tokenTxsChartData = [];
     let isLoadingError;
     try {
         // Fetch coin info and price history data concurrently
@@ -531,14 +501,13 @@ const fetchDetailedTokenInfo = (coinId) => __awaiter(void 0, void 0, void 0, fun
             (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchCoinInfo)(coinId),
             (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchPriceHistoryData)(coinId, "usd", "365"),
         ]);
+        isLoadingError = { isLoading: false, isError: false };
         if (!fetchedCoinInfo) {
             console.log(`No results for coinInfo ${coinId}`);
             isLoadingError = { isLoading: false, isError: true };
             return {
                 coinInfo,
                 nftInfo,
-                txVolumeChartData,
-                tokenTxsChartData,
                 isLoadingError,
             };
         }
@@ -548,8 +517,6 @@ const fetchDetailedTokenInfo = (coinId) => __awaiter(void 0, void 0, void 0, fun
             return {
                 coinInfo,
                 nftInfo,
-                txVolumeChartData,
-                tokenTxsChartData,
                 isLoadingError,
             };
         }
@@ -560,34 +527,14 @@ const fetchDetailedTokenInfo = (coinId) => __awaiter(void 0, void 0, void 0, fun
             total_volumes: priceMaxHistoryDataRes.total_volumes.slice(-31),
         });
         coinInfo.priceMaxHistoryData = (0,_utils_formatChartData__WEBPACK_IMPORTED_MODULE_1__.formatChartData)(priceMaxHistoryDataRes);
-        // Fetch transaction data if asset platform and contract address are available
-        if (coinInfo.asset_platform_id && coinInfo.contract_address) {
-            const fetchedTokenTxChartData = yield (0,_getTokenTxChartData__WEBPACK_IMPORTED_MODULE_2__.getTokenTxChartData)(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
-            if (!fetchedTokenTxChartData) {
-                console.log(`No results for getTokenTxChartData ${coinId}`);
-                isLoadingError = { isLoading: false, isError: true };
-                return {
-                    coinInfo,
-                    nftInfo,
-                    txVolumeChartData,
-                    tokenTxsChartData,
-                    isLoadingError,
-                };
-            }
-            tokenTxsChartData = fetchedTokenTxChartData;
-        }
-        isLoadingError = { isLoading: false, isError: false };
     }
     catch (error) {
         isLoadingError = { isLoading: false, isError: true };
         console.error(`fetchDetailedTokenInfo: Error searching for coin: ${coinId}`, error);
     }
-    // Return the gathered data instead of setting state directly
     return {
         coinInfo,
         nftInfo,
-        txVolumeChartData,
-        tokenTxsChartData,
         isLoadingError,
     };
 });
@@ -607,6 +554,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
 /* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/api/delay.ts");
+/* harmony import */ var _utils_getNetworkDetails__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/getNetworkDetails */ "./src/utils/getNetworkDetails.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -618,48 +566,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
+
 const getNftTxChartData = (platformId, contractAddress) => __awaiter(void 0, void 0, void 0, function* () {
-    let domain;
-    switch (platformId) {
-        case "arbitrum-one":
-            domain = "api.arbiscan.io";
-            break;
-        case "avalanche":
-            domain = "api.snowtrace.io";
-            break;
-        case "base":
-            domain = "api.basescan.org";
-            break;
-        case "binance-smart-chain":
-            domain = "api.bscscan.com";
-            break;
-        case "celo":
-            domain = "api.celoscan.io";
-            break;
-        case "cronos":
-            domain = "api.cronoscan.com";
-            break;
-        case "ethereum":
-            domain = "api.etherscan.io";
-            break;
-        case "fantom":
-            domain = "api.ftmscan.com";
-            break;
-        case "polygon-pos":
-            domain = "api.polygonscan.com";
-            break;
-        case "optimistic-ethereum":
-            domain = "api-optimistic.etherscan.io";
-            break;
-        default:
-            console.log(`getNftTxChartData error: Invalid platformId: ${platformId}`);
-            return [];
-    }
-    let nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(domain, contractAddress, 10000);
+    const networkDetails = (0,_utils_getNetworkDetails__WEBPACK_IMPORTED_MODULE_2__.getNetworkDetails)(platformId);
+    let nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(networkDetails.domain, contractAddress, 10000);
     if (nftTxsData.status === "0") {
         console.log("nftTxsData.status ==== 0: ", nftTxsData);
         yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(5500);
-        nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(domain, contractAddress, 10000);
+        nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(networkDetails.domain, contractAddress, 10000);
     }
     if (nftTxsData.status !== "0" && nftTxsData.result) {
         const nftTxsChartFormat = Object.entries(nftTxsData.result.reduce((result, txInfo) => {
@@ -698,6 +612,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
 /* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/api/delay.ts");
+/* harmony import */ var _utils_getNetworkDetails__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/getNetworkDetails */ "./src/utils/getNetworkDetails.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -709,59 +624,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 };
 
 
+
 const getTokenTxChartData = (platformId, contractAddress, tokenValue) => __awaiter(void 0, void 0, void 0, function* () {
-    let domain;
-    let explorerUrl;
-    switch (platformId) {
-        case "arbitrum-one":
-            domain = "api.arbiscan.io";
-            explorerUrl = "arbiscan.io";
-            break;
-        case "avalanche":
-            domain = "api.snowtrace.io";
-            explorerUrl = "snowtrace.io";
-            break;
-        case "base":
-            domain = "api.basescan.org";
-            explorerUrl = "basescan.org";
-            break;
-        case "binance-smart-chain":
-            domain = "api.bscscan.com";
-            explorerUrl = "bscscan.com";
-            break;
-        case "celo":
-            domain = "api.celoscan.io";
-            explorerUrl = "celoscan.io";
-            break;
-        case "cronos":
-            domain = "api.cronoscan.com";
-            explorerUrl = "cronoscan.com";
-            break;
-        case "ethereum":
-            domain = "api.etherscan.io";
-            explorerUrl = "etherscan.io";
-            break;
-        case "fantom":
-            domain = "api.ftmscan.com";
-            explorerUrl = "ftmscan.com";
-            break;
-        case "polygon-pos":
-            domain = "api.polygonscan.com";
-            explorerUrl = "polygonscan.com";
-            break;
-        case "optimistic-ethereum":
-            domain = "api-optimistic.etherscan.io";
-            explorerUrl = "optimistic.etherscan.io";
-            break;
-        default:
-            console.log(`getTokenTxChartData error: Invalid platformId: ${platformId}`);
-            return [];
-    }
-    let tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(domain, contractAddress, 10000);
+    const networkDetails = (0,_utils_getNetworkDetails__WEBPACK_IMPORTED_MODULE_2__.getNetworkDetails)(platformId);
+    let tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(networkDetails.domain, contractAddress, 10000);
     if (tokenTxsData.status === "0") {
         console.log("tokenTxsData.status ==== 0: ", tokenTxsData);
         yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(5500);
-        tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(domain, contractAddress, 10000);
+        tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(networkDetails.domain, contractAddress, 10000);
     }
     if (tokenTxsData.status !== "0" && tokenTxsData.result) {
         const arrayWithIndices = tokenTxsData.result.map((item, index) => (Object.assign(Object.assign({}, item), { index })));
@@ -774,7 +644,7 @@ const getTokenTxChartData = (platformId, contractAddress, tokenValue) => __await
                 date: new Date(Number(txInfo.timeStamp) * 1000),
                 amount: parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal)),
                 txHash: txInfo.hash,
-                explorerUrl: "https://" + explorerUrl + "/tx/" + txInfo.hash,
+                explorerUrl: "https://" + networkDetails.explorerUrl + "/tx/" + txInfo.hash,
                 usdValue: (parseInt(txInfo.value) / Math.pow(10, parseInt(txInfo.tokenDecimal))) *
                     tokenValue,
                 native: platformId,
@@ -1822,7 +1692,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @mui/icons-material/Search */ "./node_modules/@mui/icons-material/Search.js");
 /* harmony import */ var _static_colors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../static/colors */ "./src/static/colors.tsx");
 /* harmony import */ var _mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @mui/material/CircularProgress */ "./node_modules/@mui/material/CircularProgress/CircularProgress.js");
-/* harmony import */ var _mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mui/icons-material/SyncProblem */ "./node_modules/@mui/icons-material/SyncProblem.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _api_searchCoinName__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../api/searchCoinName */ "./src/api/searchCoinName.ts");
@@ -1837,7 +1706,6 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
 
 
 
@@ -1887,16 +1755,16 @@ const SearchBarField = ({ mainLogo, inputRef, isExpanded, setIsExpanded, setDisp
             react__WEBPACK_IMPORTED_MODULE_2___default().createElement("div", { style: styles.searchbarImage },
                 react__WEBPACK_IMPORTED_MODULE_2___default().createElement(_mui_icons_material_Search__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { fontSize: 24, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } })),
             react__WEBPACK_IMPORTED_MODULE_2___default().createElement("input", { ref: inputRef, type: "text", style: styles.searchInput, onChange: (e) => setSearchInput(e.target.value), onKeyDown: handleSearch, onClick: () => setSearchInput(""), onFocus: handleFocus, value: searchInput, placeholder: coingeckoKeyFeedback ? "Delayed -> Open menu" : null })),
-        !isLoadingError.isError && (react__WEBPACK_IMPORTED_MODULE_2___default().createElement("img", { style: styles.mainLogo, src: mainLogo ||
-                "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256", alt: "Main Logo" })),
-        isLoadingError.isLoading && !isLoadingError.isError && (react__WEBPACK_IMPORTED_MODULE_2___default().createElement(_mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_7__["default"], { size: 41, thickness: 1, style: {
-                position: "absolute",
-                right: 12,
-                zIndex: 1,
-                color: "white",
-            } })),
-        isLoadingError.isError && (react__WEBPACK_IMPORTED_MODULE_2___default().createElement("div", { style: styles.indicationIcon, title: "Refresh limit: 5/sec" },
-            react__WEBPACK_IMPORTED_MODULE_2___default().createElement(_mui_icons_material_SyncProblem__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { fontSize: 30, color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium } })))));
+        react__WEBPACK_IMPORTED_MODULE_2___default().createElement("img", { style: styles.mainLogo, src: mainLogo ||
+                "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256", alt: "Main Logo" }),
+        isLoadingError.isLoading && !isLoadingError.isError && (react__WEBPACK_IMPORTED_MODULE_2___default().createElement("div", { style: styles.progressIndication, title: "Loading.." },
+            react__WEBPACK_IMPORTED_MODULE_2___default().createElement(_mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_7__["default"], { size: 41, thickness: 1, style: {
+                    color: "white",
+                } }))),
+        isLoadingError.isError && (react__WEBPACK_IMPORTED_MODULE_2___default().createElement("div", { style: styles.progressIndication, title: "Refresh limit: 5/sec" },
+            react__WEBPACK_IMPORTED_MODULE_2___default().createElement(_mui_material_CircularProgress__WEBPACK_IMPORTED_MODULE_7__["default"], { size: 41, thickness: 1, style: {
+                    color: "red",
+                } })))));
 };
 const styles = {
     searchbar: {
@@ -1931,14 +1799,13 @@ const styles = {
         height: 40,
         borderRadius: 20,
     },
-    indicationIcon: {
-        marginLeft: 12,
-        width: 40,
-        height: 40,
+    progressIndication: {
+        position: "absolute",
+        right: 12,
+        zIndex: 1,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 1,
     },
 };
 
@@ -2083,7 +1950,7 @@ const CoingeckoApiField = ({}) => {
             react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: styles.inputContainerSaveButton, onClick: handleCoingeckoApiKey },
                 react__WEBPACK_IMPORTED_MODULE_1___default().createElement(_mui_icons_material_Save__WEBPACK_IMPORTED_MODULE_4__["default"], { style: { fontSize: 14, color: _static_colors__WEBPACK_IMPORTED_MODULE_0__["default"].white_medium } }))),
         react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: styles.explanationSubtext }, "If you do not add an API key, you share one with other users, which results in delays and limited usage."),
-        react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: styles.explanationSubtext }, "*CoinGecko's open API is now restricted. This approach helps us maintain a free extension.")));
+        react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", { style: styles.explanationSubtext }, "*CoinGecko's open API is restricted. This approach helps me maintain a free extension.")));
 };
 const styles = {
     sectionHeader: {
@@ -3380,6 +3247,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_storage__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../utils/storage */ "./src/utils/storage.ts");
 /* harmony import */ var _components_NftInfoField__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../components/NftInfoField */ "./src/components/NftInfoField.tsx");
 /* harmony import */ var _components_CoinInfoField__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../components/CoinInfoField */ "./src/components/CoinInfoField.tsx");
+/* harmony import */ var _api_getTokenTxChartData__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../api/getTokenTxChartData */ "./src/api/getTokenTxChartData.ts");
+/* harmony import */ var _api_getNftTxChartData__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../api/getNftTxChartData */ "./src/api/getNftTxChartData.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -3402,6 +3271,8 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 const bitcoinIcon = __webpack_require__(/*! ../static/images/icons/bitcoin-icon.png */ "./src/static/images/icons/bitcoin-icon.png");
+
+
 
 
 // keep highest and lowest price on max chart
@@ -3446,23 +3317,73 @@ const App = () => {
         setSearchResults(trendingCoins);
     });
     const handleFetchTokenInfo = (coinId, isNft) => __awaiter(void 0, void 0, void 0, function* () {
+        if (isNft) {
+            yield handleNftFetchLogic(coinId);
+        }
+        else {
+            yield handleTokenFetchLogic(coinId);
+        }
+    });
+    const handleNftFetchLogic = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             setIsLoadingError({ isLoading: true, isError: false });
-            const fetchInfo = isNft ? _api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_9__.fetchDetailedNftInfo : _api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_10__.fetchDetailedTokenInfo;
-            const result = yield fetchInfo(coinId);
+            const result = yield (0,_api_fetchDetailedNftInfo__WEBPACK_IMPORTED_MODULE_9__.fetchDetailedNftInfo)(coinId);
             setIsLoadingError(result.isLoadingError);
             setNftInfo(result.nftInfo);
-            setCoinInfo(result.coinInfo);
-            setTxVolumeChartData(result.txVolumeChartData);
-            setTokenTxsChartData(result.tokenTxsChartData);
-            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_11__.setHomeCoinStorage)({ id: coinId, nft: isNft });
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_11__.setHomeCoinStorage)({ id: coinId, nft: true });
+            // Fetch transaction volume data if NFT info is available
+            if ((nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.asset_platform_id) && (nftInfo === null || nftInfo === void 0 ? void 0 : nftInfo.contract_address)) {
+                setIsLoadingError({ isLoading: true, isError: false });
+                const txVolumeData = yield (0,_api_getNftTxChartData__WEBPACK_IMPORTED_MODULE_15__.getNftTxChartData)(nftInfo.asset_platform_id, nftInfo.contract_address);
+                if (!txVolumeData) {
+                    setIsLoadingError({ isLoading: false, isError: true });
+                    console.log(`No results for getNftTxChartData ${coinId}`);
+                    return {
+                        nftInfo,
+                        coinInfo,
+                        txVolumeChartData,
+                        isLoadingError,
+                    };
+                }
+                if (txVolumeData.length > 0) {
+                    setTxVolumeChartData(txVolumeData);
+                    setIsLoadingError({ isLoading: false, isError: false });
+                }
+            }
         }
         catch (error) {
-            console.error(`Error fetching info for ${coinId}-${isNft}`);
-            console.error("Error fetching info:", error);
+            console.error(`Error fetching info for ${coinId}:`, error);
             setIsLoadingError({ isLoading: false, isError: true });
         }
     });
+    const handleTokenFetchLogic = (coinId) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            setIsLoadingError({ isLoading: true, isError: false });
+            const result = yield (0,_api_fetchDetailedTokenInfo__WEBPACK_IMPORTED_MODULE_10__.fetchDetailedTokenInfo)(coinId);
+            setIsLoadingError(result.isLoadingError);
+            setCoinInfo(result.coinInfo);
+            (0,_utils_storage__WEBPACK_IMPORTED_MODULE_11__.setHomeCoinStorage)({ id: coinId, nft: false });
+            // Fetch token transaction chart data if applicable
+            if ((coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.asset_platform_id) && (coinInfo === null || coinInfo === void 0 ? void 0 : coinInfo.contract_address)) {
+                setIsLoadingError({ isLoading: true, isError: false });
+                const fetchedTokenTxChartData = yield (0,_api_getTokenTxChartData__WEBPACK_IMPORTED_MODULE_14__.getTokenTxChartData)(coinInfo.asset_platform_id, coinInfo.contract_address, coinInfo.market_data.current_price.usd);
+                if (!fetchedTokenTxChartData) {
+                    console.log(`No results for getTokenTxChartData ${coinId}`);
+                    setIsLoadingError({ isLoading: false, isError: true });
+                }
+                else {
+                    setTokenTxsChartData(fetchedTokenTxChartData);
+                    setIsLoadingError({ isLoading: false, isError: false });
+                }
+            }
+        }
+        catch (error) {
+            console.error(`Error fetching info for ${coinId}: `, error);
+            setIsLoadingError({ isLoading: false, isError: true });
+        }
+    });
+    console.log("coinInfo123: ", coinInfo);
+    console.log("nftInfo123: ", nftInfo);
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null,
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement(_components_OverlayMenu_OverlayMenu__WEBPACK_IMPORTED_MODULE_4__["default"], { menuIsOpen: isOverlayOpen, setMenuIsOpen: setIsOverlayOpen, handleFetchTokenInfo: handleFetchTokenInfo }),
         react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container },
@@ -4688,6 +4609,86 @@ function downsampling(originalArray, maxDataPoints) {
 
 /***/ }),
 
+/***/ "./src/utils/getNetworkDetails.ts":
+/*!****************************************!*\
+  !*** ./src/utils/getNetworkDetails.ts ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getNetworkDetails": () => (/* binding */ getNetworkDetails)
+/* harmony export */ });
+const getNetworkDetails = (platformId) => {
+    let domain;
+    let explorerUrl;
+    switch (platformId) {
+        case "arbitrum-one":
+            domain = "api.arbiscan.io";
+            explorerUrl = "arbiscan.io";
+            break;
+        // case "aptos": // differente domain logic \0/
+        //   domain = "public-api.aptoscan.com/v1/";
+        //   explorerUrl = "aptoscan.com";
+        //   break;
+        case "avalanche":
+            domain = "api.snowtrace.io";
+            explorerUrl = "snowtrace.io";
+            break;
+        case "base":
+            domain = "api.basescan.org";
+            explorerUrl = "basescan.org";
+            break;
+        case "blast":
+            domain = "api.blastscan.io";
+            explorerUrl = "blastscan.io";
+            break;
+        case "binance-smart-chain":
+            domain = "api.bscscan.com";
+            explorerUrl = "bscscan.com";
+            break;
+        case "celo":
+            domain = "api.celoscan.io";
+            explorerUrl = "celoscan.io";
+            break;
+        case "cronos":
+            domain = "api.cronoscan.com";
+            explorerUrl = "cronoscan.com";
+            break;
+        case "ethereum":
+            domain = "api.etherscan.io";
+            explorerUrl = "etherscan.io";
+            break;
+        case "fantom":
+            domain = "api.ftmscan.com";
+            explorerUrl = "ftmscan.com";
+            break;
+        case "linea": // todo check
+            domain = "api.lineascan.build";
+            explorerUrl = "lineascan.build";
+            break;
+        case "polygon-pos":
+            domain = "api.polygonscan.com";
+            explorerUrl = "polygonscan.com";
+            break;
+        case "optimistic-ethereum":
+            domain = "api-optimistic.etherscan.io";
+            explorerUrl = "optimistic.etherscan.io";
+            break;
+        case "scroll": // todo check
+            domain = "api.scrollscan.com";
+            explorerUrl = "scrollscan.com";
+            break;
+        default:
+            console.log(`getPlatformDetails error: Invalid platformId: ${platformId}`);
+            return null;
+    }
+    return { domain, explorerUrl };
+};
+
+
+/***/ }),
+
 /***/ "./src/utils/isEthereumAddress.ts":
 /*!****************************************!*\
   !*** ./src/utils/isEthereumAddress.ts ***!
@@ -5438,7 +5439,7 @@ module.exports = __webpack_require__.p + "275488b8325f50682b7c.png";
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_mui_icons-material_Close_js-node_modules_mui_icons-material_Delete_js-no-cfa2ac"], () => (__webpack_require__("./src/popup/popup.tsx")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_react-dom_index_js","vendors-node_modules_mui_icons-material_Close_js-node_modules_mui_icons-material_Delete_js-no-40349e"], () => (__webpack_require__("./src/popup/popup.tsx")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

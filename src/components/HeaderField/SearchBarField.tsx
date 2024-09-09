@@ -2,7 +2,6 @@ import constants, { SHARED_API_KEY_COINGECKO } from "../../static/constants";
 import SearchIcon from "@mui/icons-material/Search";
 import colors from "../../static/colors";
 import CircularProgress from "@mui/material/CircularProgress";
-import SyncProblemIcon from "@mui/icons-material/SyncProblem";
 import React, { CSSProperties, useEffect, useState } from "react";
 import { searchCoinName } from "../../api/searchCoinName";
 import { getTrendingCoins } from "../../api/getTrendingCoins";
@@ -90,40 +89,33 @@ export const SearchBarField = ({
           placeholder={coingeckoKeyFeedback ? "Delayed -> Open menu" : null}
         />
       </div>
-      {!isLoadingError.isError && (
-        <img
-          style={styles.mainLogo}
-          src={
-            mainLogo ||
-            "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256"
-          }
-          alt="Main Logo"
-        />
-      )}
+
+      <img
+        style={styles.mainLogo}
+        src={
+          mainLogo ||
+          "https://assets.coingecko.com/coins/images/5/small/dogecoin.png?1547792256"
+        }
+        alt="Main Logo"
+      />
+
       {isLoadingError.isLoading && !isLoadingError.isError && (
-        <CircularProgress
-          size={41}
-          thickness={1}
-          style={{
-            position: "absolute",
-            right: 12,
-            zIndex: 1,
-            color: "white",
-          }}
-        />
-      )}
-      {isLoadingError.isError && (
-        <div style={styles.indicationIcon} title={"Refresh limit: 5/sec"}>
-          {/*<SyncProblemIcon*/}
-          {/*  style={{ fontSize: 30, color: colors.secondary_medium }}*/}
-          {/*/>*/}
+        <div style={styles.progressIndication} title={"Loading.."}>
           <CircularProgress
             size={41}
             thickness={1}
             style={{
-              position: "absolute",
-              right: 12,
-              zIndex: 1,
+              color: "white",
+            }}
+          />
+        </div>
+      )}
+      {isLoadingError.isError && (
+        <div style={styles.progressIndication} title={"Refresh limit: 5/sec"}>
+          <CircularProgress
+            size={41}
+            thickness={1}
+            style={{
               color: "red",
             }}
           />
@@ -168,13 +160,12 @@ const styles: { [key: string]: CSSProperties } = {
     height: 40,
     borderRadius: 20,
   },
-  indicationIcon: {
-    marginLeft: 12,
-    width: 40,
-    height: 40,
+  progressIndication: {
+    position: "absolute",
+    right: 12,
+    zIndex: 1,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 1,
   },
 };

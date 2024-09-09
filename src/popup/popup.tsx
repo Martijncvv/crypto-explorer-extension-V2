@@ -17,6 +17,8 @@ import { getHomeCoinStorage, setHomeCoinStorage } from "../utils/storage";
 const bitcoinIcon = require("../static/images/icons/bitcoin-icon.png");
 import { NftInfoField } from "../components/NftInfoField";
 import { CoinInfoField } from "../components/CoinInfoField";
+import { getTokenTxChartData } from "../api/getTokenTxChartData";
+import { getNftTxChartData } from "../api/getNftTxChartData";
 
 export interface IIsLoadingError {
   isLoading: boolean;
@@ -69,23 +71,83 @@ const App: React.FC = () => {
   };
 
   const handleFetchTokenInfo = async (coinId: string, isNft: boolean) => {
+    if (isNft) {
+      await handleNftFetchLogic(coinId);
+    } else {
+      await handleTokenFetchLogic(coinId);
+    }
+  };
+
+  const handleNftFetchLogic = async (coinId: string) => {
     try {
       setIsLoadingError({ isLoading: true, isError: false });
-      const fetchInfo = isNft ? fetchDetailedNftInfo : fetchDetailedTokenInfo;
-      const result = await fetchInfo(coinId);
-
+      const result = await fetchDetailedNftInfo(coinId);
       setIsLoadingError(result.isLoadingError);
       setNftInfo(result.nftInfo);
-      setCoinInfo(result.coinInfo);
-      setTxVolumeChartData(result.txVolumeChartData);
-      setTokenTxsChartData(result.tokenTxsChartData);
-      setHomeCoinStorage({ id: coinId, nft: isNft });
+      setHomeCoinStorage({ id: coinId, nft: true });
+
+      // Fetch transaction volume data if NFT info is available
+      if (nftInfo?.asset_platform_id && nftInfo?.contract_address) {
+        setIsLoadingError({ isLoading: true, isError: false });
+        const txVolumeData = await getNftTxChartData(
+          nftInfo.asset_platform_id,
+          nftInfo.contract_address,
+        );
+
+        if (!txVolumeData) {
+          setIsLoadingError({ isLoading: false, isError: true });
+          console.log(`No results for getNftTxChartData ${coinId}`);
+          return {
+            nftInfo,
+            coinInfo,
+            txVolumeChartData,
+
+            isLoadingError,
+          };
+        }
+        if (txVolumeData.length > 0) {
+          setTxVolumeChartData(txVolumeData);
+          setIsLoadingError({ isLoading: false, isError: false });
+        }
+      }
     } catch (error) {
-      console.error(`Error fetching info for ${coinId}-${isNft}`);
-      console.error("Error fetching info:", error);
+      console.error(`Error fetching info for ${coinId}:`, error);
       setIsLoadingError({ isLoading: false, isError: true });
     }
   };
+
+  const handleTokenFetchLogic = async (coinId: string) => {
+    try {
+      setIsLoadingError({ isLoading: true, isError: false });
+      const result = await fetchDetailedTokenInfo(coinId);
+      setIsLoadingError(result.isLoadingError);
+      setCoinInfo(result.coinInfo);
+      setHomeCoinStorage({ id: coinId, nft: false });
+
+      // Fetch token transaction chart data if applicable
+      if (coinInfo?.asset_platform_id && coinInfo?.contract_address) {
+        setIsLoadingError({ isLoading: true, isError: false });
+        const fetchedTokenTxChartData = await getTokenTxChartData(
+          coinInfo.asset_platform_id,
+          coinInfo.contract_address,
+          coinInfo.market_data.current_price.usd,
+        );
+        if (!fetchedTokenTxChartData) {
+          console.log(`No results for getTokenTxChartData ${coinId}`);
+          setIsLoadingError({ isLoading: false, isError: true });
+        } else {
+          setTokenTxsChartData(fetchedTokenTxChartData);
+          setIsLoadingError({ isLoading: false, isError: false });
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching info for ${coinId}: `, error);
+      setIsLoadingError({ isLoading: false, isError: true });
+    }
+  };
+
+  console.log("coinInfo123: ", coinInfo);
+  console.log("nftInfo123: ", nftInfo);
 
   return (
     <>

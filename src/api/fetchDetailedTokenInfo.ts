@@ -1,12 +1,9 @@
 import { fetchCoinInfo, fetchPriceHistoryData } from "./api";
 import { formatChartData } from "../utils/formatChartData";
-import { getTokenTxChartData } from "./getTokenTxChartData";
 
 export const fetchDetailedTokenInfo = async (coinId: string) => {
   let coinInfo = null;
   let nftInfo = null;
-  let txVolumeChartData = [];
-  let tokenTxsChartData = [];
   let isLoadingError;
 
   try {
@@ -15,6 +12,7 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
       fetchCoinInfo(coinId),
       fetchPriceHistoryData(coinId, "usd", "365"),
     ]);
+    isLoadingError = { isLoading: false, isError: false };
 
     if (!fetchedCoinInfo) {
       console.log(`No results for coinInfo ${coinId}`);
@@ -22,8 +20,6 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
       return {
         coinInfo,
         nftInfo,
-        txVolumeChartData,
-        tokenTxsChartData,
         isLoadingError,
       };
     }
@@ -34,8 +30,6 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
       return {
         coinInfo,
         nftInfo,
-        txVolumeChartData,
-        tokenTxsChartData,
         isLoadingError,
       };
     }
@@ -47,31 +41,6 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
       total_volumes: priceMaxHistoryDataRes.total_volumes.slice(-31),
     });
     coinInfo.priceMaxHistoryData = formatChartData(priceMaxHistoryDataRes);
-
-    // Fetch transaction data if asset platform and contract address are available
-    if (coinInfo.asset_platform_id && coinInfo.contract_address) {
-      const fetchedTokenTxChartData = await getTokenTxChartData(
-        coinInfo.asset_platform_id,
-        coinInfo.contract_address,
-        coinInfo.market_data.current_price.usd,
-      );
-
-      if (!fetchedTokenTxChartData) {
-        console.log(`No results for getTokenTxChartData ${coinId}`);
-        isLoadingError = { isLoading: false, isError: true };
-        return {
-          coinInfo,
-          nftInfo,
-          txVolumeChartData,
-          tokenTxsChartData,
-          isLoadingError,
-        };
-      }
-
-      tokenTxsChartData = fetchedTokenTxChartData;
-    }
-
-    isLoadingError = { isLoading: false, isError: false };
   } catch (error) {
     isLoadingError = { isLoading: false, isError: true };
     console.error(
@@ -80,12 +49,9 @@ export const fetchDetailedTokenInfo = async (coinId: string) => {
     );
   }
 
-  // Return the gathered data instead of setting state directly
   return {
     coinInfo,
     nftInfo,
-    txVolumeChartData,
-    tokenTxsChartData,
     isLoadingError,
   };
 };

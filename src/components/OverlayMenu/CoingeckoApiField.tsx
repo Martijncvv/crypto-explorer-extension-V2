@@ -65,8 +65,8 @@ export const CoingeckoApiField = ({}) => {
         results in delays and limited usage.
       </div>
       <div style={styles.explanationSubtext}>
-        *CoinGecko's open API is now restricted. This approach helps us maintain
-        a free extension.
+        *CoinGecko's open API is restricted. This approach helps me maintain a
+        free extension.
       </div>
     </>
   );
