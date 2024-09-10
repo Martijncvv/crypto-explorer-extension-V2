@@ -43,41 +43,6 @@ const ChartsField: React.FC<ChartsBlockProps> = ({
   const chartOptionCount = availableCharts.length;
   const [chartOption, setChartOption] = useState<number>(0);
 
-  const styles: { [key: string]: CSSProperties } = {
-    container: {
-      width: 330,
-      height: 160,
-    },
-    menuOptions: {
-      display: "flex",
-      justifyContent: "center",
-    },
-    menuOption: {
-      width: 40,
-      height: 3,
-      marginRight: "9px",
-      cursor: "pointer",
-      backgroundColor: colors.primary_medium,
-      borderRadius: "2px",
-    },
-    activeOption: {
-      width: 40,
-      height: 3,
-      marginRight: "9px",
-      cursor: "pointer",
-      backgroundColor: colors.secondary_medium,
-      borderRadius: "2px",
-    },
-    emptyChartMessage: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100%",
-      fontSize: "16px",
-      color: colors.primary_medium,
-    },
-  };
-
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "ArrowRight") {
@@ -245,11 +210,13 @@ const ChartsField: React.FC<ChartsBlockProps> = ({
               <div
                 key={option}
                 onClick={() => setChartOption(option)}
-                style={
-                  chartOption === option
-                    ? styles.activeOption
-                    : styles.menuOption
-                }
+                style={{
+                  ...styles.menuOption,
+                  backgroundColor:
+                    chartOption === option
+                      ? colors.secondary_medium
+                      : colors.primary_medium,
+                }}
               />
             ),
           )}
@@ -564,14 +531,6 @@ const ChartsField: React.FC<ChartsBlockProps> = ({
                 fill={colors.accent_medium}
               />
             </ReferenceLine>
-
-            {/*style={{*/}
-            {/*textTransform: 'capitalize',*/}
-            {/*backgroundColor: colors.primary_dark,*/}
-            {/*border: 'none',*/}
-            {/*color: "red",*/}
-            {/*borderRadius: constants.border_radius_small,*/}
-            {/*padding: '3px',}}*/}
           </ComposedChart>
         </ResponsiveContainer>
       )}
@@ -580,3 +539,31 @@ const ChartsField: React.FC<ChartsBlockProps> = ({
 };
 
 export default ChartsField;
+
+const styles: { [key: string]: CSSProperties } = {
+  container: {
+    width: 330,
+    height: 160,
+  },
+  menuOptions: {
+    display: "flex",
+    justifyContent: "center",
+  },
+  menuOption: {
+    width: 42,
+    height: 4,
+    marginRight: "9px",
+    cursor: "pointer",
+    backgroundColor: colors.primary_medium,
+    borderRadius: "2px",
+    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+  },
+  emptyChartMessage: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    fontSize: "16px",
+    color: colors.primary_medium,
+  },
+};
