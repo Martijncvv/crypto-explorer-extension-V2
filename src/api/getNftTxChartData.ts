@@ -1,17 +1,18 @@
 import { fetchNftTxs } from "./api";
 import { delay } from "./delay";
-import { getNetworkDetails } from "../utils/getNetworkDetails";
+import { NETWORK_DETAILS } from "../static/constants";
 
 export const getNftTxChartData = async (
   platformId: string,
   contractAddress: string,
 ): Promise<any> => {
-  const networkDetails = getNetworkDetails(platformId);
+  const networkDetails = NETWORK_DETAILS[platformId];
 
   let nftTxsData = await fetchNftTxs(
     networkDetails.domain,
     contractAddress,
     10000,
+    networkDetails.apikey,
   );
 
   if (nftTxsData.status === "0") {
@@ -21,6 +22,7 @@ export const getNftTxChartData = async (
       networkDetails.domain,
       contractAddress,
       10000,
+      networkDetails.apikey,
     );
   }
 

@@ -1,18 +1,24 @@
 import { fetchTokenTxs } from "./api";
 import { delay } from "./delay";
-import { getNetworkDetails } from "../utils/getNetworkDetails";
+import { NETWORK_DETAILS } from "../static/constants";
 
 export const getTokenTxChartData = async (
   platformId: string,
   contractAddress: string,
   tokenValue: number,
 ): Promise<any> => {
-  const networkDetails = getNetworkDetails(platformId);
+  const networkDetails = NETWORK_DETAILS[platformId];
+
+  if (!networkDetails.apikey) {
+    console.log("no api key for network: ", platformId);
+    return null;
+  }
 
   let tokenTxsData = await fetchTokenTxs(
     networkDetails.domain,
     contractAddress,
     10000,
+    networkDetails.apikey,
   );
 
   if (tokenTxsData.status === "0") {
@@ -22,6 +28,7 @@ export const getTokenTxChartData = async (
       networkDetails.domain,
       contractAddress,
       10000,
+      networkDetails.apikey,
     );
   }
   if (tokenTxsData.status !== "0" && tokenTxsData.result) {

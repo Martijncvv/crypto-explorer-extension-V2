@@ -20,7 +20,7 @@ import {
 import {
   CACHE_TIME_LONG,
   CACHE_TIME_SHORT,
-  SHARED_API_KEY_ETHERSCAN,
+  SHARED_API_KEY_ETHERSCAN_ETHEREUM,
 } from "../static/constants";
 
 // const COINGECKO_EXCHANGES_LIST_API = 'https://api.coingecko.com/api/v3/exchanges?per_page=250'
@@ -277,10 +277,11 @@ export async function fetchNftTxs(
   domainName: string,
   contractAddress: string,
   txAmount: number,
+  apiKey: string,
 ): Promise<ITokenTxs> {
   try {
     const res = await fetch(
-      `https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&apikey=${SHARED_API_KEY_ETHERSCAN}`,
+      `https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&apikey=${apiKey}`,
     );
 
     if (!res.ok) {
@@ -300,10 +301,11 @@ export async function fetchTokenTxs(
   domainName: string,
   contractAddress: string,
   txAmount: number,
+  apiKey: string,
 ): Promise<ITokenTxs> {
   try {
     const res = await fetch(
-      `https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc&apikey=${SHARED_API_KEY_ETHERSCAN}`,
+      `https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`,
     );
 
     if (!res.ok) {
@@ -323,7 +325,7 @@ export async function fetchLatestAddressTxs(
 ): Promise<ITokenTxs> {
   try {
     const res = await fetch(
-      `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${SHARED_API_KEY_ETHERSCAN}`,
+      `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${SHARED_API_KEY_ETHERSCAN_ETHEREUM}`,
     );
 
     if (!res.ok) {

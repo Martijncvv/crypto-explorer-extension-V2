@@ -303,10 +303,10 @@ function fetchNftInfo(coinId) {
         }
     });
 }
-function fetchNftTxs(domainName, contractAddress, txAmount) {
+function fetchNftTxs(domainName, contractAddress, txAmount, apiKey) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const res = yield fetch(`https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&apikey=${_static_constants__WEBPACK_IMPORTED_MODULE_1__.SHARED_API_KEY_ETHERSCAN}`);
+            const res = yield fetch(`https://${domainName}/api?module=account&action=tokennfttx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=999999999&sort=desc&apikey=${apiKey}`);
             if (!res.ok) {
                 throw new Error(`Fetch error, ${domainName} nft txs info: ${res.status} ${res.statusText}`);
             }
@@ -318,10 +318,10 @@ function fetchNftTxs(domainName, contractAddress, txAmount) {
         }
     });
 }
-function fetchTokenTxs(domainName, contractAddress, txAmount) {
+function fetchTokenTxs(domainName, contractAddress, txAmount, apiKey) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const res = yield fetch(`https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc&apikey=${_static_constants__WEBPACK_IMPORTED_MODULE_1__.SHARED_API_KEY_ETHERSCAN}`);
+            const res = yield fetch(`https://${domainName}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${txAmount}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`);
             if (!res.ok) {
                 throw new Error(`Fetch error, ${domainName} token txs info: ${res.status} ${res.statusText}`);
             }
@@ -336,7 +336,7 @@ function fetchTokenTxs(domainName, contractAddress, txAmount) {
 function fetchLatestAddressTxs(address) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const res = yield fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${_static_constants__WEBPACK_IMPORTED_MODULE_1__.SHARED_API_KEY_ETHERSCAN}`);
+            const res = yield fetch(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${_static_constants__WEBPACK_IMPORTED_MODULE_1__.SHARED_API_KEY_ETHERSCAN_ETHEREUM}`);
             if (!res.ok) {
                 throw new Error(`Fetch error, ${address} fetchLatestAddressTxs txs info: ${res.status} ${res.statusText}`);
             }
@@ -554,7 +554,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
 /* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/api/delay.ts");
-/* harmony import */ var _utils_getNetworkDetails__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/getNetworkDetails */ "./src/utils/getNetworkDetails.ts");
+/* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -568,12 +568,12 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 const getNftTxChartData = (platformId, contractAddress) => __awaiter(void 0, void 0, void 0, function* () {
-    const networkDetails = (0,_utils_getNetworkDetails__WEBPACK_IMPORTED_MODULE_2__.getNetworkDetails)(platformId);
-    let nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(networkDetails.domain, contractAddress, 10000);
+    const networkDetails = _static_constants__WEBPACK_IMPORTED_MODULE_2__.NETWORK_DETAILS[platformId];
+    let nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(networkDetails.domain, contractAddress, 10000, networkDetails.apikey);
     if (nftTxsData.status === "0") {
         console.log("nftTxsData.status ==== 0: ", nftTxsData);
         yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(5500);
-        nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(networkDetails.domain, contractAddress, 10000);
+        nftTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchNftTxs)(networkDetails.domain, contractAddress, 10000, networkDetails.apikey);
     }
     if (nftTxsData.status !== "0" && nftTxsData.result) {
         const nftTxsChartFormat = Object.entries(nftTxsData.result.reduce((result, txInfo) => {
@@ -612,7 +612,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api/api.ts");
 /* harmony import */ var _delay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./delay */ "./src/api/delay.ts");
-/* harmony import */ var _utils_getNetworkDetails__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/getNetworkDetails */ "./src/utils/getNetworkDetails.ts");
+/* harmony import */ var _static_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../static/constants */ "./src/static/constants.tsx");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -626,12 +626,16 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 const getTokenTxChartData = (platformId, contractAddress, tokenValue) => __awaiter(void 0, void 0, void 0, function* () {
-    const networkDetails = (0,_utils_getNetworkDetails__WEBPACK_IMPORTED_MODULE_2__.getNetworkDetails)(platformId);
-    let tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(networkDetails.domain, contractAddress, 10000);
+    const networkDetails = _static_constants__WEBPACK_IMPORTED_MODULE_2__.NETWORK_DETAILS[platformId];
+    if (!networkDetails.apikey) {
+        console.log("no api key for network: ", platformId);
+        return null;
+    }
+    let tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(networkDetails.domain, contractAddress, 10000, networkDetails.apikey);
     if (tokenTxsData.status === "0") {
         console.log("tokenTxsData.status ==== 0: ", tokenTxsData);
         yield (0,_delay__WEBPACK_IMPORTED_MODULE_1__.delay)(5500);
-        tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(networkDetails.domain, contractAddress, 10000);
+        tokenTxsData = yield (0,_api__WEBPACK_IMPORTED_MODULE_0__.fetchTokenTxs)(networkDetails.domain, contractAddress, 10000, networkDetails.apikey);
     }
     if (tokenTxsData.status !== "0" && tokenTxsData.result) {
         const arrayWithIndices = tokenTxsData.result.map((item, index) => (Object.assign(Object.assign({}, item), { index })));
@@ -852,40 +856,6 @@ const ChartsField = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
     }
     const chartOptionCount = availableCharts.length;
     const [chartOption, setChartOption] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0);
-    const styles = {
-        container: {
-            width: 330,
-            height: 160,
-        },
-        menuOptions: {
-            display: "flex",
-            justifyContent: "center",
-        },
-        menuOption: {
-            width: 40,
-            height: 3,
-            marginRight: "9px",
-            cursor: "pointer",
-            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_medium,
-            borderRadius: "2px",
-        },
-        activeOption: {
-            width: 40,
-            height: 3,
-            marginRight: "9px",
-            cursor: "pointer",
-            backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium,
-            borderRadius: "2px",
-        },
-        emptyChartMessage: {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            fontSize: "16px",
-            color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_medium,
-        },
-    };
     (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
         const handleKeyDown = (event) => {
             if (event.key === "ArrowRight") {
@@ -1014,9 +984,9 @@ const ChartsField = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
     };
     return (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.container, title: "Use arrow keys to navigate" },
         (availableCharts === null || availableCharts === void 0 ? void 0 : availableCharts.length) === 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.emptyChartMessage }, "Data not (yet) available")),
-        (availableCharts === null || availableCharts === void 0 ? void 0 : availableCharts.length) > 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.menuOptions }, Array.from({ length: chartOptionCount }, (_, index) => index).map((option) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: option, onClick: () => setChartOption(option), style: chartOption === option
-                ? styles.activeOption
-                : styles.menuOption }))))),
+        (availableCharts === null || availableCharts === void 0 ? void 0 : availableCharts.length) > 0 && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { style: styles.menuOptions }, Array.from({ length: chartOptionCount }, (_, index) => index).map((option) => (react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", { key: option, onClick: () => setChartOption(option), style: Object.assign(Object.assign({}, styles.menuOption), { backgroundColor: chartOption === option
+                    ? _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].secondary_medium
+                    : _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_medium }) }))))),
         (availableCharts[chartOption] === "price30dHistorydata" ||
             availableCharts[chartOption] === "priceMaxHistorydata") && (react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_4__.ResponsiveContainer, { width: "100%", height: "100%" },
             react__WEBPACK_IMPORTED_MODULE_0___default().createElement(recharts__WEBPACK_IMPORTED_MODULE_5__.ComposedChart, { data: availableCharts[chartOption] === "price30dHistorydata"
@@ -1135,6 +1105,33 @@ const ChartsField = ({ price30dHistorydata, priceMaxHistorydata, txVolumeData, t
                         }, fill: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].accent_medium })))))));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ChartsField);
+const styles = {
+    container: {
+        width: 330,
+        height: 160,
+    },
+    menuOptions: {
+        display: "flex",
+        justifyContent: "center",
+    },
+    menuOption: {
+        width: 42,
+        height: 4,
+        marginRight: "9px",
+        cursor: "pointer",
+        backgroundColor: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_medium,
+        borderRadius: "2px",
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+    },
+    emptyChartMessage: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        fontSize: "16px",
+        color: _static_colors__WEBPACK_IMPORTED_MODULE_1__["default"].primary_medium,
+    },
+};
 
 
 /***/ }),
@@ -3450,9 +3447,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "CACHE_TIME_LONG": () => (/* binding */ CACHE_TIME_LONG),
 /* harmony export */   "CACHE_TIME_SHORT": () => (/* binding */ CACHE_TIME_SHORT),
+/* harmony export */   "NETWORK_DETAILS": () => (/* binding */ NETWORK_DETAILS),
 /* harmony export */   "SHARED_API_DELAY": () => (/* binding */ SHARED_API_DELAY),
 /* harmony export */   "SHARED_API_KEY_COINGECKO": () => (/* binding */ SHARED_API_KEY_COINGECKO),
-/* harmony export */   "SHARED_API_KEY_ETHERSCAN": () => (/* binding */ SHARED_API_KEY_ETHERSCAN),
+/* harmony export */   "SHARED_API_KEY_ETHERSCAN_ETHEREUM": () => (/* binding */ SHARED_API_KEY_ETHERSCAN_ETHEREUM),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 const constants = {
@@ -3471,8 +3469,67 @@ const CACHE_TIME_SHORT = 600000; // 10 minutes
 const CACHE_TIME_LONG = 10800000; // 3 hours
 const SHARED_API_DELAY = 2000; // 2 secs
 const SHARED_API_KEY_COINGECKO = "CG-TAvyqB8W2DTmod8w3KeMDw8h";
-const SHARED_API_KEY_ETHERSCAN = "9Z1G1NN35M1URWAANE5CBZ2WJRJMABDCC8";
+const SHARED_API_KEY_ETHERSCAN_ETHEREUM = "9Z1G1NN35M1URWAANE5CBZ2WJRJMABDCC8";
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (constants);
+const NETWORK_DETAILS = {
+    "arbitrum-one": {
+        domain: "api.arbiscan.io",
+        explorerUrl: "arbiscan.io",
+        apikey: "P6V1TYPF7V97KPA5BN6BE9YVWAPZNNE2VA",
+    },
+    avalanche: {
+        domain: "api.snowtrace.io",
+        explorerUrl: "snowtrace.io",
+    },
+    base: {
+        domain: "api.basescan.org",
+        explorerUrl: "basescan.org",
+        apikey: "WE8V2FI55PN7K8J3U76CGT445CMVW9KKAX",
+    },
+    blast: {
+        domain: "api.blastscan.io",
+        explorerUrl: "blastscan.io",
+    },
+    "binance-smart-chain": {
+        domain: "api.bscscan.com",
+        explorerUrl: "bscscan.com",
+    },
+    celo: {
+        domain: "api.celoscan.io",
+        explorerUrl: "celoscan.io",
+    },
+    cronos: {
+        domain: "api.cronoscan.com",
+        explorerUrl: "cronoscan.com",
+    },
+    ethereum: {
+        domain: "api.etherscan.io",
+        explorerUrl: "etherscan.io",
+        apikey: "9Z1G1NN35M1URWAANE5CBZ2WJRJMABDCC8",
+    },
+    fantom: {
+        domain: "api.ftmscan.com",
+        explorerUrl: "ftmscan.com",
+    },
+    linea: {
+        domain: "api.lineascan.build",
+        explorerUrl: "lineascan.build",
+    },
+    "polygon-pos": {
+        domain: "api.polygonscan.com",
+        explorerUrl: "polygonscan.com",
+    },
+    "optimistic-ethereum": {
+        domain: "api-optimistic.etherscan.io",
+        explorerUrl: "optimistic.etherscan.io",
+        apikey: "EDHXVGWDZJSGXR2ZV4P4F5CMN8Q4EEDHSA",
+    },
+    scroll: {
+        domain: "api.scrollscan.com",
+        explorerUrl: "scrollscan.com",
+        apikey: "Z8BXW9WVI2B3IPD9K5TQV1SX2T99PKNYHE",
+    },
+};
 
 
 /***/ }),
@@ -4607,86 +4664,6 @@ function downsampling(originalArray, maxDataPoints) {
     }
     return newArray;
 }
-
-
-/***/ }),
-
-/***/ "./src/utils/getNetworkDetails.ts":
-/*!****************************************!*\
-  !*** ./src/utils/getNetworkDetails.ts ***!
-  \****************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getNetworkDetails": () => (/* binding */ getNetworkDetails)
-/* harmony export */ });
-const getNetworkDetails = (platformId) => {
-    let domain;
-    let explorerUrl;
-    switch (platformId) {
-        case "arbitrum-one":
-            domain = "api.arbiscan.io";
-            explorerUrl = "arbiscan.io";
-            break;
-        // case "aptos": // differente domain logic \0/
-        //   domain = "public-api.aptoscan.com/v1/";
-        //   explorerUrl = "aptoscan.com";
-        //   break;
-        case "avalanche":
-            domain = "api.snowtrace.io";
-            explorerUrl = "snowtrace.io";
-            break;
-        case "base":
-            domain = "api.basescan.org";
-            explorerUrl = "basescan.org";
-            break;
-        case "blast":
-            domain = "api.blastscan.io";
-            explorerUrl = "blastscan.io";
-            break;
-        case "binance-smart-chain":
-            domain = "api.bscscan.com";
-            explorerUrl = "bscscan.com";
-            break;
-        case "celo":
-            domain = "api.celoscan.io";
-            explorerUrl = "celoscan.io";
-            break;
-        case "cronos":
-            domain = "api.cronoscan.com";
-            explorerUrl = "cronoscan.com";
-            break;
-        case "ethereum":
-            domain = "api.etherscan.io";
-            explorerUrl = "etherscan.io";
-            break;
-        case "fantom":
-            domain = "api.ftmscan.com";
-            explorerUrl = "ftmscan.com";
-            break;
-        case "linea": // todo check
-            domain = "api.lineascan.build";
-            explorerUrl = "lineascan.build";
-            break;
-        case "polygon-pos":
-            domain = "api.polygonscan.com";
-            explorerUrl = "polygonscan.com";
-            break;
-        case "optimistic-ethereum":
-            domain = "api-optimistic.etherscan.io";
-            explorerUrl = "optimistic.etherscan.io";
-            break;
-        case "scroll":
-            domain = "api.scrollscan.com";
-            explorerUrl = "scrollscan.com";
-            break;
-        default:
-            console.log(`getPlatformDetails error: Invalid platformId: ${platformId}`);
-            return null;
-    }
-    return { domain, explorerUrl };
-};
 
 
 /***/ }),
