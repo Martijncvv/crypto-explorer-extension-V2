@@ -20,6 +20,10 @@ export const CoinInfoField: React.FC<ICoinInfoFieldProps> = ({
   coinInfo,
   tokenTxsChartData,
 }) => {
+  const handleHelpClick = () => {
+    window.open("https://forms.gle/Q8wXHYAmwojH64zS6", "_blank");
+  };
+  const isBeforeNovember20 = new Date() < new Date("2024-11-24");
   return (
     <>
       <div style={styles.topContainer}>
@@ -77,6 +81,12 @@ export const CoinInfoField: React.FC<ICoinInfoFieldProps> = ({
         <div style={styles.bottomMargin}>
           <ExpandableTextField text={coinInfo.description?.en} />
         </div>
+        {/*https://forms.gle/Q8wXHYAmwojH64zS6*/}
+        {isBeforeNovember20 && (
+          <div style={styles.helpContainer} onClick={handleHelpClick}>
+            <p style={styles.helpText}>Marty here! Help me out (click here)</p>
+          </div>
+        )}
         <SocialsFooter coinInfo={coinInfo} />
       </div>
     </>
@@ -97,5 +107,20 @@ const styles: { [key: string]: CSSProperties } = {
 
   bottomMargin: {
     marginBottom: "12px",
+  },
+  helpContainer: {
+    textAlign: "center",
+    cursor: "pointer",
+    padding: "10px",
+    backgroundColor: "rgba(0,123,255,0.18)",
+    borderRadius: "5px",
+    color: "white",
+    marginTop: "12px",
+    marginBottom: "12px",
+    transition: "background-color 0.3s",
+  },
+  helpText: {
+    margin: 0,
+    fontWeight: "bold",
   },
 };
